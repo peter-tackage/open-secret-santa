@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -22,7 +21,7 @@ import android.view.ViewGroup;
 import android.widget.*;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
-import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
+import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.types.*;
 import com.moac.drawengine.DrawEngine;
 import com.moac.drawengine.DrawEngineProvider;
@@ -46,10 +45,10 @@ public class AssignmentSharerActivity extends Activity {
     static final int DIALOG_ASSIGNMENT = 2;
     static final int CONFIRM_REDRAW_DIALOG = 3;
 
-    long mResultId = PersistableObject.UNSET_ID;
-    long mGroupId = PersistableObject.UNSET_ID;
+    DrawResult mDrawResult;
+    Group mGroup;
 
-    OpenSecretSantaDB mDatabase;
+    DatabaseManager mDatabase;
     DrawEngineProvider mDrawEngineProv;
 
     private List<DrawResultEntry> items;
@@ -74,13 +73,15 @@ public class AssignmentSharerActivity extends Activity {
 
         setContentView(R.layout.draw_sharer_view);
 
+        mDatabase = OpenSecretSantaApplication.getDatabase();
+
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
-            mGroupId = extras.getLong(Constants.GROUP_ID);
-            Log.v(TAG, "onCreate() - got mGroupId: " + mGroupId);
+            long groupId = extras.getLong(Constants.GROUP_ID);
+            Log.v(TAG, "onCreate() - got mGroupId: " + groupId);
+            mGroup = mDatabase.queryById(groupId, Group.class);
         }
 
-        mDatabase = OpenSecretSantaApplication.getDatabase();
         mDrawEngineProv = new DrawEngineProvider();
         mSwitcher = (ViewSwitcher) findViewById(R.id.drawSharerViewSwitcher);
 
@@ -188,8 +189,8 @@ public class AssignmentSharerActivity extends Activity {
     public void onResume() {
         super.onResume();
         Log.v(TAG, "onResume() - start");
-        Log.v(TAG, "onResume() mGroupId: " + mGroupId);
-        Log.v(TAG, "onResume() mResultId: " + mResultId);
+        Log.v(TAG, "onResume() mGroupId: " + mGroup.getId());
+        Log.v(TAG, "onResume() mResultId: " + mDrawResult.getId());
         initialiseViewContent();
         Log.v(TAG, "onResume() - end");
     }
@@ -253,17 +254,16 @@ public class AssignmentSharerActivity extends Activity {
 
                 // If we allow deleting of draws, then perhaps
                 // a ready group could exist with no draws.
-                boolean isReady = mDatabase.getGroupById(mGroupId).isReady();
 
                 // See if there's a draw result already there.
-                mResultId = mDatabase.getLatestDrawResultId(mGroupId);
+                mDrawResult = mDatabase.queryLatestDrawResultForGroup(mGroup.getId());
 
                 // Having a latest draw is not good enough - it might not
                 // reflect the current structure of the good.
-                Log.v(TAG, "executeDrawIfRequired() - isReady: " + isReady + " and mResultId: " + mResultId);
+                Log.v(TAG, "executeDrawIfRequired() - isReady: " + mGroup.isReady() + " and mResultId: " + mDrawResult.getId());
                 // If there's no draw or the group is not ready to share
                 // PersistableObject.UNSET_ID is no valid row.
-                return (mResultId == PersistableObject.UNSET_ID || !isReady);
+                return (mDrawResult == null || !mGroup.isReady());
             }
 
             @Override
@@ -326,27 +326,24 @@ public class AssignmentSharerActivity extends Activity {
 
                     long before = System.currentTimeMillis();
                     // Let's get some database values
-                    Map<String, Member> members = mDatabase.getAllMembers(mGroupId);
-                    Log.v(TAG, "performDraw() - Group: " + mGroupId + " has member count: " + members.size());
+                    List<Member> members = mDatabase.queryAll(Member.class);
+                    Log.v(TAG, "performDraw() - Group: " + mGroup.getId() + " has member count: " + members.size());
                     Map<Long, Set<Long>> participants = new HashMap<Long, Set<Long>>();
 
-                    for(String name : members.keySet()) {
-                        Member m = members.get(name);
-                        Set<Long> rests = new HashSet<Long>();
+                    for(Member m : members) {
 
-                        Cursor rCursor = mDatabase.getRestrictionsForMemberId(m.getId());
-                        while(rCursor.moveToNext()) {
-                            Long id = rCursor.getLong(rCursor.getColumnIndex((Restriction.Columns.OTHER_MEMBER_ID_COLUMN)));
-                            rests.add(id);
+                        List<Restriction> restrictions = mDatabase.queryAllRestrictionsForMemberId(m.getId());
+                        Set<Long> restrictionIds = new HashSet<Long>();
+                        for (Restriction r: restrictions) {
+                            restrictionIds.add(r.getOtherMemberId());
                         }
-                        rCursor.close();
 
-                        participants.put(m.getId(), rests);
+                        participants.put(m.getId(), restrictionIds);
 
-                        Log.v(TAG, "performDraw() - " + m.getName() + "(" + m.getId() + ") has restrictions: " + rests);
+                        Log.v(TAG, "performDraw() - " + m.getName() + "(" + m.getId() + ") has restrictions: " + restrictions);
                     }
 
-                    Log.v(TAG, "performDraw() - Group: " + mGroupId + " has member count: "
+                    Log.v(TAG, "performDraw() - Group: " + mGroup.getId() + " has member count: "
                       + participants.size());
 
                     try {
@@ -359,10 +356,11 @@ public class AssignmentSharerActivity extends Activity {
                         mStatusMsg = "Draw was successful! Took " + (after - before) + "ms";
 
                         // Now write the DRE
-                        long drId = saveDrawResult(assignments, mGroupId);
+                        saveDrawResult(assignments, mGroup);
 
                         // Successful draw, so update the group flag.
-                        mDatabase.setGroupIsReady(mGroupId, true);
+                        mGroup.setReady(true);
+                        mDatabase.update(mGroup);
 
                         return new DrawStatus(true, mStatusMsg);
                     } catch(DrawFailureException e) {
@@ -376,7 +374,8 @@ public class AssignmentSharerActivity extends Activity {
                 }
 
                 // Failed to draw - not ready to share.
-                mDatabase.setGroupIsReady(mGroupId, false);
+                mGroup.setReady(false);
+                mDatabase.update(mGroup);
 
                 return new DrawStatus(false, mStatusMsg);
             }
@@ -407,28 +406,36 @@ public class AssignmentSharerActivity extends Activity {
     /*
      * Should be called in a background thread.
      */
-    protected long saveDrawResult(Map<Long, Long> _assignments, long _groupId) {
+    protected long saveDrawResult(Map<Long, Long> _assignments, Group _group) {
 
         Log.v(TAG, "saveDrawResult() - start");
         Log.v(TAG, "saveDrawResult() - length: " + _assignments.size());
 
         DrawResult dr = new DrawResult();
         dr.setDrawDate(System.currentTimeMillis());
+        dr.setGroup(_group);
+        mDatabase.update(dr);
 
         // Ok translate the member ids (in the assignments) into their names
-        long id = mDatabase.insertDrawResult(dr, _groupId);
+        long id = mDatabase.create(dr);
 
         for(Long m1Id : _assignments.keySet()) {
             // Now add the corresponding draw result entries.
 
             // We are notifying m1 that they have been assigned m2.
             // => so we use m1's details and send them m2's name.
-            Member m1 = mDatabase.getMemberById(m1Id);
+            Member m1 = mDatabase.queryById(m1Id, Member.class);
 
-            String name2 = mDatabase.getMemberById(_assignments.get(m1Id)).getName();
+            String name2 = mDatabase.queryById(_assignments.get(m1Id), Member.class).getName();
             Log.v(TAG, "saveDrawResult() - saving dre: " + m1.getName() + " - " + name2 + " with: " + m1.getContactMode() + " " + m1.getContactDetail());
 
-            long dre = mDatabase.insertDrawResultEntry(id, new DrawResultEntry(m1.getName(), name2, m1.getContactMode(), m1.getContactDetail()));
+            DrawResultEntry dre =  new DrawResultEntry();
+            dre.setGiverName(m1.getName());
+            dre.setReceiverName(name2);
+            dre.setContactMode(m1.getContactMode());
+            dre.setContactDetail(m1.getContactDetail());
+            dre.setDrawResult(dr);
+            mDatabase.create(dre);
         }
 
         Log.v(TAG, "saveDrawResult() - inserted DrawResult: " + id);
@@ -453,24 +460,19 @@ public class AssignmentSharerActivity extends Activity {
                 Log.v(TAG, "populateAssignmentsList() - populating assignments list");
 
                 // Always get the latest result - there might not be one?
-                mResultId = mDatabase.getLatestDrawResultId(mGroupId);
+                mDrawResult = mDatabase.queryLatestDrawResultForGroup(mGroup.getId());
 
                 // Really just a safe guard, in case this is called after a FAILED draw (which it shouldn't)
-                if(mResultId == PersistableObject.UNSET_ID)
+                if(mDrawResult == null)
                     return null;
 
-                // Get draw result
-                DrawResult dr = mDatabase.getDrawResultById(mResultId);
-
-                if(dr != null) {
                     // Populate
                     drDetails = new DrawResultDetails();
-                    drDetails.dr = dr;
-                    drDetails.dres = mDatabase.getAllDrawResultEntriesForDrawId(mResultId);
+                    drDetails.dr = mDrawResult;
+                    drDetails.dres = mDatabase.queryAllDrawResultEntriesForDrawId(mDrawResult.getId());
                     Collections.sort(drDetails.dres);
 
                     Log.v(TAG, "populateAssignmentsList() - row count: " + drDetails.dres.size());
-                }
 
                 return drDetails;
             }
@@ -530,8 +532,8 @@ public class AssignmentSharerActivity extends Activity {
                     }
                 } else {
                     // I don't expect this to happen...
-                    Log.e(TAG, "onPostExecute() Failed to get entries! gid: " + mGroupId
-                      + " rid: " + mResultId);
+                    Log.e(TAG, "onPostExecute() Failed to get entries! gid: " + mGroup.getId()
+                      + " rid: " + mDrawResult.getId());
                     mSwitcher.reset();
                     items.clear();
                     aa.clear();
@@ -557,8 +559,7 @@ public class AssignmentSharerActivity extends Activity {
             protected Void doInBackground(Void... params) {
 
                 assign.setViewedDate(System.currentTimeMillis());
-                // TODO BE consistent! id is already part of assign!
-                mDatabase.updateDrawResultEntry(assign, assign.getId());
+                mDatabase.update(assign);
 
                 // Creates another background thread.
                 populateAssignmentsList(false);
@@ -638,17 +639,13 @@ public class AssignmentSharerActivity extends Activity {
 
     private void openShareDialog() {
 
-        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
 
             @Override
-            protected String doInBackground(Void... params) {
-                Log.v(TAG, "openShareDialog() - getting existing draw message");
-                DrawResult dr = mDatabase.getDrawResultById(mResultId);
-                return dr != null ? dr.getMessage() : "";
-            }
+            protected void onPostExecute(Void result) {
 
-            @Override
-            protected void onPostExecute(String message) {
+                String message = mDrawResult.getMessage();
+
                 Log.v(TAG, "openShareDialog() existing msg: " + message);
 
                 // Take the values and populate the dialog
@@ -698,19 +695,25 @@ public class AssignmentSharerActivity extends Activity {
                 builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        shareAllAssignments(mResultId, msgField.getText().toString());
+                        shareAllAssignments(msgField.getText().toString());
                     }
                 });
                 AlertDialog alert = builder.create();
                 alert.setOwnerActivity(AssignmentSharerActivity.this);
                 alert.show();
             }
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                // TODO Not use now.
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
         };
 
         task.execute();
     }
 
-    private void shareAllAssignments(final long _drawResultId, final String msg) {
+    private void shareAllAssignments(final String msg) {
 
         AsyncTask<Void, Integer, ShareResults> task = new AsyncTask<Void, Integer, ShareResults>() {
 
@@ -726,12 +729,11 @@ public class AssignmentSharerActivity extends Activity {
                 ShareResults results = new ShareResults();
 
                 // Update the details before starting.
-                DrawResult dr = mDatabase.getDrawResultById(_drawResultId);
-                dr.setSendDate(System.currentTimeMillis());
-                dr.setMessage(msg);
-                mDatabase.updateDrawResult(dr, _drawResultId);
+                mDrawResult.setSendDate(System.currentTimeMillis());
+                mDrawResult.setMessage(msg);
+                mDatabase.update(mDrawResult);
 
-                Log.v(TAG, "Updating DR: " + dr.getId() + "," + dr.getDrawDate() + "," + dr.getSendDate() + "," + dr.getMessage());
+                Log.v(TAG, "Updating DR: " + mDrawResult.getId() + "," + mDrawResult.getDrawDate() + "," + mDrawResult.getSendDate() + "," + mDrawResult.getMessage());
 
                 // Currently 3 contact modes
                 // - None (are ignored)
@@ -741,7 +743,7 @@ public class AssignmentSharerActivity extends Activity {
                 // TODO Possibly validate before sending anything.
                 // Is better to prevent failures, than to send out some SMSs
                 // then fail on one... much confusion would result.
-                List<DrawResultEntry> drawEntries = mDatabase.getAllDrawResultEntriesForDrawId(_drawResultId);
+                List<DrawResultEntry> drawEntries = mDatabase.queryAllDrawResultEntriesForDrawId(mDrawResult.getId());
 
                 // Ok, Iterate through these objects.
                 for(DrawResultEntry entry : drawEntries) {
@@ -774,7 +776,7 @@ public class AssignmentSharerActivity extends Activity {
                         if(entry.isSendable()) {
                             Log.v(TAG, "Marking as sent: " + entry.getGiverName() + " at: " + System.currentTimeMillis());
                             entry.setSentDate(System.currentTimeMillis());
-                            mDatabase.updateDrawResultEntry(entry, entry.getId());
+                            mDatabase.update(entry);
                         }
                     } catch(Exception exp) {
                         // TODO This is wrong

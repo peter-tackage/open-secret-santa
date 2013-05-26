@@ -24,10 +24,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
-import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
+import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.types.Group;
 import com.moac.android.opensecretsanta.types.Member;
 import com.moac.android.opensecretsanta.types.Member.Columns;
+import com.moac.android.opensecretsanta.types.Restriction;
 
 import java.util.*;
 
@@ -44,11 +45,8 @@ public class MembersListActivity extends Activity {
     ImageButton mAddMemberButton = null;
     ImageButton mAddManualEntryButton = null;
 
-    Cursor mCursor;
     Group mGroup;
-    static OpenSecretSantaDB mDatabase;
-    long mGroupId;
-    String mGroupName;
+    DatabaseManager mDatabase;
 
     private View.OnClickListener mDeleteClickListener;
     private View.OnClickListener mRestrictClickListener;
@@ -203,13 +201,13 @@ public class MembersListActivity extends Activity {
 
     // initialise with the list of members if any already exist for this group
     private void initialise() {
+        mDatabase = OpenSecretSantaApplication.getDatabase();
+
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
-            mGroupId = extras.getLong(Constants.GROUP_ID);
-            mGroupName = extras.getString(Constants.GROUP_NAME);
+            long groupId = extras.getLong(Constants.GROUP_ID);
+            mGroup = mDatabase.queryById(groupId, Group.class);
         }
-
-        mDatabase = OpenSecretSantaApplication.getDatabase();
 
         items = new ArrayList<MemberRowDetails>();
         aa = new MemberListAdapter(this, R.layout.member_row, items, mRestrictClickListener, mDeleteClickListener);
@@ -236,13 +234,12 @@ public class MembersListActivity extends Activity {
                 String memberName = input.getText().toString().trim();
                 Log.v(TAG, "memberName:" + memberName);
                 if(memberName != null && !memberName.equals("")) {
-                    Log.v(TAG, "Attempting to add: " + memberName);
+                    Log.v(TAG, "Attempting to create/update: " + memberName);
                     Member member = new Member();
                     member.setName(memberName);
                     member.setContactMode(Constants.NAME_ONLY_CONTACT_MODE);
-
-                    // Add or update
-                    addMember(mGroupId, member);
+                    member.setGroup(mGroup);
+                    createOrUpdateMember(member);
                 }
                 dialog.dismiss();
             }
@@ -309,38 +306,33 @@ public class MembersListActivity extends Activity {
         alert.show();
     }
 
-    private void addMember(final long groupId, final Member member) {
+    private void createOrUpdateMember(final Member member) {
 
         AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
 
             @Override
             protected Void doInBackground(Void... params) {
 
-                Member existing = mDatabase.getMember(mGroupId, member.getName());
+                Member existing = mDatabase.queryMemberWithNameForGroup(mGroup.getId(), member.getName());
                 if(existing == null) {
                     // this entry doesn't exist so we can insert
-                    Log.v(TAG, "addMember() - inserting");
-                    mDatabase.insertMember(mGroupId, member);
+                    Log.v(TAG, "createOrUpdateMember() - inserting");
+                    mDatabase.create(member);
 
-                    // New entry - need to redraw.
-                    mDatabase.setGroupIsReady(mGroupId, false);
+                    mGroup.setReady(false);
+                    mDatabase.update(mGroup);
                 } else {
-                    Log.v(TAG, "addMember() - exists");
+                    Log.v(TAG, "createOrUpdateMember() - exists");
                     // Don't update if already the same.
                     if(!existing.equals(member)) {
-                        Log.v(TAG, "addMember() - update");
+                        Log.v(TAG, "createOrUpdateMember() - update");
+                        mDatabase.update(member);
 
-                        mDatabase.updateMember(existing.getId(), member);
-
-                        // TODO This should be done better, should be able
-                        // to update the number and resend, without redraw.
-
-                        // Need to redraw even if just updating phone number, because
-                        // need to ensure that the number is updated in the draw.
-                        mDatabase.setGroupIsReady(mGroupId, false);
+                        mGroup.setReady(false);
+                        mDatabase.update(mGroup);
                     }
+                    // Important: Don't set not Ready unnecessarily.
                 }
-
                 return null;
             }
 
@@ -365,17 +357,18 @@ public class MembersListActivity extends Activity {
                 try {
 
                     // If new member name exists already for this group, then fail.
-                    Member existingWithNewName = mDatabase.getMember(mGroupId, _memberName);
+                    Member existingWithNewName = mDatabase.queryMemberWithNameForGroup(mGroup.getId(), _memberName);
 
                     if(existingWithNewName == null) {
-                        Member existingMember = mDatabase.getMemberById(_memberId);
+                        Member existingMember = mDatabase.queryById(_memberId, Member.class);
 
                         // Only bother if it's actually changing.
                         if(!existingMember.getName().equals(_memberName)) {
                             existingMember.setName(_memberName);
-                            mDatabase.updateMember(_memberId, existingMember);
+                            mDatabase.update(existingMember);
                             // Need to force redraw  to use new name in the draw.
-                            mDatabase.setGroupIsReady(mGroupId, false);
+                            mGroup.setReady(false);
+                            mDatabase.update(mGroup);
                         }
                     } else {
                         return Boolean.FALSE;
@@ -414,8 +407,9 @@ public class MembersListActivity extends Activity {
 
             @Override
             protected Void doInBackground(Void... params) {
-                mDatabase.removeMember(memberId);
-                mDatabase.setGroupIsReady(mGroupId, false);
+                mDatabase.delete(memberId, Member.class);
+                mGroup.setReady(false);
+                mDatabase.update(mGroup);
                 return null;
             }
 
@@ -440,28 +434,23 @@ public class MembersListActivity extends Activity {
                 List<MemberRowDetails> rows = new ArrayList<MemberRowDetails>();
                 HashMap<Long, MemberRowDetails> restrictions = new HashMap<Long, MemberRowDetails>();
 
-                Cursor allMembersCursor = mDatabase.getAllMembersCursor(mGroupId);
-                Log.v(TAG, "number of members found " + allMembersCursor.getCount());
+                List<Member> members = mDatabase.queryAllMembersForGroup(mGroup.getId());
+                Log.v(TAG, "number of members found " + members.size());
 
-                while(allMembersCursor.moveToNext()) {
-
+                for(Member member : members) {
                     //  A member's name is unique for a group.
-                    String memberName = allMembersCursor.getString(allMembersCursor.getColumnIndex(Columns.NAME_COLUMN));
-                    Long id = allMembersCursor.getLong(allMembersCursor.getColumnIndex(Columns._ID));
-                    String contactDetail = allMembersCursor.getString(allMembersCursor.getColumnIndex(Columns.CONTACT_DETAIL_COLUMN));
-                    int contactMode = allMembersCursor.getInt(allMembersCursor.getColumnIndex(Columns.CONTACT_MODE_COLUMN));
-                    String lookupKey = allMembersCursor.getString(allMembersCursor.getColumnIndex(Columns.LOOKUP_KEY));
-                    Cursor restrictionsCursor = mDatabase.getRestrictionNamesForMemberIdCursor(id.longValue());
+                    String memberName = member.getName();
+                    long id = member.getId();
+                    String contactDetail = member.getContactDetail();
+                    int contactMode = member.getContactMode();
+                    String lookupKey = member.getLookupKey();
+                    List<Restriction> restrictionList = mDatabase.queryAllRestrictionsForMemberId(id);
 
                     Log.v(TAG, "populdateMembersList() lookupKey: " + lookupKey);
-                    MemberRowDetails row = new MemberRowDetails(id.longValue(), lookupKey, memberName, contactMode, contactDetail, restrictionsCursor.getCount());
+                    MemberRowDetails row = new MemberRowDetails(id, lookupKey, memberName, contactMode, contactDetail, restrictionList.size());
                     restrictions.put(id, row);
                     rows.add(row);
-
-                    restrictionsCursor.close();
                 }
-
-                allMembersCursor.close();
 
                 Log.v(TAG, "populateMembersList() - row count: " + rows.size());
                 Collections.sort(rows);
@@ -553,7 +542,7 @@ public class MembersListActivity extends Activity {
             }
 
 			/*
-			 * This can mean that contact doesn't exist or they have an
+             * This can mean that contact doesn't exist or they have an
 			 * entry, but no details.
 			 */
 
@@ -724,9 +713,10 @@ public class MembersListActivity extends Activity {
 
                   member.setContactMode(contactList.get(item).contactMode);
                   member.setContactDetail(contactList.get(item).contactDetail);
+                  member.setGroup(mGroup);
 
                   // Add or update.
-                  addMember(mGroupId, member);
+                  createOrUpdateMember(member);
 
                   dialog.dismiss();
               }
@@ -748,24 +738,26 @@ public class MembersListActivity extends Activity {
             mMemberName = _memberName;
         }
 
-        public void setRestrictions(final List<RestrictionRowDetails> items) {
+        public void setRestrictions(final List<RestrictionRowDetails> newRestrictions) {
             Log.v(TAG, "setRestrictions() - start");
 
             AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
 
                 @Override
-                protected void onPreExecute() {
-                }
-
-                @Override
                 protected Void doInBackground(Void... params) {
-                    Log.v(TAG, "setRestrictions() - setting changed restrictions for: " + mMemberName + " length: " + items.size());
-                    mDatabase.setGroupIsReady(mGroupId, false);
-                    mDatabase.removeAllRestrictionsForMember(mMemberId);
-                    for(RestrictionRowDetails rester : items) {
+                    Log.v(TAG, "setRestrictions() - setting changed restrictions for: " + mMemberName + " length: " + newRestrictions.size());
+                    mGroup.setReady(false);
+                    mDatabase.update(mGroup);
+                    mDatabase.deleteAllRestrictionsForMember(mMemberId);
+                    for(RestrictionRowDetails rester : newRestrictions) {
                         if(rester.restricted) {
                             Log.v(TAG, "setRestrictions() - restricting: " + rester.toMemberId);
-                            mDatabase.insertRestriction(mMemberId, rester.getToMemberId());
+                            Restriction r = new Restriction();
+                            Member fromMember = mDatabase.queryById(rester.fromMemberId, Member.class);
+                            Member toMember = mDatabase.queryById(rester.toMemberId, Member.class);
+                            r.setMember(fromMember);
+                            r.setOtherMember(toMember);
+                            mDatabase.create(r);
                         }
                     }
                     return null;
@@ -786,36 +778,36 @@ public class MembersListActivity extends Activity {
         }
 
         /*
+         *
          * Builds the full list.
          */
         public List<RestrictionRowDetails> getRestrictionRows(long _memberId) {
-            TreeMap<Long, RestrictionRowDetails> rest = new TreeMap<Long, RestrictionRowDetails>();
-            Cursor restrictionCursor = mDatabase.getRestrictionNamesForMemberIdCursor(_memberId);
-            Log.v(TAG, "getRestrictionRows() - memberId: " + _memberId + " has restriction count: " + restrictionCursor.getColumnCount());
-            while(restrictionCursor.moveToNext()) {
-                //  A member's name is unique for a group.
-                String other = restrictionCursor.getString(restrictionCursor.getColumnIndex((Columns.NAME_COLUMN)));
-                long toId = restrictionCursor.getLong(restrictionCursor.getColumnIndex((Columns._ID)));
-                rest.put(Long.valueOf(toId), new RestrictionRowDetails(_memberId, toId, other, true));
-                Log.v(TAG, "getRestrictionRows() - Adding restriction: " + toId + "(" + other + ")");
-            }
+            ArrayList<RestrictionRowDetails> rows = new ArrayList<RestrictionRowDetails>();
 
-            Cursor otherGroupMembersCursor = mDatabase.getOtherGroupMembers(_memberId);
-            while(otherGroupMembersCursor.moveToNext()) {
-                String other = otherGroupMembersCursor.getString(otherGroupMembersCursor.getColumnIndex((Columns.NAME_COLUMN)));
-                long toId = otherGroupMembersCursor.getLong(otherGroupMembersCursor.getColumnIndex((Columns._ID)));
+            List<Restriction> restrictionList = mDatabase.queryAllRestrictionsForMemberId(_memberId);
+            Log.v(TAG, "getRestrictionRows() - memberId: " + _memberId + " has restriction size: " + restrictionList.size());
 
-                // only add if it's not a restrictions
-                Long key = Long.valueOf(toId);
-                if(!rest.containsKey(key)) {
-                    rest.put(key, new RestrictionRowDetails(_memberId, toId, other, false));
-                    Log.v(TAG, "getRestrictionRows() - Adding unrestricted: " + toId + "(" + other + ")");
+            List<Member> allMembers = mDatabase.queryAllMembersForGroup(mGroup.getId());
+            for(Member otherMember : allMembers) {
+                boolean isRestricted = false;
+
+                if(otherMember.getId() == _memberId)
+                    continue;
+
+                for(Restriction restriction : restrictionList) {
+                    if(restriction.getOtherMemberId() == otherMember.getId()) {
+                        isRestricted = true;
+                        break;
+                    }
                 }
+
+                Log.v(TAG, "getRestrictionRows() - row: " +
+                  otherMember.getId() + "(" + otherMember.getName() + ")"
+                  + " isRestricted: " + isRestricted);
+
+                rows.add(new RestrictionRowDetails(_memberId, otherMember.getId(), otherMember.getName(), isRestricted));
             }
 
-            otherGroupMembersCursor.close();
-
-            ArrayList<RestrictionRowDetails> rows = new ArrayList<RestrictionRowDetails>(rest.values());
             Collections.sort(rows);
             return rows;
         }

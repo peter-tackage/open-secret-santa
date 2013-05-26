@@ -21,7 +21,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
+import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
+import com.moac.android.opensecretsanta.types.DrawResult;
 import com.moac.android.opensecretsanta.types.Group;
 import com.moac.android.opensecretsanta.types.PersistableObject;
 
@@ -33,7 +35,7 @@ public class GroupSelectionActivity extends Activity {
 
     private final static String TAG = "GroupSelectionActivity";
 
-    private OpenSecretSantaDB mDatabase;
+    private DatabaseManager mDatabase;
 
     private ImageView nextButton;
     private EditText mgroupNameView;
@@ -112,7 +114,7 @@ public class GroupSelectionActivity extends Activity {
             if(!(groupName == null || groupName.length() == 0)) {
                 Group mGroup = new Group();
                 mGroup.setName(groupName);
-                Long mNewGroupId = mDatabase.insertGroup(mGroup);
+                Long mNewGroupId = mDatabase.create(mGroup);
 
                 if(mNewGroupId != PersistableObject.UNSET_ID) {
                     Intent myIntent = new Intent(v.getContext(), DrawTabManagerActivity.class);
@@ -219,27 +221,20 @@ public class GroupSelectionActivity extends Activity {
 
                 List<GroupRowDetails> rows = new ArrayList<GroupRowDetails>();
 
-                Cursor cursor = null;
-                cursor = mDatabase.getAllGroupsCursor();
+                List<Group> groups = mDatabase.queryAll(Group.class);
 
-                if(cursor.moveToFirst()) {
-                    Log.v(TAG, "Cursor: getColumnCount(): " + cursor.getColumnCount());
+                for(Group group : groups) {
 
-                    do {
-                        long groupId = cursor.getLong(cursor.getColumnIndex(Group.Columns._ID));
+                    long groupId = group.getId();
+                    String groupName = group.getName();
+                    long memberCount = mDatabase.queryAllMembersForGroup(groupId).size();
+                    DrawResult latest = mDatabase.queryLatestDrawResultForGroup(groupId);
+                    long date = (latest != null) ?
+                      latest.getDrawDate() : Constants.UNDRAWN_DATE;
 
-                        String groupName = mDatabase.getGroupById(groupId).getName();
-                        long memberCount = mDatabase.getAllMembers(groupId).size();
-
-                        long drawResultId = mDatabase.getLatestDrawResultId(groupId);
-                        // TODO - Don't actually use this anymore.
-                        long date = (drawResultId != PersistableObject.UNSET_ID) ? mDatabase.getDrawResultById(drawResultId).getDrawDate() : Constants.UNDRAWN_DATE;
-
-                        GroupRowDetails row = new GroupRowDetails(groupId, groupName, memberCount, date);
-                        rows.add(row);
-                    } while(cursor.moveToNext());
+                    GroupRowDetails row = new GroupRowDetails(groupId, groupName, memberCount, date);
+                    rows.add(row);
                 }
-                cursor.close();
 
                 Log.v(TAG, "populateDrawList() - row count: " + rows.size());
                 Collections.sort(rows);
@@ -354,7 +349,7 @@ public class GroupSelectionActivity extends Activity {
 
             @Override
             protected Void doInBackground(Void... params) {
-                mDatabase.removeGroup(groupId);
+                mDatabase.delete(groupId, Group.class);
                 return null;
             }
 
@@ -375,14 +370,9 @@ public class GroupSelectionActivity extends Activity {
             protected Boolean doInBackground(Void... params) {
 
                 // Get the group with that id.
-                try {
-                    Group existingGroup = mDatabase.getGroupById(_groupId);
-                    existingGroup.setName(_groupName);
-                    mDatabase.updateGroup(_groupId, existingGroup);
-                } catch(SQLException exp) {
-                    Log.e(TAG, exp.getMessage(), exp);
-                    return Boolean.FALSE;
-                }
+                Group existingGroup = mDatabase.queryById(_groupId, Group.class);
+                existingGroup.setName(_groupName);
+                mDatabase.update(existingGroup);
 
                 return Boolean.TRUE;
             }

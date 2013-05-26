@@ -45,4 +45,7 @@ public class DrawResult extends PersistableObject {
     public long getSendDate() { return mSendDate; }
     public void setMessage(String message) { mMessage = message; }
     public String getMessage() { return mMessage; }
+    public void setGroup(Group group) { mGroup = group; }
+    public long getGroupId() { return mGroup.getId(); }
+
 }

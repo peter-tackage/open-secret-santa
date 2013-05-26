@@ -813,7 +813,14 @@ public class OpenSecretSantaDB {
         long viewedDate = cursor.getLong(cursor.getColumnIndex(DrawResultEntry.Columns.VIEWED_DATE_COLUMN));
         long sentDate = cursor.getLong(cursor.getColumnIndex(DrawResultEntry.Columns.SENT_DATE_COLUMN));
 
-        DrawResultEntry dre = new DrawResultEntry(name1, name2, contactMode, contactDetail, viewedDate, sentDate);
+        DrawResultEntry dre = new DrawResultEntry();
+        dre.setGiverName(name1);
+        dre.setReceiverName(name2);
+        dre.setContactMode(contactMode);
+        dre.setContactDetail(contactDetail);
+        dre.setViewedDate(viewedDate);
+        dre.setSentDate(sentDate);
+
         Log.v(TAG, "############### populateDrawResultEntry: " + name1 + " | " + name2 + "| " + contactDetail);
         dre.setId(id);
         return dre;

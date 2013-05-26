@@ -6,7 +6,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 
 @DatabaseTable(tableName = OpenSecretSantaDB.RESTRICTIONS_TABLE_NAME)
-public class Restriction {
+public class Restriction extends PersistableObject {
 
     public static interface Columns extends BaseColumns {
 
@@ -30,12 +30,11 @@ public class Restriction {
       columnDefinition = "integer references members (_id) on delete cascade")
     private Member mOtherMember;
 
-    public long getMemberId() {
-        return mMember.getId();
-    }
+    public long getMemberId() { return mMember.getId(); }
 
-    public long getOtherMemberId() {
-        return mOtherMember.getId();
-    }
+    public long getOtherMemberId() { return mOtherMember.getId(); }
 
+    public void setMember(Member member) { mMember = member; }
+
+    public void setOtherMember(Member otherMember) { mOtherMember = otherMember; }
 }

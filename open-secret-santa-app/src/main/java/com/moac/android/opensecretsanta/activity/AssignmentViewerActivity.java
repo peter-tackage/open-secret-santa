@@ -17,7 +17,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
-import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 import com.moac.android.opensecretsanta.types.DrawResult;
 import com.moac.android.opensecretsanta.types.DrawResultEntry;
 import com.moac.android.opensecretsanta.types.PersistableObject;
@@ -40,8 +39,6 @@ public class AssignmentViewerActivity extends Activity {
 
     AlertDialog mViewerDialog;
 
-    OpenSecretSantaDB mDatabase;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,8 +50,6 @@ public class AssignmentViewerActivity extends Activity {
             mResultId = extras.getLong(Constants.DRAW_RESULT_ID);
             Log.v(TAG, "onCreate() - got mResultId: " + mResultId);
         }
-
-        mDatabase = OpenSecretSantaApplication.getDatabase();
 
         mList = (ListView) findViewById(R.id.assignmentsListView);
 
@@ -149,10 +144,10 @@ public class AssignmentViewerActivity extends Activity {
                 DrawResultDetails drd = new DrawResultDetails();
 
                 // Retrieve the draw - this better work.
-                drd.dr = mDatabase.getDrawResultById(mResultId);
+                drd.dr = OpenSecretSantaApplication.getDatabase().queryById(mResultId, DrawResult.class);
 
                 // Get the rows.
-                drd.dres = mDatabase.getAllDrawResultEntriesForDrawId(mResultId);
+                drd.dres = OpenSecretSantaApplication.getDatabase().queryAllDrawResultEntriesForDrawId(mResultId);
 
                 Log.v(TAG, "populateAssignmentsList() - row count: " + drd.dres.size());
 
@@ -196,10 +191,8 @@ public class AssignmentViewerActivity extends Activity {
             @Override
             protected Void doInBackground(Void... params) {
                 assign.setViewedDate(System.currentTimeMillis());
-                // TODO BE consistent! id is already part of assign!
-                mDatabase.updateDrawResultEntry(assign, assign.getId());
+                OpenSecretSantaApplication.getDatabase().update(assign);
                 populateAssignmentsList();
-
                 return null;
             }
         };

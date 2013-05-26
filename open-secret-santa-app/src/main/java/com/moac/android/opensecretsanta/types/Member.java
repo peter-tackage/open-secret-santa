@@ -8,10 +8,11 @@ import com.j256.ormlite.table.DatabaseTable;
 import com.moac.android.opensecretsanta.activity.Constants;
 import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 
-@DatabaseTable(tableName = OpenSecretSantaDB.MEMBERS_TABLE_NAME)
+@DatabaseTable(tableName = Member.TABLE_NAME)
 public final class Member extends PersistableObject {
 
     public static final String TAG = "Member";
+    public static final String TABLE_NAME =  "members";
 
     public static interface Columns extends BaseColumns {
 
@@ -70,6 +71,10 @@ public final class Member extends PersistableObject {
     public String getLookupKey() { return mLookupKey; }
 
     public void setLookupKey(String _lookupKey) { mLookupKey = _lookupKey; }
+
+    public void setGroup(Group group) { mGroup = group; }
+
+    public long getGroupId() { return mGroup.getId(); }
 
     @Override
     public String toString() {

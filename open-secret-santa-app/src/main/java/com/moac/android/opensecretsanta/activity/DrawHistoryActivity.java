@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,8 +15,9 @@ import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
-import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
+import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.types.DrawResult;
+import com.moac.android.opensecretsanta.types.Group;
 import com.moac.android.opensecretsanta.types.PersistableObject;
 
 import java.text.SimpleDateFormat;
@@ -30,6 +30,8 @@ public class DrawHistoryActivity extends Activity {
 
     private final static String TAG = "DrawHistoryActivity";
 
+    DatabaseManager mDatabase;
+
     // Initialise to All groups
     public static final long ALL_GROUPS = PersistableObject.UNSET_ID;
     private long mGroupId = ALL_GROUPS;
@@ -37,8 +39,6 @@ public class DrawHistoryActivity extends Activity {
     private List<DrawRowDetails> items;
     private ArrayAdapter<DrawRowDetails> aa;
     ListView mList;
-
-    OpenSecretSantaDB mDatabase;
 
     private ViewSwitcher mSwitcher;
 
@@ -50,16 +50,15 @@ public class DrawHistoryActivity extends Activity {
         Log.v(TAG, "Activity State: onCreate()");
 
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.draw_history_view);
+
+        mDatabase = OpenSecretSantaApplication.getDatabase();
 
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
             mGroupId = extras.getLong(Constants.GROUP_ID);
             Log.v(TAG, "onCreate() - got groupId: " + mGroupId);
         }
-
-        mDatabase = OpenSecretSantaApplication.getDatabase();
 
         mSwitcher = (ViewSwitcher) findViewById(R.id.drawHistorySwitcher);
         mSwitcher.setAnimateFirstView(false);
@@ -158,29 +157,24 @@ public class DrawHistoryActivity extends Activity {
                 Log.v(TAG, "populateDrawList() - populating draw history list");
                 List<DrawRowDetails> rows = new ArrayList<DrawRowDetails>();
 
-                Cursor cursor = null;
+                List<DrawResult> drawResults;
                 if(mGroupId != DrawHistoryActivity.ALL_GROUPS) {
-                    cursor = mDatabase.getAllDrawResultsForGroupCursor(mGroupId);
+                    drawResults = mDatabase.queryAllDrawResultsForGroup(mGroupId);
                 } else {
-                    cursor = mDatabase.getAllDrawResultsCursor();
+                    drawResults = mDatabase.queryAll(DrawResult.class);
                 }
 
-                if(cursor.moveToFirst()) {
-                    Log.v(TAG, "Cursor: getColumnCount(): " + cursor.getColumnCount());
-
-                    do {
-                        long groupId = cursor.getLong(cursor.getColumnIndex(DrawResult.Columns.GROUP_ID_COLUMN));
-                        String groupName = mDatabase.getGroupById(groupId).getName();
-                        long drawDate = cursor.getLong(cursor.getColumnIndex(DrawResult.Columns.DRAW_DATE_COLUMN));
-                        long sendDate = cursor.getLong(cursor.getColumnIndex(DrawResult.Columns.SEND_DATE_COLUMN));
-                        long drawId = cursor.getLong(cursor.getColumnIndex(DrawResult.Columns._ID));
-                        long memberCount = mDatabase.getAllDrawResultEntriesForDrawId(drawId).size();
-
+                for (DrawResult dr : drawResults) {
+                        long groupId = dr.getGroupId();
+                        String groupName = mDatabase.queryById(groupId, Group.class).getName();
+                        long drawDate = dr.getDrawDate();
+                        long sendDate = dr.getSendDate();
+                        long drawId = dr.getId();
+                        long memberCount = mDatabase.queryAllDrawResultEntriesForDrawId(drawId).size();
                         DrawRowDetails row = new DrawRowDetails(drawId, groupName, drawDate, sendDate, memberCount, groupId);
-                        rows.add(row);
-                    } while(cursor.moveToNext());
+
+                    rows.add(row);
                 }
-                cursor.close();
 
                 Collections.sort(rows);
 
@@ -317,11 +311,13 @@ public class DrawHistoryActivity extends Activity {
                 // displayed in the draw builder area from not matching with the
                 // group - as it will force a redraw.
                 Log.v(TAG, "removeDraw() - removing: " + _drawId + " setting gid not ready: " + _groupId);
-                long latestDrawResultId = mDatabase.getLatestDrawResultId(_groupId);
-                if(latestDrawResultId == _drawId) {
-                    mDatabase.setGroupIsReady(_groupId, false);
+                DrawResult latest = mDatabase.queryLatestDrawResultForGroup(_groupId);
+                if(latest.getId() == _drawId) {
+                    Group group = mDatabase.queryById(_groupId, Group.class);
+                    group.setReady(false);
+                    mDatabase.update(group);
                 }
-                mDatabase.removeDrawResult(_drawId);
+                mDatabase.delete(_drawId, DrawResult.class);
                 return null;
             }
 

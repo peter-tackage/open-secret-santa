@@ -31,21 +31,21 @@ public class DrawResultEntry extends PersistableObject implements Comparable<Dra
       columnDefinition = "integer references draw_results (_id) on delete cascade")
     private DrawResult mDrawResult;
 
-    public DrawResultEntry(String _giverName, String _receiverName, int _contactMode, String _contactDetail, long _viewedDate, long _sentDate) {
-        mGiverName = _giverName;
-        mReceiverName = _receiverName;
-        mContactDetail = _contactDetail;
-        mContactMode = _contactMode;
-        mViewedDate = _viewedDate;
-        mSentDate = _sentDate;
-    }
-
-    public DrawResultEntry(String _name1, String _name2, int _contactMode, String _contactDetail) {
-        mGiverName = _name1;
-        mReceiverName = _name2;
-        mContactDetail = _contactDetail;
-        mContactMode = _contactMode;
-    }
+//    public DrawResultEntry(String _giverName, String _receiverName, int _contactMode, String _contactDetail, long _viewedDate, long _sentDate) {
+//        mGiverName = _giverName;
+//        mReceiverName = _receiverName;
+//        mContactDetail = _contactDetail;
+//        mContactMode = _contactMode;
+//        mViewedDate = _viewedDate;
+//        mSentDate = _sentDate;
+//    }
+//
+//    public DrawResultEntry(String _name1, String _name2, int _contactMode, String _contactDetail) {
+//        mGiverName = _name1;
+//        mReceiverName = _name2;
+//        mContactDetail = _contactDetail;
+//        mContactMode = _contactMode;
+//    }
 
     public static interface Columns extends BaseColumns {
 
@@ -84,16 +84,18 @@ public class DrawResultEntry extends PersistableObject implements Comparable<Dra
 
     public void setViewedDate(long viewedDate) { mViewedDate = viewedDate; }
 
-    @Override
-    public int compareTo(DrawResultEntry another) {
-        return String.CASE_INSENSITIVE_ORDER.compare(this.mGiverName, another.mGiverName);
-    }
-
     public long getSentDate() { return mSentDate; }
 
     public void setSentDate(long _sentDate) { mSentDate = _sentDate; }
 
+    public void setDrawResult(DrawResult drawResult) { mDrawResult = drawResult; }
+
     public boolean isSendable() {
         return mContactMode == Constants.EMAIL_CONTACT_MODE || mContactMode == Constants.SMS_CONTACT_MODE;
+    }
+
+    @Override
+    public int compareTo(DrawResultEntry another) {
+        return String.CASE_INSENSITIVE_ORDER.compare(this.mGiverName, another.mGiverName);
     }
 }
