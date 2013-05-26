@@ -29,7 +29,12 @@
     <activity
       android:name=".activity.DashboardActivity"
       android:screenOrientation="portrait"
-      android:theme="@style/AppTheme"></activity>
+      android:theme="@style/AppTheme">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
 
     <!-- Note only use adjust pan for dialogs and if edittext is at top of layout. -->
     <activity
