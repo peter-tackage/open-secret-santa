@@ -8,7 +8,7 @@ public final class Member {
 
     public static final String TAG = "Member";
 
-    public static final class MemberColumns implements BaseColumns {
+    public static interface MemberColumns extends BaseColumns {
 
         public static final String LOOKUP_KEY = "LOOKUP_KEY";
         public static final String NAME_COLUMN = "NAME";
@@ -28,7 +28,7 @@ public final class Member {
         };
     }
 
-    public static final class RestrictionsColumns implements BaseColumns {
+    public static interface RestrictionsColumns extends BaseColumns {
 
         public static final String MEMBER_ID_COLUMN = "MEMBER_ID";
         public static final String OTHER_MEMBER_ID_COLUMN = "OTHER_MEMBER_ID";

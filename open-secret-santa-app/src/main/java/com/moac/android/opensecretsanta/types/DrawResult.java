@@ -10,11 +10,6 @@ public class DrawResult {
     private long mSendDate = Constants.UNSENT_DATE;
     private String mMessage = "";
 
-    @SuppressWarnings("unused")
-    private DrawResult() {}
-
-    ;
-
     public DrawResult(long _drawDate) {
         this.mDrawDate = _drawDate;
     }
@@ -26,11 +21,7 @@ public class DrawResult {
         this.mMessage = _message;
     }
 
-    public static final class DrawResultColumns implements BaseColumns {
-
-        private DrawResultColumns() {}
-
-        ;
+    public static interface DrawResultColumns extends BaseColumns {
 
         // Results definition
         public static final String DRAW_DATE_COLUMN = "DRAW_DATE";
@@ -39,7 +30,6 @@ public class DrawResult {
         public static final String GROUP_ID_COLUMN = "GROUP_ID";
 
         public static final String DEFAULT_SORT_ORDER = DRAW_DATE_COLUMN + " DESC";
-        ;
 
         public static String[] ALL = { _ID, DRAW_DATE_COLUMN, SEND_DATE_COLUMN, MESSAGE_COLUMN, GROUP_ID_COLUMN };
     }

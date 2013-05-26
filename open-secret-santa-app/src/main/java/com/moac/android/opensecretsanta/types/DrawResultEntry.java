@@ -29,15 +29,7 @@ public class DrawResultEntry implements Comparable<DrawResultEntry> {
         this.contactMode = _contactMode;
     }
 
-    @SuppressWarnings("unused")
-    private DrawResultEntry() {
-    }
-
-    public static final class DrawResultEntryColumns implements BaseColumns {
-
-        private DrawResultEntryColumns() {}
-
-        ;
+    public static interface DrawResultEntryColumns extends BaseColumns {
 
         // For entries in that result definition.
         public static final String DRAW_RESULT_ID_COLUMN = "DRAW_RESULT_ID";

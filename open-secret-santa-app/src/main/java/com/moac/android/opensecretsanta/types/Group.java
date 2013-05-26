@@ -5,11 +5,7 @@ import android.provider.BaseColumns;
 public final class Group {
 
     // GROUP TABLE COLUMNS
-    public static final class GroupColumns implements BaseColumns {
-
-        // This class cannot be instantiated
-        private GroupColumns() {
-        }
+    public static interface GroupColumns extends BaseColumns {
 
         public static final String NAME_COLUMN = "NAME";
         public static final String IS_READY = "IS_READY";
