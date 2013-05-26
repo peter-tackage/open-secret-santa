@@ -20,7 +20,7 @@ import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 import com.moac.android.opensecretsanta.types.DrawResult;
 import com.moac.android.opensecretsanta.types.DrawResultEntry;
-import com.moac.android.opensecretsanta.types.PersistentModel;
+import com.moac.android.opensecretsanta.types.PersistableObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,7 +32,7 @@ public class AssignmentViewerActivity extends Activity {
 
     final static int DIALOG_ASSIGNMENT = 1;
 
-    private long mResultId = PersistentModel.UNSET_ID;
+    private long mResultId = PersistableObject.UNSET_ID;
 
     private List<DrawResultEntry> items;
     private ArrayAdapter<DrawResultEntry> aa;

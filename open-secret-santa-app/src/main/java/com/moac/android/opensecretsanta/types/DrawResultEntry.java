@@ -1,15 +1,30 @@
 package com.moac.android.opensecretsanta.types;
 
 import android.provider.BaseColumns;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 import com.moac.android.opensecretsanta.activity.Constants;
+import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 
-public class DrawResultEntry extends PersistentModel implements Comparable<DrawResultEntry> {
+@DatabaseTable(tableName = OpenSecretSantaDB.DRAW_RESULT_ENTRIES_TABLE_NAME)
+public class DrawResultEntry extends PersistableObject implements Comparable<DrawResultEntry> {
 
+    @DatabaseField(columnName = Columns.MEMBER_NAME_COLUMN)
     private String mGiverName;
+
+    @DatabaseField(columnName = Columns.OTHER_MEMBER_NAME_COLUMN)
     private String mReceiverName;
+
+    @DatabaseField(columnName = Columns.CONTACT_MODE_COLUMN)
     private int mContactMode = Constants.NAME_ONLY_CONTACT_MODE;
+
+    @DatabaseField(columnName = Columns.CONTACT_DETAIL_COLUMN)
     private String mContactDetail; // the email, the  phone number, the whatever.
+
+    @DatabaseField(columnName = Columns.VIEWED_DATE_COLUMN)
     private long mViewedDate = Constants.UNVIEWED_DATE;
+
+    @DatabaseField(columnName = Columns.SENT_DATE_COLUMN)
     private long mSentDate = Constants.UNSENT_DATE;
 
     public DrawResultEntry(String _giverName, String _receiverName, int _contactMode, String _contactDetail, long _viewedDate, long _sentDate) {
@@ -28,7 +43,7 @@ public class DrawResultEntry extends PersistentModel implements Comparable<DrawR
         mContactMode = _contactMode;
     }
 
-    public static interface DrawResultEntryColumns extends BaseColumns {
+    public static interface Columns extends BaseColumns {
 
         // For entries in that result definition.
         public static final String DRAW_RESULT_ID_COLUMN = "DRAW_RESULT_ID";

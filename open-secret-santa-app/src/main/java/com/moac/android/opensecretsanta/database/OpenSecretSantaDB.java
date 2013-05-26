@@ -10,11 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.util.Log;
 import com.moac.android.opensecretsanta.types.*;
-import com.moac.android.opensecretsanta.types.DrawResult.DrawResultColumns;
-import com.moac.android.opensecretsanta.types.DrawResultEntry.DrawResultEntryColumns;
-import com.moac.android.opensecretsanta.types.Group.GroupColumns;
-import com.moac.android.opensecretsanta.types.Member.MemberColumns;
-import com.moac.android.opensecretsanta.types.Member.RestrictionsColumns;
+import com.moac.android.opensecretsanta.types.Member.Columns;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,59 +32,59 @@ public class OpenSecretSantaDB {
 
     private static final String GROUPS_TABLE_CREATE =
       "CREATE TABLE " + " IF NOT EXISTS " + GROUPS_TABLE_NAME + " (" +
-        GroupColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        GroupColumns.NAME_COLUMN + " TEXT NOT NULL UNIQUE, " +
-        GroupColumns.IS_READY + " INTEGER " +
+        Group.Columns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        Group.Columns.NAME_COLUMN + " TEXT NOT NULL UNIQUE, " +
+        Group.Columns.IS_READY + " INTEGER " +
         " );";
 
     // A person in a given draw.
     private static final String MEMBER_TABLE_CREATE =
       "CREATE TABLE " + " IF NOT EXISTS " + MEMBERS_TABLE_NAME + " (" +
-        MemberColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        MemberColumns.LOOKUP_KEY + " TEXT, " +
-        MemberColumns.NAME_COLUMN + " TEXT NOT NULL , " +
-        MemberColumns.CONTACT_MODE_COLUMN + " INTEGER NOT NULL, " +
-        MemberColumns.CONTACT_DETAIL_COLUMN + " TEXT, " +
-        MemberColumns.GROUP_ID_COLUMN + " INTEGER, " +
-        "FOREIGN KEY(" + MemberColumns.GROUP_ID_COLUMN + ") REFERENCES " + GROUPS_TABLE_NAME + " ON DELETE CASCADE " +
+        Columns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        Member.Columns.LOOKUP_KEY + " TEXT, " +
+        Member.Columns.NAME_COLUMN + " TEXT NOT NULL , " +
+        Columns.CONTACT_MODE_COLUMN + " INTEGER NOT NULL, " +
+        Member.Columns.CONTACT_DETAIL_COLUMN + " TEXT, " +
+        Columns.GROUP_ID_COLUMN + " INTEGER, " +
+        "FOREIGN KEY(" + Member.Columns.GROUP_ID_COLUMN + ") REFERENCES " + GROUPS_TABLE_NAME + " ON DELETE CASCADE " +
         " );";
 
     // A mapping of member to member.
     //
     private static final String RESTRICTIONS_TABLE_CREATE =
       "CREATE TABLE " + " IF NOT EXISTS " + RESTRICTIONS_TABLE_NAME + " (" +
-        RestrictionsColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        RestrictionsColumns.MEMBER_ID_COLUMN + " INTEGER, " +
-        RestrictionsColumns.OTHER_MEMBER_ID_COLUMN + " INTEGER, " +
-        "FOREIGN KEY(" + RestrictionsColumns.MEMBER_ID_COLUMN + ") REFERENCES " + MEMBERS_TABLE_NAME
+        Restriction.Columns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        Restriction.Columns.MEMBER_ID_COLUMN + " INTEGER, " +
+        Restriction.Columns.OTHER_MEMBER_ID_COLUMN + " INTEGER, " +
+        "FOREIGN KEY(" + Restriction.Columns.MEMBER_ID_COLUMN + ") REFERENCES " + MEMBERS_TABLE_NAME
         + " ON DELETE CASCADE, " +
-        "FOREIGN KEY(" + RestrictionsColumns.OTHER_MEMBER_ID_COLUMN + ") REFERENCES " + MEMBERS_TABLE_NAME
+        "FOREIGN KEY(" + Restriction.Columns.OTHER_MEMBER_ID_COLUMN + ") REFERENCES " + MEMBERS_TABLE_NAME
         + " ON DELETE CASCADE " +
         " );";
 
     // A list of all the draw results
     private static final String DRAW_RESULTS_TABLE_CREATE =
       "CREATE TABLE " + " IF NOT EXISTS " + DRAW_RESULTS_TABLE_NAME + " (" +
-        DrawResultColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        DrawResultColumns.DRAW_DATE_COLUMN + " INTEGER, " +
-        DrawResultColumns.SEND_DATE_COLUMN + " INTEGER, " +
-        DrawResultColumns.MESSAGE_COLUMN + " TEXT, " +
-        DrawResultColumns.GROUP_ID_COLUMN + " INTEGER, " +
-        "FOREIGN KEY(" + DrawResultColumns.GROUP_ID_COLUMN + ") REFERENCES " + GROUPS_TABLE_NAME
+        DrawResult.Columns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        DrawResult.Columns.DRAW_DATE_COLUMN + " INTEGER, " +
+        DrawResult.Columns.SEND_DATE_COLUMN + " INTEGER, " +
+        DrawResult.Columns.MESSAGE_COLUMN + " TEXT, " +
+        DrawResult.Columns.GROUP_ID_COLUMN + " INTEGER, " +
+        "FOREIGN KEY(" + DrawResult.Columns.GROUP_ID_COLUMN + ") REFERENCES " + GROUPS_TABLE_NAME
         + " ON DELETE CASCADE "
         + ");";
 
     private static final String DRAW_RESULTS_ENTRIES_TABLE_CREATE =
       "CREATE TABLE " + " IF NOT EXISTS " + DRAW_RESULT_ENTRIES_TABLE_NAME + " (" +
-        DrawResultEntryColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        DrawResultEntryColumns.OTHER_MEMBER_NAME_COLUMN + " TEXT NOT NULL, " +
-        DrawResultEntryColumns.MEMBER_NAME_COLUMN + " TEXT NOT NULL, " +
-        DrawResultEntryColumns.DRAW_RESULT_ID_COLUMN + " INTEGER, " +
-        DrawResultEntryColumns.CONTACT_MODE_COLUMN + " INTEGER, " +
-        DrawResultEntryColumns.CONTACT_DETAIL_COLUMN + " TEXT, " +
-        DrawResultEntryColumns.VIEWED_DATE_COLUMN + " INTEGER, " +
-        DrawResultEntryColumns.SENT_DATE_COLUMN + " INTEGER, " +
-        "FOREIGN KEY(" + DrawResultEntryColumns.DRAW_RESULT_ID_COLUMN + ") REFERENCES " + DRAW_RESULTS_TABLE_NAME
+        DrawResultEntry.Columns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        DrawResultEntry.Columns.OTHER_MEMBER_NAME_COLUMN + " TEXT NOT NULL, " +
+        DrawResultEntry.Columns.MEMBER_NAME_COLUMN + " TEXT NOT NULL, " +
+        DrawResultEntry.Columns.DRAW_RESULT_ID_COLUMN + " INTEGER, " +
+        DrawResultEntry.Columns.CONTACT_MODE_COLUMN + " INTEGER, " +
+        DrawResultEntry.Columns.CONTACT_DETAIL_COLUMN + " TEXT, " +
+        DrawResultEntry.Columns.VIEWED_DATE_COLUMN + " INTEGER, " +
+        DrawResultEntry.Columns.SENT_DATE_COLUMN + " INTEGER, " +
+        "FOREIGN KEY(" + DrawResultEntry.Columns.DRAW_RESULT_ID_COLUMN + ") REFERENCES " + DRAW_RESULTS_TABLE_NAME
         + " ON DELETE CASCADE "
         + ");";
 
@@ -190,9 +186,9 @@ public class OpenSecretSantaDB {
             // Something like - update members set contact_detail = null  where contact_detail = '';
 
             ContentValues values = new ContentValues();
-            values.putNull(MemberColumns.CONTACT_DETAIL_COLUMN);
+            values.putNull(Columns.CONTACT_DETAIL_COLUMN);
 
-            int updatedRows = db.update(MEMBERS_TABLE_NAME, values, MemberColumns.CONTACT_DETAIL_COLUMN + " = ''", null);
+            int updatedRows = db.update(MEMBERS_TABLE_NAME, values, Columns.CONTACT_DETAIL_COLUMN + " = ''", null);
             Log.i(TAG, "upgradeToVersion2 - updatedRows: " + updatedRows);
             return true;
         }
@@ -208,8 +204,8 @@ public class OpenSecretSantaDB {
         try {
             mDb.beginTransaction();
             ContentValues values = new ContentValues();
-            values.put(GroupColumns.NAME_COLUMN, _group.getName());
-            values.put(GroupColumns.IS_READY, _group.isReady() ? 1 : 0);
+            values.put(Group.Columns.NAME_COLUMN, _group.getName());
+            values.put(Group.Columns.IS_READY, _group.isReady() ? 1 : 0);
 
             groupId = mDb.insert(GROUPS_TABLE_NAME, null, values);
             Log.v(TAG, "insertGroup() - inserted group with id: " + groupId);
@@ -225,17 +221,17 @@ public class OpenSecretSantaDB {
     }
 
     public boolean removeGroup(long _rowIndex) {
-        return mDb.delete(GROUPS_TABLE_NAME, GroupColumns._ID + "=" + _rowIndex, null) > 0;
+        return mDb.delete(GROUPS_TABLE_NAME, Group.Columns._ID + "=" + _rowIndex, null) > 0;
     }
 
     public boolean updateGroup(long _groupId, Group _group) {
         boolean result = false;
 
         ContentValues values = new ContentValues();
-        values.put(GroupColumns.NAME_COLUMN, _group.getName());
-        values.put(GroupColumns.IS_READY, _group.isReady() ? 1 : 0);
+        values.put(Group.Columns.NAME_COLUMN, _group.getName());
+        values.put(Group.Columns.IS_READY, _group.isReady() ? 1 : 0);
 
-        result = (mDb.update(GROUPS_TABLE_NAME, values, GroupColumns._ID + "=" + _groupId, null) > 0);
+        result = (mDb.update(GROUPS_TABLE_NAME, values, Group.Columns._ID + "=" + _groupId, null) > 0);
 
         return result;
     }
@@ -244,12 +240,12 @@ public class OpenSecretSantaDB {
         Group group = null;
         Cursor cursor = mDb.query(
           GROUPS_TABLE_NAME,
-          GroupColumns.ALL,
-          GroupColumns._ID + " = " + _groupId,
+          Group.Columns.ALL,
+          Group.Columns._ID + " = " + _groupId,
           null,
           null,
           null,
-          GroupColumns.DEFAULT_SORT_ORDER
+          Group.Columns.DEFAULT_SORT_ORDER
         );
 
         if((cursor.getCount() == 0) || !cursor.moveToFirst()) {
@@ -269,8 +265,8 @@ public class OpenSecretSantaDB {
     public long getGroupByMemberId(long _memberId) {
         Cursor cursor = mDb.query(
           MEMBERS_TABLE_NAME,
-          new String[]{ MemberColumns.GROUP_ID_COLUMN },
-          MemberColumns._ID + " = " + _memberId,
+          new String[]{ Member.Columns.GROUP_ID_COLUMN },
+          Member.Columns._ID + " = " + _memberId,
           null,
           null,
           null,
@@ -278,7 +274,7 @@ public class OpenSecretSantaDB {
         );
         cursor.moveToFirst();
 
-        return cursor.getLong(cursor.getColumnIndex(MemberColumns.GROUP_ID_COLUMN));
+        return cursor.getLong(cursor.getColumnIndex(Member.Columns.GROUP_ID_COLUMN));
     }
 
     public List<Group> getAllGroups() {
@@ -299,12 +295,12 @@ public class OpenSecretSantaDB {
 
         Cursor cursor = mDb.query(
           GROUPS_TABLE_NAME,
-          GroupColumns.ALL,
+          Group.Columns.ALL,
           null,
           null,
           null,
           null,
-          GroupColumns.DEFAULT_SORT_ORDER
+          Group.Columns.DEFAULT_SORT_ORDER
         );
 
         return cursor;
@@ -314,17 +310,17 @@ public class OpenSecretSantaDB {
         boolean result = false;
 
         ContentValues values = new ContentValues();
-        values.put(GroupColumns.IS_READY, ready ? 1 : 0);
+        values.put(Group.Columns.IS_READY, ready ? 1 : 0);
 
-        result = (mDb.update(GROUPS_TABLE_NAME, values, GroupColumns._ID + "=" + _groupId, null) > 0);
+        result = (mDb.update(GROUPS_TABLE_NAME, values, Group.Columns._ID + "=" + _groupId, null) > 0);
 
         return result;
     }
 
     private Group populateGroup(Cursor cursor) {
-        long id = cursor.getLong(cursor.getColumnIndex((GroupColumns._ID)));
-        String name = cursor.getString(cursor.getColumnIndex((GroupColumns.NAME_COLUMN)));
-        boolean isReady = (cursor.getInt(cursor.getColumnIndex((GroupColumns.IS_READY))) == 1);
+        long id = cursor.getLong(cursor.getColumnIndex((Group.Columns._ID)));
+        String name = cursor.getString(cursor.getColumnIndex((Group.Columns.NAME_COLUMN)));
+        boolean isReady = (cursor.getInt(cursor.getColumnIndex((Group.Columns.IS_READY))) == 1);
 
         Group group = new Group();
         group.setId(id);
@@ -344,12 +340,12 @@ public class OpenSecretSantaDB {
         // Create a new row of values to insert.
         ContentValues values = new ContentValues();
         Log.v(TAG, "########## Inserting member: " + _member.getName() + ":" + _member.getContactDetail());
-        values.put(MemberColumns.LOOKUP_KEY, _member.getLookupKey());
-        values.put(MemberColumns.NAME_COLUMN, _member.getName());
-        values.put(MemberColumns.CONTACT_MODE_COLUMN, _member.getContactMode());
-        values.put(MemberColumns.CONTACT_DETAIL_COLUMN, _member.getContactDetail());
-        values.put(MemberColumns.GROUP_ID_COLUMN, _groupId);
-        Log.v(TAG, "########## Inserting VALUE member: " + values.getAsString(MemberColumns.NAME_COLUMN) + ":" + values.getAsString(MemberColumns.CONTACT_DETAIL_COLUMN));
+        values.put(Member.Columns.LOOKUP_KEY, _member.getLookupKey());
+        values.put(Member.Columns.NAME_COLUMN, _member.getName());
+        values.put(Member.Columns.CONTACT_MODE_COLUMN, _member.getContactMode());
+        values.put(Member.Columns.CONTACT_DETAIL_COLUMN, _member.getContactDetail());
+        values.put(Member.Columns.GROUP_ID_COLUMN, _groupId);
+        Log.v(TAG, "########## Inserting VALUE member: " + values.getAsString(Member.Columns.NAME_COLUMN) + ":" + values.getAsString(Columns.CONTACT_DETAIL_COLUMN));
 
         long mId = mDb.insert(MEMBERS_TABLE_NAME, null, values);
 
@@ -360,7 +356,7 @@ public class OpenSecretSantaDB {
         // Remove member
         return mDb.delete(
           MEMBERS_TABLE_NAME,
-          MemberColumns._ID + " = " + _memberId,
+          Member.Columns._ID + " = " + _memberId,
           null
         ) > 0;
     }
@@ -369,12 +365,12 @@ public class OpenSecretSantaDB {
         boolean result = false;
 
         ContentValues values = new ContentValues();
-        values.put(MemberColumns.LOOKUP_KEY, _member.getLookupKey());
-        values.put(MemberColumns.NAME_COLUMN, _member.getName());
-        values.put(MemberColumns.CONTACT_MODE_COLUMN, _member.getContactMode());
-        values.put(MemberColumns.CONTACT_DETAIL_COLUMN, _member.getContactDetail());
+        values.put(Member.Columns.LOOKUP_KEY, _member.getLookupKey());
+        values.put(Columns.NAME_COLUMN, _member.getName());
+        values.put(Member.Columns.CONTACT_MODE_COLUMN, _member.getContactMode());
+        values.put(Member.Columns.CONTACT_DETAIL_COLUMN, _member.getContactDetail());
 
-        result = (mDb.update(MEMBERS_TABLE_NAME, values, MemberColumns._ID + "=" + _rowId, null) > 0);
+        result = (mDb.update(MEMBERS_TABLE_NAME, values, Member.Columns._ID + "=" + _rowId, null) > 0);
 
         return result;
     }
@@ -384,12 +380,12 @@ public class OpenSecretSantaDB {
         Member member = null;
         Cursor cursor = mDb.query(
           MEMBERS_TABLE_NAME,
-          MemberColumns.ALL,
-          MemberColumns._ID + " = " + _memberId,
+          Member.Columns.ALL,
+          Member.Columns._ID + " = " + _memberId,
           null,
           null,
           null,
-          MemberColumns.DEFAULT_SORT_ORDER
+          Member.Columns.DEFAULT_SORT_ORDER
         );
 
         if((cursor.getCount() == 0) || !cursor.moveToFirst()) {
@@ -407,8 +403,8 @@ public class OpenSecretSantaDB {
     public Member getMember(long groupId, String memberName) {
         Cursor cursor = mDb.query(
           MEMBERS_TABLE_NAME,
-          MemberColumns.ALL,
-          MemberColumns.NAME_COLUMN + " = ? and " + MemberColumns.GROUP_ID_COLUMN + " = " + groupId,
+          Member.Columns.ALL,
+          Columns.NAME_COLUMN + " = ? and " + Columns.GROUP_ID_COLUMN + " = " + groupId,
           new String[]{ memberName },
           null,
           null,
@@ -429,12 +425,12 @@ public class OpenSecretSantaDB {
 
         Cursor cursor = mDb.query(
           MEMBERS_TABLE_NAME,
-          MemberColumns.ALL,
-          MemberColumns.GROUP_ID_COLUMN + " = " + _groupId,
+          Member.Columns.ALL,
+          Member.Columns.GROUP_ID_COLUMN + " = " + _groupId,
           null,
           null,
           null,
-          MemberColumns.DEFAULT_SORT_ORDER
+          Member.Columns.DEFAULT_SORT_ORDER
         );
 
         return cursor;
@@ -473,7 +469,7 @@ public class OpenSecretSantaDB {
 //			// Remove old members for that Group id
 //			mDb.delete(
 //					MEMBERS_TABLE_NAME,
-//					MemberColumns.GROUP_ID_COLUMN + " = " + _groupId,
+//					Columns.GROUP_ID_COLUMN + " = " + _groupId,
 //					null
 //			);
 //
@@ -482,15 +478,15 @@ public class OpenSecretSantaDB {
 //				// Create a new row of values to insert.
 //				ContentValues values = new ContentValues();
 //
-//				values.put(MemberColumns.NAME_COLUMN, m.getName());
-//				values.put(MemberColumns.CONTACT_MODE_COLUMN, m.getContactMode());
-//				values.put(MemberColumns.CONTACT_DETAIL_COLUMN, m.getContactDetail());
-//				values.put(MemberColumns.GROUP_ID_COLUMN, _groupId);
+//				values.put(Columns.NAME_COLUMN, m.getName());
+//				values.put(Columns.CONTACT_MODE_COLUMN, m.getContactMode());
+//				values.put(Columns.CONTACT_DETAIL_COLUMN, m.getContactDetail());
+//				values.put(Columns.GROUP_ID_COLUMN, _groupId);
 //
 //				long pId = mDb.insert(MEMBERS_TABLE_NAME, null, values);
 //
 //				// Changed from 0 - should return -1 from DB when failed.
-//				if (pId == PersistentModel.UNSET_ID ) {
+//				if (pId == PersistableObject.UNSET_ID ) {
 //					// This rollback all the other adds too.
 //					Log.e(TAG, "setMembers() - Unable to add Member: " + m.getName() + " to Group Id: " + _groupId);
 //					return false;
@@ -508,11 +504,11 @@ public class OpenSecretSantaDB {
     private Member populateMember(Cursor cursor) {
         Member member = new Member();
 
-        member.setId(cursor.getLong(cursor.getColumnIndex((MemberColumns._ID))));
-        member.setLookupKey(cursor.getString(cursor.getColumnIndex((MemberColumns.LOOKUP_KEY))));
-        member.setName(cursor.getString(cursor.getColumnIndex((MemberColumns.NAME_COLUMN))));
-        member.setContactDetail(cursor.getString(cursor.getColumnIndex((MemberColumns.CONTACT_DETAIL_COLUMN))));
-        member.setContactMode(cursor.getInt(cursor.getColumnIndex((MemberColumns.CONTACT_MODE_COLUMN))));
+        member.setId(cursor.getLong(cursor.getColumnIndex((Member.Columns._ID))));
+        member.setLookupKey(cursor.getString(cursor.getColumnIndex((Member.Columns.LOOKUP_KEY))));
+        member.setName(cursor.getString(cursor.getColumnIndex((Columns.NAME_COLUMN))));
+        member.setContactDetail(cursor.getString(cursor.getColumnIndex((Member.Columns.CONTACT_DETAIL_COLUMN))));
+        member.setContactMode(cursor.getInt(cursor.getColumnIndex((Columns.CONTACT_MODE_COLUMN))));
 
         return member;
     }
@@ -527,12 +523,12 @@ public class OpenSecretSantaDB {
     public Cursor getRestrictionsForMemberId(long _memberId) {
         Cursor cursor = mDb.query(
           RESTRICTIONS_TABLE_NAME,
-          RestrictionsColumns.ALL,
-          RestrictionsColumns.MEMBER_ID_COLUMN + " = " + _memberId,
+          Restriction.Columns.ALL,
+          Restriction.Columns.MEMBER_ID_COLUMN + " = " + _memberId,
           null,
           null,
           null,
-          RestrictionsColumns.DEFAULT_SORT_ORDER
+          Restriction.Columns.DEFAULT_SORT_ORDER
         );
 
         return cursor;
@@ -549,10 +545,10 @@ public class OpenSecretSantaDB {
     }
 
     private String getMemberRestrictionsSQL(long _memberId) {
-        String subQuery = SQLiteQueryBuilder.buildQueryString(true, RESTRICTIONS_TABLE_NAME, new String[]{ RestrictionsColumns.OTHER_MEMBER_ID_COLUMN },
-          _memberId + " = " + RestrictionsColumns.MEMBER_ID_COLUMN, null, null, null, null);
-        String restrictionsQuery = SQLiteQueryBuilder.buildQueryString(true, MEMBERS_TABLE_NAME, new String[]{ MemberColumns.NAME_COLUMN, MemberColumns._ID },
-          MemberColumns._ID + " IN (" + subQuery + ")", null, null, null, null);
+        String subQuery = SQLiteQueryBuilder.buildQueryString(true, RESTRICTIONS_TABLE_NAME, new String[]{ Restriction.Columns.OTHER_MEMBER_ID_COLUMN },
+          _memberId + " = " +  Restriction.Columns.MEMBER_ID_COLUMN, null, null, null, null);
+        String restrictionsQuery = SQLiteQueryBuilder.buildQueryString(true, MEMBERS_TABLE_NAME, new String[]{ Member.Columns.NAME_COLUMN, Member.Columns._ID },
+          Columns._ID + " IN (" + subQuery + ")", null, null, null, null);
 
         Log.v(TAG, subQuery);
         Log.v(TAG, restrictionsQuery);
@@ -570,7 +566,7 @@ public class OpenSecretSantaDB {
     //		Cursor cursor = getRestrictionNameForMemberIdCursor(_memberId);
     //		while (cursor.moveToNext()) {
     //			//  A member's name is unique for a group.
-    //			String other = cursor.getString(cursor.getColumnIndex((MemberColumns.NAME_COLUMN)));
+    //			String other = cursor.getString(cursor.getColumnIndex((Columns.NAME_COLUMN)));
     //			restrictions.add(other);
     //		}
     //
@@ -581,9 +577,9 @@ public class OpenSecretSantaDB {
 
     public Cursor getOtherGroupMembers(long _memberId) {
         long _groupId = getGroupByMemberId(_memberId);
-        String otherGroupMembersQuery = SQLiteQueryBuilder.buildQueryString(true, MEMBERS_TABLE_NAME, new String[]{ MemberColumns.NAME_COLUMN, MemberColumns._ID },
-          _groupId + " = " + MemberColumns.GROUP_ID_COLUMN + " and " + _memberId + " != " + MemberColumns._ID, null, null, MEMBERS_TABLE_NAME + "."
-          + MemberColumns.NAME_COLUMN + " ASC", null);
+        String otherGroupMembersQuery = SQLiteQueryBuilder.buildQueryString(true, MEMBERS_TABLE_NAME, new String[]{ Member.Columns.NAME_COLUMN, Columns._ID },
+          _groupId + " = " + Member.Columns.GROUP_ID_COLUMN + " and " + _memberId + " != " + Member.Columns._ID, null, null, MEMBERS_TABLE_NAME + "."
+          + Member.Columns.NAME_COLUMN + " ASC", null);
 
         return mDb.rawQuery(otherGroupMembersQuery, null);
     }
@@ -593,8 +589,8 @@ public class OpenSecretSantaDB {
 
         ContentValues values = new ContentValues();
 
-        values.put(RestrictionsColumns.MEMBER_ID_COLUMN, _memberId);
-        values.put(RestrictionsColumns.OTHER_MEMBER_ID_COLUMN, _otherMemberId);
+        values.put(Restriction.Columns.MEMBER_ID_COLUMN, _memberId);
+        values.put(Restriction.Columns.OTHER_MEMBER_ID_COLUMN, _otherMemberId);
 
         long rowId = mDb.insert(RESTRICTIONS_TABLE_NAME, null, values);
 
@@ -607,7 +603,7 @@ public class OpenSecretSantaDB {
         // Remove restriction
         return mDb.delete(
           RESTRICTIONS_TABLE_NAME,
-          RestrictionsColumns._ID + " = " + _restrictionId,
+          Restriction.Columns._ID + " = " + _restrictionId,
           null
         ) > 0;
     }
@@ -616,7 +612,7 @@ public class OpenSecretSantaDB {
         // Remove restriction
         return mDb.delete(
           RESTRICTIONS_TABLE_NAME,
-          RestrictionsColumns.MEMBER_ID_COLUMN + " = " + _memberId,
+          Restriction.Columns.MEMBER_ID_COLUMN + " = " + _memberId,
           null
         ) > 0;
     }
@@ -626,8 +622,8 @@ public class OpenSecretSantaDB {
         // Remove restriction
         return mDb.delete(
           RESTRICTIONS_TABLE_NAME,
-          RestrictionsColumns.MEMBER_ID_COLUMN + " = " + _memberId + " and " +
-            RestrictionsColumns.OTHER_MEMBER_ID_COLUMN + " = " + _restrictedMemberId,
+          Restriction.Columns.MEMBER_ID_COLUMN + " = " + _memberId + " and " +
+            Restriction.Columns.OTHER_MEMBER_ID_COLUMN + " = " + _restrictedMemberId,
           null
         ) > 0;
     }
@@ -652,12 +648,12 @@ public class OpenSecretSantaDB {
 
         Cursor cursor = mDb.query(
           RESTRICTIONS_TABLE_NAME,
-          RestrictionsColumns.ALL,
-          RestrictionsColumns._ID + " = " + _restrictionId,
+          Restriction.Columns.ALL,
+          Restriction.Columns._ID + " = " + _restrictionId,
           null,
           null,
           null,
-          RestrictionsColumns.DEFAULT_SORT_ORDER
+          Restriction.Columns.DEFAULT_SORT_ORDER
         );
 
         if((cursor.getCount() == 0) || !cursor.moveToFirst()) {
@@ -677,10 +673,10 @@ public class OpenSecretSantaDB {
         // Create a new row of values to insert.
         ContentValues values = new ContentValues();
 
-        values.put(DrawResultColumns.DRAW_DATE_COLUMN, _drawResult.getDrawDate());
-        values.put(DrawResultColumns.GROUP_ID_COLUMN, _groupId);
-        values.put(DrawResultColumns.SEND_DATE_COLUMN, _drawResult.getSendDate());
-        values.put(DrawResultColumns.MESSAGE_COLUMN, _drawResult.getMessage());
+        values.put(DrawResult.Columns.DRAW_DATE_COLUMN, _drawResult.getDrawDate());
+        values.put(DrawResult.Columns.GROUP_ID_COLUMN, _groupId);
+        values.put(DrawResult.Columns.SEND_DATE_COLUMN, _drawResult.getSendDate());
+        values.put(DrawResult.Columns.MESSAGE_COLUMN, _drawResult.getMessage());
 
         long drawResultId = mDb.insert(DRAW_RESULTS_TABLE_NAME, null, values);
 
@@ -688,7 +684,7 @@ public class OpenSecretSantaDB {
     }
 
     public boolean removeDrawResult(long _rowIndex) {
-        return mDb.delete(DRAW_RESULTS_TABLE_NAME, DrawResultColumns._ID + "=" + _rowIndex, null) > 0;
+        return mDb.delete(DRAW_RESULTS_TABLE_NAME, DrawResult.Columns._ID + "=" + _rowIndex, null) > 0;
     }
 
     /*
@@ -697,30 +693,30 @@ public class OpenSecretSantaDB {
     public boolean updateDrawResult(DrawResult _drawResult, long _rowIndex) {
 
         ContentValues values = new ContentValues();
-        values.put(DrawResultColumns._ID, _rowIndex);
-        values.put(DrawResultColumns.DRAW_DATE_COLUMN, _drawResult.getDrawDate());
-        values.put(DrawResultColumns.SEND_DATE_COLUMN, _drawResult.getSendDate());
-        values.put(DrawResultColumns.MESSAGE_COLUMN, _drawResult.getMessage());
+        values.put(DrawResult.Columns._ID, _rowIndex);
+        values.put(DrawResult.Columns.DRAW_DATE_COLUMN, _drawResult.getDrawDate());
+        values.put(DrawResult.Columns.SEND_DATE_COLUMN, _drawResult.getSendDate());
+        values.put(DrawResult.Columns.MESSAGE_COLUMN, _drawResult.getMessage());
 
-        return mDb.update(DRAW_RESULTS_TABLE_NAME, values, DrawResultColumns._ID + "=" + _rowIndex, null) > 0;
+        return mDb.update(DRAW_RESULTS_TABLE_NAME, values, DrawResult.Columns._ID + "=" + _rowIndex, null) > 0;
     }
 
     public boolean setDrawSharedDate(long _drawResultId, long time) {
         ContentValues values = new ContentValues();
-        values.put(DrawResultColumns.SEND_DATE_COLUMN, time);
-        return mDb.update(DRAW_RESULTS_TABLE_NAME, values, DrawResultColumns._ID + "=" + _drawResultId, null) > 0;
+        values.put(DrawResult.Columns.SEND_DATE_COLUMN, time);
+        return mDb.update(DRAW_RESULTS_TABLE_NAME, values, DrawResult.Columns._ID + "=" + _drawResultId, null) > 0;
     }
 
     public DrawResult getDrawResultById(long _drawResultId) {
         DrawResult drawResult = null;
         Cursor cursor = mDb.query(
           DRAW_RESULTS_TABLE_NAME,
-          DrawResultColumns.ALL,
-          DrawResultColumns._ID + " = " + _drawResultId,
+          DrawResult.Columns.ALL,
+          DrawResult.Columns._ID + " = " + _drawResultId,
           null,
           null,
           null,
-          DrawResultColumns.DEFAULT_SORT_ORDER
+          DrawResult.Columns.DEFAULT_SORT_ORDER
         );
 
         if((cursor.getCount() == 0) || !cursor.moveToFirst()) {
@@ -734,10 +730,10 @@ public class OpenSecretSantaDB {
     }
 
     private DrawResult populateDrawResult(Cursor cursor) {
-        long id = cursor.getLong(cursor.getColumnIndex((DrawResultColumns._ID)));
-        long ddate = cursor.getLong(cursor.getColumnIndex((DrawResultColumns.DRAW_DATE_COLUMN)));
-        long sdate = cursor.getLong(cursor.getColumnIndex((DrawResultColumns.SEND_DATE_COLUMN)));
-        String msg = cursor.getString(cursor.getColumnIndex((DrawResultColumns.MESSAGE_COLUMN)));
+        long id = cursor.getLong(cursor.getColumnIndex((DrawResult.Columns._ID)));
+        long ddate = cursor.getLong(cursor.getColumnIndex((DrawResult.Columns.DRAW_DATE_COLUMN)));
+        long sdate = cursor.getLong(cursor.getColumnIndex((DrawResult.Columns.SEND_DATE_COLUMN)));
+        String msg = cursor.getString(cursor.getColumnIndex((DrawResult.Columns.MESSAGE_COLUMN)));
 
         DrawResult dr = new DrawResult();
         dr.setId(id);
@@ -751,12 +747,12 @@ public class OpenSecretSantaDB {
     public Cursor getAllDrawResultsForGroupCursor(long _groupId) {
         Cursor cursor = mDb.query(
           DRAW_RESULTS_TABLE_NAME,
-          DrawResultColumns.ALL,
-          DrawResultColumns.GROUP_ID_COLUMN + " = " + _groupId,
+          DrawResult.Columns.ALL,
+          DrawResult.Columns.GROUP_ID_COLUMN + " = " + _groupId,
           null,
           null,
           null,
-          DrawResultColumns.DEFAULT_SORT_ORDER
+          DrawResult.Columns.DEFAULT_SORT_ORDER
         );
 
         return cursor;
@@ -765,12 +761,12 @@ public class OpenSecretSantaDB {
     public Cursor getAllDrawResultsCursor() {
         Cursor cursor = mDb.query(
           DRAW_RESULTS_TABLE_NAME,
-          DrawResultColumns.ALL,
+          DrawResult.Columns.ALL,
           null,
           null,
           null,
           null,
-          DrawResultColumns.DEFAULT_SORT_ORDER
+          DrawResult.Columns.DEFAULT_SORT_ORDER
         );
 
         return cursor;
@@ -783,12 +779,12 @@ public class OpenSecretSantaDB {
      */
     public long insertDrawResultEntry(long _drawResultId, DrawResultEntry _drawResultEntry) {
         ContentValues values = new ContentValues();
-        values.put(DrawResultEntryColumns.DRAW_RESULT_ID_COLUMN, _drawResultId);
-        values.put(DrawResultEntryColumns.MEMBER_NAME_COLUMN, _drawResultEntry.getGiverName());
-        values.put(DrawResultEntryColumns.OTHER_MEMBER_NAME_COLUMN, _drawResultEntry.getReceiverName());
-        values.put(DrawResultEntryColumns.CONTACT_MODE_COLUMN, _drawResultEntry.getContactMode());
-        values.put(DrawResultEntryColumns.CONTACT_DETAIL_COLUMN, _drawResultEntry.getContactDetail());
-        values.put(DrawResultEntryColumns.VIEWED_DATE_COLUMN, _drawResultEntry.getViewedDate());
+        values.put(DrawResultEntry.Columns.DRAW_RESULT_ID_COLUMN, _drawResultId);
+        values.put(DrawResultEntry.Columns.MEMBER_NAME_COLUMN, _drawResultEntry.getGiverName());
+        values.put(DrawResultEntry.Columns.OTHER_MEMBER_NAME_COLUMN, _drawResultEntry.getReceiverName());
+        values.put(DrawResultEntry.Columns.CONTACT_MODE_COLUMN, _drawResultEntry.getContactMode());
+        values.put(DrawResultEntry.Columns.CONTACT_DETAIL_COLUMN, _drawResultEntry.getContactDetail());
+        values.put(DrawResultEntry.Columns.VIEWED_DATE_COLUMN, _drawResultEntry.getViewedDate());
 
         return mDb.insert(DRAW_RESULT_ENTRIES_TABLE_NAME, null, values);
     }
@@ -797,25 +793,25 @@ public class OpenSecretSantaDB {
 
         Cursor cursor = mDb.query(
           DRAW_RESULT_ENTRIES_TABLE_NAME,
-          DrawResultEntryColumns.ALL,
-          DrawResultEntryColumns.DRAW_RESULT_ID_COLUMN + " = " + _drawResultId,
+          DrawResultEntry.Columns.ALL,
+          DrawResultEntry.Columns.DRAW_RESULT_ID_COLUMN + " = " + _drawResultId,
           null,
           null,
           null,
-          DrawResultEntryColumns.DEFAULT_SORT_ORDER
+          DrawResultEntry.Columns.DEFAULT_SORT_ORDER
         );
 
         return cursor;
     }
 
     private DrawResultEntry populateDrawResultEntry(Cursor cursor) {
-        long id = cursor.getLong(cursor.getColumnIndex((DrawResultEntryColumns._ID)));
-        String name1 = cursor.getString(cursor.getColumnIndex(DrawResultEntryColumns.MEMBER_NAME_COLUMN));
-        String name2 = cursor.getString(cursor.getColumnIndex(DrawResultEntryColumns.OTHER_MEMBER_NAME_COLUMN));
-        int contactMode = cursor.getInt(cursor.getColumnIndex(DrawResultEntryColumns.CONTACT_MODE_COLUMN));
-        String contactDetail = cursor.getString(cursor.getColumnIndex(DrawResultEntryColumns.CONTACT_DETAIL_COLUMN));
-        long viewedDate = cursor.getLong(cursor.getColumnIndex(DrawResultEntryColumns.VIEWED_DATE_COLUMN));
-        long sentDate = cursor.getLong(cursor.getColumnIndex(DrawResultEntryColumns.SENT_DATE_COLUMN));
+        long id = cursor.getLong(cursor.getColumnIndex((DrawResultEntry.Columns._ID)));
+        String name1 = cursor.getString(cursor.getColumnIndex(DrawResultEntry.Columns.MEMBER_NAME_COLUMN));
+        String name2 = cursor.getString(cursor.getColumnIndex(DrawResultEntry.Columns.OTHER_MEMBER_NAME_COLUMN));
+        int contactMode = cursor.getInt(cursor.getColumnIndex(DrawResultEntry.Columns.CONTACT_MODE_COLUMN));
+        String contactDetail = cursor.getString(cursor.getColumnIndex(DrawResultEntry.Columns.CONTACT_DETAIL_COLUMN));
+        long viewedDate = cursor.getLong(cursor.getColumnIndex(DrawResultEntry.Columns.VIEWED_DATE_COLUMN));
+        long sentDate = cursor.getLong(cursor.getColumnIndex(DrawResultEntry.Columns.SENT_DATE_COLUMN));
 
         DrawResultEntry dre = new DrawResultEntry(name1, name2, contactMode, contactDetail, viewedDate, sentDate);
         Log.v(TAG, "############### populateDrawResultEntry: " + name1 + " | " + name2 + "| " + contactDetail);
@@ -840,7 +836,7 @@ public class OpenSecretSantaDB {
         // User can't actually do this...
         return mDb.delete(
           DRAW_RESULT_ENTRIES_TABLE_NAME,
-          DrawResultEntryColumns._ID + " = " + _drawResultEntryId,
+          DrawResultEntry.Columns._ID + " = " + _drawResultEntryId,
           null
         ) > 0;
     }
@@ -848,25 +844,25 @@ public class OpenSecretSantaDB {
     public boolean updateDrawResultEntry(DrawResultEntry _drawResultEntry, long _rowIndex) {
 
         ContentValues values = new ContentValues();
-        values.put(DrawResultEntryColumns.MEMBER_NAME_COLUMN, _drawResultEntry.getGiverName());
-        values.put(DrawResultEntryColumns.OTHER_MEMBER_NAME_COLUMN, _drawResultEntry.getReceiverName());
-        values.put(DrawResultEntryColumns.CONTACT_MODE_COLUMN, _drawResultEntry.getContactMode());
-        values.put(DrawResultEntryColumns.CONTACT_DETAIL_COLUMN, _drawResultEntry.getContactDetail());
-        values.put(DrawResultEntryColumns.VIEWED_DATE_COLUMN, _drawResultEntry.getViewedDate());
-        values.put(DrawResultEntryColumns.SENT_DATE_COLUMN, _drawResultEntry.getSentDate());
+        values.put(DrawResultEntry.Columns.MEMBER_NAME_COLUMN, _drawResultEntry.getGiverName());
+        values.put(DrawResultEntry.Columns.OTHER_MEMBER_NAME_COLUMN, _drawResultEntry.getReceiverName());
+        values.put(DrawResultEntry.Columns.CONTACT_MODE_COLUMN, _drawResultEntry.getContactMode());
+        values.put(DrawResultEntry.Columns.CONTACT_DETAIL_COLUMN, _drawResultEntry.getContactDetail());
+        values.put(DrawResultEntry.Columns.VIEWED_DATE_COLUMN, _drawResultEntry.getViewedDate());
+        values.put(DrawResultEntry.Columns.SENT_DATE_COLUMN, _drawResultEntry.getSentDate());
 
-        return mDb.update(DRAW_RESULT_ENTRIES_TABLE_NAME, values, DrawResultEntryColumns._ID + "=" + _rowIndex, null) > 0;
+        return mDb.update(DRAW_RESULT_ENTRIES_TABLE_NAME, values, DrawResultEntry.Columns._ID + "=" + _rowIndex, null) > 0;
     }
 
     public long getLatestDrawResultId(long _groupId) {
 
         // Changed from 0
-        long result = PersistentModel.UNSET_ID;
+        long result = PersistableObject.UNSET_ID;
 
         Cursor cursor = mDb.rawQuery(getLatestDrawResultSQL(_groupId), new String[]{ });
 
         if(cursor.moveToFirst())
-            result = cursor.getLong(cursor.getColumnIndex(DrawResultColumns._ID));
+            result = cursor.getLong(cursor.getColumnIndex(DrawResult.Columns._ID));
 
         cursor.close();
         return result;
@@ -874,10 +870,10 @@ public class OpenSecretSantaDB {
 
     private String getLatestDrawResultSQL(long _groupId) {
         // Have to kinda fudge the column here.
-        String subQuery = SQLiteQueryBuilder.buildQueryString(true, DRAW_RESULTS_TABLE_NAME, new String[]{ "max(" + DrawResultColumns.DRAW_DATE_COLUMN + ")" },
-          DrawResultColumns.GROUP_ID_COLUMN + " = " + _groupId, null, null, null, null);
-        String restrictionsQuery = SQLiteQueryBuilder.buildQueryString(true, DRAW_RESULTS_TABLE_NAME, new String[]{ DrawResultColumns._ID },
-          DrawResultColumns.DRAW_DATE_COLUMN + " IN (" + subQuery + ")", null, null, null, null);
+        String subQuery = SQLiteQueryBuilder.buildQueryString(true, DRAW_RESULTS_TABLE_NAME, new String[]{ "max(" + DrawResult.Columns.DRAW_DATE_COLUMN + ")" },
+          DrawResult.Columns.GROUP_ID_COLUMN + " = " + _groupId, null, null, null, null);
+        String restrictionsQuery = SQLiteQueryBuilder.buildQueryString(true, DRAW_RESULTS_TABLE_NAME, new String[]{ DrawResult.Columns._ID },
+          DrawResult.Columns.DRAW_DATE_COLUMN + " IN (" + subQuery + ")", null, null, null, null);
 
         Log.v(TAG, subQuery);
         Log.v(TAG, restrictionsQuery);

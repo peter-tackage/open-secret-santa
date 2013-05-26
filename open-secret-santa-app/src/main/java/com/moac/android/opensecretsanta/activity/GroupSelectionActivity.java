@@ -23,8 +23,7 @@ import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 import com.moac.android.opensecretsanta.types.Group;
-import com.moac.android.opensecretsanta.types.Group.GroupColumns;
-import com.moac.android.opensecretsanta.types.PersistentModel;
+import com.moac.android.opensecretsanta.types.PersistableObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -115,7 +114,7 @@ public class GroupSelectionActivity extends Activity {
                 mGroup.setName(groupName);
                 Long mNewGroupId = mDatabase.insertGroup(mGroup);
 
-                if(mNewGroupId != PersistentModel.UNSET_ID) {
+                if(mNewGroupId != PersistableObject.UNSET_ID) {
                     Intent myIntent = new Intent(v.getContext(), DrawTabManagerActivity.class);
                     myIntent.putExtra(Constants.GROUP_ID, mNewGroupId);
                     myIntent.putExtra(Constants.GROUP_NAME, groupName);
@@ -227,14 +226,14 @@ public class GroupSelectionActivity extends Activity {
                     Log.v(TAG, "Cursor: getColumnCount(): " + cursor.getColumnCount());
 
                     do {
-                        long groupId = cursor.getLong(cursor.getColumnIndex(GroupColumns._ID));
+                        long groupId = cursor.getLong(cursor.getColumnIndex(Group.Columns._ID));
 
                         String groupName = mDatabase.getGroupById(groupId).getName();
                         long memberCount = mDatabase.getAllMembers(groupId).size();
 
                         long drawResultId = mDatabase.getLatestDrawResultId(groupId);
                         // TODO - Don't actually use this anymore.
-                        long date = (drawResultId != PersistentModel.UNSET_ID) ? mDatabase.getDrawResultById(drawResultId).getDrawDate() : Constants.UNDRAWN_DATE;
+                        long date = (drawResultId != PersistableObject.UNSET_ID) ? mDatabase.getDrawResultById(drawResultId).getDrawDate() : Constants.UNDRAWN_DATE;
 
                         GroupRowDetails row = new GroupRowDetails(groupId, groupName, memberCount, date);
                         rows.add(row);

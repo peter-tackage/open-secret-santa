@@ -2,13 +2,17 @@ package com.moac.android.opensecretsanta.types;
 
 import android.provider.BaseColumns;
 import android.util.Log;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 import com.moac.android.opensecretsanta.activity.Constants;
+import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 
-public final class Member extends PersistentModel {
+@DatabaseTable(tableName = OpenSecretSantaDB.MEMBERS_TABLE_NAME)
+public final class Member extends PersistableObject {
 
     public static final String TAG = "Member";
 
-    public static interface MemberColumns extends BaseColumns {
+    public static interface Columns extends BaseColumns {
 
         public static final String LOOKUP_KEY = "LOOKUP_KEY";
         public static final String NAME_COLUMN = "NAME";
@@ -28,29 +32,19 @@ public final class Member extends PersistentModel {
         };
     }
 
-    public static interface RestrictionsColumns extends BaseColumns {
-
-        public static final String MEMBER_ID_COLUMN = "MEMBER_ID";
-        public static final String OTHER_MEMBER_ID_COLUMN = "OTHER_MEMBER_ID";
-
-        public static final String[] ALL = {
-          _ID,
-          MEMBER_ID_COLUMN,
-          OTHER_MEMBER_ID_COLUMN
-        };
-
-        public static final String DEFAULT_SORT_ORDER = OTHER_MEMBER_ID_COLUMN + " DESC";
-    }
-
+    @DatabaseField(columnName = Columns.LOOKUP_KEY)
     private String mLookupKey;
 
     // The participant name
+    @DatabaseField(columnName = Columns.NAME_COLUMN)
     private String mName;
 
     // the email, the  phone number, the whatever.
+    @DatabaseField(columnName = Columns.CONTACT_DETAIL_COLUMN)
     private String mContactDetail;
 
     // The types of communication to be used.
+    @DatabaseField(columnName = Columns.CONTACT_MODE_COLUMN)
     private int mContactMode = Constants.NAME_ONLY_CONTACT_MODE;
 
     public String getName() { return mName; }

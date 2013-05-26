@@ -1,11 +1,11 @@
 package com.moac.android.opensecretsanta.test.builders;
 
 import com.moac.android.opensecretsanta.types.Group;
-import com.moac.android.opensecretsanta.types.PersistentModel;
+import com.moac.android.opensecretsanta.types.PersistableObject;
 
 public class GroupBuilder {
 
-    private long id = PersistentModel.UNSET_ID; // uninserted.
+    private long id = PersistableObject.UNSET_ID; // uninserted.
     private boolean isReady = false; // should match default
     private String name = "groupName1";
 

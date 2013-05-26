@@ -27,7 +27,7 @@ import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 import com.moac.android.opensecretsanta.types.Group;
 import com.moac.android.opensecretsanta.types.Member;
-import com.moac.android.opensecretsanta.types.Member.MemberColumns;
+import com.moac.android.opensecretsanta.types.Member.Columns;
 
 import java.util.*;
 
@@ -446,11 +446,11 @@ public class MembersListActivity extends Activity {
                 while(allMembersCursor.moveToNext()) {
 
                     //  A member's name is unique for a group.
-                    String memberName = allMembersCursor.getString(allMembersCursor.getColumnIndex(MemberColumns.NAME_COLUMN));
-                    Long id = allMembersCursor.getLong(allMembersCursor.getColumnIndex(MemberColumns._ID));
-                    String contactDetail = allMembersCursor.getString(allMembersCursor.getColumnIndex(MemberColumns.CONTACT_DETAIL_COLUMN));
-                    int contactMode = allMembersCursor.getInt(allMembersCursor.getColumnIndex(MemberColumns.CONTACT_MODE_COLUMN));
-                    String lookupKey = allMembersCursor.getString(allMembersCursor.getColumnIndex(MemberColumns.LOOKUP_KEY));
+                    String memberName = allMembersCursor.getString(allMembersCursor.getColumnIndex(Columns.NAME_COLUMN));
+                    Long id = allMembersCursor.getLong(allMembersCursor.getColumnIndex(Columns._ID));
+                    String contactDetail = allMembersCursor.getString(allMembersCursor.getColumnIndex(Columns.CONTACT_DETAIL_COLUMN));
+                    int contactMode = allMembersCursor.getInt(allMembersCursor.getColumnIndex(Columns.CONTACT_MODE_COLUMN));
+                    String lookupKey = allMembersCursor.getString(allMembersCursor.getColumnIndex(Columns.LOOKUP_KEY));
                     Cursor restrictionsCursor = mDatabase.getRestrictionNamesForMemberIdCursor(id.longValue());
 
                     Log.v(TAG, "populdateMembersList() lookupKey: " + lookupKey);
@@ -794,16 +794,16 @@ public class MembersListActivity extends Activity {
             Log.v(TAG, "getRestrictionRows() - memberId: " + _memberId + " has restriction count: " + restrictionCursor.getColumnCount());
             while(restrictionCursor.moveToNext()) {
                 //  A member's name is unique for a group.
-                String other = restrictionCursor.getString(restrictionCursor.getColumnIndex((MemberColumns.NAME_COLUMN)));
-                long toId = restrictionCursor.getLong(restrictionCursor.getColumnIndex((MemberColumns._ID)));
+                String other = restrictionCursor.getString(restrictionCursor.getColumnIndex((Columns.NAME_COLUMN)));
+                long toId = restrictionCursor.getLong(restrictionCursor.getColumnIndex((Columns._ID)));
                 rest.put(Long.valueOf(toId), new RestrictionRowDetails(_memberId, toId, other, true));
                 Log.v(TAG, "getRestrictionRows() - Adding restriction: " + toId + "(" + other + ")");
             }
 
             Cursor otherGroupMembersCursor = mDatabase.getOtherGroupMembers(_memberId);
             while(otherGroupMembersCursor.moveToNext()) {
-                String other = otherGroupMembersCursor.getString(otherGroupMembersCursor.getColumnIndex((MemberColumns.NAME_COLUMN)));
-                long toId = otherGroupMembersCursor.getLong(otherGroupMembersCursor.getColumnIndex((MemberColumns._ID)));
+                String other = otherGroupMembersCursor.getString(otherGroupMembersCursor.getColumnIndex((Columns.NAME_COLUMN)));
+                long toId = otherGroupMembersCursor.getLong(otherGroupMembersCursor.getColumnIndex((Columns._ID)));
 
                 // only add if it's not a restrictions
                 Long key = Long.valueOf(toId);

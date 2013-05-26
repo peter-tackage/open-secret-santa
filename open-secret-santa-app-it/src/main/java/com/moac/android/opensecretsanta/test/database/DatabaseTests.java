@@ -10,11 +10,7 @@ import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 import com.moac.android.opensecretsanta.test.builders.DrawResultBuilder;
 import com.moac.android.opensecretsanta.test.builders.GroupBuilder;
 import com.moac.android.opensecretsanta.test.builders.MemberBuilder;
-import com.moac.android.opensecretsanta.types.DrawResult;
-import com.moac.android.opensecretsanta.types.Group;
-import com.moac.android.opensecretsanta.types.Member;
-import com.moac.android.opensecretsanta.types.Member.RestrictionsColumns;
-import com.moac.android.opensecretsanta.types.PersistentModel;
+import com.moac.android.opensecretsanta.types.*;
 
 import java.util.Date;
 import java.util.List;
@@ -53,7 +49,7 @@ public class DatabaseTests extends AndroidTestCase {
         long id = testDB.insertGroup(g1);
 
         // ID should be valid
-        assertTrue(id > PersistentModel.UNSET_ID);
+        assertTrue(id > PersistableObject.UNSET_ID);
     }
 
     public void testGroupCreateName() {
@@ -73,7 +69,7 @@ public class DatabaseTests extends AndroidTestCase {
 
         // Now try to get it back (but doesn't exist)
         try {
-            Group result = testDB.getGroupById(PersistentModel.UNSET_ID);
+            Group result = testDB.getGroupById(PersistableObject.UNSET_ID);
             fail("Should have thrown SQLException");
         } catch(SQLException exp) {
             assertTrue(true);
@@ -86,7 +82,7 @@ public class DatabaseTests extends AndroidTestCase {
         long id = testDB.insertGroup(g1);
 
         // Fails to add.
-        assertEquals(PersistentModel.UNSET_ID, id);
+        assertEquals(PersistableObject.UNSET_ID, id);
 
         // Now try to get it back (but doesn't exist)
         try {
@@ -106,7 +102,7 @@ public class DatabaseTests extends AndroidTestCase {
         long gid2 = testDB.insertGroup(g2);
 
         // should fail to add.
-        assertEquals(PersistentModel.UNSET_ID, gid2);
+        assertEquals(PersistableObject.UNSET_ID, gid2);
     }
 
     public void testGroupReadAll() {
@@ -490,13 +486,13 @@ public class DatabaseTests extends AndroidTestCase {
         // Now define some restrictions
         long rid = testDB.insertRestriction(mid1, mid2);
 
-        assertTrue(rid != PersistentModel.UNSET_ID);
+        assertTrue(rid != PersistableObject.UNSET_ID);
 
         // Now verify the READ
         Cursor cursor = testDB.getRestrictionByIdCursor(rid);
         while(cursor.moveToNext()) {
-            assertEquals(mid1, cursor.getLong((cursor.getColumnIndex(RestrictionsColumns.MEMBER_ID_COLUMN))));
-            assertEquals(mid2, cursor.getLong((cursor.getColumnIndex(RestrictionsColumns.OTHER_MEMBER_ID_COLUMN))));
+            assertEquals(mid1, cursor.getLong((cursor.getColumnIndex(Restriction.Columns.MEMBER_ID_COLUMN))));
+            assertEquals(mid2, cursor.getLong((cursor.getColumnIndex(Restriction.Columns.OTHER_MEMBER_ID_COLUMN))));
         }
         cursor.close();
     }
@@ -592,7 +588,7 @@ public class DatabaseTests extends AndroidTestCase {
         DrawResult drReturned = testDB.getDrawResultById(drId);
 
         // Verify the DrawResult matches that Created.
-        assertFalse(drReturned.getId() == PersistentModel.UNSET_ID);
+        assertFalse(drReturned.getId() == PersistableObject.UNSET_ID);
         assertEquals(dr1.getDrawDate(), drReturned.getDrawDate());
         assertEquals(dr1.getSendDate(), drReturned.getSendDate());
         assertEquals(dr1.getMessage(), drReturned.getMessage());

@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -25,19 +24,11 @@ import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 import com.moac.android.opensecretsanta.types.*;
-import com.moac.android.opensecretsanta.types.Member.RestrictionsColumns;
 import com.moac.drawengine.DrawEngine;
 import com.moac.drawengine.DrawEngineProvider;
 import com.moac.drawengine.DrawFailureException;
 import com.moac.drawengine.InvalidDrawEngineException;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
 
-import java.io.IOException;
 import java.util.*;
 
 //import android.content.BroadcastReceiver;
@@ -55,8 +46,8 @@ public class AssignmentSharerActivity extends Activity {
     static final int DIALOG_ASSIGNMENT = 2;
     static final int CONFIRM_REDRAW_DIALOG = 3;
 
-    long mResultId = PersistentModel.UNSET_ID;
-    long mGroupId = PersistentModel.UNSET_ID;
+    long mResultId = PersistableObject.UNSET_ID;
+    long mGroupId = PersistableObject.UNSET_ID;
 
     OpenSecretSantaDB mDatabase;
     DrawEngineProvider mDrawEngineProv;
@@ -271,8 +262,8 @@ public class AssignmentSharerActivity extends Activity {
                 // reflect the current structure of the good.
                 Log.v(TAG, "executeDrawIfRequired() - isReady: " + isReady + " and mResultId: " + mResultId);
                 // If there's no draw or the group is not ready to share
-                // PersistentModel.UNSET_ID is no valid row.
-                return (mResultId == PersistentModel.UNSET_ID || !isReady);
+                // PersistableObject.UNSET_ID is no valid row.
+                return (mResultId == PersistableObject.UNSET_ID || !isReady);
             }
 
             @Override
@@ -345,7 +336,7 @@ public class AssignmentSharerActivity extends Activity {
 
                         Cursor rCursor = mDatabase.getRestrictionsForMemberId(m.getId());
                         while(rCursor.moveToNext()) {
-                            Long id = rCursor.getLong(rCursor.getColumnIndex((RestrictionsColumns.OTHER_MEMBER_ID_COLUMN)));
+                            Long id = rCursor.getLong(rCursor.getColumnIndex((Restriction.Columns.OTHER_MEMBER_ID_COLUMN)));
                             rests.add(id);
                         }
                         rCursor.close();
@@ -465,7 +456,7 @@ public class AssignmentSharerActivity extends Activity {
                 mResultId = mDatabase.getLatestDrawResultId(mGroupId);
 
                 // Really just a safe guard, in case this is called after a FAILED draw (which it shouldn't)
-                if(mResultId == PersistentModel.UNSET_ID)
+                if(mResultId == PersistableObject.UNSET_ID)
                     return null;
 
                 // Get draw result

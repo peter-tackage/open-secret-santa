@@ -1,11 +1,15 @@
 package com.moac.android.opensecretsanta.types;
 
 import android.provider.BaseColumns;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 
-public class Group extends PersistentModel {
+@DatabaseTable(tableName = OpenSecretSantaDB.GROUPS_TABLE_NAME)
+public class Group extends PersistableObject {
 
     // GROUP TABLE COLUMNS
-    public static interface GroupColumns extends BaseColumns {
+    public static interface Columns extends BaseColumns {
 
         public static final String NAME_COLUMN = "NAME";
         public static final String IS_READY = "IS_READY";
@@ -19,7 +23,10 @@ public class Group extends PersistentModel {
         };
     }
 
+    @DatabaseField(columnName = Columns.NAME_COLUMN)
     private String mName;
+
+    @DatabaseField(columnName = Columns.IS_READY)
     private boolean mReady = false; // is the group ready to be notified.
 
     public String getName() { return mName; }

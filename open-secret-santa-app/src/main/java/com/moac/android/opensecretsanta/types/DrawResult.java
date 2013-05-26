@@ -1,15 +1,22 @@
 package com.moac.android.opensecretsanta.types;
 
 import android.provider.BaseColumns;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 import com.moac.android.opensecretsanta.activity.Constants;
+import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 
-public class DrawResult extends PersistentModel {
+@DatabaseTable(tableName = OpenSecretSantaDB.DRAW_RESULTS_TABLE_NAME)
+public class DrawResult extends PersistableObject {
 
+    @DatabaseField(columnName = Columns.DRAW_DATE_COLUMN)
     private long mDrawDate = Constants.UNDRAWN_DATE;
+    @DatabaseField(columnName = Columns.SEND_DATE_COLUMN)
     private long mSendDate = Constants.UNSENT_DATE;
+    @DatabaseField(columnName = Columns.MESSAGE_COLUMN)
     private String mMessage = "";
 
-    public static interface DrawResultColumns extends BaseColumns {
+    public static interface Columns extends BaseColumns {
 
         // Results definition
         public static final String DRAW_DATE_COLUMN = "DRAW_DATE";

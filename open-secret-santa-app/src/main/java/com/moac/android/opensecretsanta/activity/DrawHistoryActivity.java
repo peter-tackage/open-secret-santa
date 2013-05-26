@@ -17,8 +17,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
-import com.moac.android.opensecretsanta.types.DrawResult.DrawResultColumns;
-import com.moac.android.opensecretsanta.types.PersistentModel;
+import com.moac.android.opensecretsanta.types.DrawResult;
+import com.moac.android.opensecretsanta.types.PersistableObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class DrawHistoryActivity extends Activity {
     private final static String TAG = "DrawHistoryActivity";
 
     // Initialise to All groups
-    public static final long ALL_GROUPS = PersistentModel.UNSET_ID;
+    public static final long ALL_GROUPS = PersistableObject.UNSET_ID;
     private long mGroupId = ALL_GROUPS;
 
     private List<DrawRowDetails> items;
@@ -169,11 +169,11 @@ public class DrawHistoryActivity extends Activity {
                     Log.v(TAG, "Cursor: getColumnCount(): " + cursor.getColumnCount());
 
                     do {
-                        long groupId = cursor.getLong(cursor.getColumnIndex(DrawResultColumns.GROUP_ID_COLUMN));
+                        long groupId = cursor.getLong(cursor.getColumnIndex(DrawResult.Columns.GROUP_ID_COLUMN));
                         String groupName = mDatabase.getGroupById(groupId).getName();
-                        long drawDate = cursor.getLong(cursor.getColumnIndex(DrawResultColumns.DRAW_DATE_COLUMN));
-                        long sendDate = cursor.getLong(cursor.getColumnIndex(DrawResultColumns.SEND_DATE_COLUMN));
-                        long drawId = cursor.getLong(cursor.getColumnIndex(DrawResultColumns._ID));
+                        long drawDate = cursor.getLong(cursor.getColumnIndex(DrawResult.Columns.DRAW_DATE_COLUMN));
+                        long sendDate = cursor.getLong(cursor.getColumnIndex(DrawResult.Columns.SEND_DATE_COLUMN));
+                        long drawId = cursor.getLong(cursor.getColumnIndex(DrawResult.Columns._ID));
                         long memberCount = mDatabase.getAllDrawResultEntriesForDrawId(drawId).size();
 
                         DrawRowDetails row = new DrawRowDetails(drawId, groupName, drawDate, sendDate, memberCount, groupId);
