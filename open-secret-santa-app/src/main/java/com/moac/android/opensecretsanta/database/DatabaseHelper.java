@@ -126,6 +126,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     private void createTables(SQLiteDatabase db, ConnectionSource cs) {
         for(Class<? extends PersistableObject> objClass : PERSISTABLE_OBJECTS) {
             createTable(objClass, cs);
