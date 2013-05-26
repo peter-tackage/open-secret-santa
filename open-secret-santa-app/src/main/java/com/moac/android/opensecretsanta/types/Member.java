@@ -36,7 +36,7 @@ public final class Member extends PersistableObject {
     private String mLookupKey;
 
     // The participant name
-    @DatabaseField(columnName = Columns.NAME_COLUMN)
+    @DatabaseField(columnName = Columns.NAME_COLUMN, canBeNull = false)
     private String mName;
 
     // the email, the  phone number, the whatever.
@@ -44,7 +44,7 @@ public final class Member extends PersistableObject {
     private String mContactDetail;
 
     // The types of communication to be used.
-    @DatabaseField(columnName = Columns.CONTACT_MODE_COLUMN)
+    @DatabaseField(columnName = Columns.CONTACT_MODE_COLUMN, canBeNull = false)
     private int mContactMode = Constants.NAME_ONLY_CONTACT_MODE;
 
     public String getName() { return mName; }

@@ -9,10 +9,10 @@ import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 @DatabaseTable(tableName = OpenSecretSantaDB.DRAW_RESULT_ENTRIES_TABLE_NAME)
 public class DrawResultEntry extends PersistableObject implements Comparable<DrawResultEntry> {
 
-    @DatabaseField(columnName = Columns.MEMBER_NAME_COLUMN)
+    @DatabaseField(columnName = Columns.MEMBER_NAME_COLUMN, canBeNull = false)
     private String mGiverName;
 
-    @DatabaseField(columnName = Columns.OTHER_MEMBER_NAME_COLUMN)
+    @DatabaseField(columnName = Columns.OTHER_MEMBER_NAME_COLUMN, canBeNull = false)
     private String mReceiverName;
 
     @DatabaseField(columnName = Columns.CONTACT_MODE_COLUMN)

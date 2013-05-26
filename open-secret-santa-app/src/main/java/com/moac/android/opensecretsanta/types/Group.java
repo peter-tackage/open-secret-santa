@@ -23,7 +23,7 @@ public class Group extends PersistableObject {
         };
     }
 
-    @DatabaseField(columnName = Columns.NAME_COLUMN)
+    @DatabaseField(columnName = Columns.NAME_COLUMN, unique = true, canBeNull = false)
     private String mName;
 
     @DatabaseField(columnName = Columns.IS_READY)
