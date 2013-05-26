@@ -193,7 +193,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     /*
      * Database Schema Upgrade Methods
      */
-    private boolean upgradeToVersion2(SQLiteDatabase db) {
+
+    protected boolean upgradeToVersion2(SQLiteDatabase db) {
         Log.i(TAG, "upgradeToVersion2 - start.");
 
         // Something like - update members set contact_detail = null  where contact_detail = '';
