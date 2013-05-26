@@ -16,6 +16,8 @@
 
   <properties>
     <environment>development</environment>
+    <ormlite-core.version>4.43</ormlite-core.version>
+    <ormlite-android.version>4.43</ormlite-android.version>
   </properties>
 
   <dependencies>
@@ -36,6 +38,19 @@
       <artifactId>commons-validator</artifactId>
       <version>1.4.0</version>
     </dependency>
+
+    <dependency>
+      <groupId>com.j256.ormlite</groupId>
+      <artifactId>ormlite-android</artifactId>
+      <version>${ormlite-android.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.j256.ormlite</groupId>
+      <artifactId>ormlite-core</artifactId>
+      <version>${ormlite-core.version}</version>
+    </dependency>
+
   </dependencies>
 
   <build>
