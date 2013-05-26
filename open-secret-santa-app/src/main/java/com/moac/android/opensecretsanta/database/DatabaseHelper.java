@@ -24,14 +24,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.db.SqliteAndroidDatabaseType;
-import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
 import com.moac.android.opensecretsanta.types.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,96 +111,59 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends PersistableObject> Dao<T, Long> getDaoEx(Class<T> modelClass) {
-        Dao<T, Long> result = null;
-        if(daos.containsKey(modelClass)) {
-            result = (Dao<T, Long>) daos.get(modelClass);
+    public <T extends PersistableObject> Dao<T, Long> getDaoEx(Class<T> objClass) {
+        Dao<T, Long> result;
+        if(daos.containsKey(objClass)) {
+            result = (Dao<T, Long>) daos.get(objClass);
         } else {
             try {
-                result = getDao(modelClass);
+                result = getDao(objClass);
             } catch(java.sql.SQLException e) {
                 throw new SQLException(e.getMessage());
             }
-            daos.put(modelClass, result);
+            daos.put(objClass, result);
         }
         return result;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends PersistableObject> DatabaseTableConfig<T> getTableConfig(Class<T> modelClass) {
-        DatabaseTableConfig<T> result = null;
-        if(tableConfigs.containsKey(modelClass)) {
-            result = (DatabaseTableConfig<T>) tableConfigs.get(modelClass);
-        } else {
-            try {
-                result = DatabaseTableConfig.fromClass(getConnectionSource(), modelClass);
-            } catch(java.sql.SQLException e) {
-                throw new SQLException(e.getMessage());
-            }
-            tableConfigs.put(modelClass, result);
-        }
-        return result;
-    }
-
-    public <T extends PersistableObject> String getTableName(Class<T> modelClass) {
-        DatabaseTableConfig<? extends PersistableObject> cfg = getTableConfig(modelClass);
-        return cfg.getTableName();
-    }
-
-    public <T extends PersistableObject> String[] getColumnNames(Class<T> modelClass, boolean foreignOnly) {
-        List<String> columnNames = new ArrayList<String>();
-        try {
-            DatabaseTableConfig<? extends PersistableObject> cfg = getTableConfig(modelClass);
-            SqliteAndroidDatabaseType dbType = new SqliteAndroidDatabaseType();
-            for(FieldType fieldType : cfg.getFieldTypes(dbType)) {
-                if(!foreignOnly || fieldType.isForeign()) {
-                    columnNames.add(fieldType.getColumnName());
-                }
-            }
-        } catch(java.sql.SQLException e) {
-            throw new SQLException(e.getMessage());
-        }
-        return columnNames.toArray(new String[]{ });
     }
 
     private void createTables(SQLiteDatabase db, ConnectionSource cs) {
-        for(Class<? extends PersistableObject> modelClass : PERSISTABLE_OBJECTS) {
-            createTable(modelClass, cs);
+        for(Class<? extends PersistableObject> objClass : PERSISTABLE_OBJECTS) {
+            createTable(objClass, cs);
         }
     }
 
-    private void createTable(Class<? extends PersistableObject> modelClass, ConnectionSource cs) {
+    private void createTable(Class<? extends PersistableObject> objClass, ConnectionSource cs) {
         try {
-            TableUtils.createTable(cs, modelClass);
+            TableUtils.createTable(cs, objClass);
         } catch(java.sql.SQLException e) {
             throw new SQLException(e.getMessage());
         }
     }
 
-    public <T extends PersistableObject> List<T> queryAll(Class<T> modelClass) {
+    public <T extends PersistableObject> List<T> queryAll(Class<T> objClass) {
         List<T> entity;
         try {
-            entity = getDaoEx(modelClass).queryForAll();
+            entity = getDaoEx(objClass).queryForAll();
         } catch(java.sql.SQLException e) {
             throw new SQLException(e.getMessage());
         }
         return entity;
     }
 
-    public <T extends PersistableObject> T queryById(long id, Class<T> modelClass) {
+    public <T extends PersistableObject> T queryById(long id, Class<T> objClass) {
         T entity;
         try {
-            entity = getDaoEx(modelClass).queryForId(id);
+            entity = getDaoEx(objClass).queryForId(id);
         } catch(java.sql.SQLException e) {
             throw new SQLException(e.getMessage());
         }
         return entity;
     }
 
-    public <T extends PersistableObject> long create(PersistableObject entity, Class<T> modelClass) {
+    public <T extends PersistableObject> long create(PersistableObject entity, Class<T> objClass) {
         long id = PersistableObject.UNSET_ID;
         try {
-            if(getDaoEx(modelClass).create(modelClass.cast(entity)) == 1) {
+            if(getDaoEx(objClass).create(objClass.cast(entity)) == 1) {
                 id = entity.getId();
             }
         } catch(java.sql.SQLException e) {
@@ -212,18 +172,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return id;
     }
 
-    public <T extends PersistableObject> void update(PersistableObject entity, Class<T> modelClass) {
+    public <T extends PersistableObject> void update(PersistableObject entity, Class<T> objClass) {
         try {
-            int count = getDaoEx(modelClass).update(modelClass.cast(entity));
+            int count = getDaoEx(objClass).update(objClass.cast(entity));
             assert (count == 1);
         } catch(java.sql.SQLException e) {
             throw new SQLException(e.getMessage());
         }
     }
 
-    public <T extends PersistableObject> void deleteById(long id, Class<T> modelClass) {
+    public <T extends PersistableObject> void deleteById(long id, Class<T> objClass) {
         try {
-            int count = getDaoEx(modelClass).deleteById(id);
+            int count = getDaoEx(objClass).deleteById(id);
             assert (count == 1);
         } catch(java.sql.SQLException e) {
             throw new SQLException(e.getMessage());
@@ -234,7 +194,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
      * Database Schema Upgrade Methods
      */
     private boolean upgradeToVersion2(SQLiteDatabase db) {
-
         Log.i(TAG, "upgradeToVersion2 - start.");
 
         // Something like - update members set contact_detail = null  where contact_detail = '';
