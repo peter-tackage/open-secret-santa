@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/layout_root"
+  android:orientation="horizontal"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:padding="10dp">
+
+  <LinearLayout
+    android:id="@+id/msgLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <EditText
+      android:scrollbars="vertical"
+      android:gravity="top"
+      android:background="@drawable/green_edit_text"
+      android:textAppearance="?android:attr/textAppearanceSmall"
+      android:lines="10"
+      android:id="@+id/messageTxtEditText"
+      android:layout_height="wrap_content"
+      android:layout_width="match_parent"
+      android:hint="@string/messageTextHintText"
+      android:layout_weight="1"
+      android:inputType="textMultiLine|textLongMessage"
+      android:singleLine="false"></EditText>
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:id="@+id/linearLayout2"
+      android:layout_height="wrap_content"
+      android:gravity="right"
+      android:layout_gravity="right">
+
+      <TextView
+        android:id="@+id/textView1"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/message_count_label"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_weight="1.0"></TextView>
+
+      <TextView
+        android:id="@+id/msg_char_count"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_gravity="right"></TextView>
+    </LinearLayout>
+  </LinearLayout>
+</LinearLayout>

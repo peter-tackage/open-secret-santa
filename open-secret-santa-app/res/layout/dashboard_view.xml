@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/dashboard_main_layout"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:layout_gravity="top"
+  android:layout_weight="1"
+  android:background="@drawable/dashboard">
+
+  <TableLayout
+    android:orientation="vertical"
+    android:gravity="top"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true"
+    android:paddingTop="100dp">
+
+    <TableRow
+      android:id="@+id/tableRow1"
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:baselineAligned="false"
+      android:gravity="center">
+
+      <ImageButton
+        android:background="@null"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/newDrawImageButton"
+        android:src="@drawable/ic_dashboard_create_draw"
+        android:paddingRight="18dp"></ImageButton>
+
+      <ImageButton
+        android:background="@null"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/historyImageButton"
+        android:src="@drawable/ic_dashboard_view_draws"></ImageButton>
+
+      <ImageButton
+        android:background="@null"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/optionsImageButton"
+        android:src="@drawable/ic_dashboard_options"
+        android:paddingLeft="16dp"></ImageButton>
+    </TableRow>
+  </TableLayout>
+</RelativeLayout>
