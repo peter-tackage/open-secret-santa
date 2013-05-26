@@ -27,6 +27,10 @@ public class DrawResultEntry extends PersistableObject implements Comparable<Dra
     @DatabaseField(columnName = Columns.SENT_DATE_COLUMN)
     private long mSentDate = Constants.UNSENT_DATE;
 
+    @DatabaseField(columnName = Columns.DRAW_RESULT_ID_COLUMN, foreign = true, canBeNull = false,
+      columnDefinition = "integer references draw_results (_id) on delete cascade")
+    private DrawResult mDrawResult;
+
     public DrawResultEntry(String _giverName, String _receiverName, int _contactMode, String _contactDetail, long _viewedDate, long _sentDate) {
         mGiverName = _giverName;
         mReceiverName = _receiverName;

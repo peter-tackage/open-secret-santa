@@ -2,6 +2,7 @@ package com.moac.android.opensecretsanta.types;
 
 import android.provider.BaseColumns;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 
@@ -28,6 +29,9 @@ public class Group extends PersistableObject {
 
     @DatabaseField(columnName = Columns.IS_READY)
     private boolean mReady = false; // is the group ready to be notified.
+
+    @ForeignCollectionField(eager = false)
+    private java.util.Collection<Member> mMembers;
 
     public String getName() { return mName; }
     public void setName(String name) { mName = name; }

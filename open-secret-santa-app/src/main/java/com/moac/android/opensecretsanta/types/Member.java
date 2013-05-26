@@ -3,6 +3,7 @@ package com.moac.android.opensecretsanta.types;
 import android.provider.BaseColumns;
 import android.util.Log;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.moac.android.opensecretsanta.activity.Constants;
 import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
@@ -46,6 +47,13 @@ public final class Member extends PersistableObject {
     // The types of communication to be used.
     @DatabaseField(columnName = Columns.CONTACT_MODE_COLUMN, canBeNull = false)
     private int mContactMode = Constants.NAME_ONLY_CONTACT_MODE;
+
+    @DatabaseField(columnName = Columns.GROUP_ID_COLUMN, foreign = true, canBeNull = false,
+      columnDefinition = "integer references groups (_id) on delete cascade")
+    private Group mGroup;
+
+    @ForeignCollectionField(eager = false)
+    private java.util.Collection<Restriction> mRestrictions;
 
     public String getName() { return mName; }
 

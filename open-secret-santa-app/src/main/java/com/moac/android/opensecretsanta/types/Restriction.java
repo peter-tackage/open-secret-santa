@@ -22,25 +22,20 @@ public class Restriction {
         public static final String DEFAULT_SORT_ORDER = OTHER_MEMBER_ID_COLUMN + " DESC";
     }
 
-    @DatabaseField(columnName = Columns.MEMBER_ID_COLUMN)
-    private long mMemberId = PersistableObject.UNSET_ID;
+    @DatabaseField(columnName = Columns.MEMBER_ID_COLUMN, foreign = true, canBeNull = false,
+      columnDefinition = "integer references members (_id) on delete cascade")
+    private Member mMember;
 
-    @DatabaseField(columnName = Columns.OTHER_MEMBER_ID_COLUMN)
-    private long mOtherMemberId = PersistableObject.UNSET_ID;
+    @DatabaseField(columnName = Columns.OTHER_MEMBER_ID_COLUMN, foreign = true, canBeNull = false,
+      columnDefinition = "integer references members (_id) on delete cascade")
+    private Member mOtherMember;
 
     public long getMemberId() {
-        return mMemberId;
+        return mMember.getId();
     }
 
     public long getOtherMemberId() {
-        return mOtherMemberId;
+        return mOtherMember.getId();
     }
 
-    public void setMemberId(long memberId) {
-        mMemberId = memberId;
-    }
-
-    public void setOtherMemberId(long otherMemberId) {
-        mOtherMemberId = otherMemberId;
-    }
 }
