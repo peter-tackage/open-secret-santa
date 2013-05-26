@@ -9,13 +9,10 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.util.Log;
-import com.moac.android.opensecretsanta.types.DrawResult;
+import com.moac.android.opensecretsanta.types.*;
 import com.moac.android.opensecretsanta.types.DrawResult.DrawResultColumns;
-import com.moac.android.opensecretsanta.types.DrawResultEntry;
 import com.moac.android.opensecretsanta.types.DrawResultEntry.DrawResultEntryColumns;
-import com.moac.android.opensecretsanta.types.Group;
 import com.moac.android.opensecretsanta.types.Group.GroupColumns;
-import com.moac.android.opensecretsanta.types.Member;
 import com.moac.android.opensecretsanta.types.Member.MemberColumns;
 import com.moac.android.opensecretsanta.types.Member.RestrictionsColumns;
 
@@ -493,7 +490,7 @@ public class OpenSecretSantaDB {
 //				long pId = mDb.insert(MEMBERS_TABLE_NAME, null, values);
 //
 //				// Changed from 0 - should return -1 from DB when failed.
-//				if (pId == -1) {
+//				if (pId == PersistentModel.UNSET_ID ) {
 //					// This rollback all the other adds too.
 //					Log.e(TAG, "setMembers() - Unable to add Member: " + m.getName() + " to Group Id: " + _groupId);
 //					return false;
@@ -523,30 +520,6 @@ public class OpenSecretSantaDB {
 	/*
 	 * Restrictions
 	 */
-
-	/*
-	 * Incorrect - needs subquery - otherwise won't return the OTHER member's name.
-	 */
-    //	public Cursor getAllRestrictionNamesByMemberIdCursor(long _memberId)
-    //	{
-    //		// Join query to get the corresponding name from
-    //		// the members table.
-    //		Cursor cursor = mDb.query(
-    //				MEMBERS_TABLE_NAME + "," + RESTRICTIONS_TABLE_NAME,
-    //				// Make sure table name is referenced.
-    //				new String[] { RESTRICTIONS_TABLE_NAME + "." + RestrictionsColumns.OTHER_MEMBER_ID_COLUMN,
-    //								MEMBERS_TABLE_NAME + "." + MemberColumns.NAME_COLUMN},
-    //				RESTRICTIONS_TABLE_NAME + ". " + RestrictionsColumns.MEMBER_ID_COLUMN
-    //				+ " = " + _memberId + " and " + RESTRICTIONS_TABLE_NAME + "." + RestrictionsColumns.MEMBER_ID_COLUMN
-    //				+  " = " + MEMBERS_TABLE_NAME + "." + MemberColumns._ID,
-    //				null,
-    //				null,
-    //				null,
-    //				MEMBERS_TABLE_NAME + "." + MemberColumns.NAME_COLUMN + " ASC"
-    //		);
-    //
-    //		return cursor;
-    //	}
 
     /*
      * Basic query - DOES NOT USE NAMES!
@@ -888,7 +861,7 @@ public class OpenSecretSantaDB {
     public long getLatestDrawResultId(long _groupId) {
 
         // Changed from 0
-        long result = -1;
+        long result = PersistentModel.UNSET_ID;
 
         Cursor cursor = mDb.rawQuery(getLatestDrawResultSQL(_groupId), new String[]{ });
 

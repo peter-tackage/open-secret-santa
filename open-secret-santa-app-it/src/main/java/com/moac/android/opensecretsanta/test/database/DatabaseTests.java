@@ -14,6 +14,7 @@ import com.moac.android.opensecretsanta.types.DrawResult;
 import com.moac.android.opensecretsanta.types.Group;
 import com.moac.android.opensecretsanta.types.Member;
 import com.moac.android.opensecretsanta.types.Member.RestrictionsColumns;
+import com.moac.android.opensecretsanta.types.PersistentModel;
 
 import java.util.Date;
 import java.util.List;
@@ -52,7 +53,7 @@ public class DatabaseTests extends AndroidTestCase {
         long id = testDB.insertGroup(g1);
 
         // ID should be valid
-        assertTrue(id > -1);
+        assertTrue(id > PersistentModel.UNSET_ID);
     }
 
     public void testGroupCreateName() {
@@ -72,7 +73,7 @@ public class DatabaseTests extends AndroidTestCase {
 
         // Now try to get it back (but doesn't exist)
         try {
-            Group result = testDB.getGroupById(-1);
+            Group result = testDB.getGroupById(PersistentModel.UNSET_ID);
             fail("Should have thrown SQLException");
         } catch(SQLException exp) {
             assertTrue(true);
@@ -85,7 +86,7 @@ public class DatabaseTests extends AndroidTestCase {
         long id = testDB.insertGroup(g1);
 
         // Fails to add.
-        assertEquals(-1, id);
+        assertEquals(PersistentModel.UNSET_ID, id);
 
         // Now try to get it back (but doesn't exist)
         try {
@@ -105,7 +106,7 @@ public class DatabaseTests extends AndroidTestCase {
         long gid2 = testDB.insertGroup(g2);
 
         // should fail to add.
-        assertEquals(-1, gid2);
+        assertEquals(PersistentModel.UNSET_ID, gid2);
     }
 
     public void testGroupReadAll() {
@@ -489,7 +490,7 @@ public class DatabaseTests extends AndroidTestCase {
         // Now define some restrictions
         long rid = testDB.insertRestriction(mid1, mid2);
 
-        assertTrue(rid != -1);
+        assertTrue(rid != PersistentModel.UNSET_ID);
 
         // Now verify the READ
         Cursor cursor = testDB.getRestrictionByIdCursor(rid);
@@ -591,7 +592,7 @@ public class DatabaseTests extends AndroidTestCase {
         DrawResult drReturned = testDB.getDrawResultById(drId);
 
         // Verify the DrawResult matches that Created.
-        assertFalse(drReturned.getId() == -1);
+        assertFalse(drReturned.getId() == PersistentModel.UNSET_ID);
         assertEquals(dr1.getDrawDate(), drReturned.getDrawDate());
         assertEquals(dr1.getSendDate(), drReturned.getSendDate());
         assertEquals(dr1.getMessage(), drReturned.getMessage());

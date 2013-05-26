@@ -55,8 +55,8 @@ public class AssignmentSharerActivity extends Activity {
     static final int DIALOG_ASSIGNMENT = 2;
     static final int CONFIRM_REDRAW_DIALOG = 3;
 
-    long mResultId = -1;
-    long mGroupId = -1;
+    long mResultId = PersistentModel.UNSET_ID;
+    long mGroupId = PersistentModel.UNSET_ID;
 
     OpenSecretSantaDB mDatabase;
     DrawEngineProvider mDrawEngineProv;
@@ -271,8 +271,8 @@ public class AssignmentSharerActivity extends Activity {
                 // reflect the current structure of the good.
                 Log.v(TAG, "executeDrawIfRequired() - isReady: " + isReady + " and mResultId: " + mResultId);
                 // If there's no draw or the group is not ready to share
-                // -1 is no valid row.
-                return (mResultId == -1 || !isReady);
+                // PersistentModel.UNSET_ID is no valid row.
+                return (mResultId == PersistentModel.UNSET_ID || !isReady);
             }
 
             @Override
@@ -465,7 +465,7 @@ public class AssignmentSharerActivity extends Activity {
                 mResultId = mDatabase.getLatestDrawResultId(mGroupId);
 
                 // Really just a safe guard, in case this is called after a FAILED draw (which it shouldn't)
-                if(mResultId == -1)
+                if(mResultId == PersistentModel.UNSET_ID)
                     return null;
 
                 // Get draw result

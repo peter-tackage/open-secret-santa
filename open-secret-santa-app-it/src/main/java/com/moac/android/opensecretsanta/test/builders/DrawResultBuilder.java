@@ -2,12 +2,13 @@ package com.moac.android.opensecretsanta.test.builders;
 
 import com.moac.android.opensecretsanta.activity.Constants;
 import com.moac.android.opensecretsanta.types.DrawResult;
+import com.moac.android.opensecretsanta.types.PersistentModel;
 
 import java.util.Date;
 
 public class DrawResultBuilder {
 
-    private long id = -1; // uninserted.
+    private long id = PersistentModel.UNSET_ID; // uninserted.
     private long drawDate = Date.parse("1 August, 2011");
     private long sendDate = Constants.UNSENT_DATE;
     private String msg = "A simple test message.";
@@ -33,6 +34,10 @@ public class DrawResultBuilder {
     }
 
     public DrawResult build() {
-        return new DrawResult(this.id, this.drawDate, this.sendDate, this.msg);
+        DrawResult dr = new DrawResult();
+        dr.setDrawDate(drawDate);
+        dr.setSendDate(sendDate);
+        dr.setMessage(msg);
+        return dr;
     }
 }

@@ -2,10 +2,11 @@ package com.moac.android.opensecretsanta.test.builders;
 
 import com.moac.android.opensecretsanta.activity.Constants;
 import com.moac.android.opensecretsanta.types.Member;
+import com.moac.android.opensecretsanta.types.PersistentModel;
 
 public class MemberBuilder {
 
-    private long id = -1;
+    private long id = PersistentModel.UNSET_ID;
     private String name = "member1";
     private String detail = "+1191191";
     private int mode = Constants.SMS_CONTACT_MODE;
@@ -37,6 +38,12 @@ public class MemberBuilder {
     }
 
     public Member build() {
-        return new Member(this.id, this.name, this.lookupKey, this.detail, this.mode);
+        Member member  = new Member();
+        member.setId(id);
+        member.setName(name);
+        member.setLookupKey(lookupKey);
+        member.setContactDetail(detail);
+        member.setContactMode(mode);
+        return member;
     }
 }

@@ -24,6 +24,7 @@ import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 import com.moac.android.opensecretsanta.types.Group;
 import com.moac.android.opensecretsanta.types.Group.GroupColumns;
+import com.moac.android.opensecretsanta.types.PersistentModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -110,10 +111,11 @@ public class GroupSelectionActivity extends Activity {
         public void onClick(View v) {
             String groupName = mgroupNameView.getText().toString();
             if(!(groupName == null || groupName.length() == 0)) {
-                Group mGroup = new Group(groupName);
+                Group mGroup = new Group();
+                mGroup.setName(groupName);
                 Long mNewGroupId = mDatabase.insertGroup(mGroup);
 
-                if(mNewGroupId != -1) {
+                if(mNewGroupId != PersistentModel.UNSET_ID) {
                     Intent myIntent = new Intent(v.getContext(), DrawTabManagerActivity.class);
                     myIntent.putExtra(Constants.GROUP_ID, mNewGroupId);
                     myIntent.putExtra(Constants.GROUP_NAME, groupName);
@@ -232,7 +234,7 @@ public class GroupSelectionActivity extends Activity {
 
                         long drawResultId = mDatabase.getLatestDrawResultId(groupId);
                         // TODO - Don't actually use this anymore.
-                        long date = (drawResultId != -1) ? mDatabase.getDrawResultById(drawResultId).getDrawDate() : Constants.UNDRAWN_DATE;
+                        long date = (drawResultId != PersistentModel.UNSET_ID) ? mDatabase.getDrawResultById(drawResultId).getDrawDate() : Constants.UNDRAWN_DATE;
 
                         GroupRowDetails row = new GroupRowDetails(groupId, groupName, memberCount, date);
                         rows.add(row);

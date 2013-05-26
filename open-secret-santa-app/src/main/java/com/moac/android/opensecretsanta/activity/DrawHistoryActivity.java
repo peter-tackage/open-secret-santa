@@ -18,6 +18,7 @@ import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 import com.moac.android.opensecretsanta.types.DrawResult.DrawResultColumns;
+import com.moac.android.opensecretsanta.types.PersistentModel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class DrawHistoryActivity extends Activity {
     private final static String TAG = "DrawHistoryActivity";
 
     // Initialise to All groups
-    public static final long ALL_GROUPS = -1;
+    public static final long ALL_GROUPS = PersistentModel.UNSET_ID;
     private long mGroupId = ALL_GROUPS;
 
     private List<DrawRowDetails> items;
