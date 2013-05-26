@@ -28,4 +28,19 @@ public class Restriction {
     @DatabaseField(columnName = Columns.OTHER_MEMBER_ID_COLUMN)
     private long mOtherMemberId = PersistableObject.UNSET_ID;
 
+    public long getMemberId() {
+        return mMemberId;
+    }
+
+    public long getOtherMemberId() {
+        return mOtherMemberId;
+    }
+
+    public void setMemberId(long memberId) {
+        mMemberId = memberId;
+    }
+
+    public void setOtherMemberId(long otherMemberId) {
+        mOtherMemberId = otherMemberId;
+    }
 }
