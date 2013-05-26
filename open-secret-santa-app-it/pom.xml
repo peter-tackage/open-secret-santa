@@ -35,6 +35,7 @@
       <groupId>com.moac.android.opensecretsanta</groupId>
       <artifactId>open-secret-santa-app</artifactId>
       <type>apk</type>
+      <scope>provided</scope>
       <version>${project.version}</version>
       <classifier>${zipaligned-classifier}</classifier>
       <!--  classifier set according to the ran profile -->
@@ -44,6 +45,7 @@
       <artifactId>open-secret-santa-app</artifactId>
       <type>jar</type>
       <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
