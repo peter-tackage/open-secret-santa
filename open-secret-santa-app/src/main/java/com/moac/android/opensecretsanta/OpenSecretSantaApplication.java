@@ -14,12 +14,6 @@ public class OpenSecretSantaApplication extends Application {
         mDb.open();
     }
 
-    @Override
-    public void onTerminate() {
-        super.onTerminate();
-        mDb.close();
-    }
-
     public static OpenSecretSantaDB getDatabase() {
         return mDb;
     }
