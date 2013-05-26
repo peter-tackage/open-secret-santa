@@ -4,7 +4,7 @@ import android.provider.BaseColumns;
 import android.util.Log;
 import com.moac.android.opensecretsanta.activity.Constants;
 
-public final class Member {
+public final class Member extends PersistentModel {
 
     public static final String TAG = "Member";
 
@@ -42,72 +42,32 @@ public final class Member {
         public static final String DEFAULT_SORT_ORDER = OTHER_MEMBER_ID_COLUMN + " DESC";
     }
 
-    // Member variables.
-    private long mId = -1;
-
     private String mLookupKey;
 
     // The participant name
     private String mName;
 
-    private String mContactDetail; // the email, the  phone number, the whatever.
+    // the email, the  phone number, the whatever.
+    private String mContactDetail;
 
     // The types of communication to be used.
     private int mContactMode = Constants.NAME_ONLY_CONTACT_MODE;
 
-    /*
-     * Methods
-     */
-    public Member() {
-    }
+    public String getName() { return mName; }
 
-    public Member(long id, String name, String lookupKey, String contact, int mode) {
-        this.mId = id;
-        this.mName = name;
-        this.mLookupKey = lookupKey;
-        this.mContactDetail = contact;
-        this.mContactMode = mode;
-    }
+    public void setName(String _name) { mName = _name; }
 
-    public String getName() {
-        return mName;
-    }
+    public String getContactDetail() { return mContactDetail; }
 
-    public void setName(String _name) {
-        this.mName = _name;
-    }
+    public void setContactDetail(String _contactDetail) { mContactDetail = _contactDetail; }
 
-    public String getContactDetail() {
-        return mContactDetail;
-    }
+    public int getContactMode() { return mContactMode; }
 
-    public void setContactDetail(String _contactDetail) {
-        mContactDetail = _contactDetail;
-    }
+    public void setContactMode(int _contactMode) { mContactMode = _contactMode; }
 
-    public int getContactMode() {
-        return mContactMode;
-    }
+    public String getLookupKey() { return mLookupKey; }
 
-    public void setContactMode(int _contactMode) {
-        mContactMode = _contactMode;
-    }
-
-    public long getId() {
-        return mId;
-    }
-
-    public void setId(long _id) {
-        mId = _id;
-    }
-
-    public String getLookupKey() {
-        return mLookupKey;
-    }
-
-    public void setLookupKey(String _lookupKey) {
-        this.mLookupKey = _lookupKey;
-    }
+    public void setLookupKey(String _lookupKey) { mLookupKey = _lookupKey; }
 
     @Override
     public String toString() {
@@ -129,7 +89,6 @@ public final class Member {
     @Override
     public boolean equals(Object other) {
         if(this == other) return true;
-
         if(!(other instanceof Member)) return false;
 
         Member that = (Member) other;

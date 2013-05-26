@@ -421,7 +421,8 @@ public class AssignmentSharerActivity extends Activity {
         Log.v(TAG, "saveDrawResult() - start");
         Log.v(TAG, "saveDrawResult() - length: " + _assignments.size());
 
-        DrawResult dr = new DrawResult(System.currentTimeMillis());
+        DrawResult dr = new DrawResult();
+        dr.setDrawDate(System.currentTimeMillis());
 
         // Ok translate the member ids (in the assignments) into their names
         long id = mDatabase.insertDrawResult(dr, _groupId);

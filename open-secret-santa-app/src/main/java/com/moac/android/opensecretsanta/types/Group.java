@@ -2,7 +2,7 @@ package com.moac.android.opensecretsanta.types;
 
 import android.provider.BaseColumns;
 
-public final class Group {
+public class Group extends PersistentModel {
 
     // GROUP TABLE COLUMNS
     public static interface GroupColumns extends BaseColumns {
@@ -19,37 +19,12 @@ public final class Group {
         };
     }
 
-    private long mId = -1;
     private String mName;
     private boolean mReady = false; // is the group ready to be notified.
 
-    public Group(String name) {
-        mName = name;
-    }
+    public String getName() { return mName; }
+    public void setName(String name) { mName = name; }
+    public void setReady(boolean ready) { mReady = ready; }
+    public boolean isReady() { return mReady; }
 
-    public Group(long id, String name, boolean ready) {
-        mId = id;
-        mName = name;
-        mReady = ready;
-    }
-
-    public String getName() {
-        return mName;
-    }
-
-    public void setName(String name) {
-        mName = name;
-    }
-
-    public void setReady(boolean ready) {
-        this.mReady = ready;
-    }
-
-    public boolean isReady() {
-        return this.mReady;
-    }
-
-    public long getId() {
-        return this.mId;
-    }
 }

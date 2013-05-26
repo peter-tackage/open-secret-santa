@@ -329,7 +329,12 @@ public class OpenSecretSantaDB {
         String name = cursor.getString(cursor.getColumnIndex((GroupColumns.NAME_COLUMN)));
         boolean isReady = (cursor.getInt(cursor.getColumnIndex((GroupColumns.IS_READY))) == 1);
 
-        return new Group(id, name, isReady);
+        Group group = new Group();
+        group.setId(id);
+        group.setName(name);
+        group.setReady(isReady);
+
+        return group;
     }
 
 	/*
@@ -761,7 +766,13 @@ public class OpenSecretSantaDB {
         long sdate = cursor.getLong(cursor.getColumnIndex((DrawResultColumns.SEND_DATE_COLUMN)));
         String msg = cursor.getString(cursor.getColumnIndex((DrawResultColumns.MESSAGE_COLUMN)));
 
-        return new DrawResult(id, ddate, sdate, msg);
+        DrawResult dr = new DrawResult();
+        dr.setId(id);
+        dr.setDrawDate(ddate);
+        dr.setSendDate(sdate);
+        dr.setMessage(msg);
+
+        return dr;
     }
 
     public Cursor getAllDrawResultsForGroupCursor(long _groupId) {

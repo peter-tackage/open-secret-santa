@@ -3,30 +3,29 @@ package com.moac.android.opensecretsanta.types;
 import android.provider.BaseColumns;
 import com.moac.android.opensecretsanta.activity.Constants;
 
-public class DrawResultEntry implements Comparable<DrawResultEntry> {
+public class DrawResultEntry extends PersistentModel implements Comparable<DrawResultEntry> {
 
-    long id = -1;
-    String giverName;
-    String receiverName;
-    int contactMode = Constants.NAME_ONLY_CONTACT_MODE;
-    String contactDetail; // the email, the  phone number, the whatever.
-    long viewedDate = Constants.UNVIEWED_DATE;
-    long sentDate = Constants.UNSENT_DATE;
+    private String mGiverName;
+    private String mReceiverName;
+    private int mContactMode = Constants.NAME_ONLY_CONTACT_MODE;
+    private String mContactDetail; // the email, the  phone number, the whatever.
+    private long mViewedDate = Constants.UNVIEWED_DATE;
+    private long mSentDate = Constants.UNSENT_DATE;
 
     public DrawResultEntry(String _giverName, String _receiverName, int _contactMode, String _contactDetail, long _viewedDate, long _sentDate) {
-        this.giverName = _giverName;
-        this.receiverName = _receiverName;
-        this.contactDetail = _contactDetail;
-        this.contactMode = _contactMode;
-        this.viewedDate = _viewedDate;
-        this.sentDate = _sentDate;
+        mGiverName = _giverName;
+        mReceiverName = _receiverName;
+        mContactDetail = _contactDetail;
+        mContactMode = _contactMode;
+        mViewedDate = _viewedDate;
+        mSentDate = _sentDate;
     }
 
     public DrawResultEntry(String _name1, String _name2, int _contactMode, String _contactDetail) {
-        this.giverName = _name1;
-        this.receiverName = _name2;
-        this.contactDetail = _contactDetail;
-        this.contactMode = _contactMode;
+        mGiverName = _name1;
+        mReceiverName = _name2;
+        mContactDetail = _contactDetail;
+        mContactMode = _contactMode;
     }
 
     public static interface DrawResultEntryColumns extends BaseColumns {
@@ -46,68 +45,36 @@ public class DrawResultEntry implements Comparable<DrawResultEntry> {
           OTHER_MEMBER_NAME_COLUMN, CONTACT_MODE_COLUMN, CONTACT_DETAIL_COLUMN, VIEWED_DATE_COLUMN, SENT_DATE_COLUMN };
     }
 
-    public long getId() {
-        return id;
-    }
+    public String getGiverName() { return mGiverName;}
 
-    public String getGiverName() {
-        return giverName;
-    }
+    public String getReceiverName() { return mReceiverName; }
 
-    public String getReceiverName() {
-        return receiverName;
-    }
+    public long getViewedDate() { return mViewedDate; }
 
-    public long getViewedDate() {
-        return viewedDate;
-    }
+    public void setGiverName(String name) { mGiverName = name; }
 
-    public void setId(long id) {
-        this.id = id;
-    }
+    public void setReceiverName(String name) { mReceiverName = name; }
 
-    public void setGiverName(String name) {
-        this.giverName = name;
-    }
+    public int getContactMode() { return mContactMode; }
 
-    public void setReceiverName(String name) {
-        this.receiverName = name;
-    }
+    public void setContactMode(int contactMode) { mContactMode = contactMode; }
 
-    public int getContactMode() {
-        return contactMode;
-    }
+    public String getContactDetail() { return mContactDetail; }
 
-    public void setContactMode(int contactMode) {
-        this.contactMode = contactMode;
-    }
+    public void setContactDetail(String contactDetail) { mContactDetail = contactDetail; }
 
-    public String getContactDetail() {
-        return contactDetail;
-    }
-
-    public void setContactDetail(String contactDetail) {
-        this.contactDetail = contactDetail;
-    }
-
-    public void setViewedDate(long viewedDate) {
-        this.viewedDate = viewedDate;
-    }
+    public void setViewedDate(long viewedDate) { mViewedDate = viewedDate; }
 
     @Override
     public int compareTo(DrawResultEntry another) {
-        return String.CASE_INSENSITIVE_ORDER.compare(this.giverName, another.giverName);
+        return String.CASE_INSENSITIVE_ORDER.compare(this.mGiverName, another.mGiverName);
     }
 
-    public long getSentDate() {
-        return sentDate;
-    }
+    public long getSentDate() { return mSentDate; }
 
-    public void setSentDate(long _sentDate) {
-        this.sentDate = _sentDate;
-    }
+    public void setSentDate(long _sentDate) { mSentDate = _sentDate; }
 
     public boolean isSendable() {
-        return this.contactMode == Constants.EMAIL_CONTACT_MODE || this.contactMode == Constants.SMS_CONTACT_MODE;
+        return mContactMode == Constants.EMAIL_CONTACT_MODE || mContactMode == Constants.SMS_CONTACT_MODE;
     }
 }

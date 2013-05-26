@@ -3,23 +3,11 @@ package com.moac.android.opensecretsanta.types;
 import android.provider.BaseColumns;
 import com.moac.android.opensecretsanta.activity.Constants;
 
-public class DrawResult {
+public class DrawResult extends PersistentModel {
 
-    private long mId = -1;
     private long mDrawDate = Constants.UNDRAWN_DATE;
     private long mSendDate = Constants.UNSENT_DATE;
     private String mMessage = "";
-
-    public DrawResult(long _drawDate) {
-        this.mDrawDate = _drawDate;
-    }
-
-    public DrawResult(long _id, long _drawDate, long _sendDate, String _message) {
-        this.mId = _id;
-        this.mDrawDate = _drawDate;
-        this.mSendDate = _sendDate;
-        this.mMessage = _message;
-    }
 
     public static interface DrawResultColumns extends BaseColumns {
 
@@ -34,35 +22,10 @@ public class DrawResult {
         public static String[] ALL = { _ID, DRAW_DATE_COLUMN, SEND_DATE_COLUMN, MESSAGE_COLUMN, GROUP_ID_COLUMN };
     }
 
-    public long getDrawDate() {
-        return mDrawDate;
-    }
-
-    public void setDrawDate(long _drawDate) {
-        mDrawDate = _drawDate;
-    }
-
-    public long getId() {
-        return mId;
-    }
-
-    public void setId(long _id) {
-        mId = _id;
-    }
-
-    public void setSendDate(long sendDate) {
-        this.mSendDate = sendDate;
-    }
-
-    public long getSendDate() {
-        return mSendDate;
-    }
-
-    public void setMessage(String message) {
-        this.mMessage = message;
-    }
-
-    public String getMessage() {
-        return mMessage;
-    }
+    public long getDrawDate() { return mDrawDate; }
+    public void setDrawDate(long _drawDate) { mDrawDate = _drawDate; }
+    public void setSendDate(long sendDate) { mSendDate = sendDate; }
+    public long getSendDate() { return mSendDate; }
+    public void setMessage(String message) { mMessage = message; }
+    public String getMessage() { return mMessage; }
 }
