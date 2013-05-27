@@ -5,7 +5,9 @@ import android.database.SQLException;
 import android.test.AndroidTestCase;
 
 import com.moac.android.opensecretsanta.database.DatabaseManager;
+import com.moac.android.opensecretsanta.test.builders.DrawResultBuilder;
 import com.moac.android.opensecretsanta.test.builders.GroupBuilder;
+import com.moac.android.opensecretsanta.test.builders.MemberBuilder;
 import com.moac.android.opensecretsanta.types.*;
 
 import java.util.List;
@@ -35,23 +37,54 @@ public class DatabaseTests extends AndroidTestCase {
      */
 
     public void testQueryLatestDrawResultForGroup() {
+        Group group1 = new GroupBuilder().build();
+        mDatabaseManager.create(group1);
 
-        // Add a Group
-        // Add some members
-        // Add DrawResult #1
-        // Add DrawResult #2
-        // Add DrawResult #3
-        // Query and verify is #3
+        DrawResult dr1 = new DrawResultBuilder().withDrawDate(1).build();
+        DrawResult dr2 = new DrawResultBuilder().withDrawDate(2).build();
+        DrawResult dr3 = new DrawResultBuilder().withDrawDate(3).build();
+        mDatabaseManager.create(dr1);
+        mDatabaseManager.create(dr2);
+        mDatabaseManager.create(dr3);
+
+        DrawResult dr = mDatabaseManager.queryLatestDrawResultForGroup(group1.getId());
+        assertEquals(3, dr.getDrawDate());
     }
 
     public void testQueryAllRestrictionsForMemberId() {
         // Add a Group
-        // Add some Members
-        // Add restrictions to member #1
-        // Add restrictions to member #2
-        // Query verify all restrictions returned
-        // Query restrictions for member #1.  verify restrictions returned
+        Group group1 = new GroupBuilder().build();
+        mDatabaseManager.create(group1);
 
+        // Add some Members
+        Member m1 = new MemberBuilder().build();
+        Member m2 = new MemberBuilder().withName("m2").build();
+        Member m3 = new MemberBuilder().withName("m3").build();
+        Member m4 = new MemberBuilder().withName("m4").build();
+        mDatabaseManager.create(m1);
+        mDatabaseManager.create(m2);
+        mDatabaseManager.create(m3);
+        mDatabaseManager.create(m4);
+
+        // Add Restrictions
+        Restriction m1m2 = new Restriction();
+        m1m2.setMember(m1);
+        m1m2.setOtherMember(m2);
+        mDatabaseManager.create(m1m2);
+
+        Restriction m1m3 = new Restriction();
+        m1m2.setMember(m1);
+        m1m2.setOtherMember(m3);
+        mDatabaseManager.create(m1m3);
+
+        // Query
+        List<Restriction> restrictionsM1 = mDatabaseManager.queryAllRestrictionsForMemberId(m1.getId());
+
+        // Verify restrictions returned
+        assertEquals(2, restrictionsM1);
+        // Verify are correct.
+        assertTrue(restrictionsM1.contains(m1m2));
+        assertTrue(restrictionsM1.contains(m1m3));
     }
 
     public void testQueryAllDrawResultEntriesForDrawId() {
