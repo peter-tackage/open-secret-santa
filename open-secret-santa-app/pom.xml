@@ -18,6 +18,8 @@
     <environment>development</environment>
     <ormlite-core.version>4.43</ormlite-core.version>
     <ormlite-android.version>4.43</ormlite-android.version>
+    <draw-engine.version>1.2.0</draw-engine.version>
+    <apache-commons-validator.version>1.4.0</apache-commons-validator.version>
   </properties>
 
   <dependencies>
@@ -30,13 +32,13 @@
     <dependency>
       <groupId>com.moac.drawengine</groupId>
       <artifactId>draw-engine</artifactId>
-      <version>1.2.0</version>
+      <version>${draw-engine.version}</version>
     </dependency>
 
     <dependency>
       <groupId>commons-validator</groupId>
       <artifactId>commons-validator</artifactId>
-      <version>1.4.0</version>
+      <version>${apache-commons-validator.version}</version>
     </dependency>
 
     <dependency>

@@ -11,20 +11,21 @@
   <name>open-secret-santa-app - Parent</name>
 
   <properties>
-    <platform.version>2.2.1
-    </platform.version>
-    <android.sdk.path>/usr/share/android/android-sdk-linux_x86/
-    </android.sdk.path>
+    <platform.version>2.2.1</platform.version>
+    <android.sdk.path>/usr/share/android/android-sdk-linux_x86/</android.sdk.path>
+    <junit4.version>4.10</junit4.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
+
       <dependency>
         <groupId>com.google.android</groupId>
         <artifactId>android</artifactId>
         <version>${platform.version}</version>
         <scope>provided</scope>
       </dependency>
+
       <dependency>
         <groupId>com.google.android</groupId>
         <artifactId>android-test</artifactId>
@@ -35,9 +36,10 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.10</version>
+        <version>${junit4.version}</version>
         <scope>provided</scope>
       </dependency>
+
     </dependencies>
   </dependencyManagement>
 
@@ -47,7 +49,7 @@
         <plugin>
           <groupId>com.jayway.maven.plugins.android.generation2</groupId>
           <artifactId>android-maven-plugin</artifactId>
-          <version>3.4.0</version>
+          <version>3.6.0</version>
           <configuration>
             <sdk>
               <platform>8</platform>
@@ -88,33 +90,6 @@
             <alias>${sign.alias}</alias>
             <storepass>${sign.storepass}</storepass>
             <keypass>${sign.keypass}</keypass>
-          </configuration>
-        </plugin>
-        <!--This plugin's configuration is used to store Eclipse m2e settings
-  only. It has no influence on the Maven build itself. -->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>com.jayway.maven.plugins.android.generation2
-                    </groupId>
-                    <artifactId>android-maven-plugin</artifactId>
-                    <versionRange>[3.2.0,)</versionRange>
-                    <goals>
-                      <goal>manifest-update</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <execute />
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
           </configuration>
         </plugin>
       </plugins>

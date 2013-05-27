@@ -20,17 +20,21 @@
       This is overridden during the release.
     -->
     <zipaligned-classifier></zipaligned-classifier>
+    <robotium.version>3.6</robotium.version>
   </properties>
 
   <dependencies>
+
     <dependency>
       <groupId>com.google.android</groupId>
       <artifactId>android</artifactId>
     </dependency>
+
     <dependency>
       <groupId>com.google.android</groupId>
       <artifactId>android-test</artifactId>
     </dependency>
+
     <dependency>
       <groupId>com.moac.android.opensecretsanta</groupId>
       <artifactId>open-secret-santa-app</artifactId>
@@ -40,6 +44,7 @@
       <classifier>${zipaligned-classifier}</classifier>
       <!--  classifier set according to the ran profile -->
     </dependency>
+
     <dependency>
       <groupId>com.moac.android.opensecretsanta</groupId>
       <artifactId>open-secret-santa-app</artifactId>
@@ -47,15 +52,18 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
+
     <dependency>
       <groupId>com.jayway.android.robotium</groupId>
       <artifactId>robotium-solo</artifactId>
-      <version>3.6</version>
+      <version>${robotium.version}</version>
     </dependency>
+
   </dependencies>
 
   <build>
