@@ -787,12 +787,9 @@ public class MembersListActivity extends Activity {
             List<Restriction> restrictionList = mDatabase.queryAllRestrictionsForMemberId(_memberId);
             Log.v(TAG, "getRestrictionRows() - memberId: " + _memberId + " has restriction size: " + restrictionList.size());
 
-            List<Member> allMembers = mDatabase.queryAllMembersForGroup(mGroup.getId());
-            for(Member otherMember : allMembers) {
+            List<Member> otherMembers = mDatabase.queryAllMembersForGroupExcept(mGroup.getId(), _memberId);
+            for(Member otherMember : otherMembers) {
                 boolean isRestricted = false;
-
-                if(otherMember.getId() == _memberId)
-                    continue;
 
                 for(Restriction restriction : restrictionList) {
                     if(restriction.getOtherMemberId() == otherMember.getId()) {

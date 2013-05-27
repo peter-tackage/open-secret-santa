@@ -113,6 +113,17 @@ public class DatabaseManager {
         }
     }
 
+    public List<Member> queryAllMembersForGroupExcept(long groupId, long exceptMemberId) {
+        try {
+            return mDbHelper.getDaoEx(Member.class).queryBuilder()
+              .where().eq(Member.Columns.GROUP_ID_COLUMN, groupId)
+              .and().ne(Member.Columns._ID, exceptMemberId)
+              .query();
+        } catch(java.sql.SQLException e) {
+            throw new SQLException(e.getMessage());
+        }
+    }
+
     public Member queryMemberWithNameForGroup(long groupId, String name) {
         try {
             return mDbHelper.getDaoEx(Member.class).queryBuilder()
