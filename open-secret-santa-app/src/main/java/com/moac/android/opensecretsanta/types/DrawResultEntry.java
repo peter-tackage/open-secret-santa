@@ -9,6 +9,23 @@ import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 @DatabaseTable(tableName = OpenSecretSantaDB.DRAW_RESULT_ENTRIES_TABLE_NAME)
 public class DrawResultEntry extends PersistableObject implements Comparable<DrawResultEntry> {
 
+    public static interface Columns extends BaseColumns {
+
+        // For entries in that result definition.
+        public static final String DRAW_RESULT_ID_COLUMN = "DRAW_RESULT_ID";
+        public static final String MEMBER_NAME_COLUMN = "MEMBER_NAME";
+        public static final String OTHER_MEMBER_NAME_COLUMN = "OTHER_MEMBER_NAME";
+        public static final String CONTACT_MODE_COLUMN = "CONTACT_MODE";
+        public static final String CONTACT_DETAIL_COLUMN = "CONTACT_DETAIL";
+        public static final String VIEWED_DATE_COLUMN = "VIEWED_DATE";
+        public static final String SENT_DATE_COLUMN = "SENT_DATE";
+
+        public static final String DEFAULT_SORT_ORDER = MEMBER_NAME_COLUMN + " ASC";
+
+        public static String[] ALL = { _ID, DRAW_RESULT_ID_COLUMN, MEMBER_NAME_COLUMN,
+          OTHER_MEMBER_NAME_COLUMN, CONTACT_MODE_COLUMN, CONTACT_DETAIL_COLUMN, VIEWED_DATE_COLUMN, SENT_DATE_COLUMN };
+    }
+
     @DatabaseField(columnName = Columns.MEMBER_NAME_COLUMN, canBeNull = false)
     private String mGiverName;
 
@@ -30,39 +47,6 @@ public class DrawResultEntry extends PersistableObject implements Comparable<Dra
     @DatabaseField(columnName = Columns.DRAW_RESULT_ID_COLUMN, foreign = true, canBeNull = false,
       columnDefinition = "integer references draw_results (_id) on delete cascade")
     private DrawResult mDrawResult;
-
-//    public DrawResultEntry(String _giverName, String _receiverName, int _contactMode, String _contactDetail, long _viewedDate, long _sentDate) {
-//        mGiverName = _giverName;
-//        mReceiverName = _receiverName;
-//        mContactDetail = _contactDetail;
-//        mContactMode = _contactMode;
-//        mViewedDate = _viewedDate;
-//        mSentDate = _sentDate;
-//    }
-//
-//    public DrawResultEntry(String _name1, String _name2, int _contactMode, String _contactDetail) {
-//        mGiverName = _name1;
-//        mReceiverName = _name2;
-//        mContactDetail = _contactDetail;
-//        mContactMode = _contactMode;
-//    }
-
-    public static interface Columns extends BaseColumns {
-
-        // For entries in that result definition.
-        public static final String DRAW_RESULT_ID_COLUMN = "DRAW_RESULT_ID";
-        public static final String MEMBER_NAME_COLUMN = "MEMBER_NAME";
-        public static final String OTHER_MEMBER_NAME_COLUMN = "OTHER_MEMBER_NAME";
-        public static final String CONTACT_MODE_COLUMN = "CONTACT_MODE";
-        public static final String CONTACT_DETAIL_COLUMN = "CONTACT_DETAIL";
-        public static final String VIEWED_DATE_COLUMN = "VIEWED_DATE";
-        public static final String SENT_DATE_COLUMN = "SENT_DATE";
-
-        public static final String DEFAULT_SORT_ORDER = MEMBER_NAME_COLUMN + " ASC";
-
-        public static String[] ALL = { _ID, DRAW_RESULT_ID_COLUMN, MEMBER_NAME_COLUMN,
-          OTHER_MEMBER_NAME_COLUMN, CONTACT_MODE_COLUMN, CONTACT_DETAIL_COLUMN, VIEWED_DATE_COLUMN, SENT_DATE_COLUMN };
-    }
 
     public String getGiverName() { return mGiverName;}
 
