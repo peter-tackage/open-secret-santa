@@ -7,6 +7,7 @@ import java.util.Date;
 
 public class DrawResultBuilder {
 
+    @SuppressWarnings("deprecation")
     private long drawDate = Date.parse("1 August, 2011");
     private long sendDate = Constants.UNSENT_DATE;
     private String msg = "A simple test message.";

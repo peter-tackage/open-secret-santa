@@ -4,9 +4,8 @@ import android.provider.BaseColumns;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.moac.android.opensecretsanta.activity.Constants;
-import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 
-@DatabaseTable(tableName = OpenSecretSantaDB.DRAW_RESULT_ENTRIES_TABLE_NAME)
+@DatabaseTable(tableName = "draw_result_entries")
 public class DrawResultEntry extends PersistableObject implements Comparable<DrawResultEntry> {
 
     public static interface Columns extends BaseColumns {

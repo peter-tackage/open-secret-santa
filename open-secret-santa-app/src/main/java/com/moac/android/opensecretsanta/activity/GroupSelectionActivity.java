@@ -22,7 +22,6 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 import com.moac.android.opensecretsanta.types.DrawResult;
 import com.moac.android.opensecretsanta.types.Group;
 import com.moac.android.opensecretsanta.types.PersistableObject;

@@ -6,7 +6,6 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.moac.android.opensecretsanta.activity.Constants;
-import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 
 @DatabaseTable(tableName = Member.TABLE_NAME)
 public final class Member extends PersistableObject {

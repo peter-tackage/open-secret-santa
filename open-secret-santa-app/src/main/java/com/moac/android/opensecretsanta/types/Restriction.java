@@ -3,9 +3,8 @@ package com.moac.android.opensecretsanta.types;
 import android.provider.BaseColumns;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
-import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 
-@DatabaseTable(tableName = OpenSecretSantaDB.RESTRICTIONS_TABLE_NAME)
+@DatabaseTable(tableName = "restrictions")
 public class Restriction extends PersistableObject {
 
     public static interface Columns extends BaseColumns {

@@ -5,9 +5,8 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.moac.android.opensecretsanta.activity.Constants;
-import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 
-@DatabaseTable(tableName = OpenSecretSantaDB.DRAW_RESULTS_TABLE_NAME)
+@DatabaseTable(tableName = "draw_results")
 public class DrawResult extends PersistableObject {
 
     @DatabaseField(columnName = Columns.DRAW_DATE_COLUMN)

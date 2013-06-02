@@ -3,7 +3,6 @@ package com.moac.android.opensecretsanta;
 import android.app.Application;
 import com.moac.android.opensecretsanta.database.DatabaseHelper;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 
 public class OpenSecretSantaApplication extends Application {
 

@@ -4,9 +4,8 @@ import android.provider.BaseColumns;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
-import com.moac.android.opensecretsanta.database.OpenSecretSantaDB;
 
-@DatabaseTable(tableName = OpenSecretSantaDB.GROUPS_TABLE_NAME)
+@DatabaseTable(tableName = "groups")
 public class Group extends PersistableObject {
 
     // GROUP TABLE COLUMNS
