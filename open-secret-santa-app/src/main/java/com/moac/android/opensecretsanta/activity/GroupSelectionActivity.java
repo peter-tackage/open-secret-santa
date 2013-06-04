@@ -138,7 +138,6 @@ public class GroupSelectionActivity extends Activity {
         // Set an EditText view to get user input
         final EditText input = new EditText(this);
         input.setSingleLine();
-        input.setBackgroundResource(R.drawable.green_edit_text);
         input.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         input.setText(_selectedItem.groupName);
         // TODO Make constant - See new_group_view.xml

@@ -157,17 +157,6 @@ public class AssignmentViewerActivity extends Activity {
 
             @Override
             protected void onPostExecute(DrawResultDetails drDetails) {
-
-//				// Set the date to either the send date or the draw date
-//				final long drawDate = drDetails.dr.getDrawDate();
-//				final long sendDate = drDetails.dr.getSendDate();
-//				boolean useSend = (sendDate >= drawDate);
-//				Date sentDateObj = new Date(
-//						(useSend) ? sendDate : drawDate);
-//				final SimpleDateFormat sdf = new SimpleDateFormat("h:mm a EEE, d MMM yyyy");
-//				String dateString = sdf.format(sentDateObj);
-//				mDateTextView.setText((useSend ? "Shared: " : "Drawn: ") + dateString);
-
                 // Set this here - NOT in the background thread, otherwise might corrupt listadapter.
                 items = drDetails.dres;
                 aa.clear();

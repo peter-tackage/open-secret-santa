@@ -822,7 +822,7 @@ public class MembersListActivity extends Activity {
 
                     builder.setAdapter(new RestrictionListAdapter(MembersListActivity.this, R.layout.member_restriction_row, items, mRestrictClickListener), null);
                     builder.setCancelable(true);
-                    builder.setPositiveButton("Apply", mRestrictOkClickListener);
+                    builder.setPositiveButton("Ok", mRestrictOkClickListener);
                     builder.setIcon(R.drawable.ic_present_restricted);
 
                     AlertDialog alert = builder.create();

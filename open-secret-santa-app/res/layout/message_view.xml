@@ -18,7 +18,6 @@
     android:layout_width="match_parent"
     android:scrollbars="vertical"
     android:inputType="textMultiLine|textLongMessage|textCapSentences"
-    android:background="@drawable/green_edit_text"
     android:maxLength="500"></EditText>
 
   <LinearLayout

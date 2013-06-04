@@ -24,16 +24,16 @@
 
     <EditText
       android:hint="@string/newGroupHint"
-      android:background="@drawable/green_edit_text"
+      android:background="@color/white"
       android:inputType="text|textNoSuggestions|textCapWords"
-      android:layout_height="wrap_content"
-      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:layout_width="match_parent"
       android:maxLength="25"
       android:layout_weight="1.0"
       android:id="@+id/txtGroupName"
       android:textColor="@color/dark_grey"
       android:gravity="center_vertical"
-      android:paddingRight="0dp"></EditText>
+      android:paddingRight="0dp" />
 
     <ImageView
       android:layout_gravity="center_vertical|left"
@@ -43,7 +43,7 @@
       android:layout_weight="0.0"
       android:paddingRight="20dp"
       android:src="@drawable/ic_next"
-      android:paddingLeft="5dp"></ImageView>
+      android:paddingLeft="5dp"/>
   </LinearLayout>
 
   <ViewSwitcher

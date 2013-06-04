@@ -170,7 +170,6 @@ public class AssignmentSharerActivity extends Activity {
             // Hmmm that failed. If we're not using the default name, then try that instead
             if(!classname.equals(defaultName)) {
                 Log.i(TAG, "Failed to initialise draw engine class: " + classname);
-
                 // Try to set the default then.
                 try {
                     mDrawEngineProv.setDrawEngine(defaultName);
@@ -237,7 +236,6 @@ public class AssignmentSharerActivity extends Activity {
     }
 
     private void initialiseViewContent() {
-
         // If group is not ready, then switch to the error screen.
         executeDrawIfRequired();
     }
@@ -264,10 +262,9 @@ public class AssignmentSharerActivity extends Activity {
                 mDrawResult = mDatabase.queryLatestDrawResultForGroup(mGroup.getId());
 
                 // Having a latest draw is not good enough - it might not
-                // reflect the current structure of the good.
+                // reflect the current structure of the Group.
                 Log.v(TAG, "executeDrawIfRequired() - isReady: " + mGroup.isReady());
                 // If there's no draw or the group is not ready to share
-                // PersistableObject.UNSET_ID is no valid row.
                 return (mDrawResult == null || !mGroup.isReady());
             }
 
@@ -286,10 +283,10 @@ public class AssignmentSharerActivity extends Activity {
     }
 
     private class DrawStatus {
-        String msg;
-        boolean successful;
+        private String msg = "";
+        private boolean successful;
 
-        DrawStatus(boolean successful, String msg) {
+        public DrawStatus(boolean successful, String msg) {
             this.successful = successful;
             this.msg = msg;
         }
@@ -307,7 +304,6 @@ public class AssignmentSharerActivity extends Activity {
 
             @Override
             protected void onPreExecute() {
-
                 dialog = ProgressDialog.show(AssignmentSharerActivity.this, "",
                   "Drawing assignments. Please wait...", true);
             }
@@ -331,7 +327,7 @@ public class AssignmentSharerActivity extends Activity {
 
                     long before = System.currentTimeMillis();
                     // Let's get some database values
-                    List<Member> members = mDatabase.queryAll(Member.class);
+                    List<Member> members = mDatabase.queryAllMembersForGroup(mGroup.getId());
                     Log.v(TAG, "performDraw() - Group: " + mGroup.getId() + " has member count: " + members.size());
                     Map<Long, Set<Long>> participants = new HashMap<Long, Set<Long>>();
 
@@ -367,7 +363,9 @@ public class AssignmentSharerActivity extends Activity {
                         mGroup.setReady(true);
                         mDatabase.update(mGroup);
 
+                        // Return the successful result indication.
                         return new DrawStatus(true, mStatusMsg);
+
                     } catch(DrawFailureException e) {
                         // Not necessarily an error. But log it - in just it is.
                         Log.w(TAG, "Couldn't produce assignments", e);
@@ -392,13 +390,12 @@ public class AssignmentSharerActivity extends Activity {
 
                 // This happens in the GUI thread - so these operations are safe.
                 if(status.successful) {
-
                     // So populate the assignment list with the values (done in background).
                     populateAssignmentsList(true);
                 } else {
                     // No assignments; so switch to the error panel.
                     mSwitcher.setDisplayedChild(0);
-                    if(status.msg.length() > 0) {
+                    if(status.msg != null && !status.msg.isEmpty()) {
                         Toast.makeText(getBaseContext(), status.msg, Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -492,18 +489,7 @@ public class AssignmentSharerActivity extends Activity {
                 if(success) {
                     items = drDetails.dres;
 
-                    // Set the date to either the send date or the draw date
-                    //					final long drawDate = drDetails.dr.getDrawDate();
-                    //					final long sendDate = drDetails.dr.getSendDate();
-                    //					boolean useSend = (sendDate >= drawDate);
-                    //					Date sentDateObj = new Date(
-                    //							(useSend) ? sendDate : drawDate);
-                    //					final SimpleDateFormat sdf = new SimpleDateFormat("h:mm a EEE, d MMM yyyy");
-                    //					String dateString = sdf.format(sentDateObj);
-                    //					mDateTextView.setText((useSend ? "Shared: " : "Drawn: ") + dateString);
-
                     // Enable/Disable the share button if appropriate
-
                     aa.clear();
                     for(DrawResultEntry dre : drDetails.dres) {
                         aa.add(dre);
