@@ -1,6 +1,7 @@
 package com.moac.android.opensecretsanta.types;
 
 import android.util.Log;
+import com.moac.android.opensecretsanta.activity.Constants;
 
 import java.util.List;
 
@@ -60,6 +61,14 @@ public class Utilities {
     public static boolean containsSendableEntry(List<DrawResultEntry> _entries) {
         for(DrawResultEntry entry : _entries) {
             if(entry.isSendable())
+                return true;
+        }
+        return false;
+    }
+
+    public static boolean containsEmailSendableEntry(List<DrawResultEntry> _entries) {
+        for(DrawResultEntry entry : _entries) {
+            if(entry.getContactMode() == Constants.EMAIL_CONTACT_MODE)
                 return true;
         }
         return false;

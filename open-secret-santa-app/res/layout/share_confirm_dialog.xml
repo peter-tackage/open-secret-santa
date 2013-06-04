@@ -15,7 +15,6 @@
     <EditText
       android:scrollbars="vertical"
       android:gravity="top"
-      android:background="@drawable/green_edit_text"
       android:textAppearance="?android:attr/textAppearanceSmall"
       android:lines="10"
       android:id="@+id/messageTxtEditText"

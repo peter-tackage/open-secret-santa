@@ -3,7 +3,6 @@
   android:title="Open Secret Santa Preferences">
 
   <PreferenceCategory android:title="@string/algorithm_preferences">
-
     <ListPreference
       android:defaultValue="@string/defaultDrawEngine"
       android:dialogTitle="@string/dialog_title_list_preference"
@@ -12,6 +11,14 @@
       android:key="engine_preference"
       android:summary="@string/summary_list_preference"
       android:title="@string/algorithm_list_preference" />
+  </PreferenceCategory>
+
+  <PreferenceCategory android:title="@string/email_preferences">
+    <ListPreference
+      android:dialogTitle="@string/gmail_dialog_title_list_preference"
+      android:key="@string/gmail_account_preference"
+      android:summary="@string/gmail_summary_list_preference"
+      android:title="@string/gmail_account_list_preference" />
   </PreferenceCategory>
 
   <PreferenceCategory android:title="@string/sms_preferences">

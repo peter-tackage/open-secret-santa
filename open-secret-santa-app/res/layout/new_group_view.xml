@@ -58,7 +58,7 @@
       android:src="@drawable/no_groups_hint"
       android:id="@+id/noGroupsHelpImageView"
       android:layout_height="match_parent"
-      android:layout_gravity="center"></ImageView>
+      android:layout_gravity="center"/>
 
     <LinearLayout
       android:id="@+id/existingGroupsLayout"
@@ -71,7 +71,7 @@
         android:paddingTop="5dp"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:src="@drawable/existing_groups_title"></ImageView>
+        android:src="@drawable/existing_groups_title"/>
 
       <ListView
         android:layout_height="match_parent"
@@ -83,7 +83,7 @@
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         android:dividerHeight="8dp"
-        android:divider="@null"></ListView>
+        android:divider="@null" />
     </LinearLayout>
   </ViewSwitcher>
 </LinearLayout>

@@ -1,11 +1,13 @@
 package com.moac.android.opensecretsanta.activity;
 
+import android.accounts.*;
 import android.app.*;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -22,12 +24,14 @@ import android.widget.*;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
+import com.moac.android.opensecretsanta.mail.GmailOAuth2Sender;
 import com.moac.android.opensecretsanta.types.*;
 import com.moac.drawengine.DrawEngine;
 import com.moac.drawengine.DrawEngineProvider;
 import com.moac.drawengine.DrawFailureException;
 import com.moac.drawengine.InvalidDrawEngineException;
 
+import java.io.IOException;
 import java.util.*;
 
 //import android.content.BroadcastReceiver;
@@ -54,18 +58,19 @@ public class AssignmentSharerActivity extends Activity {
     private List<DrawResultEntry> items;
     private ArrayAdapter<DrawResultEntry> aa;
     ListView mList;
-    TextView mDateTextView;
 
     ImageView mShareButton;
     ImageView mRedrawButton;
 
     AlertDialog mViewerDialog;
     ProgressDialog mProgressDialog;
-    AlertDialog mShareConfirmDialog;
 
     ViewSwitcher mSwitcher;
 
     boolean mSendMultipartSMS;
+
+    Account mAccount = null;
+    String mToken = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -190,7 +195,7 @@ public class AssignmentSharerActivity extends Activity {
         super.onResume();
         Log.v(TAG, "onResume() - start");
         Log.v(TAG, "onResume() mGroupId: " + mGroup.getId());
-        Log.v(TAG, "onResume() mResultId: " + mDrawResult.getId());
+        Log.v(TAG, "onResume() mResultId: " + (mDrawResult == null ? "null" : mDrawResult.getId()));
         initialiseViewContent();
         Log.v(TAG, "onResume() - end");
     }
@@ -260,7 +265,7 @@ public class AssignmentSharerActivity extends Activity {
 
                 // Having a latest draw is not good enough - it might not
                 // reflect the current structure of the good.
-                Log.v(TAG, "executeDrawIfRequired() - isReady: " + mGroup.isReady() + " and mResultId: " + mDrawResult.getId());
+                Log.v(TAG, "executeDrawIfRequired() - isReady: " + mGroup.isReady());
                 // If there's no draw or the group is not ready to share
                 // PersistableObject.UNSET_ID is no valid row.
                 return (mDrawResult == null || !mGroup.isReady());
@@ -334,7 +339,7 @@ public class AssignmentSharerActivity extends Activity {
 
                         List<Restriction> restrictions = mDatabase.queryAllRestrictionsForMemberId(m.getId());
                         Set<Long> restrictionIds = new HashSet<Long>();
-                        for (Restriction r: restrictions) {
+                        for(Restriction r : restrictions) {
                             restrictionIds.add(r.getOtherMemberId());
                         }
 
@@ -429,7 +434,7 @@ public class AssignmentSharerActivity extends Activity {
             String name2 = mDatabase.queryById(_assignments.get(m1Id), Member.class).getName();
             Log.v(TAG, "saveDrawResult() - saving dre: " + m1.getName() + " - " + name2 + " with: " + m1.getContactMode() + " " + m1.getContactDetail());
 
-            DrawResultEntry dre =  new DrawResultEntry();
+            DrawResultEntry dre = new DrawResultEntry();
             dre.setGiverName(m1.getName());
             dre.setReceiverName(name2);
             dre.setContactMode(m1.getContactMode());
@@ -466,13 +471,13 @@ public class AssignmentSharerActivity extends Activity {
                 if(mDrawResult == null)
                     return null;
 
-                    // Populate
-                    drDetails = new DrawResultDetails();
-                    drDetails.dr = mDrawResult;
-                    drDetails.dres = mDatabase.queryAllDrawResultEntriesForDrawId(mDrawResult.getId());
-                    Collections.sort(drDetails.dres);
+                // Populate
+                drDetails = new DrawResultDetails();
+                drDetails.dr = mDrawResult;
+                drDetails.dres = mDatabase.queryAllDrawResultEntriesForDrawId(mDrawResult.getId());
+                Collections.sort(drDetails.dres);
 
-                    Log.v(TAG, "populateAssignmentsList() - row count: " + drDetails.dres.size());
+                Log.v(TAG, "populateAssignmentsList() - row count: " + drDetails.dres.size());
 
                 return drDetails;
             }
@@ -619,12 +624,12 @@ public class AssignmentSharerActivity extends Activity {
         return messages.size();
     }
 
-    private void sendEmail(String to, String txt, String subject) throws Exception {
+    private void sendEmail(String to, String body, String subject, String from, String token) throws Exception {
 
         Log.v(TAG, "sendEmail(): to: " + to);
-
-        RuntimeException stubEx = new RuntimeException("STUB!");
-        throw stubEx;
+        GmailOAuth2Sender sender = new GmailOAuth2Sender();
+        sender.sendMail(subject, body, from,
+          token, to);
     }
 
     @Override
@@ -639,74 +644,97 @@ public class AssignmentSharerActivity extends Activity {
 
     private void openShareDialog() {
 
-        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+        AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
 
             @Override
-            protected void onPostExecute(Void result) {
+            protected void onPostExecute(Boolean isAuth) {
 
-                String message = mDrawResult.getMessage();
+                if(!isAuth) {
+                    // Sorry - got
+                    // Take the values and populate the dialog
+                    AlertDialog.Builder builder = new AlertDialog.Builder(AssignmentSharerActivity.this);
+                    builder.setTitle("No Gmail Account Found");
+                    builder.setMessage("Please check that your phone has a Gmail account configured");
+                    AlertDialog alert = builder.create();
+                    alert.setOwnerActivity(AssignmentSharerActivity.this);
+                    alert.show();
+                } else {
 
-                Log.v(TAG, "openShareDialog() existing msg: " + message);
+                    String message = mDrawResult.getMessage();
 
-                // Take the values and populate the dialog
-                AlertDialog.Builder builder = new AlertDialog.Builder(AssignmentSharerActivity.this);
-                builder.setTitle("Notify Group");
-                builder.setIcon(R.drawable.ic_mailbox);
+                    Log.v(TAG, "openShareDialog() existing msg: " + message);
 
-                // Create the layout - add the callback to update the length.
-                LinearLayout dialogContents = new LinearLayout(AssignmentSharerActivity.this);
-                String inflator = Context.LAYOUT_INFLATER_SERVICE;
-                LayoutInflater vi = (LayoutInflater) AssignmentSharerActivity.this.getSystemService(inflator);
-                vi.inflate(R.layout.message_view, dialogContents, true);
-                builder.setView(dialogContents);
+                    // Take the values and populate the dialog
+                    AlertDialog.Builder builder = new AlertDialog.Builder(AssignmentSharerActivity.this);
+                    builder.setTitle("Notify Group");
+                    builder.setIcon(R.drawable.ic_mailbox);
 
-                // Add the callback to the field
-                final EditText msgField = (EditText) dialogContents.findViewById(R.id.messageTxtEditText);
-                msgField.setInputType(msgField.getInputType() | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-                msgField.setText(message);
+                    // Create the layout - add the callback to update the length.
+                    LinearLayout dialogContents = new LinearLayout(AssignmentSharerActivity.this);
+                    String inflator = Context.LAYOUT_INFLATER_SERVICE;
+                    LayoutInflater vi = (LayoutInflater) AssignmentSharerActivity.this.getSystemService(inflator);
+                    vi.inflate(R.layout.message_view, dialogContents, true);
+                    builder.setView(dialogContents);
 
-                final TextView charCountView = (TextView) dialogContents.findViewById(R.id.msg_char_count);
-                charCountView.setText(String.valueOf(msgField.length()));
+                    // Add the callback to the field
+                    final EditText msgField = (EditText) dialogContents.findViewById(R.id.messageTxtEditText);
+                    msgField.setInputType(msgField.getInputType() | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+                    msgField.setText(message);
 
-                Log.v(TAG, "openShareDialog() msgField: " + msgField);
-                Log.v(TAG, "openShareDialog() charCountView: " + charCountView);
+                    final TextView charCountView = (TextView) dialogContents.findViewById(R.id.msg_char_count);
+                    charCountView.setText(String.valueOf(msgField.length()));
 
-                msgField.addTextChangedListener(new TextWatcher() {
+                    Log.v(TAG, "openShareDialog() msgField: " + msgField);
+                    Log.v(TAG, "openShareDialog() charCountView: " + charCountView);
 
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    }
+                    msgField.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count,
-                                                  int after) {
-                    }
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        // Update the reported character length
-                        charCountView.setText(String.valueOf(s.length()));
-                    }
-                });
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            // Update the reported character length
+                            charCountView.setText(String.valueOf(s.length()));
+                        }
+                    });
 
-                builder.setIcon(android.R.drawable.ic_dialog_email);
-                builder.setCancelable(true);
-                builder.setNegativeButton("Cancel", null);
-                builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        shareAllAssignments(msgField.getText().toString());
-                    }
-                });
-                AlertDialog alert = builder.create();
-                alert.setOwnerActivity(AssignmentSharerActivity.this);
-                alert.show();
+                    builder.setIcon(android.R.drawable.ic_dialog_email);
+                    builder.setCancelable(true);
+                    builder.setNegativeButton("Cancel", null);
+                    builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            shareAllAssignments(msgField.getText().toString());
+                            dialog.dismiss();
+                        }
+                    });
+                    AlertDialog alert = builder.create();
+                    alert.setOwnerActivity(AssignmentSharerActivity.this);
+                    alert.show();
+                }
             }
 
             @Override
-            protected Void doInBackground(Void... voids) {
-                // TODO Not use now.
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            protected Boolean doInBackground(Void... voids) {
+                boolean authRequired = Utilities.containsEmailSendableEntry(mDatabase.queryAllDrawResultEntriesForDrawId(mDrawResult.getId()));
+                // Reset.
+                mToken = null;
+                mAccount = null;
+                if(authRequired) {
+                    try {
+                        mAccount = ((OpenSecretSantaApplication) getApplication()).getAvailableGmailAccount();
+                        // Now let's get the token
+                        AccountManagerFuture<Bundle> authTokenBundle = AccountManager.get(AssignmentSharerActivity.this).
+                          getAuthToken(mAccount, Constants.GMAIL_TOKEN_TYPE, null, true, null, null);
+                        mToken = authTokenBundle.getResult().getString(AccountManager.KEY_AUTHTOKEN);
+                    } catch(Exception e) {
+                        Log.e(TAG, "openShareDialog() - Exception when obtaining authToken", e);
+                    }
+                }
+                return authRequired ? mToken != null : true;
             }
         };
 
@@ -740,7 +768,6 @@ public class AssignmentSharerActivity extends Activity {
                 // - Email
                 // - SMS
 
-                // TODO Possibly validate before sending anything.
                 // Is better to prevent failures, than to send out some SMSs
                 // then fail on one... much confusion would result.
                 List<DrawResultEntry> drawEntries = mDatabase.queryAllDrawResultEntriesForDrawId(mDrawResult.getId());
@@ -758,8 +785,7 @@ public class AssignmentSharerActivity extends Activity {
 
                             // Email-ru
                             sendEmail(entry.getContactDetail(),
-                              Utilities.buildPersonalisedMsg(msg, entry.getGiverName(), entry.getReceiverName()),
-                              "Your Secret Santa assignment");
+                              Utilities.buildPersonalisedMsg(msg, entry.getGiverName(), entry.getReceiverName()), "Your Secret Santa assignment", mAccount.name, mToken);
                         } else if(entry.getContactMode() == Constants.SMS_CONTACT_MODE) {
                             Log.v(TAG, "shareAllAssignments() - SMS entry");
 

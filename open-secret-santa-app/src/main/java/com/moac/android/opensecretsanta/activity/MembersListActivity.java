@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -224,7 +225,7 @@ public class MembersListActivity extends Activity {
         // Set an EditText view to get user input
         final EditText input = new EditText(this);
         input.setSingleLine();
-        input.setBackgroundResource(R.drawable.green_edit_text);
+        input.setSingleLine();
         input.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         builder.setView(input);
 
@@ -239,7 +240,8 @@ public class MembersListActivity extends Activity {
                     member.setName(memberName);
                     member.setContactMode(Constants.NAME_ONLY_CONTACT_MODE);
                     member.setGroup(mGroup);
-                    createOrUpdateMember(member);
+                    mDatabase.create(member);
+                    populateMembersList();
                 }
                 dialog.dismiss();
             }
@@ -267,12 +269,10 @@ public class MembersListActivity extends Activity {
         // Set an EditText view to get user input
         final EditText input = new EditText(this);
         input.setSingleLine();
-        input.setBackgroundResource(R.drawable.green_edit_text);
         input.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         input.setText(_selectedItem.memberName);
 
         builder.setView(input);
-
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int whichButton) {
@@ -304,46 +304,6 @@ public class MembersListActivity extends Activity {
         AlertDialog alert = builder.create();
         //display dialog box
         alert.show();
-    }
-
-    private void createOrUpdateMember(final Member member) {
-
-        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-
-            @Override
-            protected Void doInBackground(Void... params) {
-
-                Member existing = mDatabase.queryMemberWithNameForGroup(mGroup.getId(), member.getName());
-                if(existing == null) {
-                    // this entry doesn't exist so we can insert
-                    Log.v(TAG, "createOrUpdateMember() - inserting");
-                    mDatabase.create(member);
-
-                    mGroup.setReady(false);
-                    mDatabase.update(mGroup);
-                } else {
-                    Log.v(TAG, "createOrUpdateMember() - exists");
-                    // Don't update if already the same.
-                    if(!existing.equals(member)) {
-                        Log.v(TAG, "createOrUpdateMember() - update");
-                        mDatabase.update(member);
-
-                        mGroup.setReady(false);
-                        mDatabase.update(mGroup);
-                    }
-                    // Important: Don't set not Ready unnecessarily.
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void v) {
-                // Kick off another task.
-                populateMembersList();
-            }
-        };
-
-        task.execute();
     }
 
     private void updateMemberName(final long _memberId, final String _memberName) {
@@ -532,10 +492,10 @@ public class MembersListActivity extends Activity {
         }
 
         @Override
-        protected void onPostExecute(RetrievedContactDetails result) {
+        protected void onPostExecute(RetrievedContactDetails contact) {
             Log.v(TAG, "loadContactInfo() - onPostExecute() ");
 
-            if(result.name == null || result.name.trim().equals("")) {
+            if(contact.name == null || contact.name.trim().equals("")) {
                 Toast.makeText(MembersListActivity.this,
                   "Can't add a contact without a name.", Toast.LENGTH_SHORT).show();
                 return;
@@ -547,18 +507,18 @@ public class MembersListActivity extends Activity {
 			 */
 
             // See if we could retrieve anything
-            if(result.contacts.size() == 0) {
+            if(contact.contacts.size() == 0) {
                 Toast.makeText(MembersListActivity.this,
                   "There's no contact details available for this person.", Toast.LENGTH_SHORT).show();
 
                 // Clear the lookupKey so this doesn't happen again.
-                result.lookupKey = null;
+                contact.lookupKey = null;
             }
 
             // Add a manual entry option
-            result.contacts.add(new ContactModeRowDetails(Constants.NAME_ONLY_CONTACT_MODE, null));
+            contact.contacts.add(new ContactModeRowDetails(Constants.NAME_ONLY_CONTACT_MODE, null));
 
-            showContactModeDialog(result, mNameOverride);
+            showContactModeDialog(contact, mNameOverride);
         }
     }
 
@@ -690,12 +650,12 @@ public class MembersListActivity extends Activity {
     /*
      * Name override is for when the same contact is added to the list multiple times. but the name is modified.
      */
-    private void showContactModeDialog(final RetrievedContactDetails contact, String nameOverride) {
+    private void showContactModeDialog(final RetrievedContactDetails contact, String memberName) {
         Log.v(TAG, "showContactModeDialog()");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(MembersListActivity.this);
 
-        final String nameToUse = (nameOverride == null ? contact.name : nameOverride);
+        final String nameToUse = (memberName == null ? contact.name : memberName);
         builder.setTitle("How to notify " + nameToUse + "?");
         builder.setIcon(R.drawable.portfolio);
 
@@ -707,16 +667,47 @@ public class MembersListActivity extends Activity {
               @Override
               public void onClick(DialogInterface dialog, int item) {
 
-                  Member member = new Member();
-                  member.setLookupKey(contact.lookupKey);
-                  member.setName(nameToUse);
+                  Member member = mDatabase.queryMemberWithNameForGroup(mGroup.getId(), nameToUse);
+                  if (member == null) {
+                      // Doesn't exist - create new
+                      member = new Member();
+                      member.setGroup(mGroup);
+                      member.setName(nameToUse);
+                      member.setLookupKey(contact.lookupKey);
+                      member.setContactMode(contactList.get(item).contactMode);
+                      member.setContactDetail(contactList.get(item).contactDetail);
+                      mDatabase.create(member);
+                      mGroup.setReady(false);
+                      mDatabase.update(mGroup);
+                  } else if (contact != null) { // can't modify contact mode anything when no contact!
+                      // Check if they actually updated anything... don't make it redraw unnecessarily.
+                      boolean isDirty = false;
+                      boolean isKeyDirty = member.getLookupKey() == null ? member.getLookupKey() != contact.lookupKey : !member.getLookupKey().equals(contact.lookupKey);
+                      boolean isContactDetailDirty = member.getContactDetail() == null ? member.getContactDetail() != contactList.get(item).contactDetail
+                         : !member.getContactDetail().equals(contactList.get(item).contactDetail);
 
-                  member.setContactMode(contactList.get(item).contactMode);
-                  member.setContactDetail(contactList.get(item).contactDetail);
-                  member.setGroup(mGroup);
+                      // Check if there are actually updates
+                      if (isKeyDirty) {
+                          member.setLookupKey(contact.lookupKey);
+                          isDirty = true;
+                      }
+                      if (member.getContactMode() != (contactList.get(item).contactMode)) {
+                          member.setContactMode(contactList.get(item).contactMode);
+                          isDirty = true;
+                      }
 
-                  // Add or update.
-                  createOrUpdateMember(member);
+                      if (isContactDetailDirty) {
+                          member.setContactDetail(contactList.get(item).contactDetail);
+                          isDirty = true;
+                      }
+                      if (isDirty) {
+                          mDatabase.update(member);
+                          mGroup.setReady(false);
+                          mDatabase.update(mGroup);
+                      }
+                  };
+
+                  populateMembersList();
 
                   dialog.dismiss();
               }

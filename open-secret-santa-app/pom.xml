@@ -53,6 +53,24 @@
       <version>${ormlite-core.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>javamail-android</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javamail-android</groupId>
+      <artifactId>additionnal</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javamail-android</groupId>
+      <artifactId>activation</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+
   </dependencies>
 
   <build>
