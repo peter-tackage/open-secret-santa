@@ -120,7 +120,7 @@ public class MembersListActivity extends Activity {
                 builder.setTitle("Delete " + tag.memberName + " from the group?")
                   .setNegativeButton("Cancel", null)
                   .setCancelable(true)
-                  .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                  .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                       @Override
                       public void onClick(DialogInterface dialog, int id) {
                           // The view is the button, which has as tag the memberId
@@ -229,7 +229,7 @@ public class MembersListActivity extends Activity {
         input.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         builder.setView(input);
 
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int whichButton) {
                 String memberName = input.getText().toString().trim();
@@ -273,7 +273,7 @@ public class MembersListActivity extends Activity {
         input.setText(_selectedItem.memberName);
 
         builder.setView(input);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int whichButton) {
 
@@ -822,7 +822,7 @@ public class MembersListActivity extends Activity {
 
                     builder.setAdapter(new RestrictionListAdapter(MembersListActivity.this, R.layout.member_restriction_row, items, mRestrictClickListener), null);
                     builder.setCancelable(true);
-                    builder.setPositiveButton("Ok", mRestrictOkClickListener);
+                    builder.setPositiveButton("OK", mRestrictOkClickListener);
                     builder.setIcon(R.drawable.ic_present_restricted);
 
                     AlertDialog alert = builder.create();

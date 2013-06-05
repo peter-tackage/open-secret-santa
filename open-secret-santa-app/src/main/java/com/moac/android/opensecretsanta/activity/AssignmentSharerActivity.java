@@ -222,7 +222,7 @@ public class AssignmentSharerActivity extends Activity {
                   .setIcon(R.drawable.ic_santa)
                   .setNegativeButton("Cancel", null)
                   .setCancelable(true)
-                  .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                  .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                       @Override
                       public void onClick(DialogInterface dialog, int id) {
                           executeDraw();
@@ -641,6 +641,7 @@ public class AssignmentSharerActivity extends Activity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(AssignmentSharerActivity.this);
                     builder.setTitle("No Gmail Account Found");
                     builder.setMessage("Please check that your phone has a Gmail account configured");
+                    builder.setPositiveButton("OK", null);
                     AlertDialog alert = builder.create();
                     alert.setOwnerActivity(AssignmentSharerActivity.this);
                     alert.show();
@@ -826,7 +827,7 @@ public class AssignmentSharerActivity extends Activity {
                     builder.setIcon(android.R.drawable.ic_dialog_alert);
                     builder.setMessage(Utilities.buildSharedErrorMessage(_result.failedMembers))
                       .setCancelable(false)
-                      .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                      .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                           @Override
                           public void onClick(DialogInterface dialog, int id) {
                               dialog.cancel();

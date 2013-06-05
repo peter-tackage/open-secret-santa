@@ -146,7 +146,7 @@ public class GroupSelectionActivity extends Activity {
 
         builder.setView(input);
 
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int whichButton) {
                 String groupName = input.getText().toString().trim();
@@ -329,7 +329,7 @@ public class GroupSelectionActivity extends Activity {
               .setIcon(R.drawable.ic_menu_delete)
               .setNegativeButton("Cancel", null)
               .setCancelable(true)
-              .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+              .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                   @Override
                   public void onClick(DialogInterface dialog, int id) {
                       // The view is the button, which has as tag the memberId
