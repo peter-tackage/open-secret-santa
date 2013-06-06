@@ -395,7 +395,7 @@ public class AssignmentSharerActivity extends Activity {
                 } else {
                     // No assignments; so switch to the error panel.
                     mSwitcher.setDisplayedChild(0);
-                    if(status.msg != null && !status.msg.isEmpty()) {
+                    if(status.msg != null && !(status.msg.length() > 0)) {
                         Toast.makeText(getBaseContext(), status.msg, Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -715,7 +715,7 @@ public class AssignmentSharerActivity extends Activity {
                         mAccount = ((OpenSecretSantaApplication) getApplication()).getAvailableGmailAccount();
                         if(mAccount != null) {// Now let's get the token
                             AccountManagerFuture<Bundle> authTokenBundle = AccountManager.get(AssignmentSharerActivity.this).
-                              getAuthToken(mAccount, Constants.GMAIL_TOKEN_TYPE, null, true, null, null);
+                              getAuthToken(mAccount, Constants.GMAIL_TOKEN_TYPE, null, null, null, null);
                             mToken = authTokenBundle.getResult().getString(AccountManager.KEY_AUTHTOKEN);
                         }
                     } catch(Exception e) {

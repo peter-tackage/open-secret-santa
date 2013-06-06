@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -28,7 +27,6 @@ import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.types.Group;
 import com.moac.android.opensecretsanta.types.Member;
-import com.moac.android.opensecretsanta.types.Member.Columns;
 import com.moac.android.opensecretsanta.types.Restriction;
 
 import java.util.*;
