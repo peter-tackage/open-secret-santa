@@ -34,22 +34,29 @@ public class OpenSecretSantaApplication extends Application {
     }
 
     public Account getAvailableGmailAccount() {
+        Log.i(TAG, "getAvailableGmailAccount() - start");
         Account result = null;
         // Use the one in the preferences, otherwise just pick the first one.
         String emailPrefKey =  getString(R.string.gmail_account_preference);
         String emailAddress = PreferenceManager.getDefaultSharedPreferences(this).getString(emailPrefKey, null);
 
-            AccountManagerFuture<Account[]> accountsFuture =
+        Log.v(TAG, "getAvailableGmailAccount() - current Gmail Account preference: " + emailAddress);
+
+        AccountManagerFuture<Account[]> accountsFuture =
               AccountManager.get(this).getAccountsByTypeAndFeatures(Constants.ACCOUNT_TYPE_GOOGLE, Constants.FEATURES_MAIL, null, null);
             try {
                 Account[] accounts = accountsFuture.getResult();
                 if(accounts != null && accounts.length > 0) {
-                   if (emailAddress == null) {
-                       // Set into preferences for next time.
-                       PreferenceManager.getDefaultSharedPreferences(this).getString(emailPrefKey, accounts[0].name);
+                    Log.v(TAG, "getAvailableGmailAccount() - found some Gmail Accounts, size: " + accounts.length);
+                    if (emailAddress == null) {
+                        Log.v(TAG, "getAvailableGmailAccount() - no preference, so use first Gmail account.");
+                        //String token = AccountManager.get(this).peekAuthToken();
+                        // Set into preferences for next time.
+                       PreferenceManager.getDefaultSharedPreferences(this).edit().putString(emailPrefKey, accounts[0].name).commit();
                        return accounts[0];
                    } else {
-                       // Find matching account
+                        Log.v(TAG, "getAvailableGmailAccount() - found Gmail preference: " + emailAddress);
+                        // Find matching account
                        for (int i=0; i < accounts.length; i++) {
                            Account acc = accounts[i];
                            if (acc.name.equals(emailAddress)){
@@ -62,7 +69,9 @@ public class OpenSecretSantaApplication extends Application {
             } catch(Exception e) {
                Log.e(TAG, "getAvailableGmailAccount() - Error when fetching account", e);
             }
-          return result;
+        Log.v(TAG, "getAvailableGmailAccount() - returning Gmail Account: " + result);
+
+        return result;
     }
 
 }

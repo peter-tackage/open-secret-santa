@@ -714,15 +714,21 @@ public class AssignmentSharerActivity extends Activity {
                     try {
                         mAccount = ((OpenSecretSantaApplication) getApplication()).getAvailableGmailAccount();
                         if(mAccount != null) {// Now let's get the token
+                            Log.v(TAG, "openShareDialog() - got account: " + mAccount.toString());
+                            // This might open the auth dialog.
                             AccountManagerFuture<Bundle> authTokenBundle = AccountManager.get(AssignmentSharerActivity.this).
-                              getAuthToken(mAccount, Constants.GMAIL_TOKEN_TYPE, null, null, null, null);
+                              getAuthToken(mAccount, Constants.GMAIL_TOKEN_TYPE , null, AssignmentSharerActivity.this, null, null);
                             mToken = authTokenBundle.getResult().getString(AccountManager.KEY_AUTHTOKEN);
+                            Log.v(TAG, "openShareDialog() - got account token: " + mToken);
                         }
                     } catch(Exception e) {
                         Log.e(TAG, "openShareDialog() - Exception when obtaining authToken", e);
                     }
                 }
-                return authRequired ? mToken != null : true;
+                boolean result =  !authRequired || mToken != null;
+
+                Log.i(TAG, "openShareDialog() - authRequired: " + authRequired + " result: " + result);
+                return result;
             }
         };
 

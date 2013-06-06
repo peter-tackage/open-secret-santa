@@ -25,8 +25,8 @@ public class AllPreferencesActivity extends PreferenceActivity {
           new AccountManagerCallback<Account[]>() {
               @Override
               public void run(AccountManagerFuture<Account[]> future) {
-                      ListPreference gmailLp = ((ListPreference) getPreferenceManager().findPreference(getString(R.string.gmail_account_preference)));
-                      List<String> accountEntries = new ArrayList<String>();
+                  ListPreference gmailLp = ((ListPreference) getPreferenceManager().findPreference(getString(R.string.gmail_account_preference)));
+                  List<String> accountEntries = new ArrayList<String>();
                   try {
                       Account[] accounts = future.getResult();
                       if(accounts != null && accounts.length > 0) {
@@ -34,13 +34,13 @@ public class AllPreferencesActivity extends PreferenceActivity {
                               accountEntries.add(accounts[i].name);
                           }
                       }
-
                   } catch(Exception e) {
                       Log.e(TAG, "onCreate() - An error occurred populating the account list", e);
+                  } finally {
+                      String[] entries = accountEntries.toArray(new String[accountEntries.size()]);
+                      gmailLp.setEntries(entries);
+                      gmailLp.setEntryValues(entries);
                   }
-                  String[] entries = accountEntries.toArray(new String[accountEntries.size()]);
-                  gmailLp.setEntries(entries);
-                  gmailLp.setEntryValues(entries);
               }
           }, new Handler());
     }

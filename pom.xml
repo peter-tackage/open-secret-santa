@@ -6,7 +6,7 @@
 
   <groupId>com.moac.android.opensecretsanta</groupId>
   <artifactId>open-secret-santa-app-parent</artifactId>
-  <version>1.4</version>
+  <version>1.4.1</version>
   <packaging>pom</packaging>
   <name>open-secret-santa-app - Parent</name>
 
