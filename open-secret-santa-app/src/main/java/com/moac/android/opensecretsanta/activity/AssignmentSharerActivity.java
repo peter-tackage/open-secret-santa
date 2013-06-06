@@ -773,7 +773,7 @@ public class AssignmentSharerActivity extends Activity {
 
                             // Email-ru
                             sendEmail(entry.getContactDetail(),
-                              Utilities.buildPersonalisedMsg(msg, entry.getGiverName(), entry.getReceiverName()), "Your Secret Santa assignment", mAccount.name, mToken);
+                              Utilities.buildPersonalisedMsg(msg, entry.getGiverName(), entry.getReceiverName()), "Your Secret Santa assignment from Open Secret Santa", mAccount.name, mToken);
                         } else if(entry.getContactMode() == Constants.SMS_CONTACT_MODE) {
                             Log.v(TAG, "shareAllAssignments() - SMS entry");
 
