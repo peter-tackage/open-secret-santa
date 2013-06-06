@@ -631,8 +631,10 @@ public class MembersListActivity extends Activity {
 
             while(cursor.moveToNext()) {
                 String email = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA1));
+                // Very rough validation.
                 boolean isValid =
-                  org.apache.commons.validator.routines.EmailValidator.getInstance().isValid(email);
+                 email.length() >= 3 && email.lastIndexOf("@") > 0 &&
+                    email.lastIndexOf("@") < (email.length() - 1);
                 Log.v(TAG, "loadContact() - found email address " + email + " isValid: " + isValid);
                 if(isValid) {
                     results.add(new ContactModeRowDetails(Integer.valueOf(Constants.EMAIL_CONTACT_MODE), email));
