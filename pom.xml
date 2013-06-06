@@ -6,13 +6,13 @@
 
   <groupId>com.moac.android.opensecretsanta</groupId>
   <artifactId>open-secret-santa-app-parent</artifactId>
-  <version>1.3.1</version>
+  <version>1.4</version>
   <packaging>pom</packaging>
   <name>open-secret-santa-app - Parent</name>
 
   <properties>
     <platform.version>2.2.1</platform.version>
-    <android.sdk.path>/usr/share/android/android-sdk-linux_x86/</android.sdk.path>
+  <!--  <android.sdk.path>/usr/share/android/android-sdk-linux_x86/</android.sdk.path>  -->
     <junit4.version>4.10</junit4.version>
   </properties>
 
