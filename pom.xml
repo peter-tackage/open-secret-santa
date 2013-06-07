@@ -11,8 +11,7 @@
   <name>open-secret-santa-app - Parent</name>
 
   <properties>
-    <platform.version>2.2.1</platform.version>
-  <!--  <android.sdk.path>/usr/share/android/android-sdk-linux_x86/</android.sdk.path>  -->
+    <platform.version>14</platform.version>
     <junit4.version>4.10</junit4.version>
   </properties>
 
