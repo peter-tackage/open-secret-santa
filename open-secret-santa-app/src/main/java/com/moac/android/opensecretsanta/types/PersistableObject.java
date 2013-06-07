@@ -14,6 +14,5 @@ public abstract class PersistableObject {
     }
 
     public long getId() { return mId; }
-    public void setId(long _id) { mId = _id; }       // TODO Will remove
 
 }
