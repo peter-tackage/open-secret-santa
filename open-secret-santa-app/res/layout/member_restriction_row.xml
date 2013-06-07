@@ -14,7 +14,7 @@
     android:layout_weight="1.0"
     android:clickable="false"
     android:layout_gravity="center_vertical"
-    android:gravity="center_vertical|left"></TextView>
+    android:gravity="center_vertical|left"/>
 
   <CheckBox
     android:layout_width="wrap_content"
@@ -22,6 +22,6 @@
     android:layout_height="wrap_content"
     android:id="@+id/restrictCheckBox"
     android:layout_gravity="center"
-    android:gravity="center"></CheckBox>
+    android:gravity="center"/>
 </LinearLayout>
   

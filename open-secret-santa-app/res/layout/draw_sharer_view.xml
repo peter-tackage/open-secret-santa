@@ -13,7 +13,7 @@
     android:src="@drawable/no_draws_help"
     android:id="@+id/noDrawsHelpImageView"
     android:layout_height="match_parent"
-    android:layout_gravity="center"></ImageView>
+    android:layout_gravity="center"/>
 
   <LinearLayout
     android:id="@+id/LinearLayout1"
@@ -28,7 +28,7 @@
       android:layout_height="wrap_content"
       android:layout_width="match_parent"
       android:layout_gravity="top"
-      android:layout_weight="1.0"></include>
+      android:layout_weight="1.0"/>
 
     <TableLayout
       android:orientation="vertical"
@@ -52,7 +52,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:src="@drawable/btn_notify_group"
-          android:background="@null"></ImageButton>
+          android:background="@null"/>
 
         <ImageButton
           android:id="@+id/redrawButton"
@@ -61,7 +61,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:src="@drawable/btn_redraw"
-          android:background="@null"></ImageButton>
+          android:background="@null"/>
       </TableRow>
     </TableLayout>
   </LinearLayout>

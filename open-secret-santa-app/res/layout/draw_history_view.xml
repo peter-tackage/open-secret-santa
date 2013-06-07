@@ -12,7 +12,7 @@
     android:layout_gravity="left"
     android:layout_height="wrap_content"
     android:paddingLeft="7dp"
-    android:paddingTop="7dp"></ImageView>
+    android:paddingTop="7dp"/>
 
   <ViewSwitcher
     android:orientation="vertical"
@@ -26,7 +26,7 @@
       android:src="@drawable/no_draws"
       android:id="@+id/noDrawsImageView"
       android:layout_height="match_parent"
-      android:layout_gravity="center"></ImageView>
+      android:layout_gravity="center"/>
 
     <ListView
       android:layout_width="match_parent"
