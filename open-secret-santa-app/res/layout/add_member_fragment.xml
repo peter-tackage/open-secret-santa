@@ -14,5 +14,5 @@
     android:layout_marginBottom="4dp"
     android:layout_marginTop="4dp"
     android:iconifiedByDefault="false"
-    android:queryHint="@string/memberSearchHintLabel" />
+    android:queryHint="@string/member_search_hint_label" />
 </LinearLayout>
