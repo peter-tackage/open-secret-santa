@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <string name="about">About</string>
+ <!-- Add member search -->
+  <string name="memberSearchHintLabel">Invite your friends</string>
 
   <!-- New Member -->
   <string name="newManualEntryLabel">Add name only</string>
@@ -9,17 +10,6 @@
   <string name="noMembersHelp">"Add in the group members and restrictions if
     required"
   </string>
-
-  <!-- New Group -->
-  <string name="newGroupHint">Enter a new group name</string>
-  <string name="existingGroupsLabel">Existing Groups</string>
-  <string name="createNewGroupLabel">Create a new group</string>
-  <string name="noGroupsHelp">Create a new group and add some people to start
-    building your draw
-  </string>
-
-  <!-- Draw History List -->
-  <string name="noDrawsHelp">"No draws to display"</string>
 
   <!-- Preferred Contact Details Selection Popup -->
   <string name="contactDetailsPopupTitle">Select contact mode for</string>
@@ -38,7 +28,6 @@
   <string name="noAssignmentsHelp">"Couldn't draw according to the current list
     of members and restrictions."
   </string>
-  <string name="deleteDraw">Delete</string>
 
   <!-- Preferences - Algorithm -->
   <string name="algorithm_preferences">Algorithm Preferences</string>
@@ -74,6 +63,5 @@
   <string name="app_date_info">Date: 6th June 2013</string>
   <string name="title_activity_initialise">InitialiseActivity</string>
   <string name="menu_settings">Settings</string>
-  <string name="hello_world">Hello world!</string>
 
 </resources>
