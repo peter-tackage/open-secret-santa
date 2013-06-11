@@ -17,7 +17,7 @@ public class MemberSuggestionProvider extends ContentProvider {
 
     public static String TAG = MemberSuggestionProvider.class.getSimpleName();
 
-    public static final String AUTHORITY = "com.moac.android.opensecretsanta.provider.contactsuggestions";
+    public static final String AUTHORITY = "com.moac.android.opensecretsanta.membersuggestions";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/search");
     public static final int MANUAL_ENTRY_ID = -1;
 
@@ -127,57 +127,5 @@ public class MemberSuggestionProvider extends ContentProvider {
         throw new UnsupportedOperationException();
     }
 
-//    /**
-//     * This is essentially a copy of the method in SearchManager - it is not publically available.
-//     *
-//     * @param searchable
-//     * @param query
-//     * @param limit
-//     * @return
-//     */
-//    public Cursor getSuggestions(SearchableInfo searchable, String query, int limit) {
-//        if(searchable == null) {
-//            return null;
-//        }
-//
-//        String authority = searchable.getSuggestAuthority();
-//        if(authority == null) {
-//            return null;
-//        }
-//
-//        Uri.Builder uriBuilder = new Uri.Builder()
-//          .scheme(ContentResolver.SCHEME_CONTENT)
-//          .authority(authority)
-//          .query("")  // TODO: Remove, workaround for a bug in Uri.writeToParcel()
-//          .fragment("");  // TODO: Remove, workaround for a bug in Uri.writeToParcel()
-//
-//        // if content path provided, insert it now
-//        final String contentPath = searchable.getSuggestPath();
-//        if(contentPath != null) {
-//            uriBuilder.appendEncodedPath(contentPath);
-//        }
-//
-//        // append standard suggestion query path
-//        uriBuilder.appendPath(SearchManager.SUGGEST_URI_PATH_QUERY);
-//
-//        // get the query selection, may be null
-//        String selection = searchable.getSuggestSelection();
-//        // inject query, either as selection args or inline
-//        String[] selArgs = null;
-//        if(selection != null) {    // use selection if provided
-//            selArgs = new String[]{ query };
-//        } else {                    // no selection, use REST pattern
-//            uriBuilder.appendPath(query);
-//        }
-//
-//        if(limit > 0) {
-//            uriBuilder.appendQueryParameter(SearchManager.SUGGEST_PARAMETER_LIMIT, String.valueOf(limit));
-//        }
-//
-//        Uri uri = uriBuilder.build();
-//
-//        // finally, make the query
-//        return getContext().getContentResolver().query(uri, null, selection, selArgs, null);
-//    }
 }
 
