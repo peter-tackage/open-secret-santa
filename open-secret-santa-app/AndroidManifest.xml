@@ -42,7 +42,7 @@
 
     <provider
       android:authorities="com.moac.android.opensecretsanta.provider.contactsuggestions"
-      android:name=".content.ContactSuggestionsContentProvider" >
+      android:name=".content.MemberSuggestionProvider" >
     </provider>
 
   </application>

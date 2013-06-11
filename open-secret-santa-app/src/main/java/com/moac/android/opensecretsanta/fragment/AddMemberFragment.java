@@ -59,7 +59,7 @@ public class AddMemberFragment extends Fragment {
         @Override
         public boolean onSuggestionClick(int position) {
             Log.i(TAG, "onSuggestionClick() - position: " + position);
-            mSearchView.getSuggestionsAdapter() ;
+            Object item = mSearchView.getSuggestionsAdapter().getItem(position);
             return true;
         }
     };

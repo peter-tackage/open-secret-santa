@@ -13,9 +13,9 @@ import android.util.Log;
 import java.util.Arrays;
 import java.util.List;
 
-public class ContactSuggestionsContentProvider extends ContentProvider {
+public class MemberSuggestionProvider extends ContentProvider {
 
-    public static String TAG = "SuggestionsProvider";
+    public static String TAG = MemberSuggestionProvider.class.getSimpleName();
 
     public static final String AUTHORITY = "com.moac.android.opensecretsanta.provider.contactsuggestions";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/search");
