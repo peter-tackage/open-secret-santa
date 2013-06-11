@@ -4,12 +4,12 @@ import android.app.Fragment;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CursorAdapter;
 import android.widget.SearchView;
 import com.moac.android.opensecretsanta.R;
 
@@ -31,7 +31,7 @@ public class AddMemberFragment extends Fragment {
         SearchManager searchManager = (SearchManager)getActivity().getSystemService(Context.SEARCH_SERVICE);
         if (searchManager != null) {
             Log.i(TAG, "onCreateView() - setting SearchAbleInfo. getComponentName() = " + getActivity().getComponentName());
-            setupSearchView(mSearchView, mQueryTextListener);
+            setupSearchView(mSearchView, mQueryTextListener, mSuggestionListener, null);
         }
         return view;
     }
@@ -49,21 +49,36 @@ public class AddMemberFragment extends Fragment {
         }
     };
 
-    private void setupSearchView(SearchView _searchView, SearchView.OnQueryTextListener _listener) {
+    SearchView.OnSuggestionListener mSuggestionListener = new SearchView.OnSuggestionListener() {
+        @Override
+        public boolean onSuggestionSelect(int position) {
+            Log.i(TAG, "onSuggestionSelect() - position: " + position);
+            return false;
+        }
 
+        @Override
+        public boolean onSuggestionClick(int position) {
+            Log.i(TAG, "onSuggestionClick() - position: " + position);
+            mSearchView.getSuggestionsAdapter() ;
+            return true;
+        }
+    };
+
+    private void setupSearchView(SearchView _searchView, SearchView.OnQueryTextListener _queryTextListener,
+                                 SearchView.OnSuggestionListener _suggestionListener, CursorAdapter _suggestionsAdapter) {
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
         if (searchManager != null) {
-            List<SearchableInfo> searchables = searchManager.getSearchablesInGlobalSearch();
-            // Try to use the "contacts" global search provider
+            // Use the "contacts" global search provider
             SearchableInfo info = searchManager.getSearchableInfo(getActivity().getComponentName());
-            for (SearchableInfo inf : searchables) {
-                if (inf.getSuggestAuthority() != null && inf.getSuggestAuthority().equals("com.android.contacts")) {
-                    info = inf;
-                    break;
-                }
+            Log.i(TAG, "setupSearchView() - info: " + info);
+            if (info != null) {
+               Log.i(TAG, "setupSearchView() - Found match for search suggest authority");
+               _searchView.setSearchableInfo(info);
             }
-            _searchView.setSearchableInfo(info);
+
         }
-        _searchView.setOnQueryTextListener(_listener);
+        _searchView.setOnQueryTextListener(_queryTextListener);
+        _searchView.setOnSuggestionListener(_suggestionListener);
+    //    _searchView.setSuggestionsAdapter(_suggestionsAdapter);
     }
 }

@@ -23,20 +23,27 @@
     android:name=".OpenSecretSantaApplication"
     android:theme="@style/AppTheme">
 
+    <activity android:name=".activity.MembersListActivity" />
+    <activity android:name=".activity.AssignmentSharerActivity" />
+    <activity android:name=".activity.AllPreferencesActivity" />
     <activity
-      android:name=".activity.MembersListActivity"/>
-    <activity
-      android:name=".activity.AssignmentSharerActivity"/>
-    <activity
-      android:name=".activity.AllPreferencesActivity"/>
-    <activity android:name=".activity.NewDrawActivity">
+      android:name=".activity.NewDrawActivity"
+      android:launchMode="singleTop">   <!-- For search -->
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
-      <meta-data android:name="android.app.default_searchable"
-        android:value=".activity.NewDrawActivity" />
+      <intent-filter>
+        <action android:name="android.intent.action.SEARCH" />
+      </intent-filter>
+      <meta-data android:name="android.app.searchable"
+        android:resource="@xml/searchable"/>
     </activity>
+
+    <provider
+      android:authorities="com.moac.android.opensecretsanta.provider.contactsuggestions"
+      android:name=".content.ContactSuggestionsContentProvider" >
+    </provider>
 
   </application>
 
