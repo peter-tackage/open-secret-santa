@@ -41,7 +41,7 @@
     </activity>
 
     <provider
-      android:authorities="com.moac.android.opensecretsanta.provider.contactsuggestions"
+      android:authorities="com.moac.android.opensecretsanta.membersuggestions"
       android:name=".content.MemberSuggestionProvider" >
     </provider>
 

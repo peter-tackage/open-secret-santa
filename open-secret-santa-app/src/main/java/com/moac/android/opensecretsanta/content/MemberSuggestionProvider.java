@@ -13,11 +13,21 @@ import android.util.Log;
 import java.util.Arrays;
 import java.util.List;
 
+/*
+ * Calls through to the Contacts Suggestion endpoint.
+ * Refer SearchManager and
+ * https://android.googlesource.com/platform/packages/apps/GlobalSearch/+/master/src/com/android/globalsearch/
+ *
+ */
 public class MemberSuggestionProvider extends ContentProvider {
 
     public static String TAG = MemberSuggestionProvider.class.getSimpleName();
 
+    /*
+     * Authority must match searchable.xml and Provider in AndroidManifest.xml
+     */
     public static final String AUTHORITY = "com.moac.android.opensecretsanta.membersuggestions";
+
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/search");
     public static final int MANUAL_ENTRY_ID = -1;
 
