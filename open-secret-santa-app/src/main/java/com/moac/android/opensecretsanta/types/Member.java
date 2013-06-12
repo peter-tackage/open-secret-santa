@@ -25,7 +25,7 @@ public final class Member extends PersistableObject {
     private String mLookupKey;
 
     // The participant name
-    @DatabaseField(columnName = Columns.NAME_COLUMN, canBeNull = false)
+    @DatabaseField(columnName = Columns.NAME_COLUMN, canBeNull = false, uniqueCombo = true)
     private String mName;
 
     // the email, the  phone number, the whatever.
@@ -36,7 +36,7 @@ public final class Member extends PersistableObject {
     @DatabaseField(columnName = Columns.CONTACT_MODE_COLUMN, canBeNull = false)
     private int mContactMode = ContactModes.NAME_ONLY_CONTACT_MODE;
 
-    @DatabaseField(columnName = Columns.GROUP_ID_COLUMN, foreign = true, canBeNull = false,
+    @DatabaseField(columnName = Columns.GROUP_ID_COLUMN, foreign = true, canBeNull = false, uniqueCombo = true,
       columnDefinition = "integer references groups (_id) on delete cascade")
     private Group mGroup;
 

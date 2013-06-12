@@ -123,9 +123,9 @@ public class DatabaseTests extends AndroidTestCase {
         Group group1 = new GroupBuilder().build();
         mDatabaseManager.create(group1);
 
-        Member m1 = new MemberBuilder().build();
-        Member m2 = new MemberBuilder().build();
-        Member m3 = new MemberBuilder().build();
+        Member m1 = new MemberBuilder().withName("m1").build();
+        Member m2 = new MemberBuilder().withName("m2").build();
+        Member m3 = new MemberBuilder().withName("m3").build();
         m1.setGroup(group1);
         m2.setGroup(group1);
         m3.setGroup(group1);
@@ -404,10 +404,32 @@ public class DatabaseTests extends AndroidTestCase {
         Member m2 = new MemberBuilder().build();
         try {
             mDatabaseManager.create(m2);
+            assertTrue(true); // Should be allowee
         } catch(SQLException exp) {
             fail("Non-unique Member name should be allowed in different Groups");
         }
     }
+
+    public void testCreateMemberNonUniqueNameSameGroupFails() {
+        Group g1 = new GroupBuilder().build();
+        mDatabaseManager.create(g1);
+
+        Member m1 = new MemberBuilder().build();
+        Member m2 = new MemberBuilder().build();
+        m1.setGroup(g1);
+        m2.setGroup(g1);
+
+        mDatabaseManager.create(m1);
+
+        try {
+            // Now create another one with the same name for that group
+            mDatabaseManager.create(m2);
+            fail("Non-unique Member name should not be allowed in a Group");
+        } catch(SQLException exp) {
+            assertTrue(true);
+        }
+    }
+
 
     public void testQueryMemberByName() {
         Group g1 = new GroupBuilder().build();
