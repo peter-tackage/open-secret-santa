@@ -52,22 +52,9 @@ public class MemberSuggestionProvider extends ContentProvider {
 
     private static final String KEY_SEARCH_COLUMN = ContactsContract.Contacts.DISPLAY_NAME;
 
-    private SearchableInfo mContactsSearchableInfo;
-
     @Override
     public boolean onCreate() {
-        SearchManager searchManager = (SearchManager) getContext().getSystemService(Context.SEARCH_SERVICE);
-        if(searchManager != null) {
-            List<SearchableInfo> searchables = searchManager.getSearchablesInGlobalSearch();
-            // Try to use the "contacts" global search provider
-            for(SearchableInfo inf : searchables) {
-                if(inf.getSuggestAuthority() != null && inf.getSuggestAuthority().equals("com.android.contacts")) {
-                    mContactsSearchableInfo = inf;
-                    break;
-                }
-            }
-        }
-        return mContactsSearchableInfo != null;
+        return true;
     }
 
     @Override
