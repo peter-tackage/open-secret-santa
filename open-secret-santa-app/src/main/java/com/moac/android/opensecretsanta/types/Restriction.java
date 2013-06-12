@@ -23,8 +23,8 @@ public class Restriction extends PersistableObject {
     private Member mOtherMember;
 
     public long getMemberId() { return mMember.getId(); }
-    public void setMember(Member member) { mMember = member; }
+    public void setMember(Member _member) { mMember = _member; }
 
     public long getOtherMemberId() { return mOtherMember.getId(); }
-    public void setOtherMember(Member otherMember) { mOtherMember = otherMember; }
+    public void setOtherMember(Member _otherMember) { mOtherMember = _otherMember; }
 }

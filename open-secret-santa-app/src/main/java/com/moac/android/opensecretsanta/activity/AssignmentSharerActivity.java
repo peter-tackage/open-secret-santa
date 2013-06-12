@@ -496,7 +496,7 @@ public class AssignmentSharerActivity extends Activity {
 //                    aa.notifyDataSetChanged();
 //
 //                    // Enable Share only if appropriate
-//                    boolean isShareable = Utilities.containsSendableEntry(drDetails.dres);
+//                    boolean isShareable = Utils.containsSendableEntry(drDetails.dres);
 //                    setShareEnabled(isShareable);
 //
 //                    mSwitcher.setDisplayedChild(1);
@@ -622,7 +622,7 @@ public class AssignmentSharerActivity extends Activity {
 //            case PROGRESS_DIALOG:
 //                mProgressDialog.setProgress(0);
 //                // TODO this is prob risky because that value might change under us.
-//                mProgressDialog.setMax(Utilities.getShareableCount(items));
+//                mProgressDialog.setMax(Utils.getShareableCount(items));
 //        }
 //    }
 //
@@ -704,7 +704,7 @@ public class AssignmentSharerActivity extends Activity {
 //
 //            @Override
 //            protected Boolean doInBackground(Void... voids) {
-//                boolean authRequired = Utilities.containsEmailSendableEntry(mDatabase.queryAllDrawResultEntriesForDrawId(mDrawResult.getId()));
+//                boolean authRequired = Utils.containsEmailSendableEntry(mDatabase.queryAllDrawResultEntriesForDrawId(mDrawResult.getId()));
 //                // Reset.
 //                mToken = null;
 //                mAccount = null;
@@ -777,13 +777,13 @@ public class AssignmentSharerActivity extends Activity {
 //
 //                            // Email-ru
 //                            sendEmail(entry.getContactDetail(),
-//                              Utilities.buildPersonalisedMsg(msg, entry.getGiverName(), entry.getReceiverName()), "Your Secret Santa assignment from Open Secret Santa", mAccount.name, mToken);
+//                              Utils.buildPersonalisedMsg(msg, entry.getGiverName(), entry.getReceiverName()), "Your Secret Santa assignment from Open Secret Santa", mAccount.name, mToken);
 //                        } else if(entry.getContactMode() == ContactModes.SMS_CONTACT_MODE) {
 //                            Log.v(TAG, "shareAllAssignments() - SMS entry");
 //
 //                            // SMS
 //                            results.sentSMSCount += sendSms(entry.getContactDetail(),
-//                              Utilities.buildPersonalisedMsg(msg, entry.getGiverName(), entry.getReceiverName()),
+//                              Utils.buildPersonalisedMsg(msg, entry.getGiverName(), entry.getReceiverName()),
 //                              mSendMultipartSMS);
 //                        } else {
 //                            // We didn't get a known contact mode - so fail.
@@ -829,7 +829,7 @@ public class AssignmentSharerActivity extends Activity {
 //                    AlertDialog.Builder builder = new AlertDialog.Builder(AssignmentSharerActivity.this);
 //                    builder.setTitle("Notification Error");
 //                    builder.setIcon(android.R.drawable.ic_dialog_alert);
-//                    builder.setMessage(Utilities.buildSharedErrorMessage(_result.failedMembers))
+//                    builder.setMessage(Utils.buildSharedErrorMessage(_result.failedMembers))
 //                      .setCancelable(false)
 //                      .setPositiveButton("OK", new DialogInterface.OnClickListener() {
 //                          @Override
@@ -840,7 +840,7 @@ public class AssignmentSharerActivity extends Activity {
 //                    AlertDialog alert = builder.create();
 //                    alert.show();
 //                } else {
-//                    Toast.makeText(AssignmentSharerActivity.this, Utilities.buildSuccessMessage(_result), Toast.LENGTH_LONG).show();
+//                    Toast.makeText(AssignmentSharerActivity.this, Utils.buildSuccessMessage(_result), Toast.LENGTH_LONG).show();
 //                }
 //
 //                // Updated the sent dates (probably), so need to redraw.

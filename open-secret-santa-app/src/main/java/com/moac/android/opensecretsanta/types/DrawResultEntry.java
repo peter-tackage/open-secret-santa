@@ -50,7 +50,6 @@ public class DrawResultEntry extends PersistableObject {
       columnDefinition = "integer references draw_results (_id) on delete cascade")
     private DrawResult mDrawResult;
 
-
     public long getDrawResultId() { return mDrawResult.getId(); }
     public void setDrawResult(DrawResult _drawResult) { mDrawResult = _drawResult; }
 

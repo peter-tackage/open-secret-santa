@@ -2,15 +2,11 @@ package com.moac.android.opensecretsanta;
 
 import android.accounts.*;
 import android.app.Application;
-import android.content.SharedPreferences;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import com.moac.android.opensecretsanta.activity.Constants;
 import com.moac.android.opensecretsanta.database.DatabaseHelper;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-
-import java.io.IOException;
+import com.moac.android.opensecretsanta.mail.GmailOAuth2Sender;
 
 public class OpenSecretSantaApplication extends Application {
 
@@ -43,7 +39,7 @@ public class OpenSecretSantaApplication extends Application {
         Log.v(TAG, "getAvailableGmailAccount() - current Gmail Account preference: " + emailAddress);
 
         AccountManagerFuture<Account[]> accountsFuture =
-              AccountManager.get(this).getAccountsByTypeAndFeatures(Constants.ACCOUNT_TYPE_GOOGLE, Constants.FEATURES_MAIL, null, null);
+              AccountManager.get(this).getAccountsByTypeAndFeatures(GmailOAuth2Sender.ACCOUNT_TYPE_GOOGLE, GmailOAuth2Sender.FEATURES_MAIL, null, null);
             try {
                 Account[] accounts = accountsFuture.getResult();
                 if(accounts != null && accounts.length > 0) {

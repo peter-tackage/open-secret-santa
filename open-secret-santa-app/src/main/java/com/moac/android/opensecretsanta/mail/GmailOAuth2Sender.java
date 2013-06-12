@@ -19,6 +19,10 @@ public class GmailOAuth2Sender {
 
     private static final String TAG = GmailOAuth2Sender.class.getSimpleName();
 
+    public static final String ACCOUNT_TYPE_GOOGLE = "com.google";
+    public static final String[] FEATURES_MAIL = { "service_mail" };
+    public static final String GMAIL_TOKEN_TYPE =  "oauth2:https://mail.google.com/";
+
     private Session session;
 
     private SMTPTransport connectToSmtp(String host, int port, String userEmail,

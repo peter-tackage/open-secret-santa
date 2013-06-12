@@ -1,11 +1,9 @@
 package com.moac.android.opensecretsanta.types;
 
 import android.provider.BaseColumns;
-import android.util.Log;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
-import com.moac.android.opensecretsanta.activity.Constants;
 import com.moac.android.opensecretsanta.activity.ContactModes;
 
 @DatabaseTable(tableName = Member.TABLE_NAME)
@@ -55,7 +53,7 @@ public final class Member extends PersistableObject {
     public String getLookupKey() { return mLookupKey; }
     public void setLookupKey(String _lookupKey) { mLookupKey = _lookupKey; }
 
-    public void setGroup(Group group) { mGroup = group; }
+    public void setGroup(Group _group) { mGroup = _group; }
     public long getGroupId() { return mGroup.getId(); }
 
     @Override

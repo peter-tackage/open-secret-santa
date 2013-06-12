@@ -1,14 +1,13 @@
 package com.moac.android.opensecretsanta.types;
 
 import android.util.Log;
-import com.moac.android.opensecretsanta.activity.Constants;
 import com.moac.android.opensecretsanta.activity.ContactModes;
 
 import java.util.List;
 
-public class Utilities {
+public class Utils {
 
-    public static final String TAG = Utilities.class.getSimpleName();
+    public static final String TAG = Utils.class.getSimpleName();
 
     public static String buildPersonalisedMsg(String extraMsg, String from, String to) {
         Log.v(TAG, "buildPersonalisedMsg() - start");

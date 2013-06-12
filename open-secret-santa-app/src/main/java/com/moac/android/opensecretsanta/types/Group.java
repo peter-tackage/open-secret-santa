@@ -25,9 +25,9 @@ public class Group extends PersistableObject {
     private java.util.Collection<Member> mMembers;
 
     public String getName() { return mName; }
-    public void setName(String name) { mName = name; }
+    public void setName(String _name) { mName = _name; }
 
-    public void setMessage(String message) { mMessage = message; }
+    public void setMessage(String _message) { mMessage = _message; }
     public String getMessage() { return mMessage; }
 
 }

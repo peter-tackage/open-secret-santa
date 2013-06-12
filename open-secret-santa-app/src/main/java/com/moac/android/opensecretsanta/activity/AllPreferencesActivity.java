@@ -7,6 +7,7 @@ import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.util.Log;
 import com.moac.android.opensecretsanta.R;
+import com.moac.android.opensecretsanta.mail.GmailOAuth2Sender;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public class AllPreferencesActivity extends PreferenceActivity {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
 
-        AccountManager.get(this).getAccountsByTypeAndFeatures(Constants.ACCOUNT_TYPE_GOOGLE, Constants.FEATURES_MAIL,
+        AccountManager.get(this).getAccountsByTypeAndFeatures(GmailOAuth2Sender.ACCOUNT_TYPE_GOOGLE, GmailOAuth2Sender.FEATURES_MAIL,
           new AccountManagerCallback<Account[]>() {
               @Override
               public void run(AccountManagerFuture<Account[]> future) {
