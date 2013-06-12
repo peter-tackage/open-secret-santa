@@ -29,6 +29,11 @@
     </dependency>
 
     <dependency>
+      <groupId>com.google.android</groupId>
+      <artifactId>support-v13</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>com.moac.drawengine</groupId>
       <artifactId>draw-engine</artifactId>
       <version>${draw-engine.version}</version>
