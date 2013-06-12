@@ -14,11 +14,11 @@ public class ContactModeRowDetails {
     @Override
     public String toString() {
         switch(contactMode) {
-            case Constants.NAME_ONLY_CONTACT_MODE:
+            case ContactModes.NAME_ONLY_CONTACT_MODE:
                 return "View draw result on this phone";
-            case Constants.SMS_CONTACT_MODE:
+            case ContactModes.SMS_CONTACT_MODE:
                 return "(SMS) " + contactDetail;
-            case Constants.EMAIL_CONTACT_MODE:
+            case ContactModes.EMAIL_CONTACT_MODE:
                 return "(Email) " + contactDetail;
             default:
                 return "Unsupported Mode";

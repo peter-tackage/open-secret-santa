@@ -2,27 +2,13 @@ package com.moac.android.opensecretsanta.types;
 
 import android.util.Log;
 import com.moac.android.opensecretsanta.activity.Constants;
+import com.moac.android.opensecretsanta.activity.ContactModes;
 
 import java.util.List;
 
 public class Utilities {
 
-    public static final String TAG = "Utilities";
-
-    public static String buildSharedErrorMessage(List<DrawResultEntry> failedEntries) {
-        StringBuilder s = new StringBuilder();
-        s.append("Could not notify the following member(s) : ");
-        for(DrawResultEntry m : failedEntries) {
-            s.append(m.getGiverName());
-            s.append(" (");
-            s.append(m.getContactDetail());
-            s.append(")");
-            if(failedEntries.indexOf(m) != (failedEntries.size() - 1)) {
-                s.append(", ");
-            }
-        }
-        return s.toString();
-    }
+    public static final String TAG = Utilities.class.getSimpleName();
 
     public static String buildPersonalisedMsg(String extraMsg, String from, String to) {
         Log.v(TAG, "buildPersonalisedMsg() - start");
@@ -58,28 +44,32 @@ public class Utilities {
         return s.toString();
     }
 
-    public static boolean containsSendableEntry(List<DrawResultEntry> _entries) {
-        for(DrawResultEntry entry : _entries) {
-            if(entry.isSendable())
+    public static boolean containsSendableEntry(List<Member> _members) {
+        for(Member member : _members) {
+            if(isSendable(member))
                 return true;
         }
         return false;
     }
 
-    public static boolean containsEmailSendableEntry(List<DrawResultEntry> _entries) {
-        for(DrawResultEntry entry : _entries) {
-            if(entry.getContactMode() == Constants.EMAIL_CONTACT_MODE)
+    public static boolean containsEmailSendableEntry(List<Member> _members) {
+        for(Member member : _members) {
+            if(member.getContactMode() == ContactModes.EMAIL_CONTACT_MODE)
                 return true;
         }
         return false;
     }
 
-    public static int getShareableCount(List<DrawResultEntry> _entries) {
+    public static int getShareableCount(List<Member> _members) {
         int count = 0;
-        for(DrawResultEntry entry : _entries) {
-            if(entry.isSendable())
+        for(Member member : _members) {
+            if(isSendable(member))
                 count++;
         }
         return count;
+    }
+
+    public static boolean isSendable(Member _member) {
+        return _member.getContactMode() != ContactModes.NAME_ONLY_CONTACT_MODE;
     }
 }

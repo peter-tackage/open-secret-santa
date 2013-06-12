@@ -1,6 +1,5 @@
 package com.moac.android.opensecretsanta.test.database;
 
-
 import android.database.SQLException;
 import android.test.AndroidTestCase;
 
@@ -89,35 +88,73 @@ public class DatabaseTests extends AndroidTestCase {
         assertEquals(2, restrictionsM1.size());
     }
 
+    /**
+     * FIXME This doesn't work at the moment - ORMLIte doesn't enforce the
+     * unique constraints on the foreign key reference column. Probably because
+     * its required when supporting one-to-many relationships and there's no
+     * reasonable way for ORMLite to know what the intended relationship is.
+     */
+//    public void testCreateSingleDrawResultPerGroupFails() {
+//        // Add a Group
+//        // Add a Draw Result
+//
+//        Group group1 = new GroupBuilder().build();
+//        mDatabaseManager.create(group1);
+//
+//        DrawResult dr1 = new DrawResultBuilder().withDrawDate(1).build();
+//        DrawResult dr2 = new DrawResultBuilder().withDrawDate(2).build();
+//        dr1.setGroup(group1);
+//        dr2.setGroup(group1); // <------ same group id!!!
+//        mDatabaseManager.create(dr1);
+//        try {
+//            mDatabaseManager.create(dr2);
+//            fail("Only one Draw Result per Group should be allowed");
+//        } catch(SQLException exp) {
+//            assertTrue(true);
+//        }
+//    }
+
     public void testQueryAllDrawResultEntriesForDrawId() {
         // Add a Group
         // Add some Members
         // Add a Draw Result
         // Add some DREs
         // Query for DREs and verify
-
         Group group1 = new GroupBuilder().build();
         mDatabaseManager.create(group1);
 
+        Member m1 = new MemberBuilder().build();
+        Member m2 = new MemberBuilder().build();
+        Member m3 = new MemberBuilder().build();
+        m1.setGroup(group1);
+        m2.setGroup(group1);
+        m3.setGroup(group1);
+        mDatabaseManager.create(m1);
+        mDatabaseManager.create(m2);
+        mDatabaseManager.create(m3);
+
         DrawResult dr1 = new DrawResultBuilder().withDrawDate(1).build();
-        DrawResult dr2 = new DrawResultBuilder().withDrawDate(2).build();
         dr1.setGroup(group1);
-        dr2.setGroup(group1);
         mDatabaseManager.create(dr1);
-        mDatabaseManager.create(dr2);
 
         DrawResultEntry dre1 = new DrawResultEntryBuilder().build();
         DrawResultEntry dre2 = new DrawResultEntryBuilder().build();
         DrawResultEntry dre3 = new DrawResultEntryBuilder().build();
         dre1.setDrawResult(dr1);
+        dre1.setGiverMember(m1);
+        dre1.setReceiverMember(m2);
         dre2.setDrawResult(dr1);
-        dre3.setDrawResult(dr2);
+        dre2.setGiverMember(m2);
+        dre2.setReceiverMember(m3);
+        dre3.setDrawResult(dr1);
+        dre3.setGiverMember(m3);
+        dre3.setReceiverMember(m1);
         mDatabaseManager.create(dre1);
         mDatabaseManager.create(dre2);
         mDatabaseManager.create(dre3);
 
         List<DrawResultEntry> dres = mDatabaseManager.queryAllDrawResultEntriesForDrawId(dr1.getId());
-        assertEquals(2, dres.size());
+        assertEquals(3, dres.size());
     }
 
     public void testQueryAllDrawResultsForGroup() {
@@ -367,8 +404,7 @@ public class DatabaseTests extends AndroidTestCase {
         Member m2 = new MemberBuilder().build();
         try {
             mDatabaseManager.create(m2);
-        }
-        catch (SQLException exp) {
+        } catch(SQLException exp) {
             fail("Non-unique Member name should be allowed in different Groups");
         }
     }
@@ -428,5 +464,4 @@ public class DatabaseTests extends AndroidTestCase {
         // Verify restrictions correctly deleted by cascade
         assertEquals(0, mDatabaseManager.queryAllRestrictionsForMemberId(m1.getId()).size());
     }
-
 }

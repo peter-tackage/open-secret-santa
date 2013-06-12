@@ -5,36 +5,29 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
-@DatabaseTable(tableName = "groups")
+@DatabaseTable(tableName = Group.TABLE_NAME)
 public class Group extends PersistableObject {
 
-    // GROUP TABLE COLUMNS
+    public static final String TABLE_NAME =  "groups";
+
     public static interface Columns extends BaseColumns {
-
         public static final String NAME_COLUMN = "NAME";
-        public static final String IS_READY = "IS_READY";
-
-        public static final String DEFAULT_SORT_ORDER = NAME_COLUMN + " ASC";
-
-        public static final String[] ALL = {
-          _ID,
-          NAME_COLUMN,
-          IS_READY
-        };
+        public static final String MESSAGE_COLUMN = "MESSAGE";
     }
 
     @DatabaseField(columnName = Columns.NAME_COLUMN, unique = true, canBeNull = false)
     private String mName;
 
-    @DatabaseField(columnName = Columns.IS_READY)
-    private boolean mReady = false; // is the group ready to be notified.
+    @DatabaseField(columnName = Columns.MESSAGE_COLUMN)
+    private String mMessage = "";
 
     @ForeignCollectionField(eager = false)
     private java.util.Collection<Member> mMembers;
 
     public String getName() { return mName; }
     public void setName(String name) { mName = name; }
-    public void setReady(boolean ready) { mReady = ready; }
-    public boolean isReady() { return mReady; }
+
+    public void setMessage(String message) { mMessage = message; }
+    public String getMessage() { return mMessage; }
 
 }

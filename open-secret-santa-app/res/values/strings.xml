@@ -65,5 +65,6 @@
   <string name="app_date_info">Date: 6th June 2013</string>
   <string name="title_activity_initialise">InitialiseActivity</string>
   <string name="menu_settings">Settings</string>
+  <string name="empty_member_list_label">No members in draw</string>
 
 </resources>

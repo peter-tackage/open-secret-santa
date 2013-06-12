@@ -37,7 +37,7 @@ public class DatabaseManager {
     public <T extends PersistableObject> T queryById(long id, Class<T> objClass) {
         return mDbHelper.queryById(id, objClass);
     }
-
+    @SuppressWarnings("unchecked")
     public <T extends PersistableObject> T queryById(T obj) {
         return (T) mDbHelper.queryById(obj.getId(), obj.getClass());
     }

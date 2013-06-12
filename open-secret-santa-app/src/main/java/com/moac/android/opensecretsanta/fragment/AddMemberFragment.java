@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.CursorAdapter;
 import android.widget.SearchView;
 import com.moac.android.opensecretsanta.R;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class AddMemberFragment extends Fragment {
@@ -61,7 +63,9 @@ public class AddMemberFragment extends Fragment {
             Log.i(TAG, "onSuggestionClick() - position: " + position);
             Object item = mSearchView.getSuggestionsAdapter().getItem(position);
             Log.i(TAG, "onSuggestionClick() - item: "  + item);
-
+            Cursor c = mSearchView.getSuggestionsAdapter().getCursor();
+            c.moveToPosition(position);
+            Log.i(TAG, "onSuggestionClick() - columnNames: " + Arrays.toString(c.getColumnNames()));
             return true;
         }
     };

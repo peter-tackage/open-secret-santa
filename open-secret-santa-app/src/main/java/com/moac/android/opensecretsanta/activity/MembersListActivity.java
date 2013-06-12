@@ -178,7 +178,7 @@ public class MembersListActivity extends Activity {
                     // Just populate and open the dialog.
                     RetrievedContactDetails contact = new RetrievedContactDetails();
                     contact.name = selected.getMemberName();
-                    contact.contacts.add(new ContactModeRowDetails(Constants.NAME_ONLY_CONTACT_MODE, null));
+                    contact.contacts.add(new ContactModeRowDetails(ContactModes.NAME_ONLY_CONTACT_MODE, null));
 
                     showContactModeDialog(contact, selected.getMemberName());
                 }
@@ -204,7 +204,7 @@ public class MembersListActivity extends Activity {
 
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
-            long groupId = extras.getLong(Constants.GROUP_ID);
+            long groupId = extras.getLong(Intents.GROUP_ID_INTENT_EXTRA);
             mGroup = mDatabase.queryById(groupId, Group.class);
         }
 
@@ -236,7 +236,7 @@ public class MembersListActivity extends Activity {
                     Log.v(TAG, "Attempting to create/update: " + memberName);
                     Member member = new Member();
                     member.setName(memberName);
-                    member.setContactMode(Constants.NAME_ONLY_CONTACT_MODE);
+                    member.setContactMode(ContactModes.NAME_ONLY_CONTACT_MODE);
                     member.setGroup(mGroup);
                     mDatabase.create(member);
                     populateMembersList();
@@ -325,7 +325,7 @@ public class MembersListActivity extends Activity {
                             existingMember.setName(_memberName);
                             mDatabase.update(existingMember);
                             // Need to force redraw  to use new name in the draw.
-                            mGroup.setReady(false);
+                            // TODO DELETE THE DRAW RESULT
                             mDatabase.update(mGroup);
                         }
                     } else {
@@ -366,7 +366,7 @@ public class MembersListActivity extends Activity {
             @Override
             protected Void doInBackground(Void... params) {
                 mDatabase.delete(memberId, Member.class);
-                mGroup.setReady(false);
+                // TODO DELETE THE DRAW RESULT;
                 mDatabase.update(mGroup);
                 return null;
             }
@@ -514,7 +514,7 @@ public class MembersListActivity extends Activity {
             }
 
             // Add a manual entry option
-            contact.contacts.add(new ContactModeRowDetails(Constants.NAME_ONLY_CONTACT_MODE, null));
+            contact.contacts.add(new ContactModeRowDetails(ContactModes.NAME_ONLY_CONTACT_MODE, null));
 
             showContactModeDialog(contact, mNameOverride);
         }
@@ -599,7 +599,7 @@ public class MembersListActivity extends Activity {
 
                 // Just some *very* basic validation - can't trust contacts.
                 if(phoneNo.length() > 0) {
-                    ContactModeRowDetails newContact = new ContactModeRowDetails(Integer.valueOf(Constants.SMS_CONTACT_MODE), phoneNo);
+                    ContactModeRowDetails newContact = new ContactModeRowDetails(Integer.valueOf(ContactModes.SMS_CONTACT_MODE), phoneNo);
                     results.add(newContact);
                 }
             }
@@ -637,7 +637,7 @@ public class MembersListActivity extends Activity {
                     email.lastIndexOf("@") < (email.length() - 1);
                 Log.v(TAG, "loadContact() - found email address " + email + " isValid: " + isValid);
                 if(isValid) {
-                    results.add(new ContactModeRowDetails(Integer.valueOf(Constants.EMAIL_CONTACT_MODE), email));
+                    results.add(new ContactModeRowDetails(Integer.valueOf(ContactModes.EMAIL_CONTACT_MODE), email));
                 }
             }
 
@@ -677,7 +677,7 @@ public class MembersListActivity extends Activity {
                       member.setContactMode(contactList.get(item).contactMode);
                       member.setContactDetail(contactList.get(item).contactDetail);
                       mDatabase.create(member);
-                      mGroup.setReady(false);
+                      // TODO DELETE THE DRAW RESULT
                       mDatabase.update(mGroup);
                   } else if (contact != null) { // can't modify contact mode anything when no contact!
                       // Check if they actually updated anything... don't make it redraw unnecessarily.
@@ -702,7 +702,7 @@ public class MembersListActivity extends Activity {
                       }
                       if (isDirty) {
                           mDatabase.update(member);
-                          mGroup.setReady(false);
+                          // TODO DELETE THE DRAW RESULT
                           mDatabase.update(mGroup);
                       }
                   };
@@ -737,7 +737,7 @@ public class MembersListActivity extends Activity {
                 @Override
                 protected Void doInBackground(Void... params) {
                     Log.v(TAG, "setRestrictions() - setting changed restrictions for: " + mMemberName + " length: " + newRestrictions.size());
-                    mGroup.setReady(false);
+                    // TODO DELETE THE DRAW RESULT
                     mDatabase.update(mGroup);
                     mDatabase.deleteAllRestrictionsForMember(mMemberId);
                     for(RestrictionRowDetails rester : newRestrictions) {

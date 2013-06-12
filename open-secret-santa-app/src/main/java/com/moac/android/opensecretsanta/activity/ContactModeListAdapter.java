@@ -46,11 +46,11 @@ public class ContactModeListAdapter extends ArrayAdapter<ContactModeRowDetails> 
         tv.setText(modeDetails.toString());
 
         ImageView iv = (ImageView) newView.findViewById(R.id.contactModeImage);
-        if(modeDetails.contactMode == Constants.SMS_CONTACT_MODE) {
+        if(modeDetails.contactMode == ContactModes.SMS_CONTACT_MODE) {
             iv.setImageResource(R.drawable.ic_phone);
-        } else if(modeDetails.contactMode == Constants.NAME_ONLY_CONTACT_MODE) {
+        } else if(modeDetails.contactMode == ContactModes.NAME_ONLY_CONTACT_MODE) {
             iv.setImageResource(R.drawable.ic_menu_view);
-        } else if(modeDetails.contactMode == Constants.EMAIL_CONTACT_MODE) {
+        } else if(modeDetails.contactMode == ContactModes.EMAIL_CONTACT_MODE) {
             iv.setImageResource(R.drawable.ic_email);
         }
 

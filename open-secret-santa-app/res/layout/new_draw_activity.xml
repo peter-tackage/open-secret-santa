@@ -7,8 +7,14 @@
 
   <fragment android:name="com.moac.android.opensecretsanta.fragment.AddMemberFragment"
     android:id="@+id/memberSearchFragment"
-    android:layout_weight="1"
+    android:layout_weight="0"
     android:layout_width="match_parent"
     android:layout_height="wrap_content" />
+
+  <fragment android:name="android.app.ListFragment"
+    android:id="@+id/memberListFragment"
+    android:layout_weight="1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
 
 </LinearLayout>
