@@ -16,8 +16,8 @@
 
   <properties>
     <environment>development</environment>
-    <ormlite-core.version>4.43</ormlite-core.version>
-    <ormlite-android.version>4.43</ormlite-android.version>
+    <ormlite-core.version>4.45</ormlite-core.version>
+    <ormlite-android.version>4.45</ormlite-android.version>
     <draw-engine.version>1.2.0</draw-engine.version>
   </properties>
 
