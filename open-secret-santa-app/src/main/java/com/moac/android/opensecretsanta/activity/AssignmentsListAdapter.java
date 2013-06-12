@@ -66,7 +66,7 @@ public class AssignmentsListAdapter extends ArrayAdapter<DrawResultEntry> {
 //        // Display viewed or sent... or neither.
 //        TextView tv2 = (TextView) newView.findViewById(R.id.dateViewTextView);
 //
-//        if(dre.getViewedDate() == DrawResultEntry.UNVIEWED_DATE && dre.getSentDate() == DrawResultEntry.UNSENT_DATE) {
+//        if(dre.getViewedDate() == DrawResultEntry.UNVIEWED_DATE && dre.getSentDate() == DrawResultEntry.UNSET_DATE) {
 //            Log.v(TAG, "Setting Unviewed: " + dre.getGiverName() + " v: " + dre.getViewedDate() + ", s: " + dre.getSentDate());
 //            tv2.setText("");
 //        } else {

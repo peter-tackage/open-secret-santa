@@ -3,15 +3,13 @@ package com.moac.android.opensecretsanta.types;
 import android.provider.BaseColumns;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
-import com.moac.android.opensecretsanta.activity.Constants;
 
 @DatabaseTable(tableName = DrawResultEntry.TABLE_NAME)
 public class DrawResultEntry extends PersistableObject {
 
     public static final String TABLE_NAME =  "draw_result_entries";
 
-    public static final long UNVIEWED_DATE = -1;
-    public static final long UNSENT_DATE = -1;
+    public static final long UNSET_DATE = -1;
 
     public static interface Columns extends BaseColumns {
         public static final String DRAW_RESULT_ID_COLUMN = "DRAW_RESULT_ID";
@@ -40,10 +38,10 @@ public class DrawResultEntry extends PersistableObject {
     private Member mReceiver;
 
     @DatabaseField(columnName = Columns.VIEWED_DATE_COLUMN)
-    private long mViewedDate = UNVIEWED_DATE;
+    private long mViewedDate = UNSET_DATE;
 
     @DatabaseField(columnName = Columns.SENT_DATE_COLUMN)
-    private long mSentDate = UNSENT_DATE;
+    private long mSentDate = UNSET_DATE;
 
     @DatabaseField(columnName = Columns.SEND_STATUS_COLUMN)
     private long mSendStatus;
