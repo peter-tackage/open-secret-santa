@@ -88,13 +88,52 @@ public class DatabaseTests extends AndroidTestCase {
         assertEquals(2, restrictionsM1.size());
     }
 
+    public void testCreateMultipleDrawResultEntriesPerMemberPerGroupFails() {
+
+        Group group1 = new GroupBuilder().build();
+        mDatabaseManager.create(group1);
+
+        Member m1 = new MemberBuilder().withName("m1").build();
+        Member m2 = new MemberBuilder().withName("m2").build();
+        Member m3 = new MemberBuilder().withName("m3").build();
+        m1.setGroup(group1);
+        m2.setGroup(group1);
+        m3.setGroup(group1);
+        mDatabaseManager.create(m1);
+        mDatabaseManager.create(m2);
+        mDatabaseManager.create(m3);
+
+        DrawResult dr1 = new DrawResultBuilder().withDrawDate(1).build();
+        dr1.setGroup(group1);
+        mDatabaseManager.create(dr1);
+
+        DrawResultEntry dre1 = new DrawResultEntry();
+        DrawResultEntry dre2 = new DrawResultEntry();
+        dre1.setDrawResult(dr1);
+        dre1.setGiverMember(m1);
+        dre1.setReceiverMember(m2);
+        // Now add a second illegal assignment
+        dre2.setDrawResult(dr1);
+        dre2.setGiverMember(m1);
+        dre2.setReceiverMember(m3);
+
+        mDatabaseManager.create(dre1);
+
+        try {
+            mDatabaseManager.create(dre2);
+            fail("A member should only have a single DRE per DrawResult");
+        } catch(SQLException exp) {
+            assertTrue(true);
+        }
+    }
+
     /**
      * FIXME This doesn't work at the moment - ORMLIte doesn't enforce the
      * unique constraints on the foreign key reference column. Probably because
      * its required when supporting one-to-many relationships and there's no
      * reasonable way for ORMLite to know what the intended relationship is.
      */
-//    public void testCreateSingleDrawResultPerGroupFails() {
+//    public void testCreateMultipleDrawResultsPerGroupFails() {
 //        // Add a Group
 //        // Add a Draw Result
 //

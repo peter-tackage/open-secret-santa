@@ -22,7 +22,16 @@ public class DrawResultEntry extends PersistableObject {
         public static final String SEND_STATUS_COLUMN = "SEND_STATUS";
     }
 
-    @DatabaseField(columnName = Columns.GIVER_MEMBER_ID_COLUMN, foreign = true, canBeNull = false,
+    /**
+     * Unique combo with mGiver and mDrawResult only prevents a giver having multiple recipients,
+     * rather than a recipient having multiple givers. I don't think there's a way to support
+     * two separate combos in ORMLite - eg mGiver/mDrawResult & mReceiver/mDrawResult.
+     *
+     * Perhaps this is an argument for is associating the DRE with the Members only and
+     * not also the DrawResult (which perhaps could be discarded)
+     */
+
+    @DatabaseField(columnName = Columns.GIVER_MEMBER_ID_COLUMN, foreign = true, canBeNull = false, uniqueCombo = true,
       columnDefinition = "integer references members (_id) on delete cascade")
     private Member mGiver;
 
@@ -39,7 +48,7 @@ public class DrawResultEntry extends PersistableObject {
     @DatabaseField(columnName = Columns.SEND_STATUS_COLUMN)
     private long mSendStatus;
 
-    @DatabaseField(columnName = Columns.DRAW_RESULT_ID_COLUMN, foreign = true, canBeNull = false,
+    @DatabaseField(columnName = Columns.DRAW_RESULT_ID_COLUMN, foreign = true, canBeNull = false, uniqueCombo = true,
       columnDefinition = "integer references draw_results (_id) on delete cascade")
     private DrawResult mDrawResult;
 
