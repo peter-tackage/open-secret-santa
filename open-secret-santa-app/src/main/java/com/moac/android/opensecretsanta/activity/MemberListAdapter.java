@@ -29,19 +29,18 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
 
         View v = _convertView;
         ViewHolder holder;
-        LinearLayout newView;
 
         if(v == null) {
-            newView = new LinearLayout(getContext());
-            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            _convertView = inflater.inflate(mResource, newView, true);
+            // Some good info on LayoutInflater here - http://stackoverflow.com/questions/5026926/making-sense-of-layoutinflater
+            LinearLayout parent = new LinearLayout(getContext());
+            v = LayoutInflater.from(getContext()).inflate(mResource, parent, false);
 
             holder = new ViewHolder();
-            holder.mMemberNameView = (TextView) newView.findViewById(R.id.member_name_textview);
-            holder.mContactModeView = (TextView) newView.findViewById(R.id.contact_mode_textview);
-            holder.mRestrictionsView = (TextView) newView.findViewById(R.id.restriction_count_textview);
+            holder.mMemberNameView = (TextView) v.findViewById(R.id.member_name_textview);
+            holder.mContactModeView = (TextView) v.findViewById(R.id.contact_mode_textview);
+            holder.mRestrictionsView = (TextView) v.findViewById(R.id.restriction_count_textview);
 
-            _convertView.setTag(holder);
+            v.setTag(holder);
         } else {
             // View already exists, retrieve the holder instance from the View
             holder = (ViewHolder) v.getTag();
