@@ -1,6 +1,5 @@
 package com.moac.android.opensecretsanta.types;
 
-import android.provider.BaseColumns;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -11,7 +10,7 @@ public class DrawResultEntry extends PersistableObject {
 
     public static final long UNSET_DATE = -1;
 
-    public static interface Columns extends BaseColumns {
+    public static interface Columns extends PersistableObject.Columns {
         public static final String DRAW_RESULT_ID_COLUMN = "DRAW_RESULT_ID";
         public static final String GIVER_MEMBER_ID_COLUMN = "GIVER_MEMBER_ID";
         public static final String RECEIVER_MEMBER_ID_COLUMN = "RECEIVER_MEMBER_ID";

@@ -1,6 +1,5 @@
 package com.moac.android.opensecretsanta.types;
 
-import android.provider.BaseColumns;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -9,7 +8,7 @@ public class Restriction extends PersistableObject {
 
     public static final String TABLE_NAME = "restrictions";
 
-    public static interface Columns extends BaseColumns {
+    public static interface Columns extends PersistableObject.Columns {
         public static final String MEMBER_ID_COLUMN = "MEMBER_ID";
         public static final String OTHER_MEMBER_ID_COLUMN = "OTHER_MEMBER_ID";
     }

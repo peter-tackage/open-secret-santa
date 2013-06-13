@@ -1,6 +1,5 @@
 package com.moac.android.opensecretsanta.types;
 
-import android.provider.BaseColumns;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -10,7 +9,7 @@ public class Group extends PersistableObject {
 
     public static final String TABLE_NAME =  "groups";
 
-    public static interface Columns extends BaseColumns {
+    public static interface Columns extends PersistableObject.Columns {
         public static final String NAME_COLUMN = "NAME";
         public static final String MESSAGE_COLUMN = "MESSAGE";
     }
