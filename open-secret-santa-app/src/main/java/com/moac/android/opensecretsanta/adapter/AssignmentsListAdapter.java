@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.activity;
+package com.moac.android.opensecretsanta.adapter;
 
 import android.content.Context;
 import android.util.Log;

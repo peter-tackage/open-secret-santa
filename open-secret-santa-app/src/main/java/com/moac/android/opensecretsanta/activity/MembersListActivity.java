@@ -24,6 +24,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
+import com.moac.android.opensecretsanta.adapter.*;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.types.Group;
 import com.moac.android.opensecretsanta.types.Member;
@@ -38,14 +39,14 @@ public class MembersListActivity extends Activity {
 
     private List<MemberRowDetails> items;
     private ArrayAdapter<MemberRowDetails> aa;
-    ListView mList;
+    private ListView mList;
 
     // UI Components
-    ImageButton mAddMemberButton = null;
-    ImageButton mAddManualEntryButton = null;
+    private ImageButton mAddMemberButton = null;
+    private ImageButton mAddManualEntryButton = null;
 
-    Group mGroup;
-    DatabaseManager mDatabase;
+    private  Group mGroup;
+    private  DatabaseManager mDatabase;
 
     private View.OnClickListener mDeleteClickListener;
     private View.OnClickListener mRestrictClickListener;
@@ -109,27 +110,28 @@ public class MembersListActivity extends Activity {
             }
         });
 
-        mDeleteClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final MemberListAdapter.DeleteViewTag tag = (MemberListAdapter.DeleteViewTag) view.getTag();
-                // Confirm delete of group
-                AlertDialog.Builder builder = new AlertDialog.Builder(MembersListActivity.this);
-                builder.setTitle("Delete " + tag.memberName + " from the group?")
-                  .setNegativeButton("Cancel", null)
-                  .setCancelable(true)
-                  .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                      @Override
-                      public void onClick(DialogInterface dialog, int id) {
-                          // The view is the button, which has as tag the memberId
-                          removeParticipantFromGroup(tag.memberId);
-                      }
-                  });
-                builder.setIcon(R.drawable.ic_menu_delete);
-                AlertDialog alert = builder.create();
-                alert.show();
-            }
-        };
+        // HACK COMMENTED OUT SO IT COMPILES - PT
+//        mDeleteClickListener = new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                final MemberListAdapter.DeleteViewTag tag = (MemberListAdapter.DeleteViewTag) view.getTag();
+//                // Confirm delete of group
+//                AlertDialog.Builder builder = new AlertDialog.Builder(MembersListActivity.this);
+//                builder.setTitle("Delete " + tag.memberName + " from the group?")
+//                  .setNegativeButton("Cancel", null)
+//                  .setCancelable(true)
+//                  .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                      @Override
+//                      public void onClick(DialogInterface dialog, int id) {
+//                          // The view is the button, which has as tag the mMemberId
+//                          removeParticipantFromGroup(tag.memberId);
+//                      }
+//                  });
+//                builder.setIcon(R.drawable.ic_menu_delete);
+//                AlertDialog alert = builder.create();
+//                alert.show();
+//            }
+//        };
 
         mRestrictClickListener = new View.OnClickListener() {
             @Override
@@ -162,7 +164,7 @@ public class MembersListActivity extends Activity {
 
                 // If null then is a manual entry - or at least, we can't do anything with it..
                 if(!(lookupKey == null || lookupKey.equals(""))) {
-                    Log.v(TAG, "onItemClick() lookupKey: " + lookupKey);
+                    Log.v(TAG, "onItemClick() mLookupKey: " + lookupKey);
                     // Override the name, in case it's different from the entry in the contacts list.
                     RetrieveMemberTask task = new RetrieveMemberTask(selected.getMemberName());
 
@@ -209,8 +211,9 @@ public class MembersListActivity extends Activity {
         }
 
         items = new ArrayList<MemberRowDetails>();
-        aa = new MemberListAdapter(this, R.layout.member_row, items, mRestrictClickListener, mDeleteClickListener);
-        mList.setAdapter(aa);
+        // HACKED TO COMPILE - PT
+    //    aa = new MemberListAdapter(this, R.layout.member_row, items, mRestrictClickListener, mDeleteClickListener);
+   //     mList.setAdapter(aa);
     }
 
     private void showManualEntryDialog() {
@@ -231,7 +234,7 @@ public class MembersListActivity extends Activity {
             @Override
             public void onClick(DialogInterface dialog, int whichButton) {
                 String memberName = input.getText().toString().trim();
-                Log.v(TAG, "memberName:" + memberName);
+                Log.v(TAG, "mMemberName:" + memberName);
                 if(memberName != null && !memberName.equals("")) {
                     Log.v(TAG, "Attempting to create/update: " + memberName);
                     Member member = new Member();
@@ -268,7 +271,7 @@ public class MembersListActivity extends Activity {
         final EditText input = new EditText(this);
         input.setSingleLine();
         input.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
-        input.setText(_selectedItem.memberName);
+        input.setText(_selectedItem.getMemberName());
 
         builder.setView(input);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -276,10 +279,10 @@ public class MembersListActivity extends Activity {
             public void onClick(DialogInterface dialog, int whichButton) {
 
                 String memberName = input.getText().toString().trim();
-                Log.v(TAG, "memberName:" + memberName);
+                Log.v(TAG, "mMemberName:" + memberName);
 
-                if(memberName != null && !memberName.equals("") && !memberName.equals(_selectedItem.memberName)) {
-                    Log.v(TAG, "Attempting to updating member name from: " + _selectedItem.memberName + " to " + memberName);
+                if(memberName != null && !memberName.equals("") && !memberName.equals(_selectedItem.getMemberName())) {
+                    Log.v(TAG, "Attempting to updating member name from: " + _selectedItem.getMemberName() + " to " + memberName);
                     updateMemberName(_selectedItem.getMemberId(), memberName);
                 }
                 // Force hide of the keyboard.
@@ -404,7 +407,7 @@ public class MembersListActivity extends Activity {
                     String lookupKey = member.getLookupKey();
                     List<Restriction> restrictionList = mDatabase.queryAllRestrictionsForMemberId(id);
 
-                    Log.v(TAG, "populdateMembersList() lookupKey: " + lookupKey);
+                    Log.v(TAG, "populdateMembersList() mLookupKey: " + lookupKey);
                     MemberRowDetails row = new MemberRowDetails(id, lookupKey, memberName, contactMode, contactDetail, restrictionList.size());
                     restrictions.put(id, row);
                     rows.add(row);
@@ -509,7 +512,7 @@ public class MembersListActivity extends Activity {
                 Toast.makeText(MembersListActivity.this,
                   "There's no contact details available for this person.", Toast.LENGTH_SHORT).show();
 
-                // Clear the lookupKey so this doesn't happen again.
+                // Clear the mLookupKey so this doesn't happen again.
                 contact.lookupKey = null;
             }
 
@@ -549,7 +552,7 @@ public class MembersListActivity extends Activity {
                     contactInfo.lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
                     contactInfo.name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
 
-                    Log.v(TAG, "loadContact() - lookupKey: " + contactInfo.lookupKey);
+                    Log.v(TAG, "loadContact() - mLookupKey: " + contactInfo.lookupKey);
                 }
             } finally {
                 cursor.close();
@@ -674,8 +677,8 @@ public class MembersListActivity extends Activity {
                       member.setGroup(mGroup);
                       member.setName(nameToUse);
                       member.setLookupKey(contact.lookupKey);
-                      member.setContactMode(contactList.get(item).contactMode);
-                      member.setContactDetail(contactList.get(item).contactDetail);
+                      member.setContactMode(contactList.get(item).getContactMode());
+                      member.setContactDetail(contactList.get(item).getContactDetail());
                       mDatabase.create(member);
                       // TODO DELETE THE DRAW RESULT
                       mDatabase.update(mGroup);
@@ -683,21 +686,21 @@ public class MembersListActivity extends Activity {
                       // Check if they actually updated anything... don't make it redraw unnecessarily.
                       boolean isDirty = false;
                       boolean isKeyDirty = member.getLookupKey() == null ? member.getLookupKey() != contact.lookupKey : !member.getLookupKey().equals(contact.lookupKey);
-                      boolean isContactDetailDirty = member.getContactDetail() == null ? member.getContactDetail() != contactList.get(item).contactDetail
-                         : !member.getContactDetail().equals(contactList.get(item).contactDetail);
+                      boolean isContactDetailDirty = member.getContactDetail() == null ? member.getContactDetail() != contactList.get(item).getContactDetail()
+                         : !member.getContactDetail().equals(contactList.get(item).getContactDetail());
 
                       // Check if there are actually updates
                       if (isKeyDirty) {
                           member.setLookupKey(contact.lookupKey);
                           isDirty = true;
                       }
-                      if (member.getContactMode() != (contactList.get(item).contactMode)) {
-                          member.setContactMode(contactList.get(item).contactMode);
+                      if (member.getContactMode() != (contactList.get(item).getContactMode())) {
+                          member.setContactMode(contactList.get(item).getContactMode());
                           isDirty = true;
                       }
 
                       if (isContactDetailDirty) {
-                          member.setContactDetail(contactList.get(item).contactDetail);
+                          member.setContactDetail(contactList.get(item).getContactDetail());
                           isDirty = true;
                       }
                       if (isDirty) {
@@ -741,11 +744,11 @@ public class MembersListActivity extends Activity {
                     mDatabase.update(mGroup);
                     mDatabase.deleteAllRestrictionsForMember(mMemberId);
                     for(RestrictionRowDetails rester : newRestrictions) {
-                        if(rester.restricted) {
-                            Log.v(TAG, "setRestrictions() - restricting: " + rester.toMemberId);
+                        if(rester.isRestricted()) {
+                            Log.v(TAG, "setRestrictions() - restricting: " + rester.getToMemberId());
                             Restriction r = new Restriction();
-                            Member fromMember = mDatabase.queryById(rester.fromMemberId, Member.class);
-                            Member toMember = mDatabase.queryById(rester.toMemberId, Member.class);
+                            Member fromMember = mDatabase.queryById(rester.getFromMemberId(), Member.class);
+                            Member toMember = mDatabase.queryById(rester.getToMemberId(), Member.class);
                             r.setMember(fromMember);
                             r.setOtherMember(toMember);
                             mDatabase.create(r);
@@ -776,7 +779,7 @@ public class MembersListActivity extends Activity {
             ArrayList<RestrictionRowDetails> rows = new ArrayList<RestrictionRowDetails>();
 
             List<Restriction> restrictionList = mDatabase.queryAllRestrictionsForMemberId(_memberId);
-            Log.v(TAG, "getRestrictionRows() - memberId: " + _memberId + " has restriction size: " + restrictionList.size());
+            Log.v(TAG, "getRestrictionRows() - mMemberId: " + _memberId + " has restriction size: " + restrictionList.size());
 
             List<Member> otherMembers = mDatabase.queryAllMembersForGroupExcept(mGroup.getId(), _memberId);
             for(Member otherMember : otherMembers) {
@@ -843,11 +846,11 @@ public class MembersListActivity extends Activity {
                 // TODO Got to be a better way than this.
                 // Should be able to access the list at the end and iterate.
 
-                // The view is the button, which has as tag the memberId to restrict or allow
+                // The view is the button, which has as tag the mMemberId to restrict or allow
                 RestrictionRowDetails res = (RestrictionRowDetails) view.getTag();
-                res.restricted = !((CheckBox) view).isChecked();
+                res.setRestricted(!((CheckBox) view).isChecked());
                 RestrictionBuilder.this.changed = true;
-                Log.v(TAG, "mRestrictClickListener() - res.restricted = " + res.restricted);
+                Log.v(TAG, "mRestrictClickListener() - res.restricted = " + res.isRestricted());
             }
         };
 
