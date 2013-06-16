@@ -19,6 +19,8 @@
     <ormlite-core.version>4.45</ormlite-core.version>
     <ormlite-android.version>4.45</ormlite-android.version>
     <draw-engine.version>1.2.0</draw-engine.version>
+    <javamail-for-android.version>1.0.0</javamail-for-android.version>
+    <picasso.version>1.1.1</picasso.version>
   </properties>
 
   <dependencies>
@@ -54,19 +56,25 @@
     <dependency>
       <groupId>javamail-android</groupId>
       <artifactId>mail</artifactId>
-      <version>1.0.0</version>
+      <version>${javamail-for-android.version}</version>
     </dependency>
 
     <dependency>
       <groupId>javamail-android</groupId>
       <artifactId>additionnal</artifactId>
-      <version>1.0.0</version>
+      <version>${javamail-for-android.version}</version>
     </dependency>
 
     <dependency>
       <groupId>javamail-android</groupId>
       <artifactId>activation</artifactId>
-      <version>1.0.0</version>
+      <version>${javamail-for-android.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.squareup.picasso</groupId>
+      <artifactId>picasso</artifactId>
+      <version>${picasso.version}</version>
     </dependency>
 
   </dependencies>
