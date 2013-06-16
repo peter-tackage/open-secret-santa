@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.types;
+package com.moac.android.opensecretsanta.model;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
@@ -29,7 +29,7 @@ public final class Member extends PersistableObject {
     @DatabaseField(columnName = Columns.CONTACT_DETAIL_COLUMN)
     private String mContactDetail;
 
-    // The types of communication to be used.
+    // The model of communication to be used.
     @DatabaseField(columnName = Columns.CONTACT_MODE_COLUMN, canBeNull = false)
     private int mContactMode = ContactModes.NAME_ONLY_CONTACT_MODE;
 

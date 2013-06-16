@@ -1,7 +1,7 @@
 package com.moac.android.opensecretsanta.test.builders;
 
 import com.moac.android.opensecretsanta.activity.ContactModes;
-import com.moac.android.opensecretsanta.types.Member;
+import com.moac.android.opensecretsanta.model.Member;
 
 public class MemberBuilder {
 

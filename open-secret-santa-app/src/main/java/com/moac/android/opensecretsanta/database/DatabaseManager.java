@@ -18,7 +18,7 @@ package com.moac.android.opensecretsanta.database;
 
 import android.database.SQLException;
 import com.j256.ormlite.stmt.DeleteBuilder;
-import com.moac.android.opensecretsanta.types.*;
+import com.moac.android.opensecretsanta.model.*;
 
 import java.util.List;
 

@@ -1,19 +1,10 @@
 package com.moac.android.opensecretsanta.adapter;
 
 import android.content.Context;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import com.moac.android.opensecretsanta.R;
-import com.moac.android.opensecretsanta.types.DrawResultEntry;
+import com.moac.android.opensecretsanta.model.DrawResultEntry;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class AssignmentsListAdapter extends ArrayAdapter<DrawResultEntry> {

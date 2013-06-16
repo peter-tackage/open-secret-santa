@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.types;
+package com.moac.android.opensecretsanta.model;
 
 import com.j256.ormlite.field.DatabaseField;
 

@@ -26,9 +26,9 @@ import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.adapter.*;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.types.Group;
-import com.moac.android.opensecretsanta.types.Member;
-import com.moac.android.opensecretsanta.types.Restriction;
+import com.moac.android.opensecretsanta.model.Group;
+import com.moac.android.opensecretsanta.model.Member;
+import com.moac.android.opensecretsanta.model.Restriction;
 
 import java.util.*;
 
@@ -558,7 +558,7 @@ public class MembersListActivity extends Activity {
                 cursor.close();
             }
 
-            // TODO - This should be expanded to handle other communication types.
+            // TODO - This should be expanded to handle other communication model.
             contactInfo.contacts.addAll(findMobileNumbers(contentResolver, contactId));
             contactInfo.contacts.addAll(findEmailAddresses(contentResolver, contactId));
         }

@@ -1,7 +1,8 @@
-package com.moac.android.opensecretsanta.types;
+package com.moac.android.opensecretsanta.model;
 
 import android.util.Log;
 import com.moac.android.opensecretsanta.activity.ContactModes;
+import com.moac.android.opensecretsanta.activity.ShareResults;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class Utils {
 
     public static String buildSuccessMessage(ShareResults result) {
 
-        // TODO Change for different types.
+        // TODO Change for different model.
         StringBuilder s = new StringBuilder();
         //s.append(result.sentSMSCount);
         s.append("Messages sent to ");

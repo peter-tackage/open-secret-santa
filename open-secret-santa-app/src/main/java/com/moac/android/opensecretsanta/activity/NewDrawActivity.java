@@ -3,7 +3,6 @@ package com.moac.android.opensecretsanta.activity;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.ListFragment;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
@@ -11,9 +10,8 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
-import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.fragment.MemberListFragment;
-import com.moac.android.opensecretsanta.types.Group;
+import com.moac.android.opensecretsanta.model.Group;
 
 import java.util.List;
 

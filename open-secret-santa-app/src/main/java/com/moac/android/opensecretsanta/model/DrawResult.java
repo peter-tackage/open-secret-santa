@@ -1,11 +1,8 @@
-package com.moac.android.opensecretsanta.types;
+package com.moac.android.opensecretsanta.model;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @DatabaseTable(tableName = DrawResult.TABLE_NAME)
 public class DrawResult extends PersistableObject {

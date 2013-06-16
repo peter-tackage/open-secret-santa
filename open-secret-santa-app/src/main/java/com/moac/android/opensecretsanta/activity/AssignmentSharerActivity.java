@@ -1,36 +1,6 @@
 package com.moac.android.opensecretsanta.activity;
 
-import android.accounts.*;
 import android.app.*;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.telephony.SmsManager;
-import android.text.Editable;
-import android.text.InputType;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.*;
-import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
-import com.moac.android.opensecretsanta.R;
-import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.mail.GmailOAuth2Sender;
-import com.moac.android.opensecretsanta.types.*;
-import com.moac.drawengine.DrawEngine;
-import com.moac.drawengine.DrawEngineProvider;
-import com.moac.drawengine.DrawFailureException;
-import com.moac.drawengine.InvalidDrawEngineException;
-
-import java.util.*;
 
 //import android.content.BroadcastReceiver;
 //import android.content.IntentFilter;
@@ -568,7 +538,7 @@ public class AssignmentSharerActivity extends Activity {
 //        Log.v(TAG, "sendSMS() - sending to: " + to);
 //        Log.v(TAG, "sendSMS() - sending msg: " + txt);
 //
-//        // TODO What about the encoding types?
+//        // TODO What about the encoding model?
 //
 //		/*
 //         * See Professional Android 2 Development. pg402

@@ -1,6 +1,6 @@
 package com.moac.android.opensecretsanta.test.builders;
 
-import com.moac.android.opensecretsanta.types.Group;
+import com.moac.android.opensecretsanta.model.Group;
 
 public class GroupBuilder {
 

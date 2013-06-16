@@ -1,4 +1,6 @@
-package com.moac.android.opensecretsanta.types;
+package com.moac.android.opensecretsanta.activity;
+
+import com.moac.android.opensecretsanta.model.DrawResultEntry;
 
 import java.util.ArrayList;
 import java.util.List;

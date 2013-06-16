@@ -8,7 +8,7 @@ import com.moac.android.opensecretsanta.test.builders.DrawResultBuilder;
 import com.moac.android.opensecretsanta.test.builders.DrawResultEntryBuilder;
 import com.moac.android.opensecretsanta.test.builders.GroupBuilder;
 import com.moac.android.opensecretsanta.test.builders.MemberBuilder;
-import com.moac.android.opensecretsanta.types.*;
+import com.moac.android.opensecretsanta.model.*;
 
 import java.util.List;
 

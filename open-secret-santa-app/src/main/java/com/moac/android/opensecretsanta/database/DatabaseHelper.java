@@ -27,7 +27,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
-import com.moac.android.opensecretsanta.types.*;
+import com.moac.android.opensecretsanta.model.*;
 
 import java.util.HashMap;
 import java.util.List;

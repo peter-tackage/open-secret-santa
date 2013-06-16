@@ -1,6 +1,6 @@
 package com.moac.android.opensecretsanta.test.builders;
 
-import com.moac.android.opensecretsanta.types.DrawResult;
+import com.moac.android.opensecretsanta.model.DrawResult;
 
 import java.util.Date;
 
