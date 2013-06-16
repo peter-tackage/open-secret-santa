@@ -14,7 +14,7 @@ public final class Member extends PersistableObject {
         public static final String LOOKUP_KEY = "LOOKUP_KEY";
         public static final String NAME_COLUMN = "NAME";
         public static final String CONTACT_MODE_COLUMN = "CONTACT_MODE";
-        public static final String CONTACT_DETAIL_COLUMN = "CONTACT_DETAIL";
+        public static final String CONTACT_ADDRESS_COLUMN = "CONTACT_ADDRESS";
         public static final String GROUP_ID_COLUMN = "GROUP_ID";
     }
 
@@ -26,8 +26,8 @@ public final class Member extends PersistableObject {
     private String mName;
 
     // the email, the  phone number, the whatever.
-    @DatabaseField(columnName = Columns.CONTACT_DETAIL_COLUMN)
-    private String mContactDetail;
+    @DatabaseField(columnName = Columns.CONTACT_ADDRESS_COLUMN)
+    private String mContactAddress;
 
     // The model of communication to be used.
     @DatabaseField(columnName = Columns.CONTACT_MODE_COLUMN, canBeNull = false)
@@ -43,8 +43,8 @@ public final class Member extends PersistableObject {
     public String getName() { return mName; }
     public void setName(String _name) { mName = _name; }
 
-    public String getContactDetail() { return mContactDetail; }
-    public void setContactDetail(String _contactDetail) { mContactDetail = _contactDetail; }
+    public String getContactAddress() { return mContactAddress; }
+    public void setContactAddress(String _contactAddress) { mContactAddress = _contactAddress; }
 
     public int getContactMode() { return mContactMode; }
     public void setContactMode(int _contactMode) { mContactMode = _contactMode; }
@@ -62,8 +62,8 @@ public final class Member extends PersistableObject {
         sb.append(getId());
         sb.append(", Name: ");
         sb.append(getName());
-        sb.append(", Contact Detail: ");
-        sb.append(getContactDetail());
+        sb.append(", Contact Address: ");
+        sb.append(getContactAddress());
         sb.append(", Contact Mode: ");
         sb.append(getContactMode());
         sb.append(", Lookup Key: ");
@@ -79,7 +79,7 @@ public final class Member extends PersistableObject {
 
         Member that = (Member) other;
         return
-          (null == this.mContactDetail ? (this.mContactDetail == that.mContactDetail) : this.mContactDetail.equals(that.mContactDetail))
+          (null == this.mContactAddress ? (this.mContactAddress == that.mContactAddress) : this.mContactAddress.equals(that.mContactAddress))
             &&
             (null == this.mLookupKey ? (this.mLookupKey == that.mLookupKey) : this.mLookupKey.equals(that.mLookupKey))
             &&

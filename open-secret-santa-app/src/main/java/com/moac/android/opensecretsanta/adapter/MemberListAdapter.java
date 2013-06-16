@@ -1,6 +1,7 @@
 package com.moac.android.opensecretsanta.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,8 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
     @Override
     public View getView(int _position, View _convertView, ViewGroup _parent) {
 
+        Log.v(TAG, "getView() - creating for position: " + _position);
+
         View v = _convertView;
         TextView memberNameView;
         TextView contactModeView;
@@ -37,8 +40,7 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
         // Good info on LayoutInflater here - http://stackoverflow.com/questions/5026926/making-sense-of-layoutinflater
 
         if(v == null) {
-            LinearLayout root = new LinearLayout(getContext());
-            v = LayoutInflater.from(getContext()).inflate(mResource, root, false);
+            v = LayoutInflater.from(getContext()).inflate(mResource, _parent, false);
 
             memberNameView = (TextView) v.findViewById(R.id.member_name_textview);
             contactModeView = (TextView) v.findViewById(R.id.contact_mode_textview);

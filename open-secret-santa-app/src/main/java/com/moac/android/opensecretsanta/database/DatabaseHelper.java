@@ -199,11 +199,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         Log.i(TAG, "upgradeToVersion2 - start.");
 
         // Something like - update members set contact_detail = null  where contact_detail = '';
-
+        final String CONTACT_DETAIL_COLUMN="CONTACT_DETAIL"; // Column has changed.
         ContentValues values = new ContentValues();
-        values.putNull(Member.Columns.CONTACT_DETAIL_COLUMN);
+        values.putNull(CONTACT_DETAIL_COLUMN);
 
-        int updatedRows = db.update(Member.TABLE_NAME, values, Member.Columns.CONTACT_DETAIL_COLUMN + " = ''", null);
+        int updatedRows = db.update(Member.TABLE_NAME, values, CONTACT_DETAIL_COLUMN + " = ''", null);
         Log.i(TAG, "upgradeToVersion2 - updatedRows: " + updatedRows);
         return true;
     }

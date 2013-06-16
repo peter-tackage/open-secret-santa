@@ -397,13 +397,13 @@ public class AssignmentSharerActivity extends Activity {
 //            Member m1 = mDatabase.queryById(m1Id, Member.class);
 //
 //            String name2 = mDatabase.queryById(_assignments.get(m1Id), Member.class).getName();
-//            Log.v(TAG, "saveDrawResult() - saving dre: " + m1.getName() + " - " + name2 + " with: " + m1.getContactMode() + " " + m1.getContactDetail());
+//            Log.v(TAG, "saveDrawResult() - saving dre: " + m1.getName() + " - " + name2 + " with: " + m1.getContactMode() + " " + m1.getContactAddress());
 //
 //            DrawResultEntry dre = new DrawResultEntry();
 //            dre.setGiverName(m1.getName());
 //            dre.setReceiverName(name2);
 //            dre.setContactMode(m1.getContactMode());
-//            dre.setContactDetail(m1.getContactDetail());
+//            dre.setContactAddress(m1.getContactAddress());
 //            dre.setDrawResult(dr);
 //            mDatabase.create(dre);
 //        }
@@ -746,13 +746,13 @@ public class AssignmentSharerActivity extends Activity {
 //                            Log.v(TAG, "shareAllAssignments() - email entry");
 //
 //                            // Email-ru
-//                            sendEmail(entry.getContactDetail(),
+//                            sendEmail(entry.getContactAddress(),
 //                              Utils.buildPersonalisedMsg(msg, entry.getGiverName(), entry.getReceiverName()), "Your Secret Santa assignment from Open Secret Santa", mAccount.name, mToken);
 //                        } else if(entry.getContactMode() == ContactModes.SMS_CONTACT_MODE) {
 //                            Log.v(TAG, "shareAllAssignments() - SMS entry");
 //
 //                            // SMS
-//                            results.sentSMSCount += sendSms(entry.getContactDetail(),
+//                            results.sentSMSCount += sendSms(entry.getContactAddress(),
 //                              Utils.buildPersonalisedMsg(msg, entry.getGiverName(), entry.getReceiverName()),
 //                              mSendMultipartSMS);
 //                        } else {
@@ -768,7 +768,7 @@ public class AssignmentSharerActivity extends Activity {
 //                        }
 //                    } catch(Exception exp) {
 //                        // TODO This is wrong
-//                        Log.i(TAG, "Failed to send entry: " + entry.getGiverName() + " (" + entry.getContactDetail() + ")" + " (" + entry.getContactMode() + ")" + exp);
+//                        Log.i(TAG, "Failed to send entry: " + entry.getGiverName() + " (" + entry.getContactAddress() + ")" + " (" + entry.getContactMode() + ")" + exp);
 //                        results.failedMembers.add(entry);
 //                    } finally {
 //                        // Always do this - ensure dialog gets to 100% (otherwise looks weird).

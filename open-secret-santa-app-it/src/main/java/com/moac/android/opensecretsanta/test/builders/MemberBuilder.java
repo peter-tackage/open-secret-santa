@@ -6,7 +6,7 @@ import com.moac.android.opensecretsanta.model.Member;
 public class MemberBuilder {
 
     private String name = "member1";
-    private String detail = "+1191191";
+    private String address = "+1191191";
     private int mode = ContactModes.SMS_CONTACT_MODE;
     private String lookupKey = "AAABBB1111";
 
@@ -16,8 +16,8 @@ public class MemberBuilder {
         return this;
     }
 
-    public MemberBuilder withContactDetail(String detail) {
-        this.detail = detail;
+    public MemberBuilder withContactAddress(String address) {
+        this.address = address;
         return this;
     }
 
@@ -35,7 +35,7 @@ public class MemberBuilder {
         Member member  = new Member();
         member.setName(name);
         member.setLookupKey(lookupKey);
-        member.setContactDetail(detail);
+        member.setContactAddress(address);
         member.setContactMode(mode);
         return member;
     }
