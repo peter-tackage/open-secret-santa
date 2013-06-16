@@ -31,6 +31,7 @@ public class NewDrawActivity extends Activity {
         setContentView(R.layout.new_draw_activity);
         mPager = (ViewPager)findViewById(R.id.draws_pager);
         List<Group> groups = OpenSecretSantaApplication.getDatabase().queryAll(Group.class);
+        Log.v(TAG, "initialiseUI() - group count: " + groups.size());
         mPagerAdapter = new DrawPagerAdapter(getFragmentManager(), groups);
         mPager.setAdapter(mPagerAdapter);
     }
@@ -39,9 +40,7 @@ public class NewDrawActivity extends Activity {
     public void onStart() {
         super.onStart();
         Log.v(TAG, "onStart() - start");
-
         // We no longer expose the concept of the Group to the user.
-
         Log.v(TAG, "onStart() - end");
     }
 
@@ -51,6 +50,7 @@ public class NewDrawActivity extends Activity {
 
         public DrawPagerAdapter(FragmentManager _fm, List<Group> _groups) {
             super(_fm);
+            Log.i(TAG, "DrawPagerAdapter() - creating with groups: " + _groups.size());
             mGroups = _groups;
         }
 

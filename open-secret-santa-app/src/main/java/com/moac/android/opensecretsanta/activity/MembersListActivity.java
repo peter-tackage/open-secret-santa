@@ -402,7 +402,7 @@ public class MembersListActivity extends Activity {
                     //  A member's name is unique for a group.
                     String memberName = member.getName();
                     long id = member.getId();
-                    String contactDetail = member.getContactDetail();
+                    String contactDetail = member.getContactAddress();
                     int contactMode = member.getContactMode();
                     String lookupKey = member.getLookupKey();
                     List<Restriction> restrictionList = mDatabase.queryAllRestrictionsForMemberId(id);
@@ -678,7 +678,7 @@ public class MembersListActivity extends Activity {
                       member.setName(nameToUse);
                       member.setLookupKey(contact.lookupKey);
                       member.setContactMode(contactList.get(item).getContactMode());
-                      member.setContactDetail(contactList.get(item).getContactDetail());
+                      member.setContactAddress(contactList.get(item).getContactDetail());
                       mDatabase.create(member);
                       // TODO DELETE THE DRAW RESULT
                       mDatabase.update(mGroup);
@@ -686,8 +686,8 @@ public class MembersListActivity extends Activity {
                       // Check if they actually updated anything... don't make it redraw unnecessarily.
                       boolean isDirty = false;
                       boolean isKeyDirty = member.getLookupKey() == null ? member.getLookupKey() != contact.lookupKey : !member.getLookupKey().equals(contact.lookupKey);
-                      boolean isContactDetailDirty = member.getContactDetail() == null ? member.getContactDetail() != contactList.get(item).getContactDetail()
-                         : !member.getContactDetail().equals(contactList.get(item).getContactDetail());
+                      boolean isContactDetailDirty = member.getContactAddress() == null ? member.getContactAddress() != contactList.get(item).getContactDetail()
+                         : !member.getContactAddress().equals(contactList.get(item).getContactDetail());
 
                       // Check if there are actually updates
                       if (isKeyDirty) {
@@ -700,7 +700,7 @@ public class MembersListActivity extends Activity {
                       }
 
                       if (isContactDetailDirty) {
-                          member.setContactDetail(contactList.get(item).getContactDetail());
+                          member.setContactAddress(contactList.get(item).getContactDetail());
                           isDirty = true;
                       }
                       if (isDirty) {

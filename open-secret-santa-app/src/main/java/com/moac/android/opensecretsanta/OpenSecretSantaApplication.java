@@ -4,9 +4,13 @@ import android.accounts.*;
 import android.app.Application;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import com.moac.android.opensecretsanta.activity.ContactModes;
 import com.moac.android.opensecretsanta.database.DatabaseHelper;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.mail.GmailOAuth2Sender;
+import com.moac.android.opensecretsanta.model.Group;
+import com.moac.android.opensecretsanta.model.Member;
+import com.moac.android.opensecretsanta.util.Utils;
 
 public class OpenSecretSantaApplication extends Application {
 
@@ -18,6 +22,12 @@ public class OpenSecretSantaApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mDatabaseManager = initDatabase();
+        Utils.doOnce(getApplicationContext(), "initTestData", new Runnable() {
+            @Override
+            public void run() {
+              loadTestData();
+            }
+        });
     }
 
     public static DatabaseManager getDatabase() {
@@ -69,5 +79,38 @@ public class OpenSecretSantaApplication extends Application {
 
         return result;
     }
+
+
+    private void loadTestData() {
+
+        // Add a Group
+        Group group1 = new Group();
+        group1.setName("Test Group");
+        mDatabaseManager.create(group1);
+
+        // Add some Members
+        Member m1 = new Member();
+        m1.setName("John Goodman");
+        m1.setContactMode(ContactModes.NAME_ONLY_CONTACT_MODE);
+
+        Member m2 = new Member();
+        m2.setName("Mary Arthur");
+        m2.setContactMode(ContactModes.EMAIL_CONTACT_MODE);
+        m2.setContactAddress("test@tester.com");
+
+        Member m3 = new Member();
+        m3.setName("Some Person");
+        m3.setContactMode(ContactModes.SMS_CONTACT_MODE);
+        m3.setContactAddress("+49232267513213");
+
+        m1.setGroup(group1);
+        m2.setGroup(group1);
+        m3.setGroup(group1);
+        mDatabaseManager.create(m1);
+        mDatabaseManager.create(m2);
+        mDatabaseManager.create(m3);
+    }
+
+
 
 }

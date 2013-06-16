@@ -1,12 +1,30 @@
-package com.moac.android.opensecretsanta.model;
+package com.moac.android.opensecretsanta.util;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import com.moac.android.opensecretsanta.activity.ContactModes;
 import com.moac.android.opensecretsanta.activity.ShareResults;
+import com.moac.android.opensecretsanta.model.Member;
 
 import java.util.List;
 
 public class Utils {
+
+    private static final String DO_ONCE_TAG = "do_once";
+
+    public static boolean doOnce(Context _context, String _taskTag, Runnable _task) {
+        final String prefTag = DO_ONCE_TAG + _taskTag;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(_context);
+        boolean isDone = prefs.getBoolean(prefTag, false);
+        if (!isDone) {
+            _task.run();
+            prefs.edit().putBoolean(prefTag, true).commit();
+            return true;
+        }
+        return false;
+    }
 
     public static final String TAG = Utils.class.getSimpleName();
 
