@@ -27,47 +27,46 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
     public View getView(int _position, View _convertView, ViewGroup _parent) {
 
         View v = _convertView;
-        ViewHolder holder;
+        TextView memberNameView;
+        TextView contactModeView;
+        TextView restrictionsView;
 
         // Attempt to reuse recycled view if possible
         // Refer - http://lucasr.org/2012/04/05/performance-tips-for-androids-listview/
+        // More up-to-date info here - http://www.piwai.info/android-adapter-good-practices/ (specifically using Tag)
         // Good info on LayoutInflater here - http://stackoverflow.com/questions/5026926/making-sense-of-layoutinflater
 
         if(v == null) {
             LinearLayout root = new LinearLayout(getContext());
             v = LayoutInflater.from(getContext()).inflate(mResource, root, false);
 
-            holder = new ViewHolder();
-            holder.mMemberNameView = (TextView) v.findViewById(R.id.member_name_textview);
-            holder.mContactModeView = (TextView) v.findViewById(R.id.contact_mode_textview);
-            holder.mRestrictionsView = (TextView) v.findViewById(R.id.restriction_count_textview);
+            memberNameView = (TextView) v.findViewById(R.id.member_name_textview);
+            contactModeView = (TextView) v.findViewById(R.id.contact_mode_textview);
+            restrictionsView = (TextView) v.findViewById(R.id.restriction_count_textview);
 
-            v.setTag(holder);
+            v.setTag(R.id.member_name_textview, memberNameView);
+            v.setTag(R.id.contact_mode_textview, contactModeView);
+            v.setTag(R.id.restriction_count_textview, restrictionsView);
         } else {
             // Recycled View is available, retrieve the holder instance from the View
-            holder = (ViewHolder) v.getTag();
+            memberNameView = (TextView)v.getTag(R.id.member_name_textview);
+            contactModeView = (TextView)v.getTag(R.id.contact_mode_textview);
+            restrictionsView = (TextView)v.getTag(R.id.restriction_count_textview);
         }
 
         MemberRowDetails details = getItem(_position);
 
         // Assign the view with its content.
-        holder.mMemberNameView.setText(details.mMemberName);
-        holder.mContactModeView.setText(details.mContactDetail);
+        memberNameView.setText(details.mMemberName);
+        contactModeView.setText(details.mContactDetail);
 
         if(details.mRestrictionCount > 0) {
-            holder.mRestrictionsView.setText(String.valueOf(details.mRestrictionCount));
-            holder.mRestrictionsView.setVisibility(View.VISIBLE);
+            restrictionsView.setText(String.valueOf(details.mRestrictionCount));
+            restrictionsView.setVisibility(View.VISIBLE);
         } else {
-            holder.mRestrictionsView.setVisibility(View.GONE);
+            restrictionsView.setVisibility(View.GONE);
         }
 
         return v;
-    }
-
-    // ViewHolder keeps references to avoid making unnecessary calls to findViewById
-    private class ViewHolder {
-        TextView mMemberNameView;
-        TextView mRestrictionsView;
-        TextView mContactModeView;
     }
 }

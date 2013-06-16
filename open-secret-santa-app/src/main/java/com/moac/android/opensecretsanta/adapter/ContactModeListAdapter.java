@@ -30,37 +30,36 @@ public class ContactModeListAdapter extends ArrayAdapter<ContactModeRowDetails> 
     public View getView(int _position, View _convertView, ViewGroup _parent) {
 
         View v = _convertView;
-        ViewHolder holder;
-        if(v == null) {
-            LinearLayout root = new LinearLayout(getContext());
-            LayoutInflater inflator = LayoutInflater.from(getContext());
-            v = inflator.inflate(mResource, root, true);
+        ImageView contactModeImageView;
+        TextView contactModeView;
 
-            holder = new ViewHolder();
-            holder.mContactModeImageView = (ImageView) v.findViewById(R.id.contactModeImage);
-            holder.mContactModeView = (TextView) v.findViewById(R.id.contactModeTextView);
-            v.setTag(holder);
+        if(v == null) {
+            LayoutInflater inflator = LayoutInflater.from(getContext());
+            v = inflator.inflate(mResource, _parent, false);
+
+            contactModeImageView = (ImageView) v.findViewById(R.id.contactModeImage);
+            contactModeView = (TextView) v.findViewById(R.id.contactModeTextView);
+            v.setTag(R.id.contactModeImage, contactModeImageView);
+            v.setTag(R.id.contactModeTextView, contactModeView);
+
         } else {
-            holder = (ViewHolder) v.getTag();
+            contactModeImageView = (ImageView)v.getTag(R.id.contactModeImage);
+            contactModeView = (TextView)v.getTag(R.id.contactModeTextView);
         }
 
         ContactModeRowDetails modeDetails = getItem(_position);
 
-        holder.mContactModeView.setText(modeDetails.toString());
+        contactModeView.setText(modeDetails.toString());
 
         if(modeDetails.mContactMode == ContactModes.SMS_CONTACT_MODE) {
-            holder.mContactModeImageView.setImageResource(R.drawable.ic_phone);
+            contactModeImageView.setImageResource(R.drawable.ic_phone);
         } else if(modeDetails.mContactMode == ContactModes.NAME_ONLY_CONTACT_MODE) {
-            holder.mContactModeImageView.setImageResource(R.drawable.ic_menu_view);
+            contactModeImageView.setImageResource(R.drawable.ic_menu_view);
         } else if(modeDetails.mContactMode == ContactModes.EMAIL_CONTACT_MODE) {
-            holder.mContactModeImageView.setImageResource(R.drawable.ic_email);
+            contactModeImageView.setImageResource(R.drawable.ic_email);
         }
 
         return v;
     }
 
-    private class ViewHolder {
-        ImageView mContactModeImageView;
-        TextView mContactModeView;
-    }
 }
