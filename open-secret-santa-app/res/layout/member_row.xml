@@ -13,15 +13,30 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:src="@drawable/icon"/>
+    android:src="@drawable/icon"
+    android:paddingRight="8dp" />
 
 
-  <TwoLineListItem
+  <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:text="Meli Melo"
+    android:id="@+id/member_name_textview"
+    android:layout_toLeftOf="@+id/restriction_count_textview"
+    android:layout_toRightOf="@+id/member_imageView" />
+
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="test@example.com"
+    android:id="@+id/contact_mode_textview"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
     android:layout_toRightOf="@+id/member_imageView"
-    android:id="@+id/member_listlineitem"
-    android:layout_toLeftOf="@+id/restriction_count_textview"/>
+    android:layout_toLeftOf="@+id/restriction_count_textview"
+    android:singleLine="true"
+    android:textColor="@color/dark_grey"
+    android:textSize="12sp" />
 
   <TextView
     android:id="@+id/restriction_count_textview"
