@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   android:orientation="horizontal"
-  android:id="@+id/member_list_row">
+  android:id="@+id/member_list_row"
+  android:padding="8dp">
 
 
   <ImageView
@@ -12,30 +13,15 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:src="@drawable/icon" />
+    android:src="@drawable/icon"/>
 
-  <LinearLayout
-    android:orientation="vertical"
+
+  <TwoLineListItem
     android:layout_width="wrap_content"
-    android:layout_height="match_parent"
-    android:paddingLeft="5dp"
-    android:layout_weight="1">
-
-    <TextView
-      android:id="@+id/member_name_textview"
-      android:text="Member Name"
-      android:textAppearance="?android:attr/textAppearanceListItem"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content" />
-
-    <TextView
-      android:id="@+id/contact_mode_textview"
-      android:text="example@example.com"
-      android:textAppearance="?android:attr/textAppearanceListItemSmall"
-      android:layout_height="wrap_content"
-      android:layout_width="wrap_content" />
-
-  </LinearLayout>
+    android:layout_height="wrap_content"
+    android:layout_toRightOf="@+id/member_imageView"
+    android:id="@+id/member_listlineitem"
+    android:layout_toLeftOf="@+id/restriction_count_textview"/>
 
   <TextView
     android:id="@+id/restriction_count_textview"
@@ -45,6 +31,8 @@
     android:background="@android:color/holo_purple"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical|right" />
+    android:layout_alignParentTop="true"
+    android:layout_alignParentRight="true"
+    android:textSize="12sp" />
 
-</LinearLayout>
+</RelativeLayout>
