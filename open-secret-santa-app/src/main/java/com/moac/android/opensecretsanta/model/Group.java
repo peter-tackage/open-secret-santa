@@ -12,6 +12,7 @@ public class Group extends PersistableObject {
     public static interface Columns extends PersistableObject.Columns {
         public static final String NAME_COLUMN = "NAME";
         public static final String MESSAGE_COLUMN = "MESSAGE";
+        public static final String CREATED_AT = "CREATED_AT";
     }
 
     @DatabaseField(columnName = Columns.NAME_COLUMN, unique = true, canBeNull = false)
@@ -20,11 +21,17 @@ public class Group extends PersistableObject {
     @DatabaseField(columnName = Columns.MESSAGE_COLUMN)
     private String mMessage = "";
 
+    @DatabaseField(columnName =  Columns.CREATED_AT)
+    private long mCreatedAt;
+
     @ForeignCollectionField(eager = false)
     private java.util.Collection<Member> mMembers;
 
     public String getName() { return mName; }
     public void setName(String _name) { mName = _name; }
+
+    public long getCreatedAt() { return mCreatedAt; }
+    public void setCreatedAt(long _createdAt) { mCreatedAt = _createdAt; }
 
     public void setMessage(String _message) { mMessage = _message; }
     public String getMessage() { return mMessage; }
