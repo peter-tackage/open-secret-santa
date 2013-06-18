@@ -52,8 +52,8 @@ public class NewDrawActivity extends Activity {
           this,                  /* host Activity */
           mDrawerLayout,         /* DrawerLayout object */
           R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
-          R.string.drawer_open,  /* "open drawer" description */
-          R.string.drawer_close  /* "close drawer" description */
+          R.string.drawer_open_accesshint,  /* "open drawer" description */
+          R.string.drawer_close_accesshint  /* "close drawer" description */
         );
 
         // Set the drawer toggle as the DrawerListener
@@ -104,7 +104,7 @@ public class NewDrawActivity extends Activity {
 
     private void displayInitialGroup() {
         long groupId = PreferenceManager.getDefaultSharedPreferences(this).getLong(MOST_RECENT_GROUP_KEY, PersistableObject.UNSET_ID);
-        if (groupId == PersistableObject.UNSET_ID)
+        if(groupId == PersistableObject.UNSET_ID)
             return;
 
         showMembersListForGroup(groupId);
@@ -129,9 +129,9 @@ public class NewDrawActivity extends Activity {
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         Fragment existing = fragmentManager.findFragmentByTag(MEMBERS_LIST_TAG);
-        if (existing!=null)
+        if(existing != null)
             transaction.remove(existing);
-         transaction.add(R.id.content_frame, fragment, MEMBERS_LIST_TAG)
+        transaction.add(R.id.content_frame, fragment, MEMBERS_LIST_TAG)
           .commit();
 
         // Update preferences to save last viewed Group

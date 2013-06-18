@@ -68,7 +68,10 @@
   <string name="empty_member_list_label">No members in draw</string>
   <string name="prev_draw_label">Prev</string>
   <string name="next_draw_label">Next</string>
-  <string name="drawer_open">open drawer</string>
-  <string name="drawer_close">close drawer</string>
+
+  <!-- Accessibility hints -->
+  <string name="drawer_open_accesshint">open drawer</string>
+  <string name="drawer_close_accesshint">close drawer</string>
+  <string name="member_avatar_accesshint">member avatar</string>
 
 </resources>

@@ -7,18 +7,18 @@ public class RestrictionRowDetails implements Comparable<RestrictionRowDetails> 
     protected String mToMemberName;
     protected boolean mIsRestricted;
 
-    public RestrictionRowDetails(long fromMemberId, long toMemberId, String toMemberName, boolean restricted) {
-        this.mFromMemberId = fromMemberId;
-        this.mToMemberId = toMemberId;
-        this.mToMemberName = toMemberName;
-        this.mIsRestricted = restricted;
+    public RestrictionRowDetails(long _fromMemberId, long _toMemberId, String _toMemberName, boolean _isRestricted) {
+        this.mFromMemberId = _fromMemberId;
+        this.mToMemberId = _toMemberId;
+        this.mToMemberName = _toMemberName;
+        this.mIsRestricted = _isRestricted;
     }
 
     public boolean isRestricted() { return mIsRestricted; }
     public void setRestricted(boolean _restricted) { mIsRestricted = _restricted; }
+
     public long getFromMemberId() { return mFromMemberId; }
     public long getToMemberId() { return mToMemberId; }
-
     public String getToMemberName() { return mToMemberName; }
 
     @Override
