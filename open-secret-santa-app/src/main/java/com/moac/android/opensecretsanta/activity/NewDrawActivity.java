@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -18,6 +19,7 @@ import com.moac.android.opensecretsanta.adapter.GroupListAdapter;
 import com.moac.android.opensecretsanta.fragment.AddMemberFragment;
 import com.moac.android.opensecretsanta.fragment.MemberListFragment;
 import com.moac.android.opensecretsanta.model.Group;
+import com.moac.android.opensecretsanta.model.PersistableObject;
 
 import java.util.List;
 
@@ -27,6 +29,7 @@ public class NewDrawActivity extends Activity {
 
     private static final String MEMBERS_LIST_TAG = "member_list";
     private static final String ADD_MEMBERS_TAG = "add_member";
+    private static final String MOST_RECENT_GROUP_KEY = "most_recent_group_id";
 
     protected DrawerLayout mDrawerLayout;
     protected ActionBarDrawerToggle mDrawerToggle;
@@ -59,8 +62,13 @@ public class NewDrawActivity extends Activity {
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
 
+        populateGroupsList(mDrawerList);
+
         // Add the Add Members fragment
         showAddMemberFragment();
+
+        // Add the Members List for the most recent Group
+        displayInitialGroup();
     }
 
     @Override
@@ -87,17 +95,19 @@ public class NewDrawActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        populateGroupsList(mDrawerList);
-    }
-
     private void populateGroupsList(ListView _groupsList) {
         // Retrieve the list of groups from database.
         List<Group> groups = OpenSecretSantaApplication.getDatabase().queryAll(Group.class);
         Log.v(TAG, "initialiseUI() - group count: " + groups.size());
         ((GroupListAdapter) _groupsList.getAdapter()).update(groups);
+    }
+
+    private void displayInitialGroup() {
+        long groupId = PreferenceManager.getDefaultSharedPreferences(this).getLong(MOST_RECENT_GROUP_KEY, PersistableObject.UNSET_ID);
+        if (groupId == PersistableObject.UNSET_ID)
+            return;
+
+        showMembersListForGroup(groupId);
     }
 
     private class GroupListItemClickListener implements AdapterView.OnItemClickListener {
@@ -123,11 +133,13 @@ public class NewDrawActivity extends Activity {
             transaction.remove(existing);
          transaction.add(R.id.content_frame, fragment, MEMBERS_LIST_TAG)
           .commit();
+
+        // Update preferences to save last viewed Group
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putLong(MOST_RECENT_GROUP_KEY, _groupId).commit();
     }
 
     private void showAddMemberFragment() {
         Log.i(TAG, "showAddMemberFragment() - start");
-        // Replace existing fragment
         Fragment fragment = new AddMemberFragment();
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
