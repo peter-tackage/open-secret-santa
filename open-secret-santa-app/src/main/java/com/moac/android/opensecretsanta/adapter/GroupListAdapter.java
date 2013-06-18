@@ -9,16 +9,16 @@ import android.widget.TextView;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.model.Group;
 
+import java.util.Collections;
 import java.util.List;
 
 public class GroupListAdapter extends BaseAdapter {
 
     private final Context mContext;
-    private List<Group> mGroups;
+    private List<Group> mGroups = Collections.emptyList();
 
-    public GroupListAdapter(Context _context, List<Group> _groups){
+    public GroupListAdapter(Context _context){
         mContext = _context;
-        mGroups = _groups;
     }
 
     @Override
@@ -46,7 +46,6 @@ public class GroupListAdapter extends BaseAdapter {
             groupNameView = (TextView) v.findViewById(R.id.group_name_textView);
             v.setTag(R.id.group_name_textView, groupNameView);
         } else {
-            // Recycled View is available, retrieve the holder instance from the View
             groupNameView = (TextView)v.getTag(R.id.group_name_textView);
         }
 
@@ -54,5 +53,10 @@ public class GroupListAdapter extends BaseAdapter {
         groupNameView.setText(group.getName());
 
         return v;
+    }
+
+    public void update(List<Group> _groups) {
+        mGroups = _groups;
+        notifyDataSetChanged();
     }
 }

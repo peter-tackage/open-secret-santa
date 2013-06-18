@@ -50,13 +50,13 @@ public class MemberListFragment extends ListFragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onStart() {
+        super.onStart();
         // TODO Make this load asynchronously
         Log.i(TAG, "onActivityCreated() - loading members for groupId: " + mGroupId);
         List<Member> members = mDb.queryAllMembersForGroup(mGroupId);
         mItems = buildRowData(members);
-        Log.i(TAG, "onActivityCreated() - rttrieved members for groupId: " + mItems.size());
+        Log.i(TAG, "onActivityCreated() - retrieved members count: " + mItems.size());
         setListAdapter(new MemberListAdapter(getActivity(), R.layout.member_row, mItems));
     }
 

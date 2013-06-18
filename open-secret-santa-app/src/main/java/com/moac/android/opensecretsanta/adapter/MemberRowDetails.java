@@ -19,7 +19,6 @@ public class MemberRowDetails implements Comparable<MemberRowDetails> {
         mRestrictionCount = _restrictionCount;
     }
 
-
     public long getMemberId() { return mMemberId; }
     public String getMemberName() { return mMemberName; }
     public String getLookupKey() { return mLookupKey; }
