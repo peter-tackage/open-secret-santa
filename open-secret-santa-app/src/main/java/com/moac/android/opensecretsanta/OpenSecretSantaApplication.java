@@ -80,26 +80,32 @@ public class OpenSecretSantaApplication extends Application {
         return result;
     }
 
-
     private void loadTestData() {
+        createTestDraw(0);
+        createTestDraw(1);
+        createTestDraw(2);
+        createTestDraw(3);
+        createTestDraw(4);
+     }
 
+    private void createTestDraw(int _instance ) {
         // Add a Group
         Group group1 = new Group();
-        group1.setName("Test Group");
+        group1.setName("Test Group - 1 " + _instance);
         mDatabaseManager.create(group1);
 
         // Add some Members
         Member m1 = new Member();
-        m1.setName("John Goodman");
+        m1.setName("John Goodman"+_instance);
         m1.setContactMode(ContactModes.NAME_ONLY_CONTACT_MODE);
 
         Member m2 = new Member();
-        m2.setName("Mary Arthur");
+        m2.setName("Mary Arthur"+_instance);
         m2.setContactMode(ContactModes.EMAIL_CONTACT_MODE);
         m2.setContactAddress("test@tester.com");
 
         Member m3 = new Member();
-        m3.setName("Some Person");
+        m3.setName("Some Person"+_instance);
         m3.setContactMode(ContactModes.SMS_CONTACT_MODE);
         m3.setContactAddress("+49232267513213");
 

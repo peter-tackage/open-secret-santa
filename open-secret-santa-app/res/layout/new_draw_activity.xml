@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical" android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  style="@style/AppTheme">
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/drawer_layout"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
 
-  <fragment android:name="com.moac.android.opensecretsanta.fragment.AddMemberFragment"
-    android:id="@+id/memberSearchFragment"
-    android:layout_weight="0"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content" />
-
-  <android.support.v4.view.ViewPager
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/draws_pager"
+  <!-- The main content view -->
+  <FrameLayout
+    android:id="@+id/content_frame"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
 
-</LinearLayout>
+  <!-- The navigation drawer -->
+  <ListView
+    android:id="@+id/left_drawer_list"
+    android:layout_width="240dp"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:choiceMode="singleChoice"
+    android:background="@android:color/white" />
+
+</android.support.v4.widget.DrawerLayout>
