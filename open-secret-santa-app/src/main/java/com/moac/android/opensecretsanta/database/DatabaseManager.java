@@ -18,6 +18,7 @@ package com.moac.android.opensecretsanta.database;
 
 import android.database.SQLException;
 import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.moac.android.opensecretsanta.model.*;
 
 import java.util.List;
@@ -37,6 +38,7 @@ public class DatabaseManager {
     public <T extends PersistableObject> T queryById(long id, Class<T> objClass) {
         return mDbHelper.queryById(id, objClass);
     }
+
     @SuppressWarnings("unchecked")
     public <T extends PersistableObject> T queryById(T obj) {
         return (T) mDbHelper.queryById(obj.getId(), obj.getClass());
@@ -78,6 +80,18 @@ public class DatabaseManager {
             return mDbHelper.getDaoEx(Restriction.class).queryBuilder()
               .where().eq(Restriction.Columns.MEMBER_ID_COLUMN, memberId)
               .query();
+        } catch(java.sql.SQLException e) {
+            throw new SQLException(e.getMessage());
+        }
+    }
+
+    public boolean queryIsRestricted(long fromMemberId, long toMemberId) {
+        try {
+            Restriction restriction = mDbHelper.getDaoEx(Restriction.class).queryBuilder()
+              .where().eq(Restriction.Columns.MEMBER_ID_COLUMN, fromMemberId)
+              .and().eq(Restriction.Columns.OTHER_MEMBER_ID_COLUMN, toMemberId)
+              .queryForFirst();
+            return restriction != null;
         } catch(java.sql.SQLException e) {
             throw new SQLException(e.getMessage());
         }

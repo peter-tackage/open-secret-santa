@@ -23,12 +23,9 @@
     android:name=".OpenSecretSantaApplication"
     android:theme="@style/AppTheme">
 
-    <activity android:name=".activity.MembersListActivity" />
-    <activity android:name=".activity.AssignmentSharerActivity" />
-    <activity android:name=".activity.AllPreferencesActivity" />
     <activity
       android:name=".activity.NewDrawActivity"
-      android:launchMode="singleTop">   <!-- For search -->
+    android:launchMode="singleTop">   <!-- For search -->
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
@@ -39,10 +36,12 @@
       <meta-data android:name="android.app.searchable"
         android:resource="@xml/searchable"/>
     </activity>
+    <activity android:name=".activity.RestrictionsActivity" />
 
     <provider
       android:authorities="com.moac.android.opensecretsanta.membersuggestions"
-      android:name=".content.MemberSuggestionProvider" >
+      android:name=".content.MemberSuggestionProvider"
+      android:exported="false">
     </provider>
 
   </application>

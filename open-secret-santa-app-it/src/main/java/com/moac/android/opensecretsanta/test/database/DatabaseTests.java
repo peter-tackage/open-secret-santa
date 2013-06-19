@@ -88,6 +88,33 @@ public class DatabaseTests extends AndroidTestCase {
         assertEquals(2, restrictionsM1.size());
     }
 
+    public void testQueryIsRestricted() {
+        // Add a Group
+        Group group1 = new GroupBuilder().build();
+        mDatabaseManager.create(group1);
+
+        // Add some Members
+        Member m1 = new MemberBuilder().build();
+        Member m2 = new MemberBuilder().withName("m2").build();
+        Member m3 = new MemberBuilder().withName("m3").build();
+        m1.setGroup(group1);
+        m2.setGroup(group1);
+        m3.setGroup(group1);
+        mDatabaseManager.create(m1);
+        mDatabaseManager.create(m2);
+        mDatabaseManager.create(m3);
+
+        // Add Restrictions
+        Restriction m1m2 = new Restriction();
+        m1m2.setMember(m1);
+        m1m2.setOtherMember(m2);
+        mDatabaseManager.create(m1m2);
+
+        // Verify the restrictions
+        assertTrue(mDatabaseManager.queryIsRestricted(m1.getId(), m2.getId()));
+        assertTrue(!mDatabaseManager.queryIsRestricted(m1.getId(), m3.getId()));
+    }
+
     public void testCreateMultipleDrawResultEntriesPerMemberPerGroupFails() {
 
         Group group1 = new GroupBuilder().build();

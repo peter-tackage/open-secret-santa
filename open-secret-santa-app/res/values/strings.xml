@@ -73,5 +73,6 @@
   <string name="drawer_open_accesshint">open drawer</string>
   <string name="drawer_close_accesshint">close drawer</string>
   <string name="member_avatar_accesshint">member avatar</string>
+  <string name="menu_done">Done</string>
 
 </resources>

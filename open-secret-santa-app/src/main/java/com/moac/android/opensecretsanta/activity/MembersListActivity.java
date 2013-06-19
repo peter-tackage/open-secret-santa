@@ -823,7 +823,8 @@ public class MembersListActivity extends Activity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MembersListActivity.this);
                     builder.setTitle("Select restrictions for\n" + mMemberName);
 
-                    builder.setAdapter(new RestrictionListAdapter(MembersListActivity.this, R.layout.restriction_row, items, mRestrictClickListener), null);
+                    // HACK TO COMPILE PT
+                  //  builder.setAdapter(new RestrictionListAdapter(MembersListActivity.this, R.layout.restriction_row, items, mRestrictClickListener), null);
                     builder.setCancelable(true);
                     builder.setPositiveButton("OK", mRestrictOkClickListener);
                     builder.setIcon(R.drawable.ic_present_restricted);

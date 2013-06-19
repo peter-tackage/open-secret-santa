@@ -1,11 +1,15 @@
 package com.moac.android.opensecretsanta.fragment;
 
+import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.Intents;
+import com.moac.android.opensecretsanta.activity.OnMemberClickListener;
 import com.moac.android.opensecretsanta.adapter.MemberListAdapter;
 import com.moac.android.opensecretsanta.adapter.MemberRowDetails;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
@@ -27,8 +31,7 @@ public class MemberListFragment extends ListFragment {
     // Shorthand to database.
     private DatabaseManager mDb;
 
-    // The row data, joined from multiple sources.
-    private List<MemberRowDetails> mItems;
+    private OnMemberClickListener mOnMemberClickListener;
 
     /**
      * Factory method for this fragment class
@@ -43,6 +46,16 @@ public class MemberListFragment extends ListFragment {
     }
 
     @Override
+    public void onAttach(Activity _activity) {
+        super.onAttach(_activity);
+        try {
+            mOnMemberClickListener = (OnMemberClickListener) _activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(_activity.toString() + " must implement OnMemberClickListener");
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDb = OpenSecretSantaApplication.getDatabase();
@@ -52,12 +65,19 @@ public class MemberListFragment extends ListFragment {
     @Override
     public void onStart() {
         super.onStart();
-        // TODO Make this load asynchronously
+        // TODO Make this load asynchronously and somewhere else
         Log.i(TAG, "onActivityCreated() - loading members for groupId: " + mGroupId);
         List<Member> members = mDb.queryAllMembersForGroup(mGroupId);
-        mItems = buildRowData(members);
-        Log.i(TAG, "onActivityCreated() - retrieved members count: " + mItems.size());
-        setListAdapter(new MemberListAdapter(getActivity(), R.layout.member_row, mItems));
+        List<MemberRowDetails> items = buildRowData(members);
+        Log.i(TAG, "onActivityCreated() - retrieved members count: " + items.size());
+        setListAdapter(new MemberListAdapter(getActivity(), R.layout.member_row, items));
+        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                MemberRowDetails row = (MemberRowDetails)getListView().getAdapter().getItem(position);
+                mOnMemberClickListener.onMemberClick(mGroupId, row.getMemberId());
+            }
+        });
     }
 
     public long getGroupId() {

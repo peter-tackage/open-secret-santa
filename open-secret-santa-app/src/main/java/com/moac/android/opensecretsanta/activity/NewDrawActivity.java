@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -20,10 +21,11 @@ import com.moac.android.opensecretsanta.fragment.AddMemberFragment;
 import com.moac.android.opensecretsanta.fragment.MemberListFragment;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.PersistableObject;
+import com.moac.android.opensecretsanta.model.Restriction;
 
 import java.util.List;
 
-public class NewDrawActivity extends Activity {
+public class NewDrawActivity extends Activity implements OnMemberClickListener {
 
     private static final String TAG = NewDrawActivity.class.getSimpleName();
 
@@ -95,6 +97,14 @@ public class NewDrawActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onMemberClick(long _groupId, long _memberId) {
+        Intent intent = new Intent(this, RestrictionsActivity.class);
+        intent.putExtra(Intents.GROUP_ID_INTENT_EXTRA, _groupId);
+        intent.putExtra(Intents.MEMBER_ID_INTENT_EXTRA, _memberId);
+        startActivity(intent);
+    }
+
     private void populateGroupsList(ListView _groupsList) {
         // Retrieve the list of groups from database.
         List<Group> groups = OpenSecretSantaApplication.getDatabase().queryAll(Group.class);
@@ -106,7 +116,6 @@ public class NewDrawActivity extends Activity {
         long groupId = PreferenceManager.getDefaultSharedPreferences(this).getLong(MOST_RECENT_GROUP_KEY, PersistableObject.UNSET_ID);
         if(groupId == PersistableObject.UNSET_ID)
             return;
-
         showMembersListForGroup(groupId);
     }
 

@@ -16,13 +16,13 @@ public class RestrictionListAdapter extends BaseAdapter {
     private final static String TAG = RestrictionListAdapter.class.getSimpleName();
 
     private final Context mContext;
-    private OnClickListener mRestrictClickListener;
+   // private OnClickListener mRestrictClickListener;
     private List<RestrictionRowDetails> mItems = Collections.emptyList();
 
-
-    public RestrictionListAdapter(Context _context, OnClickListener _onClickListener) {
+    public RestrictionListAdapter(Context _context, List<RestrictionRowDetails> _items) {
         mContext = _context;
-        mRestrictClickListener = _onClickListener;
+        mItems = _items;
+     //   mRestrictClickListener = _onClickListener;
     }
 
     @Override
@@ -70,8 +70,8 @@ public class RestrictionListAdapter extends BaseAdapter {
         // TODO Load contact avatar into memberViewImage
         memberNameView.setText(res.getToMemberName());
         checkBoxView.setChecked(!res.isRestricted());
-        checkBoxView.setOnClickListener(mRestrictClickListener);
-        checkBoxView.setTag(res); // Provide item as tag data for callbacks
+      //  checkBoxView.setOnClickListener(mRestrictClickListener);
+     //   checkBoxView.setTag(res); // Provide item as tag data for callbacks
 
         return v;
     }
