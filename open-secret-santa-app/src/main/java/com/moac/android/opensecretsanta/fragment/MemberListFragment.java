@@ -80,7 +80,9 @@ public class MemberListFragment extends ListFragment {
                 Member selected = (Member)mCompleteTextView.getAdapter().getItem(position);
                 Log.i(TAG, "OnItemClick() - name: " + selected.getName());
                 addMember(selected);
-                Toast.makeText(getActivity(), selected.getName(), Toast.LENGTH_SHORT).show();
+                mCompleteTextView.setText("");
+                mCompleteTextView.requestFocus(); // Keep focus for more entries
+                Toast.makeText(getActivity(), selected.getName() + " added", Toast.LENGTH_SHORT).show();
             }
         });
         return view;
