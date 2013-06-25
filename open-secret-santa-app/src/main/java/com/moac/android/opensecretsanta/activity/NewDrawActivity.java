@@ -17,11 +17,9 @@ import android.widget.*;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.adapter.GroupListAdapter;
-import com.moac.android.opensecretsanta.fragment.AddMemberFragment;
 import com.moac.android.opensecretsanta.fragment.MemberListFragment;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.PersistableObject;
-import com.moac.android.opensecretsanta.model.Restriction;
 
 import java.util.List;
 
@@ -30,7 +28,6 @@ public class NewDrawActivity extends Activity implements OnMemberClickListener {
     private static final String TAG = NewDrawActivity.class.getSimpleName();
 
     private static final String MEMBERS_LIST_TAG = "member_list";
-    private static final String ADD_MEMBERS_TAG = "add_member";
     private static final String MOST_RECENT_GROUP_KEY = "most_recent_group_id";
 
     protected DrawerLayout mDrawerLayout;
@@ -90,7 +87,7 @@ public class NewDrawActivity extends Activity implements OnMemberClickListener {
         if(mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        // TODO Handle your other action bar items...
+        // TODO Handle other action bar items...
         return super.onOptionsItemSelected(item);
     }
 

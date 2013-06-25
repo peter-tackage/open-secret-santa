@@ -6,7 +6,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import com.moac.android.opensecretsanta.activity.ContactModes;
 
 @DatabaseTable(tableName = Member.TABLE_NAME)
-public final class Member extends PersistableObject {
+public final class Member extends PersistableObject implements Comparable<Member>  {
 
     public static final String TABLE_NAME =  "members";
 
@@ -62,6 +62,7 @@ public final class Member extends PersistableObject {
     public long getContactId() { return mContactId; }
     public void setContactId(long contactId) { mContactId = contactId; }
 
+    public long getRestrictionCount() { return mRestrictions == null ? 0 : mRestrictions.size(); }
     @Override
     public String toString() {
         return mName;
@@ -98,5 +99,11 @@ public final class Member extends PersistableObject {
 //            &&
 //            this.mContactMode == that.mContactMode;
 //    }
+
+
+    @Override
+    public int compareTo(Member _that) {
+        return String.CASE_INSENSITIVE_ORDER.compare(this.mName, _that.mName);
+    }
 
 }

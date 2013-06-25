@@ -21,6 +21,7 @@
     <draw-engine.version>1.2.0</draw-engine.version>
     <javamail-for-android.version>1.0.0</javamail-for-android.version>
     <picasso.version>1.1.1</picasso.version>
+    <otto.version>1.3.4</otto.version>
   </properties>
 
   <dependencies>
@@ -75,6 +76,12 @@
       <groupId>com.squareup.picasso</groupId>
       <artifactId>picasso</artifactId>
       <version>${picasso.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.squareup</groupId>
+      <artifactId>otto</artifactId>
+      <version>${otto.version}</version>
     </dependency>
 
   </dependencies>

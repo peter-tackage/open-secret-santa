@@ -13,18 +13,12 @@ import android.widget.*;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.ContactModes;
 import com.moac.android.opensecretsanta.model.Member;
-import com.moac.android.opensecretsanta.model.PersistableObject;
-import com.moac.android.opensecretsanta.util.Utils;
-import com.squareup.picasso.Picasso;
+import com.moac.android.opensecretsanta.util.ContactUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static android.provider.ContactsContract.Contacts;
 import static com.moac.android.opensecretsanta.adapter.Queries.Query;
 
 public class SuggestionsAdapter extends BaseAdapter implements Filterable {
@@ -83,12 +77,10 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
 //          .placeholder(R.drawable.ic_contact_picture)
 //          .into(avatarView);
         // TODO Move these to a background thread/get Picasso to work.
-        Drawable avatar = getContentDrawable(mContext, item.getContactId(), item.getLookupKey());
+        Drawable avatar = ContactUtils.getContactPhoto(mContext, item.getContactId(), item.getLookupKey());
         if (avatar != null) {
-            Log.i(TAG, "getView() - setting real avatar" + item.getContactAddress());
             avatarView.setImageDrawable(avatar);
         } else{
-            Log.i(TAG, "getView() - setting dummy avatar" + item.getContactAddress());
             avatarView.setImageResource(R.drawable.ic_contact_picture);
         }
         nameView.setText(item.getName());
@@ -163,55 +155,6 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
         }
 
         return results;
-    }
-
-    public static InputStream openPhoto(Context context, long _contactId, String lookupKey) {
-
-        // Best performance lookup for Contact.
-        Uri lookupUri = Contacts.getLookupUri(_contactId, lookupKey);
-        Uri contactUri = ContactsContract.Contacts.lookupContact(context.getContentResolver(), lookupUri);
-
-        // Build the URI for the Contact's photo.
-        Uri photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
-
-        Log.i(TAG, "openPhoto() #### Querying to: " + photoUri);
-        Cursor cursor = context.getContentResolver().query(photoUri,
-          new String[]{ ContactsContract.Contacts.Photo.PHOTO }, null, null, null);
-        if(cursor == null) {
-            return null;
-        }
-        try {
-            if(cursor.moveToFirst()) {
-                byte[] data = cursor.getBlob(0);
-                if(data != null) {
-                    return new ByteArrayInputStream(data);
-                }
-            }
-        } finally {
-            cursor.close();
-        }
-        return null;
-    }
-
-    private static Drawable getContentDrawable(Context _context, long _contactId, String _lookupKey) {
-        try {
-
-            if (_contactId == PersistableObject.UNSET_ID || _lookupKey == null)
-                return null;
-
-            InputStream stream = openPhoto(_context, _contactId, _lookupKey);
-            if(stream == null) {
-                throw new FileNotFoundException("Failed to open drawable for lookupKey " + _lookupKey);
-            }
-            try {
-                return Drawable.createFromStream(stream, null);
-            } finally {
-                Utils.safeClose(stream);
-            }
-        } catch(FileNotFoundException fnfe) {
-            Log.w(TAG, "Icon not found for lookupKey: " + _lookupKey + ", " + fnfe.getMessage());
-            return null;
-        }
     }
 
     public static Cursor doQuery(Context _context, Query _query, String _constraint) {

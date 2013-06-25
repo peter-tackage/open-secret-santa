@@ -4,17 +4,19 @@
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   android:orientation="horizontal"
-  android:paddingTop="8dp">
+  android:padding="4dp">
 
 
   <ImageView
     android:id="@+id/member_imageview"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="48dp"
+    android:layout_height="48dp"
     android:layout_gravity="center"
-    android:src="@drawable/icon"
-    android:paddingRight="8dp"
-    android:contentDescription="@string/member_avatar_accesshint" />
+    android:cropToPadding="true"
+    android:scaleType="centerCrop"
+    android:src="@drawable/ic_contact_picture"
+    android:contentDescription="@string/member_avatar_accesshint"
+    android:padding="4dp" />
 
 
   <TextView
@@ -30,7 +32,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="test@example.com"
-    android:id="@+id/contact_mode_textview"
+    android:id="@+id/contact_address_textview"
     android:layout_centerHorizontal="true"
     android:layout_centerVertical="true"
     android:layout_toRightOf="@+id/member_imageview"
@@ -52,6 +54,7 @@
     android:layout_height="wrap_content"
     android:layout_alignParentTop="true"
     android:layout_alignParentRight="true"
-    android:textSize="12sp" />
+    android:textSize="12sp"
+    android:minWidth="48dp" />
 
 </RelativeLayout>

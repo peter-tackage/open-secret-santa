@@ -10,6 +10,7 @@ import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.mail.GmailOAuth2Sender;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
+import com.moac.android.opensecretsanta.model.Restriction;
 import com.moac.android.opensecretsanta.util.Utils;
 
 public class OpenSecretSantaApplication extends Application {
@@ -115,6 +116,11 @@ public class OpenSecretSantaApplication extends Application {
         mDatabaseManager.create(m1);
         mDatabaseManager.create(m2);
         mDatabaseManager.create(m3);
+
+        Restriction r1 = new Restriction();
+        r1.setMember(m1);
+        r1.setOtherMember(m2);
+        mDatabaseManager.create(r1);
     }
 
 

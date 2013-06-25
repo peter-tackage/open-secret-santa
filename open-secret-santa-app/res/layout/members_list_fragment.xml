@@ -3,8 +3,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:orientation="vertical"
   android:layout_width="match_parent"
-  android:layout_height="wrap_content"
-  android:layout_weight="0">
+  android:layout_height="match_parent">
 
   <AutoCompleteTextView
     android:layout_width="match_parent"
@@ -16,6 +15,20 @@
     android:layout_marginRight="8dp"
     android:layout_marginBottom="4dp"
     android:hint="@string/search_hint_label"
-    android:singleLine="true"/>
+    android:singleLine="true" />
+
+  <ListView
+    android:id="@id/android:list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:drawSelectorOnTop="false" />
+
+  <TextView
+    android:id="@id/android:empty"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FF0000"
+    android:text="No data" />
 
 </LinearLayout>

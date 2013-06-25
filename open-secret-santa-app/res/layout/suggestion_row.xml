@@ -5,8 +5,7 @@
   android:layout_height="wrap_content"
   android:minHeight="48dip"
   android:orientation="horizontal"
-  android:paddingTop="8dp"
-  android:paddingLeft="8dp">
+  android:padding="4dp">
 
   <ImageView
     android:id="@+id/avatar_imageview"
@@ -15,9 +14,9 @@
     android:layout_gravity="center"
     android:cropToPadding="true"
     android:scaleType="centerCrop"
-    android:src="@drawable/icon"
-    android:paddingRight="8dp"
-    android:contentDescription="@string/member_avatar_accesshint" />
+    android:src="@drawable/ic_contact_picture"
+    android:contentDescription="@string/member_avatar_accesshint"
+    android:padding="4dp" />
 
   <TextView
     android:layout_width="wrap_content"
@@ -38,7 +37,6 @@
     android:singleLine="true"
     android:textColor="@color/dark_grey"
     android:textSize="12sp"
-    android:paddingTop="4dp"
     android:textAppearance="@android:style/TextAppearance.Small"
     android:layout_below="@+id/name_textview" />
 

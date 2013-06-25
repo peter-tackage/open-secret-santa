@@ -87,28 +87,28 @@ public class MembersListActivity extends Activity {
     }
 
     private void initialiseUIComponents() {
-        setContentView(R.layout.members_list_view);
-
-        mSwitcher = (ViewSwitcher) findViewById(R.id.memberListSwitcher);
-        mSwitcher.setAnimateFirstView(false);
-
-        // Obtain handles to UI objects
-        mAddMemberButton = (ImageButton) findViewById(R.id.addMemberFromContactsButton);
-        mAddMemberButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Open the contacts list.
-                addParticipantHandler(v);
-            }
-        });
-
-        mAddManualEntryButton = (ImageButton) findViewById(R.id.addManualEntryButton);
-        mAddManualEntryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showManualEntryDialog();
-            }
-        });
+//        setContentView(R.layout.members_list_view);
+//
+//        mSwitcher = (ViewSwitcher) findViewById(R.id.memberListSwitcher);
+//        mSwitcher.setAnimateFirstView(false);
+//
+//        // Obtain handles to UI objects
+//        mAddMemberButton = (ImageButton) findViewById(R.id.addMemberFromContactsButton);
+//        mAddMemberButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // Open the contacts list.
+//                addParticipantHandler(v);
+//            }
+//        });
+//
+//        mAddManualEntryButton = (ImageButton) findViewById(R.id.addManualEntryButton);
+//        mAddManualEntryButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                showManualEntryDialog();
+//            }
+//        });
 
         // HACK COMMENTED OUT SO IT COMPILES - PT
 //        mDeleteClickListener = new View.OnClickListener() {
@@ -141,9 +141,9 @@ public class MembersListActivity extends Activity {
                 // No point if there's only one person!
                 if(items.size() > 1) {
                     // Extract from the tag.
-                    MemberRowDetails selectedItem = (MemberRowDetails) view.getTag();
-                    long memberId = selectedItem.getMemberId();
-                    String memberName = selectedItem.getMemberName();
+                    Member selectedItem = (Member) view.getTag();
+                    long memberId = selectedItem.getId();
+                    String memberName = selectedItem.getName();
 
                     RestrictionBuilder rb = new RestrictionBuilder(memberId, memberName);
                     rb.openRestrictionsDialog();
@@ -151,7 +151,7 @@ public class MembersListActivity extends Activity {
             }
         };
 
-        mList = (ListView) findViewById(R.id.membersList);
+ //       mList = (ListView) findViewById(R.id.membersList);
         // Onclick listener to open notify mode selection dialog
         mList.setOnItemClickListener(new OnItemClickListener() {
             @Override

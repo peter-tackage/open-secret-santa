@@ -11,12 +11,6 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-
-    <fragment android:name="com.moac.android.opensecretsanta.fragment.AddMemberFragment"
-      android:id="@+id/add_member_fragment"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content" />
-
   </LinearLayout>
 
   <!-- The navigation drawer -->

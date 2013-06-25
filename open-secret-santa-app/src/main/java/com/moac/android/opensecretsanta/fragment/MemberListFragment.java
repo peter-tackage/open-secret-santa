@@ -4,16 +4,23 @@ import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
+import android.widget.Toast;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.activity.OnMemberClickListener;
-import com.moac.android.opensecretsanta.adapter.MemberListAdapter;
 import com.moac.android.opensecretsanta.adapter.MemberRowDetails;
+import com.moac.android.opensecretsanta.adapter.MemberListAdapter;
+import com.moac.android.opensecretsanta.adapter.SuggestionsAdapter;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
+import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
+import com.moac.android.opensecretsanta.model.PersistableObject;
 import com.moac.android.opensecretsanta.model.Restriction;
 
 import java.util.ArrayList;
@@ -23,15 +30,10 @@ public class MemberListFragment extends ListFragment {
 
     private static final String TAG = MemberListFragment.class.getSimpleName();
 
-    /**
-     * The fragment's associated Group
-     */
-    private long mGroupId;
-
-    // Shorthand to database.
+    private Group mGroup;
     private DatabaseManager mDb;
-
     private OnMemberClickListener mOnMemberClickListener;
+    private AutoCompleteTextView mCompleteTextView;
 
     /**
      * Factory method for this fragment class
@@ -59,40 +61,63 @@ public class MemberListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDb = OpenSecretSantaApplication.getDatabase();
-        mGroupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
+        long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
+        mGroup = mDb.queryById(groupId, Group.class);
     }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.members_list_fragment, container, false);
+
+        mCompleteTextView = (AutoCompleteTextView)view.findViewById(R.id.add_autoCompleteTextView);
+        mCompleteTextView.setThreshold(1);
+        mCompleteTextView.setAdapter(new SuggestionsAdapter(getActivity()));
+        mCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Member selected = (Member)mCompleteTextView.getAdapter().getItem(position);
+                Log.i(TAG, "OnItemClick() - name: " + selected.getName());
+                addMember(selected);
+                Toast.makeText(getActivity(), selected.getName(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        return view;
+    }
+
 
     @Override
     public void onStart() {
         super.onStart();
-        // TODO Make this load asynchronously and somewhere else
-        Log.i(TAG, "onActivityCreated() - loading members for groupId: " + mGroupId);
-        List<Member> members = mDb.queryAllMembersForGroup(mGroupId);
-        List<MemberRowDetails> items = buildRowData(members);
-        Log.i(TAG, "onActivityCreated() - retrieved members count: " + items.size());
-        setListAdapter(new MemberListAdapter(getActivity(), R.layout.member_row, items));
+        Log.i(TAG, "onActivityCreated() - loading members for groupId: " + mGroup.getId());
+        loadMembers();
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                MemberRowDetails row = (MemberRowDetails)getListView().getAdapter().getItem(position);
-                mOnMemberClickListener.onMemberClick(mGroupId, row.getMemberId());
+                Member row = (Member)getListView().getAdapter().getItem(position);
+                mOnMemberClickListener.onMemberClick(mGroup.getId(), row.getId());
             }
         });
     }
 
-    public long getGroupId() {
-        return mGroupId;
+    // TODO Make this load asynchronously and somewhere else
+    private void loadMembers() {
+        List<Member> members = mDb.queryAllMembersForGroup(mGroup.getId());
+        Log.i(TAG, "onActivityCreated() - retrieved members count: " + members.size());
+        setListAdapter(new MemberListAdapter(getActivity(), R.layout.member_row, members));
     }
 
-    private List<MemberRowDetails> buildRowData(List<Member> _members) {
-        List<MemberRowDetails> rows = new ArrayList<MemberRowDetails>(_members.size());
-        for(Member member : _members) {
-            long memberId = member.getId();
-            List<Restriction> restrictions = mDb.queryAllRestrictionsForMemberId(memberId);
-            MemberRowDetails row = new MemberRowDetails(memberId, member.getLookupKey(),
-              member.getName(), member.getContactMode(), member.getContactAddress(), restrictions.size());
-            rows.add(row);
-        }
-        return rows;
+    public long getGroupId() {
+        return mGroup.getId();
     }
+
+    private void addMember(Member _member) {
+        _member.setGroup(mGroup);
+        long id = mDb.create(_member);
+        if (id != PersistableObject.UNSET_ID) {
+            loadMembers();
+        }
+    }
+
 }
