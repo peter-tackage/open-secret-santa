@@ -9,21 +9,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.activity.OnMemberClickListener;
-import com.moac.android.opensecretsanta.adapter.MemberRowDetails;
 import com.moac.android.opensecretsanta.adapter.MemberListAdapter;
 import com.moac.android.opensecretsanta.adapter.SuggestionsAdapter;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
-import com.moac.android.opensecretsanta.model.Restriction;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MemberListFragment extends ListFragment {
@@ -85,6 +83,9 @@ public class MemberListFragment extends ListFragment {
                 Toast.makeText(getActivity(), selected.getName() + " added", Toast.LENGTH_SHORT).show();
             }
         });
+
+        TextView titleText = (TextView)view.findViewById(R.id.group_title_textview);
+        titleText.setText(mGroup.getName());
         return view;
     }
 
