@@ -66,9 +66,6 @@ public class NewDrawActivity extends Activity implements OnMemberClickListener {
 
         populateGroupsList(mDrawerList);
 
-        // Add the Add Members fragment
-        showAddMemberFragment();
-
         // Add the Members List for the most recent Group
         displayInitialGroup();
     }
@@ -147,12 +144,4 @@ public class NewDrawActivity extends Activity implements OnMemberClickListener {
         PreferenceManager.getDefaultSharedPreferences(this).edit().putLong(MOST_RECENT_GROUP_KEY, _groupId).commit();
     }
 
-    private void showAddMemberFragment() {
-        Log.i(TAG, "showAddMemberFragment() - start");
-        Fragment fragment = new AddMemberFragment();
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-          .add(R.id.content_frame, fragment, ADD_MEMBERS_TAG)
-          .commit();
-    }
 }

@@ -12,6 +12,7 @@ public final class Member extends PersistableObject {
 
     public static interface Columns extends PersistableObject.Columns {
         public static final String LOOKUP_KEY = "LOOKUP_KEY";
+        public static final String CONTACT_ID = "CONTACT_ID";
         public static final String NAME_COLUMN = "NAME";
         public static final String CONTACT_MODE_COLUMN = "CONTACT_MODE";
         public static final String CONTACT_ADDRESS_COLUMN = "CONTACT_ADDRESS";
@@ -20,6 +21,9 @@ public final class Member extends PersistableObject {
 
     @DatabaseField(columnName = Columns.LOOKUP_KEY)
     private String mLookupKey;
+
+    @DatabaseField(columnName = Columns.CONTACT_ID)
+    private long mContactId = UNSET_ID;
 
     // The participant name
     @DatabaseField(columnName = Columns.NAME_COLUMN, canBeNull = false, uniqueCombo = true)
@@ -55,6 +59,9 @@ public final class Member extends PersistableObject {
     public void setGroup(Group _group) { mGroup = _group; }
     public long getGroupId() { return mGroup.getId(); }
 
+    public long getContactId() { return mContactId; }
+    public void setContactId(long contactId) { mContactId = contactId; }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -72,20 +79,20 @@ public final class Member extends PersistableObject {
         return sb.toString();
     }
 
-    @Override
-    public boolean equals(Object other) {
-        if(this == other) return true;
-        if(!(other instanceof Member)) return false;
-
-        Member that = (Member) other;
-        return
-          (null == this.mContactAddress ? (this.mContactAddress == that.mContactAddress) : this.mContactAddress.equals(that.mContactAddress))
-            &&
-            (null == this.mLookupKey ? (this.mLookupKey == that.mLookupKey) : this.mLookupKey.equals(that.mLookupKey))
-            &&
-            (null == this.mName ? (this.mName == that.mName) : this.mName.equals(that.mName))
-            &&
-            this.mContactMode == that.mContactMode;
-    }
+//    @Override
+//    public boolean equals(Object other) {
+//        if(this == other) return true;
+//        if(!(other instanceof Member)) return false;
+//
+//        Member that = (Member) other;
+//        return
+//          (null == this.mContactAddress ? (this.mContactAddress == that.mContactAddress) : this.mContactAddress.equals(that.mContactAddress))
+//            &&
+//            (null == this.mLookupKey ? (this.mLookupKey == that.mLookupKey) : this.mLookupKey.equals(that.mLookupKey))
+//            &&
+//            (null == this.mName ? (this.mName == that.mName) : this.mName.equals(that.mName))
+//            &&
+//            this.mContactMode == that.mContactMode;
+//    }
 
 }

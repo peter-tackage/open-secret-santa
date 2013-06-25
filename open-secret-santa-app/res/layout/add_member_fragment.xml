@@ -6,15 +6,16 @@
   android:layout_height="wrap_content"
   android:layout_weight="0">
 
-  <SearchView
+  <AutoCompleteTextView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/memberSearchView"
+    android:id="@+id/add_autoCompleteTextView"
     android:layout_gravity="center"
     android:layout_marginLeft="8dp"
+    android:layout_marginTop="4dp"
     android:layout_marginRight="8dp"
     android:layout_marginBottom="4dp"
-    android:layout_marginTop="4dp"
-    android:iconifiedByDefault="false"
-    android:queryHint="@string/search_hint_label" />
+    android:hint="@string/search_hint_label"
+    android:singleLine="true"/>
+
 </LinearLayout>

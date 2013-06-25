@@ -19,7 +19,7 @@ public class DrawResult extends PersistableObject {
     @DatabaseField(columnName = Columns.DRAW_DATE_COLUMN)
     private long mDrawDate = UNDRAWN_DATE;
 
-    // FIXME Doesn\t work. ORMLite issue - Only allow a single Draw Result per Group.
+    // FIXME Doesn't work. ORMLite issue - Only allow a single Draw Result per Group.
     @DatabaseField(columnName = Columns.GROUP_ID_COLUMN, foreign = true, canBeNull = false, unique = true,
     columnDefinition = "integer references groups (_id) on delete cascade")
     private Group mGroup;

@@ -8,9 +8,13 @@ import com.moac.android.opensecretsanta.activity.ContactModes;
 import com.moac.android.opensecretsanta.activity.ShareResults;
 import com.moac.android.opensecretsanta.model.Member;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public class Utils {
+
+    public static final String TAG = Utils.class.getSimpleName();
 
     private static final String DO_ONCE_TAG = "do_once";
 
@@ -26,7 +30,13 @@ public class Utils {
         return false;
     }
 
-    public static final String TAG = Utils.class.getSimpleName();
+    public static void safeClose(InputStream _stream) {
+        if(_stream == null)
+            return;
+        try {
+            _stream.close();
+        } catch(IOException e) { }
+    }
 
     public static String buildPersonalisedMsg(String extraMsg, String from, String to) {
         Log.v(TAG, "buildPersonalisedMsg() - start");
