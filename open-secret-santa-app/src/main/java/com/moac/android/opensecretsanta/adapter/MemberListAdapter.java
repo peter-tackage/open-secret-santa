@@ -2,6 +2,8 @@ package com.moac.android.opensecretsanta.adapter;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +13,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.model.Member;
+import com.moac.android.opensecretsanta.model.PersistableObject;
 import com.moac.android.opensecretsanta.util.ContactUtils;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -58,20 +62,24 @@ public class MemberListAdapter extends ArrayAdapter<Member> {
         } else {
             // Recycled View is available, retrieve the holder instance from the View
             avatarView = (ImageView) v.getTag(R.id.member_imageview);
-            memberNameView = (TextView)v.getTag(R.id.member_name_textview);
-            contactAddressView = (TextView)v.getTag(R.id.contact_address_textview);
-            restrictionsView = (TextView)v.getTag(R.id.restriction_count_textview);
+            memberNameView = (TextView) v.getTag(R.id.member_name_textview);
+            contactAddressView = (TextView) v.getTag(R.id.contact_address_textview);
+            restrictionsView = (TextView) v.getTag(R.id.restriction_count_textview);
         }
 
         Member item = getItem(_position);
 
         // Assign the view with its content.
-        Drawable avatar = ContactUtils.getContactPhoto(getContext(), item.getContactId(), item.getLookupKey());
-        if (avatar != null) {
-            avatarView.setImageDrawable(avatar);
-        } else{
-            avatarView.setImageResource(R.drawable.ic_contact_picture);
+        if(item.getContactId() == PersistableObject.UNSET_ID || item.getLookupKey() == null) {
+            Picasso.with(getContext()).load(R.drawable.ic_contact_picture).into(avatarView);
+        } else {
+            Uri lookupUri = ContactsContract.Contacts.getLookupUri(item.getContactId(), item.getLookupKey());
+            Uri contactUri = ContactsContract.Contacts.lookupContact(getContext().getContentResolver(), lookupUri);
+            Picasso.with(getContext()).load(contactUri)
+              .placeholder(R.drawable.ic_contact_picture).error(R.drawable.ic_contact_picture)
+              .into(avatarView);
         }
+
         memberNameView.setText(item.getName());
         contactAddressView.setText(item.getContactAddress());
 
