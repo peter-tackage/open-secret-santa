@@ -64,6 +64,10 @@ public final class Member extends PersistableObject {
 
     @Override
     public String toString() {
+        return mName;
+    }
+
+    public String toDebugString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Id: ");
         sb.append(getId());
