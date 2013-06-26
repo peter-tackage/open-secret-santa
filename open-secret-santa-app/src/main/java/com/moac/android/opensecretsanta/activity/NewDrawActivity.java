@@ -23,7 +23,7 @@ import com.moac.android.opensecretsanta.model.PersistableObject;
 
 import java.util.List;
 
-public class NewDrawActivity extends Activity implements OnMemberClickListener {
+public class NewDrawActivity extends Activity implements OnEditMemberListener {
 
     private static final String TAG = NewDrawActivity.class.getSimpleName();
 
@@ -92,7 +92,12 @@ public class NewDrawActivity extends Activity implements OnMemberClickListener {
     }
 
     @Override
-    public void onMemberClick(long _groupId, long _memberId) {
+    public void onEditMember(long _groupId, long _memberId) {
+        // TODO Launch member editor.
+    }
+
+    @Override
+    public void onRestrictMember(long _groupId, long _memberId) {
         Intent intent = new Intent(this, RestrictionsActivity.class);
         intent.putExtra(Intents.GROUP_ID_INTENT_EXTRA, _groupId);
         intent.putExtra(Intents.MEMBER_ID_INTENT_EXTRA, _memberId);

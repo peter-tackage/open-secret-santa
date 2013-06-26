@@ -69,6 +69,8 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
             nameView = (TextView) v.getTag(R.id.name_textview);
             addressView = (TextView) v.getTag(R.id.address_textview);
         }
+
+        // FIXME Have seen index out of bound exception here.
         Member item = mItems.get(position);
 
             // This is broken - doesn't immediately update ImageView, needs reload.

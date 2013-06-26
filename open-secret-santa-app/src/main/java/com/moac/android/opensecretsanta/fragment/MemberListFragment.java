@@ -9,7 +9,7 @@ import android.widget.*;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.Intents;
-import com.moac.android.opensecretsanta.activity.OnMemberClickListener;
+import com.moac.android.opensecretsanta.activity.OnEditMemberListener;
 import com.moac.android.opensecretsanta.adapter.MemberListAdapter;
 import com.moac.android.opensecretsanta.adapter.SuggestionsAdapter;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
@@ -25,7 +25,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     private Group mGroup;
     private DatabaseManager mDb;
-    private OnMemberClickListener mOnMemberClickListener;
+    private OnEditMemberListener mOnMemberClickListener;
     private AutoCompleteTextView mCompleteTextView;
 
     /**
@@ -44,9 +44,9 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     public void onAttach(Activity _activity) {
         super.onAttach(_activity);
         try {
-            mOnMemberClickListener = (OnMemberClickListener) _activity;
+            mOnMemberClickListener = (OnEditMemberListener) _activity;
         } catch(ClassCastException e) {
-            throw new ClassCastException(_activity.toString() + " must implement OnMemberClickListener");
+            throw new ClassCastException(_activity.toString() + " must implement OnEditMemberListener");
         }
     }
 
@@ -150,6 +150,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
                 mode.finish();
                 return true;
             case R.id.menu_restrictions:
+                doRestrictions(getListView().getCheckedItemIds()[0]);
                 mode.finish();
                 return true;
             case R.id.menu_delete:
@@ -173,12 +174,16 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     // TODO Do in background & add confirm dialog
-    private void doDelete(long[] ids) {
-        for(int i = 0; i < ids.length; i++) {
-            long memberId = ids[i];
+    private void doDelete(long[] _ids) {
+        for(int i = 0; i < _ids.length; i++) {
+            long memberId = _ids[i];
             mDb.delete(memberId, Member.class);
         }
-        Toast.makeText(getActivity(), ids.length + " deleted", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), _ids.length + " deleted", Toast.LENGTH_SHORT).show();
+    }
+
+    private void doRestrictions(long _id) {
+
     }
 
     // TODO Make this load asynchronously and somewhere else
