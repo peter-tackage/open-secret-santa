@@ -4,18 +4,14 @@ import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AutoCompleteTextView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.view.*;
+import android.widget.*;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.activity.OnMemberClickListener;
 import com.moac.android.opensecretsanta.adapter.MemberListAdapter;
+import com.moac.android.opensecretsanta.adapter.MemberRowDetails;
 import com.moac.android.opensecretsanta.adapter.SuggestionsAdapter;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Group;
@@ -24,7 +20,7 @@ import com.moac.android.opensecretsanta.model.PersistableObject;
 
 import java.util.List;
 
-public class MemberListFragment extends ListFragment {
+public class MemberListFragment extends ListFragment implements ActionMode.Callback {
 
     private static final String TAG = MemberListFragment.class.getSimpleName();
 
@@ -32,6 +28,7 @@ public class MemberListFragment extends ListFragment {
     private DatabaseManager mDb;
     private OnMemberClickListener mOnMemberClickListener;
     private AutoCompleteTextView mCompleteTextView;
+    private ActionMode mActionMode = null;
 
     /**
      * Factory method for this fragment class
@@ -84,17 +81,15 @@ public class MemberListFragment extends ListFragment {
             }
         });
 
-        TextView titleText = (TextView)view.findViewById(R.id.group_title_textview);
+        TextView titleText = (TextView)view.findViewById(R.id.content_title_textview);
         titleText.setText(mGroup.getName());
         return view;
     }
 
-
     @Override
-    public void onStart() {
-        super.onStart();
-        Log.i(TAG, "onActivityCreated() - loading members for groupId: " + mGroup.getId());
-        loadMembers();
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -102,6 +97,62 @@ public class MemberListFragment extends ListFragment {
                 mOnMemberClickListener.onMemberClick(mGroup.getId(), row.getId());
             }
         });
+        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                if (mActionMode != null)
+                    return false;
+
+                // Start the CAB using the ActionMode.Callback defined above
+                mActionMode = getActivity().startActionMode(MemberListFragment.this);
+                Member selectedItem = (Member) ((ListView) parent).getItemAtPosition(position);
+                return true;
+            }
+        });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.i(TAG, "onActivityCreated() - loading members for groupId: " + mGroup.getId());
+        loadMembers();
+
+    }
+
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        // Inflate a menu resource providing context menu items
+        MenuInflater inflater = mode.getMenuInflater();
+        inflater.inflate(R.menu.edit_member_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        return true;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_edit:
+                mode.finish();
+                return true;
+            case R.id.menu_restrictions:
+                mode.finish();
+                return true;
+            case R.id.menu_delete:
+                mode.finish();
+                return true;
+            default:
+                return false;
+        }
+
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+       mActionMode = null;
     }
 
     // TODO Make this load asynchronously and somewhere else

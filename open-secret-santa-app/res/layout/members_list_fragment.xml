@@ -8,14 +8,14 @@
   <TextView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/group_title_textview"
+    android:id="@+id/content_title_textview"
     android:gravity="center_horizontal"
     android:textColor="@color/white"
     android:background="@android:color/holo_blue_light" />
 
   <AutoCompleteTextView
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="48dp"
     android:id="@+id/add_autoCompleteTextView"
     android:layout_gravity="center"
     android:layout_marginLeft="8dp"

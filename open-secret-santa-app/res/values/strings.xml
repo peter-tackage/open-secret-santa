@@ -74,5 +74,8 @@
   <string name="drawer_close_accesshint">close drawer</string>
   <string name="member_avatar_accesshint">member avatar</string>
   <string name="menu_done">Done</string>
+  <string name="menu_edit">Edit</string>
+  <string name="menu_restrictions">Restrictions</string>
+  <string name="menu_delete">Delete</string>
 
 </resources>

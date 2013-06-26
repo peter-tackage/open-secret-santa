@@ -14,7 +14,6 @@
     android:layout_gravity="center"
     android:cropToPadding="true"
     android:scaleType="centerCrop"
-    android:src="@drawable/ic_contact_picture"
     android:contentDescription="@string/member_avatar_accesshint"
     android:padding="4dp" />
 
