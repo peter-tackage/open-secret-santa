@@ -153,8 +153,9 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
                 mode.finish();
                 return true;
             case R.id.menu_delete:
-                doDelete();
+                doDelete(getListView().getCheckItemIds());
                 mode.finish();
+                loadMembers();
                 return true;
             default:
                 return false;
@@ -172,18 +173,12 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     // TODO Do in background & add confirm dialog
-    private void doDelete() {
-        if(getListView().getCheckedItemCount() == 0)
-            return;
-
-        long[] ids = getListView().getCheckItemIds();
+    private void doDelete(long[] ids) {
         for(int i = 0; i < ids.length; i++) {
             long memberId = ids[i];
             mDb.delete(memberId, Member.class);
         }
         Toast.makeText(getActivity(), ids.length + " deleted", Toast.LENGTH_SHORT).show();
-
-        loadMembers();
     }
 
     // TODO Make this load asynchronously and somewhere else
