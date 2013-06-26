@@ -4,8 +4,9 @@
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   android:orientation="horizontal"
-  android:padding="4dp">
-
+  android:padding="4dp"
+  android:background="?android:attr/activatedBackgroundIndicator">
+  <!-- android:background sets visual indicator of list item selection -->
 
   <ImageView
     android:id="@+id/member_imageview"
@@ -21,7 +22,7 @@
   <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Meli Melo"
+    android:text="Mr User"
     android:id="@+id/member_name_textview"
     android:layout_toLeftOf="@+id/restriction_count_textview"
     android:layout_toRightOf="@+id/member_imageview"

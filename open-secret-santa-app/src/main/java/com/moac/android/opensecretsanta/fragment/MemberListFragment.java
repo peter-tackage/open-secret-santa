@@ -11,7 +11,6 @@ import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.activity.OnMemberClickListener;
 import com.moac.android.opensecretsanta.adapter.MemberListAdapter;
-import com.moac.android.opensecretsanta.adapter.MemberRowDetails;
 import com.moac.android.opensecretsanta.adapter.SuggestionsAdapter;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Group;
@@ -47,7 +46,7 @@ public class MemberListFragment extends ListFragment implements ActionMode.Callb
         super.onAttach(_activity);
         try {
             mOnMemberClickListener = (OnMemberClickListener) _activity;
-        } catch (ClassCastException e) {
+        } catch(ClassCastException e) {
             throw new ClassCastException(_activity.toString() + " must implement OnMemberClickListener");
         }
     }
@@ -66,13 +65,13 @@ public class MemberListFragment extends ListFragment implements ActionMode.Callb
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.members_list_fragment, container, false);
 
-        mCompleteTextView = (AutoCompleteTextView)view.findViewById(R.id.add_autoCompleteTextView);
+        mCompleteTextView = (AutoCompleteTextView) view.findViewById(R.id.add_autoCompleteTextView);
         mCompleteTextView.setThreshold(1);
         mCompleteTextView.setAdapter(new SuggestionsAdapter(getActivity()));
         mCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Member selected = (Member)mCompleteTextView.getAdapter().getItem(position);
+                Member selected = (Member) mCompleteTextView.getAdapter().getItem(position);
                 Log.i(TAG, "OnItemClick() - name: " + selected.getName());
                 addMember(selected);
                 mCompleteTextView.setText("");
@@ -81,7 +80,7 @@ public class MemberListFragment extends ListFragment implements ActionMode.Callb
             }
         });
 
-        TextView titleText = (TextView)view.findViewById(R.id.content_title_textview);
+        TextView titleText = (TextView) view.findViewById(R.id.content_title_textview);
         titleText.setText(mGroup.getName());
         return view;
     }
@@ -90,22 +89,28 @@ public class MemberListFragment extends ListFragment implements ActionMode.Callb
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        // TODO May want to change this for sharing
+        // Only allow single selection of members
+        getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Member row = (Member)getListView().getAdapter().getItem(position);
-                mOnMemberClickListener.onMemberClick(mGroup.getId(), row.getId());
+                // Remove this for now.
+                //    Member row = (Member) getListView().getAdapter().getItem(position);
+                //    mOnMemberClickListener.onMemberClick(mGroup.getId(), row.getId());
             }
         });
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if (mActionMode != null)
+                if(mActionMode != null)
                     return false;
 
                 // Start the CAB using the ActionMode.Callback defined above
                 mActionMode = getActivity().startActionMode(MemberListFragment.this);
-                Member selectedItem = (Member) ((ListView) parent).getItemAtPosition(position);
+                // Visual indicator of selection
+                ((ListView) parent).setItemChecked(position, true);
                 return true;
             }
         });
@@ -116,7 +121,6 @@ public class MemberListFragment extends ListFragment implements ActionMode.Callb
         super.onStart();
         Log.i(TAG, "onActivityCreated() - loading members for groupId: " + mGroup.getId());
         loadMembers();
-
     }
 
     @Override
@@ -129,12 +133,12 @@ public class MemberListFragment extends ListFragment implements ActionMode.Callb
 
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        return true;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-        switch (item.getItemId()) {
+        switch(item.getItemId()) {
             case R.id.menu_edit:
                 mode.finish();
                 return true;
@@ -147,12 +151,13 @@ public class MemberListFragment extends ListFragment implements ActionMode.Callb
             default:
                 return false;
         }
-
     }
 
     @Override
     public void onDestroyActionMode(ActionMode mode) {
-       mActionMode = null;
+        mActionMode = null;
+        // Clear visual indicator of selection.
+        getListView().clearChoices();
     }
 
     // TODO Make this load asynchronously and somewhere else
@@ -169,9 +174,8 @@ public class MemberListFragment extends ListFragment implements ActionMode.Callb
     private void addMember(Member _member) {
         _member.setGroup(mGroup);
         long id = mDb.create(_member);
-        if (id != PersistableObject.UNSET_ID) {
+        if(id != PersistableObject.UNSET_ID) {
             loadMembers();
         }
     }
-
 }
