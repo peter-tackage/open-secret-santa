@@ -19,8 +19,7 @@ import com.moac.android.opensecretsanta.model.PersistableObject;
 
 import java.util.List;
 
-public class MemberListFragment extends ListFragment implements // ActionMode.Callback,
-  AbsListView.MultiChoiceModeListener {
+public class MemberListFragment extends ListFragment implements AbsListView.MultiChoiceModeListener {
 
     private static final String TAG = MemberListFragment.class.getSimpleName();
 
@@ -124,6 +123,7 @@ public class MemberListFragment extends ListFragment implements // ActionMode.Ca
 
     @Override
     public void onDestroyView() {
+        // Force the ending of the CAB
         getListView().clearChoices();
         getListView().setChoiceMode(ListView.CHOICE_MODE_NONE);
         super.onDestroyView();
@@ -153,6 +153,7 @@ public class MemberListFragment extends ListFragment implements // ActionMode.Ca
                 mode.finish();
                 return true;
             case R.id.menu_delete:
+                doDelete();
                 mode.finish();
                 return true;
             default:
@@ -168,6 +169,21 @@ public class MemberListFragment extends ListFragment implements // ActionMode.Ca
         int selectedCount = getListView().getCheckedItemCount();
         mode.setTitle(selectedCount + " selected");
         mode.getMenu().setGroupVisible(R.id.menu_single_selection_group, (selectedCount == 1));
+    }
+
+    // TODO Do in background & add confirm dialog
+    private void doDelete() {
+        if(getListView().getCheckedItemCount() == 0)
+            return;
+
+        long[] ids = getListView().getCheckItemIds();
+        for(int i = 0; i < ids.length; i++) {
+            long memberId = ids[i];
+            mDb.delete(memberId, Member.class);
+        }
+        Toast.makeText(getActivity(), ids.length + " deleted", Toast.LENGTH_SHORT).show();
+
+        loadMembers();
     }
 
     // TODO Make this load asynchronously and somewhere else

@@ -32,6 +32,11 @@ public class MemberListAdapter extends ArrayAdapter<Member> {
     }
 
     @Override
+    public long getItemId(int position) {
+        return getItem(position).getId();
+    }
+
+    @Override
     public View getView(int _position, View _convertView, ViewGroup _parent) {
 
         Log.v(TAG, "getView() - creating for position: " + _position);
