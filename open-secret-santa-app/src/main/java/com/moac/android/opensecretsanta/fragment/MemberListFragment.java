@@ -134,6 +134,7 @@ public class MemberListFragment extends ListFragment implements // ActionMode.Ca
         // Inflate a menu resource providing context menu items
         MenuInflater inflater = mode.getMenuInflater();
         inflater.inflate(R.menu.edit_member_menu, menu);
+
         return true;
     }
 
@@ -164,6 +165,9 @@ public class MemberListFragment extends ListFragment implements // ActionMode.Ca
 
     @Override
     public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+        int selectedCount = getListView().getCheckedItemCount();
+        mode.setTitle(selectedCount + " selected");
+        mode.getMenu().setGroupVisible(R.id.menu_single_selection_group, (selectedCount == 1));
     }
 
     // TODO Make this load asynchronously and somewhere else
