@@ -19,7 +19,8 @@ import com.moac.android.opensecretsanta.model.PersistableObject;
 
 import java.util.List;
 
-public class MemberListFragment extends ListFragment implements ActionMode.Callback {
+public class MemberListFragment extends ListFragment implements // ActionMode.Callback,
+  AbsListView.MultiChoiceModeListener {
 
     private static final String TAG = MemberListFragment.class.getSimpleName();
 
@@ -27,7 +28,6 @@ public class MemberListFragment extends ListFragment implements ActionMode.Callb
     private DatabaseManager mDb;
     private OnMemberClickListener mOnMemberClickListener;
     private AutoCompleteTextView mCompleteTextView;
-    private ActionMode mActionMode = null;
 
     /**
      * Factory method for this fragment class
@@ -89,9 +89,9 @@ public class MemberListFragment extends ListFragment implements ActionMode.Callb
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // TODO May want to change this for sharing
-        // Only allow single selection of members
-        getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        // Initially don't perform check selection.
+        getListView().setChoiceMode(ListView.CHOICE_MODE_NONE);
+        getListView().setMultiChoiceModeListener(this);
 
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -104,12 +104,11 @@ public class MemberListFragment extends ListFragment implements ActionMode.Callb
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if(mActionMode != null)
-                    return false;
 
-                // Start the CAB using the ActionMode.Callback defined above
-                mActionMode = getActivity().startActionMode(MemberListFragment.this);
-                // Visual indicator of selection
+                // Allow selection mode
+                getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+
+                // Visual indicator of selection and launch CAB.
                 ((ListView) parent).setItemChecked(position, true);
                 return true;
             }
@@ -121,6 +120,13 @@ public class MemberListFragment extends ListFragment implements ActionMode.Callb
         super.onStart();
         Log.i(TAG, "onActivityCreated() - loading members for groupId: " + mGroup.getId());
         loadMembers();
+    }
+
+    @Override
+    public void onDestroyView() {
+        getListView().clearChoices();
+        getListView().setChoiceMode(ListView.CHOICE_MODE_NONE);
+        super.onDestroyView();
     }
 
     @Override
@@ -154,10 +160,10 @@ public class MemberListFragment extends ListFragment implements ActionMode.Callb
     }
 
     @Override
-    public void onDestroyActionMode(ActionMode mode) {
-        mActionMode = null;
-        // Clear visual indicator of selection.
-        getListView().clearChoices();
+    public void onDestroyActionMode(ActionMode mode) {}
+
+    @Override
+    public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
     }
 
     // TODO Make this load asynchronously and somewhere else
