@@ -29,7 +29,6 @@ public class RestrictionsListFragment extends ListFragment {
     private DatabaseManager mDb;
     private Member mFromMember;
     private Group mGroup;
-    private TextView mTitleTextView;
 
     /**
      * Factory method for this fragment class
@@ -60,8 +59,8 @@ public class RestrictionsListFragment extends ListFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.restrictions_list_fragment, container, false);
 
-        mTitleTextView = (TextView) view.findViewById(R.id.content_title_textview);
-        mTitleTextView.setText("Restrictions for " + mFromMember.getName());
+        TextView titleTextView = (TextView) view.findViewById(R.id.content_title_textview);
+        titleTextView.setText("Restrictions for " + mFromMember.getName());
         return view;
     }
 
@@ -75,8 +74,17 @@ public class RestrictionsListFragment extends ListFragment {
         List<Restriction> restrictionsForMember = mDb.queryAllRestrictionsForMemberId(fromMemberId);
         Set<Long> restrictionSet = buildRestrictionSet(restrictionsForMember);
         List<RestrictionRowDetails> rows = buildRowData(fromMemberId, otherMembers, restrictionSet);
-        setListAdapter(new RestrictionListAdapter(getActivity(), rows));
+        setListAdapter(new RestrictionListAdapter(getActivity(), rows, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RestrictionRowDetails details = (RestrictionRowDetails)v.getTag();
+                handleRestrictionToggle(details);
+            }
+        }));
     }
+
+    private void handleRestrictionToggle(RestrictionRowDetails _details) {
+     }
 
     private static List<RestrictionRowDetails> buildRowData(long _fromMemberId, List<Member> _otherMembers, Set<Long> _restrictions) {
         List<RestrictionRowDetails> rows = new ArrayList<RestrictionRowDetails>(_otherMembers.size());
@@ -97,7 +105,7 @@ public class RestrictionsListFragment extends ListFragment {
     private static Set<Long> buildRestrictionSet(List<Restriction> _restrictions) {
         Set<Long> result = new HashSet<Long>();
         for(Restriction restriction : _restrictions) {
-            result.add(restriction.getId());
+            result.add(restriction.getOtherMemberId());
         }
         return result;
     }

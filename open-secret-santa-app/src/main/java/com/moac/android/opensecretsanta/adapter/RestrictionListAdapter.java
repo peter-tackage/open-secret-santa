@@ -3,6 +3,7 @@ package com.moac.android.opensecretsanta.adapter;
 import android.content.Context;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,13 +21,13 @@ public class RestrictionListAdapter extends BaseAdapter {
     private final static String TAG = RestrictionListAdapter.class.getSimpleName();
 
     private final Context mContext;
-   // private OnClickListener mRestrictClickListener;
+    private OnClickListener mRestrictClickListener;
     private List<RestrictionRowDetails> mItems = Collections.emptyList();
 
-    public RestrictionListAdapter(Context _context, List<RestrictionRowDetails> _items) {
+    public RestrictionListAdapter(Context _context, List<RestrictionRowDetails> _items, OnClickListener _onClickListener) {
         mContext = _context;
         mItems = _items;
-     //   mRestrictClickListener = _onClickListener;
+        mRestrictClickListener = _onClickListener;
     }
 
     @Override
@@ -84,8 +85,8 @@ public class RestrictionListAdapter extends BaseAdapter {
 
         memberNameView.setText(item.getToMemberName());
         checkBoxView.setChecked(!item.isRestricted());
-      //  checkBoxView.setOnClickListener(mRestrictClickListener);
-     //   checkBoxView.setTag(res); // Provide item as tag data for callbacks
+        checkBoxView.setOnClickListener(mRestrictClickListener);
+        checkBoxView.setTag(item); // Provide item as tag data for callbacks
 
         return v;
     }
