@@ -18,12 +18,13 @@ import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.adapter.GroupListAdapter;
 import com.moac.android.opensecretsanta.fragment.MemberListFragment;
+import com.moac.android.opensecretsanta.model.DrawResult;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 
 import java.util.List;
 
-public class NewDrawActivity extends Activity implements OnEditMemberListener {
+public class NewDrawActivity extends Activity implements DrawManager {
 
     private static final String TAG = NewDrawActivity.class.getSimpleName();
 
@@ -103,6 +104,17 @@ public class NewDrawActivity extends Activity implements OnEditMemberListener {
         intent.putExtra(Intents.MEMBER_ID_INTENT_EXTRA, _memberId);
         startActivity(intent);
     }
+
+    @Override
+    public void onRequestDraw(Group _group) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void onNotifyDraw(DrawResult _result) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
 
     private void populateGroupsList(ListView _groupsList) {
         // Retrieve the list of groups from database.

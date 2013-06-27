@@ -9,10 +9,11 @@ import android.widget.*;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.Intents;
-import com.moac.android.opensecretsanta.activity.OnEditMemberListener;
+import com.moac.android.opensecretsanta.activity.DrawManager;
 import com.moac.android.opensecretsanta.adapter.MemberListAdapter;
 import com.moac.android.opensecretsanta.adapter.SuggestionsAdapter;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
+import com.moac.android.opensecretsanta.model.DrawResult;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
@@ -25,7 +26,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     private Group mGroup;
     private DatabaseManager mDb;
-    private OnEditMemberListener mEditMemberListener;
+    private DrawManager mDrawManager;
     private AutoCompleteTextView mCompleteTextView;
 
     /**
@@ -44,9 +45,9 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     public void onAttach(Activity _activity) {
         super.onAttach(_activity);
         try {
-            mEditMemberListener = (OnEditMemberListener) _activity;
+            mDrawManager = (DrawManager) _activity;
         } catch(ClassCastException e) {
-            throw new ClassCastException(_activity.toString() + " must implement OnEditMemberListener");
+            throw new ClassCastException(_activity.toString() + " must implement DrawManager");
         }
     }
 
@@ -162,6 +163,14 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
                 mode.finish();
                 loadMembers();
                 return true;
+            case R.id.menu_draw:
+                doDraw(mGroup);
+                mode.finish();
+                return true;
+            case R.id.menu_notify:
+                doNotify(mGroup);
+                mode.finish();
+                return true;
             default:
                 return false;
         }
@@ -186,8 +195,18 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         Toast.makeText(getActivity(), _ids.length + " deleted", Toast.LENGTH_SHORT).show();
     }
 
+    private void doNotify(Group _group) {
+        DrawResult dr = mDb.queryLatestDrawResultForGroup(_group.getId());
+        if(dr != null)
+            mDrawManager.onNotifyDraw(dr);
+    }
+
+    private void doDraw(Group _group) {
+        mDrawManager.onRequestDraw(_group);
+    }
+
     private void doRestrictions(long _id) {
-        mEditMemberListener.onRestrictMember(mGroup.getId(), _id);
+        mDrawManager.onRestrictMember(mGroup.getId(), _id);
     }
 
     // TODO Make this load asynchronously and somewhere else
