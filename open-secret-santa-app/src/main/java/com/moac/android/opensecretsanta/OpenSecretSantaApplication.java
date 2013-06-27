@@ -45,7 +45,7 @@ public class OpenSecretSantaApplication extends Application {
     }
 
     // Returns an instance of the currently prefered DrawEngine
-    public DrawEngine createDrawEngineInstance() {
+    public DrawEngine getCurrentDrawEngineInstance() {
         DrawEngine engine = null;
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -53,7 +53,7 @@ public class OpenSecretSantaApplication extends Application {
         String classname = prefs.getString("engine_preference",
           defaultName);
 
-        Log.i(TAG, "createDrawEngineInstance() - setting draw engine to: " + classname);
+        Log.i(TAG, "getCurrentDrawEngineInstance() - setting draw engine to: " + classname);
 
         try {
             engine = DrawEngineFactory.createDrawEngine(classname);
