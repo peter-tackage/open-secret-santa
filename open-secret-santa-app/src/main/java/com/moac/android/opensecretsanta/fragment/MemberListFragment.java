@@ -25,7 +25,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     private Group mGroup;
     private DatabaseManager mDb;
-    private OnEditMemberListener mOnMemberClickListener;
+    private OnEditMemberListener mEditMemberListener;
     private AutoCompleteTextView mCompleteTextView;
 
     /**
@@ -44,7 +44,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     public void onAttach(Activity _activity) {
         super.onAttach(_activity);
         try {
-            mOnMemberClickListener = (OnEditMemberListener) _activity;
+            mEditMemberListener = (OnEditMemberListener) _activity;
         } catch(ClassCastException e) {
             throw new ClassCastException(_activity.toString() + " must implement OnEditMemberListener");
         }
@@ -96,8 +96,6 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Remove this for now.
-                //    Member row = (Member) getListView().getAdapter().getItem(position);
-                //    mOnMemberClickListener.onMemberClick(mGroup.getId(), row.getId());
             }
         });
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -154,7 +152,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
                 mode.finish();
                 return true;
             case R.id.menu_delete:
-                doDelete(getListView().getCheckItemIds());
+                doDelete(getListView().getCheckedItemIds());
                 mode.finish();
                 loadMembers();
                 return true;
@@ -183,7 +181,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     private void doRestrictions(long _id) {
-
+        mEditMemberListener.onRestrictMember(mGroup.getId(), _id);
     }
 
     // TODO Make this load asynchronously and somewhere else

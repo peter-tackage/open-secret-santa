@@ -32,7 +32,13 @@ public class MemberListAdapter extends ArrayAdapter<Member> {
     }
 
     @Override
+    public boolean hasStableIds () {
+        return true; // Required for using ListView#getCheckItemIds
+    }
+
+    @Override
     public long getItemId(int position) {
+        // Return a stable id - the member id
         return getItem(position).getId();
     }
 
