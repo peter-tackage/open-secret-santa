@@ -53,6 +53,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         mDb = OpenSecretSantaApplication.getDatabase();
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
@@ -125,6 +126,11 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         getListView().clearChoices();
         getListView().setChoiceMode(ListView.CHOICE_MODE_NONE);
         super.onDestroyView();
+    }
+
+    @Override
+    public void onCreateOptionsMenu (Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.draw_menu, menu);
     }
 
     @Override
