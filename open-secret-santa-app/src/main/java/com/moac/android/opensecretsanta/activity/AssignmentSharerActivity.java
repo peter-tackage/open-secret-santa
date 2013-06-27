@@ -21,7 +21,7 @@ public class AssignmentSharerActivity extends Activity {
 //    Group mGroup;
 //
 //    DatabaseManager mDatabase;
-//    DrawEngineProvider mDrawEngineProv;
+//    DrawEngineFactory mDrawEngineProv;
 //
 //    private List<DrawResultEntry> items;
 //    private ArrayAdapter<DrawResultEntry> aa;
@@ -36,6 +36,7 @@ public class AssignmentSharerActivity extends Activity {
 //    ViewSwitcher mSwitcher;
 //
 //    boolean mSendMultipartSMS;
+//
 //
 //    Account mAccount = null;
 //    String mToken = null;
@@ -55,7 +56,7 @@ public class AssignmentSharerActivity extends Activity {
 //            mGroup = mDatabase.queryById(groupId, Group.class);
 //        }
 //
-//        mDrawEngineProv = new DrawEngineProvider();
+//        mDrawEngineProv = new DrawEngineFactory();
 //        mSwitcher = (ViewSwitcher) findViewById(R.id.drawSharerViewSwitcher);
 //
 //        //mDateTextView = (TextView)findViewById(R.id.dateValue);

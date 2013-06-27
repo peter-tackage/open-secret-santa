@@ -2,6 +2,7 @@ package com.moac.android.opensecretsanta;
 
 import android.accounts.*;
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import com.moac.android.opensecretsanta.activity.ContactModes;
@@ -11,18 +12,21 @@ import com.moac.android.opensecretsanta.mail.GmailOAuth2Sender;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.Restriction;
+import com.moac.android.opensecretsanta.util.DrawEngineFactory;
+import com.moac.android.opensecretsanta.util.InvalidDrawEngineException;
 import com.moac.android.opensecretsanta.util.Utils;
+import com.moac.drawengine.DrawEngine;
 
 public class OpenSecretSantaApplication extends Application {
 
     private static final String TAG = "OpenSecretSantaApp";
 
-    private static DatabaseManager mDatabaseManager = null;
+    private static DatabaseManager sDatabaseManager = null;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mDatabaseManager = initDatabase();
+        sDatabaseManager = initDatabase();
         Utils.doOnce(getApplicationContext(), "initTestData", new Runnable() {
             @Override
             public void run() {
@@ -32,12 +36,43 @@ public class OpenSecretSantaApplication extends Application {
     }
 
     public static DatabaseManager getDatabase() {
-        return mDatabaseManager;
+        return sDatabaseManager;
     }
 
     private DatabaseManager initDatabase() {
         DatabaseHelper databaseHelper = new DatabaseHelper(this);
         return new DatabaseManager(databaseHelper);
+    }
+
+    // Returns an instance of the currently prefered DrawEngine
+    public DrawEngine createDrawEngineInstance() {
+        DrawEngine engine = null;
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String defaultName = getString(R.string.defaultDrawEngine);
+        String classname = prefs.getString("engine_preference",
+          defaultName);
+
+        Log.i(TAG, "createDrawEngineInstance() - setting draw engine to: " + classname);
+
+        try {
+            engine = DrawEngineFactory.createDrawEngine(classname);
+        } catch(InvalidDrawEngineException ideexp) {
+            // Error: If we weren't attempting to load the default name, then try that instead
+            if(!classname.equals(defaultName)) {
+                Log.w(TAG, "Failed to initialise draw engine class: " + classname);
+                try {
+                    // Try to set the default then.
+                    engine = DrawEngineFactory.createDrawEngine(defaultName);
+                    // Success - update preference to use the default.
+                    prefs.edit().putString("engine_preference", defaultName).commit();
+
+                } catch(InvalidDrawEngineException ideexp2) {
+                    Log.e(TAG, "Unable to initialise default draw engine class: " + classname, ideexp2);
+                }
+            }
+        }
+       return engine;
     }
 
     public Account getAvailableGmailAccount() {
@@ -93,7 +128,7 @@ public class OpenSecretSantaApplication extends Application {
         // Add a Group
         Group group1 = new Group();
         group1.setName("Test Group - 1 " + _instance);
-        mDatabaseManager.create(group1);
+        sDatabaseManager.create(group1);
 
         // Add some Members
         Member m1 = new Member();
@@ -113,14 +148,14 @@ public class OpenSecretSantaApplication extends Application {
         m1.setGroup(group1);
         m2.setGroup(group1);
         m3.setGroup(group1);
-        mDatabaseManager.create(m1);
-        mDatabaseManager.create(m2);
-        mDatabaseManager.create(m3);
+        sDatabaseManager.create(m1);
+        sDatabaseManager.create(m2);
+        sDatabaseManager.create(m3);
 
         Restriction r1 = new Restriction();
         r1.setMember(m1);
         r1.setOtherMember(m2);
-        mDatabaseManager.create(r1);
+        sDatabaseManager.create(r1);
     }
 
 

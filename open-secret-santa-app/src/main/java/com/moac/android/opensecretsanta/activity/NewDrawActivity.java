@@ -13,7 +13,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.Toast;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.adapter.GroupListAdapter;
@@ -21,6 +23,7 @@ import com.moac.android.opensecretsanta.fragment.MemberListFragment;
 import com.moac.android.opensecretsanta.model.DrawResult;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.PersistableObject;
+import com.moac.drawengine.DrawEngine;
 
 import java.util.List;
 
@@ -107,7 +110,7 @@ public class NewDrawActivity extends Activity implements DrawManager {
 
     @Override
     public void onRequestDraw(Group _group) {
-       Toast.makeText(this, "Requesting Draw", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Requesting Draw", Toast.LENGTH_SHORT).show();
     }
 
     @Override
