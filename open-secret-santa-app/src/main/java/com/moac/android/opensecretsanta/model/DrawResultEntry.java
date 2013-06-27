@@ -6,6 +6,14 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = DrawResultEntry.TABLE_NAME)
 public class DrawResultEntry extends PersistableObject {
 
+    public enum Status {
+        Not_Sent("Not Sent"), Successful("Successful"), Failed("Failed");
+
+        private String mText;
+        Status(String _text) {  mText = _text; }
+        public String getText() { return mText; }
+    }
+
     public static final String TABLE_NAME =  "draw_result_entries";
 
     public static final long UNSET_DATE = -1;
@@ -20,7 +28,7 @@ public class DrawResultEntry extends PersistableObject {
     }
 
     /**
-     * Unique combo with mGiver and mDrawResult only prevents a giver having multiple recipients,
+     * uniqueCombo with mGiver and mDrawResult only prevents a giver having multiple recipients,
      * rather than a recipient having multiple givers. I don't think there's a way to support
      * two separate combos in ORMLite - eg mGiver/mDrawResult & mReceiver/mDrawResult.
      *
@@ -36,6 +44,10 @@ public class DrawResultEntry extends PersistableObject {
       columnDefinition = "integer references members (_id) on delete cascade")
     private Member mReceiver;
 
+    @DatabaseField(columnName = Columns.DRAW_RESULT_ID_COLUMN, foreign = true, canBeNull = false, uniqueCombo = true,
+      columnDefinition = "integer references draw_results (_id) on delete cascade")
+    private DrawResult mDrawResult;
+
     @DatabaseField(columnName = Columns.VIEWED_DATE_COLUMN)
     private long mViewedDate = UNSET_DATE;
 
@@ -43,11 +55,7 @@ public class DrawResultEntry extends PersistableObject {
     private long mSentDate = UNSET_DATE;
 
     @DatabaseField(columnName = Columns.SEND_STATUS_COLUMN)
-    private long mSendStatus;
-
-    @DatabaseField(columnName = Columns.DRAW_RESULT_ID_COLUMN, foreign = true, canBeNull = false, uniqueCombo = true,
-      columnDefinition = "integer references draw_results (_id) on delete cascade")
-    private DrawResult mDrawResult;
+    private Status mSendStatus = Status.Not_Sent;
 
     public long getDrawResultId() { return mDrawResult.getId(); }
     public void setDrawResult(DrawResult _drawResult) { mDrawResult = _drawResult; }
@@ -64,7 +72,7 @@ public class DrawResultEntry extends PersistableObject {
     public long getSentDate() { return mSentDate; }
     public void setSentDate(long _sentDate) { mSentDate = _sentDate; }
 
-    public long getSendStatus() { return mSendStatus; }
-    public void setSendStatus(long _sendStatus) { mSendStatus = _sendStatus; }
+    public Status getSendStatus() { return mSendStatus; }
+    public void setSendStatus(Status _sendStatus) { mSendStatus = _sendStatus; }
 
 }
