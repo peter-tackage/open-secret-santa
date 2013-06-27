@@ -123,6 +123,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     @Override
     public void onDestroyView() {
+        // TODO Is this necessary now we are using the CHOICE_MODE_MULTIPLE_MODAL trigger?
         // Force the ending of the CAB
         getListView().clearChoices();
         getListView().setChoiceMode(ListView.CHOICE_MODE_NONE);
@@ -149,27 +150,35 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle *non-contextual* action bar selection
+        switch (item.getItemId()) {
+            case R.id.menu_draw:
+                doDraw(mGroup);
+                return true;
+            case R.id.menu_notify:
+                doNotify(mGroup);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        // Handle contextual action bar selection
         switch(item.getItemId()) {
             case R.id.menu_edit:
                 mode.finish();
                 return true;
             case R.id.menu_restrictions:
-                doRestrictions(getListView().getCheckedItemIds()[0]);
+                doRestrictions(mGroup.getId(), getListView().getCheckedItemIds()[0]);
                 mode.finish();
                 return true;
             case R.id.menu_delete:
                 doDelete(getListView().getCheckedItemIds());
                 mode.finish();
                 loadMembers();
-                return true;
-            case R.id.menu_draw:
-                doDraw(mGroup);
-                mode.finish();
-                return true;
-            case R.id.menu_notify:
-                doNotify(mGroup);
-                mode.finish();
                 return true;
             default:
                 return false;
@@ -205,8 +214,8 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         mDrawManager.onRequestDraw(_group);
     }
 
-    private void doRestrictions(long _id) {
-        mDrawManager.onRestrictMember(mGroup.getId(), _id);
+    private void doRestrictions(long _groupId, long _id) {
+        mDrawManager.onRestrictMember(_groupId, _id);
     }
 
     // TODO Make this load asynchronously and somewhere else

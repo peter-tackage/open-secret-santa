@@ -10,5 +10,4 @@ public interface DrawManager {
     public void onRequestDraw(Group _group);
     public void onNotifyDraw(DrawResult _result);
 
-
 }

@@ -107,14 +107,13 @@ public class NewDrawActivity extends Activity implements DrawManager {
 
     @Override
     public void onRequestDraw(Group _group) {
-        //To change body of implemented methods use File | Settings | File Templates.
+       Toast.makeText(this, "Requesting Draw", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onNotifyDraw(DrawResult _result) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        Toast.makeText(this, "Requesting Notify", Toast.LENGTH_SHORT).show();
     }
-
 
     private void populateGroupsList(ListView _groupsList) {
         // Retrieve the list of groups from database.
@@ -124,24 +123,25 @@ public class NewDrawActivity extends Activity implements DrawManager {
     }
 
     private void displayInitialGroup() {
+        // Fetch the most recently used Group Id from preferences
         long groupId = PreferenceManager.getDefaultSharedPreferences(this).getLong(MOST_RECENT_GROUP_KEY, PersistableObject.UNSET_ID);
         if(groupId == PersistableObject.UNSET_ID)
             return;
-        showMembersListForGroup(groupId);
+        showGroup(groupId);
     }
 
     private class GroupListItemClickListener implements AdapterView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> _parent, View _view, int _position, long _id) {
-            showMembersListForGroup(_id);
+            showGroup(_id);
             // Highlight the selected item, update the title, and close the drawer
             mDrawerList.setItemChecked(_position, true);
             mDrawerLayout.closeDrawer(mDrawerList);
         }
     }
 
-    private void showMembersListForGroup(long _groupId) {
-        Log.i(TAG, "showMembersListForGroup() - start");
+    private void showGroup(long _groupId) {
+        Log.i(TAG, "showGroup() - start");
 
         Fragment fragment = MemberListFragment.create(_groupId);
         // Replace existing fragment
