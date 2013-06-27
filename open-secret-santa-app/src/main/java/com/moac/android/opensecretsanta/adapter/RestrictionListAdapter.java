@@ -1,12 +1,16 @@
 package com.moac.android.opensecretsanta.adapter;
 
 import android.content.Context;
+import android.net.Uri;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.moac.android.opensecretsanta.R;
+import com.moac.android.opensecretsanta.model.PersistableObject;
+import com.squareup.picasso.Picasso;
 
 import java.util.Collections;
 import java.util.List;
@@ -65,11 +69,21 @@ public class RestrictionListAdapter extends BaseAdapter {
             checkBoxView = (CheckBox)v.getTag(R.id.restrict_checkbox);
         }
 
-        RestrictionRowDetails res = getItem(_position);
+        RestrictionRowDetails item = getItem(_position);
 
-        // TODO Load contact avatar into memberViewImage
-        memberNameView.setText(res.getToMemberName());
-        checkBoxView.setChecked(!res.isRestricted());
+        // Assign the view with its content.
+        if(item.getContactId() == PersistableObject.UNSET_ID || item.getLookupKey() == null) {
+            Picasso.with(mContext).load(R.drawable.ic_contact_picture).into(memberImageView);
+        } else {
+            Uri lookupUri = ContactsContract.Contacts.getLookupUri(item.getContactId(), item.getLookupKey());
+            Uri contactUri = ContactsContract.Contacts.lookupContact(mContext.getContentResolver(), lookupUri);
+            Picasso.with(mContext).load(contactUri)
+              .placeholder(R.drawable.ic_contact_picture).error(R.drawable.ic_contact_picture)
+              .into(memberImageView);
+        }
+
+        memberNameView.setText(item.getToMemberName());
+        checkBoxView.setChecked(!item.isRestricted());
       //  checkBoxView.setOnClickListener(mRestrictClickListener);
      //   checkBoxView.setTag(res); // Provide item as tag data for callbacks
 

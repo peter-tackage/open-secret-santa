@@ -16,7 +16,7 @@ import com.moac.android.opensecretsanta.model.PersistableObject;
  */
 public class RestrictionsActivity extends Activity {
 
-    RestrictionsListFragment mRestrictionsListFragment;
+    protected RestrictionsListFragment mRestrictionsListFragment;
 
     @Override
     public void onCreate(Bundle _savedInstance) {

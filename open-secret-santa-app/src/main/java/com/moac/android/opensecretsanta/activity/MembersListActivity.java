@@ -795,8 +795,8 @@ public class MembersListActivity extends Activity {
                 Log.v(TAG, "getRestrictionRows() - row: " +
                   otherMember.getId() + "(" + otherMember.getName() + ")"
                   + " isRestricted: " + isRestricted);
-
-                rows.add(new RestrictionRowDetails(_memberId, otherMember.getId(), otherMember.getName(), isRestricted));
+             // HACK PT
+            //    rows.add(new RestrictionRowDetails(_memberId, otherMember.getId(), otherMember.getName(), isRestricted));
             }
 
             Collections.sort(rows);
