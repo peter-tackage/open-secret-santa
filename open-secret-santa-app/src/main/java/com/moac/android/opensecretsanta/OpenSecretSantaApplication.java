@@ -2,6 +2,7 @@ package com.moac.android.opensecretsanta;
 
 import android.accounts.*;
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -45,34 +46,34 @@ public class OpenSecretSantaApplication extends Application {
     }
 
     // Returns an instance of the currently prefered DrawEngine
-    public DrawEngine getCurrentDrawEngineInstance() {
-        DrawEngine engine = null;
+    public static DrawEngine getCurrentDrawEngineInstance(Context _context) throws InvalidDrawEngineException {
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String defaultName = getString(R.string.defaultDrawEngine);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(_context);
+        String defaultName = _context.getString(R.string.defaultDrawEngine);
         String classname = prefs.getString("engine_preference",
           defaultName);
 
         Log.i(TAG, "getCurrentDrawEngineInstance() - setting draw engine to: " + classname);
 
         try {
-            engine = DrawEngineFactory.createDrawEngine(classname);
+            return DrawEngineFactory.createDrawEngine(classname);
         } catch(InvalidDrawEngineException ideexp) {
             // Error: If we weren't attempting to load the default name, then try that instead
             if(!classname.equals(defaultName)) {
                 Log.w(TAG, "Failed to initialise draw engine class: " + classname);
                 try {
                     // Try to set the default then.
-                    engine = DrawEngineFactory.createDrawEngine(defaultName);
+                    DrawEngine engine = DrawEngineFactory.createDrawEngine(defaultName);
                     // Success - update preference to use the default.
                     prefs.edit().putString("engine_preference", defaultName).commit();
-
+                    return engine;
                 } catch(InvalidDrawEngineException ideexp2) {
                     Log.e(TAG, "Unable to initialise default draw engine class: " + classname, ideexp2);
+                    throw ideexp2;
                 }
             }
+            throw ideexp;
         }
-       return engine;
     }
 
     public Account getAvailableGmailAccount() {

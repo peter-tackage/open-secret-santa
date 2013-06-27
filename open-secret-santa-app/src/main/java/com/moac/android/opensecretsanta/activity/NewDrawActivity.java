@@ -19,13 +19,14 @@ import android.widget.Toast;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.adapter.GroupListAdapter;
+import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.fragment.MemberListFragment;
-import com.moac.android.opensecretsanta.model.DrawResult;
-import com.moac.android.opensecretsanta.model.Group;
-import com.moac.android.opensecretsanta.model.PersistableObject;
+import com.moac.android.opensecretsanta.model.*;
+import com.moac.android.opensecretsanta.util.InvalidDrawEngineException;
 import com.moac.drawengine.DrawEngine;
+import com.moac.drawengine.DrawFailureException;
 
-import java.util.List;
+import java.util.*;
 
 public class NewDrawActivity extends Activity implements DrawManager {
 
@@ -37,10 +38,12 @@ public class NewDrawActivity extends Activity implements DrawManager {
     protected DrawerLayout mDrawerLayout;
     protected ActionBarDrawerToggle mDrawerToggle;
     protected ListView mDrawerList;
+    protected DatabaseManager mDb; // shorthand.
 
     @Override
     public void onCreate(Bundle _savedInstanceState) {
         super.onCreate(_savedInstanceState);
+        mDb = OpenSecretSantaApplication.getDatabase();
         initialiseUI();
     }
 
@@ -161,4 +164,60 @@ public class NewDrawActivity extends Activity implements DrawManager {
         PreferenceManager.getDefaultSharedPreferences(this).edit().putLong(MOST_RECENT_GROUP_KEY, _groupId).commit();
     }
 
+    private DrawStatus executeDraw(DrawEngine _engine, Group _group) {
+
+        DrawStatus drawStatus = new DrawStatus();
+
+        Log.v(TAG, "executeDraw() - doInBackgrounnd()");
+
+        // Build these assignments.
+        Map<Long, Long> assignments = null;
+
+        List<Member> members = mDb.queryAllMembersForGroup(_group.getId());
+        Log.v(TAG, "executeDraw() - Group: " + _group.getId() + " has member count: " + members.size());
+        Map<Long, Set<Long>> participants = new HashMap<Long, Set<Long>>();
+
+        for(Member m : members) {
+            List<Restriction> restrictions = mDb.queryAllRestrictionsForMemberId(m.getId());
+            Set<Long> restrictionIds = new HashSet<Long>();
+            for(Restriction r : restrictions) {
+                restrictionIds.add(r.getOtherMemberId());
+            }
+            participants.put(m.getId(), restrictionIds);
+            Log.v(TAG, "performDraw() - " + m.getName() + "(" + m.getId() + ") has restrictions: " + restrictions);
+        }
+
+        try {
+            assignments = _engine.generateDraw(participants);
+            Log.v(TAG, "Assignments size: " + assignments.size());
+            drawStatus.setAssignments(assignments);
+        } catch(DrawFailureException e) {
+            // Not necessarily an error. But log it - in case it is.
+            Log.w(TAG, "Couldn't produce assignments", e);
+            drawStatus.setException(e);
+            drawStatus.setMsg("Couldn't produce assignments");
+        }
+
+       return drawStatus;
+    }
+
+    private class DrawStatus {
+
+        private Exception mException;
+        private String mMsg;
+        private Map<Long, Long> mAssignments;
+
+        private Exception getException() { return mException; }
+        private void setException(Exception exception) { mException = exception;}
+
+        private String getMsg() { return mMsg; }
+        private void setMsg(String msg) { mMsg = msg; }
+
+        private Map<Long, Long> getAssignments() { return mAssignments; }
+        private void setAssignments(Map<Long, Long> assignments) { mAssignments = assignments; }
+
+        public boolean isSuccess() {
+            return mAssignments != null && mException == null;
+        }
+    }
 }
