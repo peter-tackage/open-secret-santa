@@ -114,6 +114,13 @@ public class NewDrawActivity extends Activity implements DrawManager {
     @Override
     public void onRequestDraw(Group _group) {
         Toast.makeText(this, "Requesting Draw", Toast.LENGTH_SHORT).show();
+        try {
+            DrawEngine engine = OpenSecretSantaApplication.getCurrentDrawEngineInstance(getApplicationContext());
+            DrawStatus status = executeDraw(engine, _group);
+            Log.i(TAG, "onRequestDraw() - DrawStatus.isSuccess(): " + status.isSuccess());
+        } catch(InvalidDrawEngineException e) {
+            Log.e(TAG, "onRequestDraw() - Unable to load Draw Engine");
+        }
     }
 
     @Override
@@ -168,8 +175,6 @@ public class NewDrawActivity extends Activity implements DrawManager {
 
         DrawStatus drawStatus = new DrawStatus();
 
-        Log.v(TAG, "executeDraw() - doInBackgrounnd()");
-
         // Build these assignments.
         Map<Long, Long> assignments = null;
 
@@ -184,16 +189,16 @@ public class NewDrawActivity extends Activity implements DrawManager {
                 restrictionIds.add(r.getOtherMemberId());
             }
             participants.put(m.getId(), restrictionIds);
-            Log.v(TAG, "performDraw() - " + m.getName() + "(" + m.getId() + ") has restrictions: " + restrictions);
+            Log.v(TAG, "executeDraw() - " + m.getName() + "(" + m.getId() + ") has restriction count: " + restrictionIds.size());
         }
 
         try {
             assignments = _engine.generateDraw(participants);
-            Log.v(TAG, "Assignments size: " + assignments.size());
+            Log.v(TAG, "executeDraw() - Assignments size: " + assignments.size());
             drawStatus.setAssignments(assignments);
         } catch(DrawFailureException e) {
-            // Not necessarily an error. But log it - in case it is.
-            Log.w(TAG, "Couldn't produce assignments", e);
+            // Not necessarily an error. But is draw failure regardless.
+            Log.w(TAG, "executeDraw() - Couldn't produce assignments", e);
             drawStatus.setException(e);
             drawStatus.setMsg("Couldn't produce assignments");
         }
