@@ -77,5 +77,7 @@
   <string name="menu_edit">Edit</string>
   <string name="menu_restrictions">Restrictions</string>
   <string name="menu_delete">Delete</string>
+  <string name="menu_notify">Notify</string>
+  <string name="menu_draw">Draw</string>
 
 </resources>

@@ -187,7 +187,7 @@ public class AssignmentSharerActivity extends Activity {
 //                // Confirm redraw of group
 //                AlertDialog.Builder redrawConfirmDialog = new AlertDialog.Builder(this);
 //                redrawConfirmDialog.setTitle("Redraw assignments?")
-//                  .setIcon(R.drawable.ic_santa)
+//                  .setIcon(R.drawable.ic_menu_draw)
 //                  .setNegativeButton("Cancel", null)
 //                  .setCancelable(true)
 //                  .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -622,7 +622,7 @@ public class AssignmentSharerActivity extends Activity {
 //                    // Take the values and populate the dialog
 //                    AlertDialog.Builder builder = new AlertDialog.Builder(AssignmentSharerActivity.this);
 //                    builder.setTitle("Notify Group");
-//                    builder.setIcon(R.drawable.ic_mailbox);
+//                    builder.setIcon(R.drawable.ic_menu_notify_group);
 //
 //                    // Create the layout - add the callback to update the length.
 //                    LinearLayout dialogContents = new LinearLayout(AssignmentSharerActivity.this);

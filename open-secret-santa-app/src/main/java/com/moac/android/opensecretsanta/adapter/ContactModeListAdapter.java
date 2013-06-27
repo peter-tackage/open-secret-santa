@@ -50,14 +50,14 @@ public class ContactModeListAdapter extends ArrayAdapter<ContactModeRowDetails> 
         ContactModeRowDetails modeDetails = getItem(_position);
 
         contactModeView.setText(modeDetails.toString());
-
-        if(modeDetails.mContactMode == ContactModes.SMS_CONTACT_MODE) {
-            contactModeImageView.setImageResource(R.drawable.ic_phone);
-        } else if(modeDetails.mContactMode == ContactModes.NAME_ONLY_CONTACT_MODE) {
-            contactModeImageView.setImageResource(R.drawable.ic_menu_view);
-        } else if(modeDetails.mContactMode == ContactModes.EMAIL_CONTACT_MODE) {
-            contactModeImageView.setImageResource(R.drawable.ic_email);
-        }
+//   PT HACK
+//        if(modeDetails.mContactMode == ContactModes.SMS_CONTACT_MODE) {
+//            contactModeImageView.setImageResource(R.drawable.ic_phone);
+//        } else if(modeDetails.mContactMode == ContactModes.NAME_ONLY_CONTACT_MODE) {
+//            contactModeImageView.setImageResource(R.drawable.ic_menu_view);
+//        } else if(modeDetails.mContactMode == ContactModes.EMAIL_CONTACT_MODE) {
+//            contactModeImageView.setImageResource(R.drawable.ic_email);
+//        }
 
         return v;
     }
