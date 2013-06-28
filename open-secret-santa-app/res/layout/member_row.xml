@@ -16,8 +16,17 @@
     android:cropToPadding="true"
     android:scaleType="centerCrop"
     android:contentDescription="@string/member_avatar_accesshint"
-    android:padding="4dp" />
+    android:layout_margin="4dp" />
 
+  <View
+    android:id="@+id/member_status_indicator_view"
+    android:layout_height="4dp"
+    android:layout_width="48dp"
+    android:background="@android:color/holo_green_light"
+    android:layout_alignBottom="@+id/member_imageview"
+    android:layout_alignLeft="@+id/member_imageview"
+    android:layout_alignRight="@+id/member_imageview"
+    android:visibility="gone" />
 
   <TextView
     android:layout_width="wrap_content"
