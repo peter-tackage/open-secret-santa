@@ -130,7 +130,7 @@ public class NewDrawActivity extends Activity implements DrawManager {
         // The current design only allows one Draw Result per group.
         int count = mDb.deleteAllDrawResultsForGroup(_group.getId());
         Log.v(TAG, "prepareDraw() - deleted Draw Result count: " + count);
-
+        mMembersListFragment.onDrawCleared();
         // TODO Notify cleared.
     }
 
@@ -165,15 +165,27 @@ public class NewDrawActivity extends Activity implements DrawManager {
     }
 
     private void showGroup(long _groupId) {
-        Log.i(TAG, "showGroup() - start");
+        Log.i(TAG, "showGroup() - start. groupId: " + _groupId);
+
+        FragmentManager fragmentManager = getFragmentManager();
+
+        // Can we find the fragment we're attempting to create?
+        MemberListFragment existing = (MemberListFragment)fragmentManager.findFragmentByTag(MEMBERS_LIST_TAG);
+        if (existing != null && existing.getGroupId() == _groupId)  {
+            Log.i(TAG, "showGroup() - found matching required fragment");
+            mMembersListFragment = existing;
+            return;
+        }
 
         // Replace existing fragment
         // Can't call replace, seems to replace ALL fragments in the layout.
-        FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        if(mMembersListFragment != null)
+        if(existing != null) {
+            Log.i(TAG, "showGroup() - removing existing fragment");
             transaction.remove(mMembersListFragment);
+        }
 
+        Log.i(TAG, "showGroup() - creating new fragment");
         MemberListFragment newFragment = MemberListFragment.create(_groupId);
         transaction.add(R.id.content_frame, newFragment, MEMBERS_LIST_TAG)
           .commit();
@@ -250,7 +262,8 @@ public class NewDrawActivity extends Activity implements DrawManager {
             dre.setDrawResult(dr);
             mDb.create(dre);
         }
-        // TODO Notify DrawResult available.
+        // TODO Is this reference going to be correct on group change??
+        mMembersListFragment.onDrawAvailable(dr);
     }
 
     private class DrawStatus {

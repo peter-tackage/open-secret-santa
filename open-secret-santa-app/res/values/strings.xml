@@ -79,5 +79,6 @@
   <string name="menu_delete">Delete</string>
   <string name="menu_notify">Notify</string>
   <string name="menu_draw">Draw</string>
+  <string name="menu_reveal">Reveal</string>
 
 </resources>

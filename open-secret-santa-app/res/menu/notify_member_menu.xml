@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+      android:id="@+id/menu_notify_single"
+      android:icon="@drawable/ic_menu_notify"
+      android:title="@string/menu_notify"
+      android:showAsAction="always" />
+  <item
+    android:id="@+id/menu_reveal"
+    android:icon="@drawable/ic_menu_reveal"
+    android:title="@string/menu_reveal"
+    android:showAsAction="always" />
+</menu>

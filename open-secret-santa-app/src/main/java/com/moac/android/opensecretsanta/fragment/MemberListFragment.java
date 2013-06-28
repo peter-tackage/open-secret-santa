@@ -24,10 +24,16 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     private static final String TAG = MemberListFragment.class.getSimpleName();
 
+    private enum Mode {
+        Building, Notify
+    }
+
     private Group mGroup;
     private DatabaseManager mDb;
     private DrawManager mDrawManager;
     private AutoCompleteTextView mCompleteTextView;
+
+    private Mode mMode = Mode.Building;
 
     /**
      * Factory method for this fragment class
@@ -43,6 +49,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     @Override
     public void onAttach(Activity _activity) {
+        Log.i(TAG, "onAttach()");
         super.onAttach(_activity);
         try {
             mDrawManager = (DrawManager) _activity;
@@ -53,8 +60,11 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         setHasOptionsMenu(true);
+
         mDb = OpenSecretSantaApplication.getDatabase();
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
@@ -63,6 +73,8 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.i(TAG, "onCreateView()");
+        setRetainInstance(true);
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.members_list_fragment, container, false);
 
@@ -74,7 +86,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Member selected = (Member) mCompleteTextView.getAdapter().getItem(position);
                 Log.i(TAG, "OnItemClick() - name: " + selected.getName());
-                addMember(selected);
+                addMember(selected, mGroup);
                 mCompleteTextView.setText("");
                 mCompleteTextView.requestFocus(); // Keep focus for more entries
                 Toast.makeText(getActivity(), selected.getName() + " added", Toast.LENGTH_SHORT).show();
@@ -87,8 +99,10 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        Log.i(TAG, "onViewCreated()");
+
+        super.onViewCreated(view, savedInstanceState);
 
         // Initially don't perform check selection.
         getListView().setChoiceMode(ListView.CHOICE_MODE_NONE);
@@ -116,13 +130,14 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     @Override
     public void onStart() {
+        Log.i(TAG, "onStart() - loading members for groupId: " + mGroup.getId());
         super.onStart();
-        Log.i(TAG, "onActivityCreated() - loading members for groupId: " + mGroup.getId());
-        loadMembers();
+        loadMembers(mGroup.getId());
     }
 
     @Override
     public void onDestroyView() {
+        Log.i(TAG, "onDestroyView()");
         // TODO Is this necessary now we are using the CHOICE_MODE_MULTIPLE_MODAL trigger?
         // Force the ending of the CAB
         getListView().clearChoices();
@@ -178,21 +193,31 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
             case R.id.menu_delete:
                 doDelete(getListView().getCheckedItemIds());
                 mode.finish();
-                loadMembers();
+                loadMembers(mGroup.getId());
                 return true;
+            case R.id.menu_notify:
+                mode.finish();
+            case R.id.menu_reveal:
+                mode.finish();
             default:
                 return false;
         }
     }
 
     @Override
-    public void onDestroyActionMode(ActionMode mode) {}
+    public void onDestroyActionMode(ActionMode mode) {
+        Log.i(TAG, "onDestroyActionMode()");
+    }
 
     @Override
     public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+        Log.i(TAG, "onItemCheckedStateChanged()");
         int selectedCount = getListView().getCheckedItemCount();
         mode.setTitle(selectedCount + " selected");
         mode.getMenu().setGroupVisible(R.id.menu_single_selection_group, (selectedCount == 1));
+        if(mMode == Mode.Notify) {
+
+        }
     }
 
     // TODO Do in background & add confirm dialog
@@ -219,9 +244,9 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     // TODO Make this load asynchronously and somewhere else
-    private void loadMembers() {
-        List<Member> members = mDb.queryAllMembersForGroup(mGroup.getId());
-        Log.i(TAG, "onActivityCreated() - retrieved members count: " + members.size());
+    private void loadMembers(long _groupId) {
+        List<Member> members = mDb.queryAllMembersForGroup(_groupId);
+        Log.i(TAG, "loadMembers() - retrieved members count: " + members.size());
         setListAdapter(new MemberListAdapter(getActivity(), R.layout.member_row, members));
     }
 
@@ -229,11 +254,22 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         return mGroup.getId();
     }
 
-    private void addMember(Member _member) {
-        _member.setGroup(mGroup);
+    private void addMember(Member _member, Group _group) {
+        _member.setGroup(_group);
         long id = mDb.create(_member);
         if(id != PersistableObject.UNSET_ID) {
-            loadMembers();
+            loadMembers(_group.getId());
         }
+    }
+
+    public void onDrawAvailable(DrawResult drawResult) {
+        mMode = Mode.Notify;
+        // TODO Show Notify button
+    }
+
+    public void onDrawCleared() {
+        // Revert to building mode
+        mMode = Mode.Building;
+        // TODO Hide Notify button
     }
 }
