@@ -155,7 +155,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         // Inflate a menu resource providing context menu items
         MenuInflater inflater = mode.getMenuInflater();
         inflater.inflate(R.menu.edit_member_menu, menu);
-
+        inflater.inflate(R.menu.notify_member_menu, menu);
         return true;
     }
 
@@ -214,22 +214,20 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         Log.i(TAG, "onItemCheckedStateChanged()");
         int selectedCount = getListView().getCheckedItemCount();
         mode.setTitle(selectedCount + " selected");
-        mode.getMenu().setGroupVisible(R.id.menu_single_selection_group, (selectedCount == 1));
-        if(mMode == Mode.Notify) {
-
-        }
+        mode.getMenu().setGroupVisible(R.id.menu_group_single_selection, (selectedCount == 1));
+        mode.getMenu().setGroupVisible(R.id.menu_group_notify, mMode == Mode.Notify);
     }
 
     // TODO Do in background & add confirm dialog
     private void doDelete(long[] _ids) {
-        for(int i = 0; i < _ids.length; i++) {
-            long memberId = _ids[i];
-            mDb.delete(memberId, Member.class);
+        for(long id : _ids) {
+            mDb.delete(id, Member.class);
         }
         Toast.makeText(getActivity(), _ids.length + " deleted", Toast.LENGTH_SHORT).show();
     }
 
     private void doNotify(Group _group) {
+        // Forward the Draw Result for handling.
         DrawResult dr = mDb.queryLatestDrawResultForGroup(_group.getId());
         if(dr != null)
             mDrawManager.onNotifyDraw(dr);
