@@ -150,11 +150,21 @@ public class DatabaseManager {
         }
     }
 
-    public void deleteAllRestrictionsForMember(long memberId) {
+    public int deleteAllRestrictionsForMember(long memberId) {
         try {
             DeleteBuilder<Restriction, Long> deleteBuilder = mDbHelper.getDaoEx(Restriction.class).deleteBuilder();
             deleteBuilder.where().eq(Restriction.Columns.MEMBER_ID_COLUMN, memberId);
-            deleteBuilder.delete();
+            return deleteBuilder.delete();
+        } catch(java.sql.SQLException e) {
+            throw new SQLException(e.getMessage());
+        }
+    }
+
+    public int deleteAllDrawResultsForGroup(long groupId) {
+        try {
+            DeleteBuilder<DrawResult, Long> deleteBuilder = mDbHelper.getDaoEx(DrawResult.class).deleteBuilder();
+            deleteBuilder.where().eq(DrawResult.Columns.GROUP_ID_COLUMN, groupId);
+            return deleteBuilder.delete();
         } catch(java.sql.SQLException e) {
             throw new SQLException(e.getMessage());
         }

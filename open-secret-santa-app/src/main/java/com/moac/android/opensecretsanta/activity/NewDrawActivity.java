@@ -1,7 +1,6 @@
 package com.moac.android.opensecretsanta.activity;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -39,6 +38,7 @@ public class NewDrawActivity extends Activity implements DrawManager {
     protected ActionBarDrawerToggle mDrawerToggle;
     protected ListView mDrawerList;
     protected DatabaseManager mDb; // shorthand.
+    protected MemberListFragment mMembersListFragment;
 
     @Override
     public void onCreate(Bundle _savedInstanceState) {
@@ -115,12 +115,23 @@ public class NewDrawActivity extends Activity implements DrawManager {
     public void onRequestDraw(Group _group) {
         Toast.makeText(this, "Requesting Draw", Toast.LENGTH_SHORT).show();
         try {
+            prepareDraw(_group);
             DrawEngine engine = OpenSecretSantaApplication.getCurrentDrawEngineInstance(getApplicationContext());
             DrawStatus status = executeDraw(engine, _group);
             Log.i(TAG, "onRequestDraw() - DrawStatus.isSuccess(): " + status.isSuccess());
-        } catch(InvalidDrawEngineException e) {
-            Log.e(TAG, "onRequestDraw() - Unable to load Draw Engine");
+            processDrawStatus(status, _group);
+        } catch(InvalidDrawEngineException exp) {
+            Log.e(TAG, "onRequestDraw() - Unable to load Draw Engine", exp);
+            Toast.makeText(this, R.string.no_engine_error_message, Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void prepareDraw(Group _group) {
+        // The current design only allows one Draw Result per group.
+        int count = mDb.deleteAllDrawResultsForGroup(_group.getId());
+        Log.v(TAG, "prepareDraw() - deleted Draw Result count: " + count);
+
+        // TODO Notify cleared.
     }
 
     @Override
@@ -156,16 +167,17 @@ public class NewDrawActivity extends Activity implements DrawManager {
     private void showGroup(long _groupId) {
         Log.i(TAG, "showGroup() - start");
 
-        Fragment fragment = MemberListFragment.create(_groupId);
         // Replace existing fragment
         // Can't call replace, seems to replace ALL fragments in the layout.
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        Fragment existing = fragmentManager.findFragmentByTag(MEMBERS_LIST_TAG);
-        if(existing != null)
-            transaction.remove(existing);
-        transaction.add(R.id.content_frame, fragment, MEMBERS_LIST_TAG)
+        if(mMembersListFragment != null)
+            transaction.remove(mMembersListFragment);
+
+        MemberListFragment newFragment = MemberListFragment.create(_groupId);
+        transaction.add(R.id.content_frame, newFragment, MEMBERS_LIST_TAG)
           .commit();
+        mMembersListFragment = newFragment;
 
         // Update preferences to save last viewed Group
         PreferenceManager.getDefaultSharedPreferences(this).edit().putLong(MOST_RECENT_GROUP_KEY, _groupId).commit();
@@ -203,7 +215,42 @@ public class NewDrawActivity extends Activity implements DrawManager {
             drawStatus.setMsg("Couldn't produce assignments");
         }
 
-       return drawStatus;
+        return drawStatus;
+    }
+
+    private void processDrawStatus(DrawStatus _status, Group _group) {
+        if(!_status.isSuccess()) {
+            // Report failure
+            Toast.makeText(this, R.string.draw_failed_message, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Toast.makeText(this, R.string.draw_success_message, Toast.LENGTH_SHORT).show();
+
+        // Create the top level Draw Result
+        DrawResult dr = new DrawResult();
+        dr.setDrawDate(System.currentTimeMillis());
+        dr.setGroup(_group);
+        mDb.create(dr);
+
+        // Now add the corresponding draw result entries.
+        for(Long m1Id : _status.getAssignments().keySet()) {
+
+            // We are notifying m1 that they have been assigned m2.
+            Member m1 = mDb.queryById(m1Id, Member.class);
+            Member m2 = mDb.queryById(_status.getAssignments().get(m1Id), Member.class);
+
+            Log.v(TAG, "saveDrawResult() - saving dre: " + m1.getName() + " - " + m2.getName() + " with: "
+              + m1.getContactMode() + " " + m1.getContactAddress());
+
+            // Create the individual Draw Result Entry
+            DrawResultEntry dre = new DrawResultEntry();
+            dre.setGiverMember(m1);
+            dre.setReceiverMember(m2);
+            dre.setDrawResult(dr);
+            mDb.create(dre);
+        }
+        // TODO Notify DrawResult available.
     }
 
     private class DrawStatus {
@@ -213,16 +260,14 @@ public class NewDrawActivity extends Activity implements DrawManager {
         private Map<Long, Long> mAssignments;
 
         private Exception getException() { return mException; }
-        private void setException(Exception exception) { mException = exception;}
+        private void setException(Exception exception) { mException = exception; }
 
         private String getMsg() { return mMsg; }
         private void setMsg(String msg) { mMsg = msg; }
 
         private Map<Long, Long> getAssignments() { return mAssignments; }
-        private void setAssignments(Map<Long, Long> assignments) { mAssignments = assignments; }
+        private void setAssignments(Map<Long, Long> assignments) {  mAssignments = assignments;}
 
-        public boolean isSuccess() {
-            return mAssignments != null && mException == null;
-        }
+        public boolean isSuccess() { return mAssignments != null && mException == null;}
     }
 }
