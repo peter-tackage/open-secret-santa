@@ -73,6 +73,8 @@
   <string name="drawer_open_accesshint">open drawer</string>
   <string name="drawer_close_accesshint">close drawer</string>
   <string name="member_avatar_accesshint">member avatar</string>
+  <string name="drawer_groups_title">Your Groups</string>
+
   <string name="menu_done">Done</string>
   <string name="menu_edit">Edit</string>
   <string name="menu_restrictions">Restrictions</string>
@@ -80,5 +82,6 @@
   <string name="menu_notify">Notify</string>
   <string name="menu_draw">Draw</string>
   <string name="menu_reveal">Reveal</string>
+
 
 </resources>

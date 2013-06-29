@@ -60,16 +60,27 @@ public class NewDrawActivity extends Activity implements DrawManager {
           mDrawerLayout,         /* DrawerLayout object */
           R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
           R.string.drawer_open_accesshint,  /* "open drawer" description */
-          R.string.drawer_close_accesshint  /* "close drawer" description */
-        );
+          R.string.drawer_close_accesshint) /* "close drawer" description */  {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                getActionBar().setTitle(getString(R.string.app_name));
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+             /** Called when a drawer has settled in a completely open state. */
+             public void onDrawerOpened(View drawerView) {
+                getActionBar().setTitle(getString(R.string.drawer_groups_title));
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                populateGroupRowDetailsList(mDrawerList);
+            }
+        };
 
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
-
-        populateGroupRowDetailsList(mDrawerList);
 
         // Add the Members List for the most recent Group
         displayInitialGroup();
