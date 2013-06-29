@@ -215,6 +215,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         mode.setTitle(selectedCount + " selected");
         mode.getMenu().setGroupVisible(R.id.menu_group_single_selection, (selectedCount == 1));
         mode.getMenu().setGroupVisible(R.id.menu_group_notify, mMode == Mode.Notify);
+        mode.getMenu().setGroupVisible(R.id.menu_group_notify_single_selection, mMode == Mode.Notify && (selectedCount == 1));
     }
 
     // TODO Do in background & add confirm dialog

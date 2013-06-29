@@ -6,6 +6,8 @@
       android:icon="@drawable/ic_menu_notify"
       android:title="@string/menu_notify"
       android:showAsAction="always" />
+  </group>
+  <group android:id="@+id/menu_group_notify_single_selection">
     <item
       android:id="@+id/menu_reveal"
       android:icon="@drawable/ic_menu_reveal"
