@@ -31,7 +31,7 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
     }
 
     @Override
-    public boolean hasStableIds () {
+    public boolean hasStableIds() {
         return true; // Required for using ListView#getCheckItemIds
     }
 
@@ -75,31 +75,31 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
         } else {
             // Recycled View is available, retrieve the holder instance from the View
             avatarView = (ImageView) v.getTag(R.id.member_imageview);
-            statusIndicatorView = (View)v.getTag(R.id.member_status_indicator_view);
+            statusIndicatorView = (View) v.getTag(R.id.member_status_indicator_view);
             memberNameView = (TextView) v.getTag(R.id.member_name_textview);
             contactAddressView = (TextView) v.getTag(R.id.contact_address_textview);
             restrictionsView = (TextView) v.getTag(R.id.restriction_count_textview);
         }
 
         MemberRowDetails row = getItem(_position);
-        Member item = row.getMember();
+        Member member = row.getMember();
         Assignment assignment = row.getAssignment();
 
         // Assign the view with its content.
-        if(item.getContactId() == PersistableObject.UNSET_ID || item.getLookupKey() == null) {
+        if(member.getContactId() == PersistableObject.UNSET_ID || member.getLookupKey() == null) {
             Picasso.with(getContext()).load(R.drawable.ic_contact_picture).into(avatarView);
         } else {
-            Uri lookupUri = ContactsContract.Contacts.getLookupUri(item.getContactId(), item.getLookupKey());
+            Uri lookupUri = ContactsContract.Contacts.getLookupUri(member.getContactId(), member.getLookupKey());
             Uri contactUri = ContactsContract.Contacts.lookupContact(getContext().getContentResolver(), lookupUri);
             Picasso.with(getContext()).load(contactUri)
               .placeholder(R.drawable.ic_contact_picture).error(R.drawable.ic_contact_picture)
               .into(avatarView);
         }
 
-        memberNameView.setText(item.getName());
-        contactAddressView.setText(item.getContactAddress());
+        memberNameView.setText(member.getName());
+        contactAddressView.setText(member.getContactAddress());
 
-        final long restrictionCount = item.getRestrictionCount();
+        final long restrictionCount = member.getRestrictionCount();
         if(restrictionCount > 0) {
             restrictionsView.setText(String.valueOf(restrictionCount));
             restrictionsView.setVisibility(View.VISIBLE);
@@ -107,9 +107,27 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
             restrictionsView.setVisibility(View.GONE);
         }
 
-        if(statusIndicatorView != null)
+        if(statusIndicatorView != null) {
             statusIndicatorView.setVisibility(assignment == null ? View.GONE : View.VISIBLE);
+            if(assignment != null) {
+                setIndicatorColor(statusIndicatorView, member, assignment);
+            }
+        }
 
         return v;
+    }
+
+    private void setIndicatorColor(View _view, Member _member, Assignment _assignment) {
+        switch(_assignment.getSendStatus()) {
+            case Successful:
+                _view.setBackgroundResource(android.R.color.holo_green_light);
+                break;
+            case Failed:
+                _view.setBackgroundResource(android.R.color.holo_red_light);
+                break;
+            case Not_Sent:
+            default:
+                _view.setBackgroundResource(android.R.color.holo_orange_light);
+        }
     }
 }

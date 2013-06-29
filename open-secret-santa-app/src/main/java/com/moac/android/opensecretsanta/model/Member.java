@@ -3,7 +3,7 @@ package com.moac.android.opensecretsanta.model;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
-import com.moac.android.opensecretsanta.activity.ContactModes;
+import com.moac.android.opensecretsanta.activity.ContactMode;
 
 @DatabaseTable(tableName = Member.TABLE_NAME)
 public final class Member extends PersistableObject implements Comparable<Member>  {
@@ -35,7 +35,7 @@ public final class Member extends PersistableObject implements Comparable<Member
 
     // The model of communication to be used.
     @DatabaseField(columnName = Columns.CONTACT_MODE_COLUMN, canBeNull = false)
-    private int mContactMode = ContactModes.NAME_ONLY_CONTACT_MODE;
+    private ContactMode mContactMode = ContactMode.REVEAL_ONLY;
 
     @DatabaseField(columnName = Columns.GROUP_ID_COLUMN, foreign = true, canBeNull = false, uniqueCombo = true,
       columnDefinition = "integer references groups (_id) on delete cascade")
@@ -50,8 +50,8 @@ public final class Member extends PersistableObject implements Comparable<Member
     public String getContactAddress() { return mContactAddress; }
     public void setContactAddress(String _contactAddress) { mContactAddress = _contactAddress; }
 
-    public int getContactMode() { return mContactMode; }
-    public void setContactMode(int _contactMode) { mContactMode = _contactMode; }
+    public ContactMode getContactMode() { return mContactMode; }
+    public void setContactMode(ContactMode _contactMode) { mContactMode = _contactMode; }
 
     public String getLookupKey() { return mLookupKey; }
     public void setLookupKey(String _lookupKey) { mLookupKey = _lookupKey; }

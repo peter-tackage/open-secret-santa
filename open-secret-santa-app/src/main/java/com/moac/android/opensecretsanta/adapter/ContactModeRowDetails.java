@@ -1,7 +1,5 @@
 package com.moac.android.opensecretsanta.adapter;
 
-import com.moac.android.opensecretsanta.activity.ContactModes;
-
 public class ContactModeRowDetails {
 
     protected int mContactMode;
@@ -33,18 +31,18 @@ public class ContactModeRowDetails {
         hash = 31 * hash + (null == mContactDetail ? 0 : mContactDetail.hashCode());
         return hash;
     }
-
-    @Override
-    public String toString() {
-        switch(mContactMode) {
-            case ContactModes.NAME_ONLY_CONTACT_MODE:
-                return "View draw result on this phone";
-            case ContactModes.SMS_CONTACT_MODE:
-                return "(SMS) " + mContactDetail;
-            case ContactModes.EMAIL_CONTACT_MODE:
-                return "(Email) " + mContactDetail;
-            default:
-                return "Unsupported Mode";
-        }
-    }
+//
+//    @Override
+//    public String toString() {
+//        switch(mContactMode) {
+//            case ContactMode.REVEAL_ONLY:
+//                return "View draw result on this phone";
+//            case ContactMode.SMS_CONTACT_MODE:
+//                return "(SMS) " + mContactDetail;
+//            case ContactMode.EMAIL_CONTACT_MODE:
+//                return "(Email) " + mContactDetail;
+//            default:
+//                return "Unsupported Mode";
+//        }
+//    }
 }

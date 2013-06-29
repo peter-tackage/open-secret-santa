@@ -4,8 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import com.moac.android.opensecretsanta.activity.ContactModes;
-import com.moac.android.opensecretsanta.activity.ShareResults;
+import com.moac.android.opensecretsanta.activity.ContactMode;
 import com.moac.android.opensecretsanta.model.Member;
 
 import java.io.IOException;
@@ -82,7 +81,7 @@ public class Utils {
 
     public static boolean containsEmailSendableEntry(List<Member> _members) {
         for(Member member : _members) {
-            if(member.getContactMode() == ContactModes.EMAIL_CONTACT_MODE)
+            if(member.getContactMode() == ContactMode.EMAIL)
                 return true;
         }
         return false;
@@ -98,6 +97,6 @@ public class Utils {
     }
 
     public static boolean isSendable(Member _member) {
-        return _member.getContactMode() != ContactModes.NAME_ONLY_CONTACT_MODE;
+        return _member.getContactMode() != ContactMode.REVEAL_ONLY;
     }
 }
