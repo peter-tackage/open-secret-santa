@@ -91,7 +91,9 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
                 addMember(selected, mGroup);
                 mCompleteTextView.setText("");
                 mCompleteTextView.requestFocus(); // Keep focus for more entries
-                Toast.makeText(getActivity(), selected.getName() + " added", Toast.LENGTH_SHORT).show();
+                Toast addedToast = Toast.makeText(getActivity(), selected.getName() + " added", Toast.LENGTH_SHORT);
+                addedToast.setGravity(Gravity.CENTER, 0,0);
+                addedToast.show();
             }
         });
 
