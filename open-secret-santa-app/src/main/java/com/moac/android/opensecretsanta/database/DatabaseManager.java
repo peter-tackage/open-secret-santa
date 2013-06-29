@@ -104,6 +104,19 @@ public class DatabaseManager {
         }
     }
 
+    public Assignment queryAssignmentForMember(long _memberId) {
+        try {
+            QueryBuilder<Assignment, Long> assignmentQuery =
+              mDbHelper.getDaoEx(Assignment.class).queryBuilder();
+
+            assignmentQuery.selectColumns(Member.Columns._ID).where().eq(Assignment.Columns.GIVER_MEMBER_ID_COLUMN, _memberId);
+            return assignmentQuery.queryForFirst();
+
+        } catch(java.sql.SQLException e) {
+            throw new SQLException(e.getMessage());
+        }
+    }
+
     public List<Member> queryAllMembersForGroup(long groupId) {
         try {
             return mDbHelper.getDaoEx(Member.class).queryBuilder()

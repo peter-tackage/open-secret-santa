@@ -11,12 +11,15 @@ import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.activity.DrawManager;
 import com.moac.android.opensecretsanta.adapter.MemberListAdapter;
+import com.moac.android.opensecretsanta.adapter.MemberRowDetails;
 import com.moac.android.opensecretsanta.adapter.SuggestionsAdapter;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
+import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MemberListFragment extends ListFragment implements AbsListView.MultiChoiceModeListener {
@@ -223,7 +226,12 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         for(long id : _ids) {
             mDb.delete(id, Member.class);
         }
+        invalidateAssignments(mGroup.getId());
         Toast.makeText(getActivity(), _ids.length + " deleted", Toast.LENGTH_SHORT).show();
+    }
+
+    private void invalidateAssignments(long _groupId) {
+        mDb.deleteAllAssignmentsForGroup(_groupId);
     }
 
     private void doNotify(Group _group) {
@@ -241,9 +249,20 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     // TODO Make this load asynchronously and somewhere else
     private void loadMembers(long _groupId) {
+        List<MemberRowDetails> rows = buildMemberRowDetails(_groupId);
+        Log.i(TAG, "loadMembers() - retrieved members count: " + rows.size());
+        setListAdapter(new MemberListAdapter(getActivity(), R.layout.member_row, rows));
+    }
+
+    private List<MemberRowDetails> buildMemberRowDetails(long _groupId) {
+        List<MemberRowDetails> rows = new ArrayList<MemberRowDetails>();
         List<Member> members = mDb.queryAllMembersForGroup(_groupId);
-        Log.i(TAG, "loadMembers() - retrieved members count: " + members.size());
-        setListAdapter(new MemberListAdapter(getActivity(), R.layout.member_row, members));
+        for(Member member : members) {
+            Assignment assignment = mDb.queryAssignmentForMember(member.getId());
+            MemberRowDetails row = new MemberRowDetails(member, assignment);
+            rows.add(row);
+        }
+        return rows;
     }
 
     public long getGroupId() {
@@ -254,18 +273,22 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         _member.setGroup(_group);
         long id = mDb.create(_member);
         if(id != PersistableObject.UNSET_ID) {
+            invalidateAssignments(_group.getId());
             loadMembers(_group.getId());
         }
     }
 
     public void onDrawAvailable() {
         mMode = Mode.Notify;
+        loadMembers(mGroup.getId());
         // TODO Show Notify button
     }
 
     public void onDrawCleared() {
         // Revert to building mode
         mMode = Mode.Building;
+        invalidateAssignments(mGroup.getId());
+        loadMembers(mGroup.getId());
         // TODO Hide Notify button
     }
 }

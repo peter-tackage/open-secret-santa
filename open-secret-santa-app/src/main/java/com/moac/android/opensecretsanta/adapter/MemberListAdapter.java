@@ -1,7 +1,6 @@
 package com.moac.android.opensecretsanta.adapter;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.util.Log;
@@ -12,21 +11,21 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.moac.android.opensecretsanta.R;
+import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
-import com.moac.android.opensecretsanta.util.ContactUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class MemberListAdapter extends ArrayAdapter<Member> {
+public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
 
     private final String TAG = MemberListAdapter.class.getSimpleName();
 
     private int mResource;
 
     public MemberListAdapter(Context _context, int _resource,
-                             List<Member> _members) {
+                             List<MemberRowDetails> _members) {
         super(_context, _resource, _members);
         mResource = _resource;
     }
@@ -39,7 +38,7 @@ public class MemberListAdapter extends ArrayAdapter<Member> {
     @Override
     public long getItemId(int position) {
         // Return a stable id - the member id
-        return getItem(position).getId();
+        return getItem(position).getMember().getId();
     }
 
     @Override
@@ -48,7 +47,9 @@ public class MemberListAdapter extends ArrayAdapter<Member> {
         Log.v(TAG, "getView() - creating for position: " + _position);
 
         View v = _convertView;
+
         ImageView avatarView;
+        View statusIndicatorView;
         TextView memberNameView;
         TextView contactAddressView;
         TextView restrictionsView;
@@ -62,6 +63,7 @@ public class MemberListAdapter extends ArrayAdapter<Member> {
             v = LayoutInflater.from(getContext()).inflate(mResource, _parent, false);
 
             avatarView = (ImageView) v.findViewById(R.id.member_imageview);
+            statusIndicatorView = v.findViewById(R.id.member_status_indicator_view);
             memberNameView = (TextView) v.findViewById(R.id.member_name_textview);
             contactAddressView = (TextView) v.findViewById(R.id.contact_address_textview);
             restrictionsView = (TextView) v.findViewById(R.id.restriction_count_textview);
@@ -73,12 +75,15 @@ public class MemberListAdapter extends ArrayAdapter<Member> {
         } else {
             // Recycled View is available, retrieve the holder instance from the View
             avatarView = (ImageView) v.getTag(R.id.member_imageview);
+            statusIndicatorView = (View)v.getTag(R.id.member_status_indicator_view);
             memberNameView = (TextView) v.getTag(R.id.member_name_textview);
             contactAddressView = (TextView) v.getTag(R.id.contact_address_textview);
             restrictionsView = (TextView) v.getTag(R.id.restriction_count_textview);
         }
 
-        Member item = getItem(_position);
+        MemberRowDetails row = getItem(_position);
+        Member item = row.getMember();
+        Assignment assignment = row.getAssignment();
 
         // Assign the view with its content.
         if(item.getContactId() == PersistableObject.UNSET_ID || item.getLookupKey() == null) {
@@ -101,6 +106,9 @@ public class MemberListAdapter extends ArrayAdapter<Member> {
         } else {
             restrictionsView.setVisibility(View.GONE);
         }
+
+        if(statusIndicatorView != null)
+            statusIndicatorView.setVisibility(assignment == null ? View.GONE : View.VISIBLE);
 
         return v;
     }
