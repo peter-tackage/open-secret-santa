@@ -3,7 +3,6 @@ package com.moac.android.opensecretsanta.adapter;
 import android.content.Context;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import com.moac.android.opensecretsanta.model.DrawResultEntry;
 
 import java.util.List;
 
@@ -35,7 +34,7 @@ public class AssignmentsListAdapter extends ArrayAdapter<DrawResultEntry> {
 //        }
 //
 //        // Get the individual parts of the draw_row and populate.
-//        DrawResultEntry dre = getItem(position);
+//        Assignment dre = getItem(position);
 //
 //        // Name
 //        TextView tv = (TextView) newView.findViewById(R.id.memberTextView);
@@ -57,7 +56,7 @@ public class AssignmentsListAdapter extends ArrayAdapter<DrawResultEntry> {
 //        // Display viewed or sent... or neither.
 //        TextView tv2 = (TextView) newView.findViewById(R.id.dateViewTextView);
 //
-//        if(dre.getViewedDate() == DrawResultEntry.UNVIEWED_DATE && dre.getSentDate() == DrawResultEntry.UNSET_DATE) {
+//        if(dre.getViewedDate() == Assignment.UNVIEWED_DATE && dre.getSentDate() == Assignment.UNSET_DATE) {
 //            Log.v(TAG, "Setting Unviewed: " + dre.getGiverName() + " v: " + dre.getViewedDate() + ", s: " + dre.getSentDate());
 //            tv2.setText("");
 //        } else {

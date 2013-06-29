@@ -13,7 +13,6 @@ import com.moac.android.opensecretsanta.activity.DrawManager;
 import com.moac.android.opensecretsanta.adapter.MemberListAdapter;
 import com.moac.android.opensecretsanta.adapter.SuggestionsAdapter;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.model.DrawResult;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
@@ -227,10 +226,8 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     private void doNotify(Group _group) {
-        // Forward the Draw Result for handling.
-        DrawResult dr = mDb.queryLatestDrawResultForGroup(_group.getId());
-        if(dr != null)
-            mDrawManager.onNotifyDraw(dr);
+        if(_group != null)
+            mDrawManager.onNotifyDraw(_group);
     }
 
     private void doDraw(Group _group) {
@@ -260,7 +257,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         }
     }
 
-    public void onDrawAvailable(DrawResult drawResult) {
+    public void onDrawAvailable() {
         mMode = Mode.Notify;
         // TODO Show Notify button
     }

@@ -4,8 +4,6 @@ import android.database.SQLException;
 import android.test.AndroidTestCase;
 
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.test.builders.DrawResultBuilder;
-import com.moac.android.opensecretsanta.test.builders.DrawResultEntryBuilder;
 import com.moac.android.opensecretsanta.test.builders.GroupBuilder;
 import com.moac.android.opensecretsanta.test.builders.MemberBuilder;
 import com.moac.android.opensecretsanta.model.*;
@@ -35,24 +33,6 @@ public class DatabaseTests extends AndroidTestCase {
     /*
      * Bespoke Query Tests
      */
-
-    public void testQueryLatestDrawResultForGroup() {
-        Group group1 = new GroupBuilder().build();
-        mDatabaseManager.create(group1);
-
-        DrawResult dr1 = new DrawResultBuilder().withDrawDate(1).build();
-        DrawResult dr2 = new DrawResultBuilder().withDrawDate(2).build();
-        DrawResult dr3 = new DrawResultBuilder().withDrawDate(3).build();
-        dr1.setGroup(group1);
-        dr2.setGroup(group1);
-        dr3.setGroup(group1);
-        mDatabaseManager.create(dr1);
-        mDatabaseManager.create(dr2);
-        mDatabaseManager.create(dr3);
-
-        DrawResult dr = mDatabaseManager.queryLatestDrawResultForGroup(group1.getId());
-        assertEquals(3, dr.getDrawDate());
-    }
 
     public void testQueryAllRestrictionsForMemberId() {
         // Add a Group
@@ -113,138 +93,6 @@ public class DatabaseTests extends AndroidTestCase {
         // Verify the restrictions
         assertTrue(mDatabaseManager.queryIsRestricted(m1.getId(), m2.getId()));
         assertTrue(!mDatabaseManager.queryIsRestricted(m1.getId(), m3.getId()));
-    }
-
-    public void testCreateMultipleDrawResultEntriesPerMemberPerGroupFails() {
-
-        Group group1 = new GroupBuilder().build();
-        mDatabaseManager.create(group1);
-
-        Member m1 = new MemberBuilder().withName("m1").build();
-        Member m2 = new MemberBuilder().withName("m2").build();
-        Member m3 = new MemberBuilder().withName("m3").build();
-        m1.setGroup(group1);
-        m2.setGroup(group1);
-        m3.setGroup(group1);
-        mDatabaseManager.create(m1);
-        mDatabaseManager.create(m2);
-        mDatabaseManager.create(m3);
-
-        DrawResult dr1 = new DrawResultBuilder().withDrawDate(1).build();
-        dr1.setGroup(group1);
-        mDatabaseManager.create(dr1);
-
-        DrawResultEntry dre1 = new DrawResultEntry();
-        DrawResultEntry dre2 = new DrawResultEntry();
-        dre1.setDrawResult(dr1);
-        dre1.setGiverMember(m1);
-        dre1.setReceiverMember(m2);
-        // Now add a second illegal assignment
-        dre2.setDrawResult(dr1);
-        dre2.setGiverMember(m1);
-        dre2.setReceiverMember(m3);
-
-        mDatabaseManager.create(dre1);
-
-        try {
-            mDatabaseManager.create(dre2);
-            fail("A member should only have a single DRE per DrawResult");
-        } catch(SQLException exp) {
-            assertTrue(true);
-        }
-    }
-
-    /**
-     * FIXME This doesn't work at the moment - ORMLIte doesn't enforce the
-     * unique constraints on the foreign key reference column. Probably because
-     * its required when supporting one-to-many relationships and there's no
-     * reasonable way for ORMLite to know what the intended relationship is.
-     */
-//    public void testCreateMultipleDrawResultsPerGroupFails() {
-//        // Add a Group
-//        // Add a Draw Result
-//
-//        Group group1 = new GroupBuilder().build();
-//        mDatabaseManager.create(group1);
-//
-//        DrawResult dr1 = new DrawResultBuilder().withDrawDate(1).build();
-//        DrawResult dr2 = new DrawResultBuilder().withDrawDate(2).build();
-//        dr1.setGroup(group1);
-//        dr2.setGroup(group1); // <------ same group id!!!
-//        mDatabaseManager.create(dr1);
-//        try {
-//            mDatabaseManager.create(dr2);
-//            fail("Only one Draw Result per Group should be allowed");
-//        } catch(SQLException exp) {
-//            assertTrue(true);
-//        }
-//    }
-
-    public void testQueryAllDrawResultEntriesForDrawId() {
-        // Add a Group
-        // Add some Members
-        // Add a Draw Result
-        // Add some DREs
-        // Query for DREs and verify
-        Group group1 = new GroupBuilder().build();
-        mDatabaseManager.create(group1);
-
-        Member m1 = new MemberBuilder().withName("m1").build();
-        Member m2 = new MemberBuilder().withName("m2").build();
-        Member m3 = new MemberBuilder().withName("m3").build();
-        m1.setGroup(group1);
-        m2.setGroup(group1);
-        m3.setGroup(group1);
-        mDatabaseManager.create(m1);
-        mDatabaseManager.create(m2);
-        mDatabaseManager.create(m3);
-
-        DrawResult dr1 = new DrawResultBuilder().withDrawDate(1).build();
-        dr1.setGroup(group1);
-        mDatabaseManager.create(dr1);
-
-        DrawResultEntry dre1 = new DrawResultEntryBuilder().build();
-        DrawResultEntry dre2 = new DrawResultEntryBuilder().build();
-        DrawResultEntry dre3 = new DrawResultEntryBuilder().build();
-        dre1.setDrawResult(dr1);
-        dre1.setGiverMember(m1);
-        dre1.setReceiverMember(m2);
-        dre2.setDrawResult(dr1);
-        dre2.setGiverMember(m2);
-        dre2.setReceiverMember(m3);
-        dre3.setDrawResult(dr1);
-        dre3.setGiverMember(m3);
-        dre3.setReceiverMember(m1);
-        mDatabaseManager.create(dre1);
-        mDatabaseManager.create(dre2);
-        mDatabaseManager.create(dre3);
-
-        List<DrawResultEntry> dres = mDatabaseManager.queryAllDrawResultEntriesForDrawId(dr1.getId());
-        assertEquals(3, dres.size());
-    }
-
-    public void testQueryAllDrawResultsForGroup() {
-        // Add a Group
-        // Add some members
-        // Add DrawResult #1
-        // Add DrawResult #2
-        // Add DrawResult #3
-        // Query and verify
-
-        Group group1 = new GroupBuilder().build();
-        Group group2 = new GroupBuilder().withName("g2").build();
-        mDatabaseManager.create(group1);
-        mDatabaseManager.create(group2);
-
-        DrawResult dr1 = new DrawResultBuilder().withDrawDate(1).build();
-        DrawResult dr2 = new DrawResultBuilder().withDrawDate(2).build();
-        dr1.setGroup(group1);
-        dr2.setGroup(group1);
-        mDatabaseManager.create(dr1);
-        mDatabaseManager.create(dr2);
-
-        List<DrawResult> drs = mDatabaseManager.queryAllDrawResultsForGroup(group1.getId());
-        assertEquals(2, drs.size());
     }
 
     public void testQueryAllMembersForGroup() {
@@ -367,6 +215,127 @@ public class DatabaseTests extends AndroidTestCase {
         // Verify restrictions correctly deleted
         assertEquals(0, mDatabaseManager.queryAllRestrictionsForMemberId(m1.getId()).size());
         assertEquals(1, mDatabaseManager.queryAllRestrictionsForMemberId(m2.getId()).size());
+    }
+
+    public void testQueryAllAssignmentsForGroup() {
+        Group group1 = new GroupBuilder().build();
+        mDatabaseManager.create(group1);
+
+        // Add some Members
+        Member m1 = new MemberBuilder().withName("m1").build();
+        Member m2 = new MemberBuilder().withName("m2").build();
+        Member m3 = new MemberBuilder().withName("m3").build();
+        m1.setGroup(group1);
+        m2.setGroup(group1);
+        m3.setGroup(group1);
+        mDatabaseManager.create(m1);
+        mDatabaseManager.create(m2);
+        mDatabaseManager.create(m3);
+
+        Assignment a1 = new Assignment();
+        a1.setGiverMember(m1);
+        a1.setReceiverMember(m2);
+        Assignment a2 = new Assignment();
+        a2.setGiverMember(m2);
+        a2.setReceiverMember(m3);
+        Assignment a3 = new Assignment();
+        a3.setGiverMember(m3);
+        a3.setReceiverMember(m1);
+        mDatabaseManager.create(a1);
+        mDatabaseManager.create(a2);
+        mDatabaseManager.create(a3);
+
+        /**
+         * Make a second group - testing query doesn't pull these in.
+         */
+
+        Group group2 = new GroupBuilder().withName("group2").build();
+        mDatabaseManager.create(group2);
+
+        // Add some Members
+        Member m1_2 = new MemberBuilder().withName("m1-2").build();
+        Member m2_2 = new MemberBuilder().withName("m2-2").build();
+        m1_2.setGroup(group2);
+        m2_2.setGroup(group2);
+        mDatabaseManager.create(m1_2);
+        mDatabaseManager.create(m2_2);
+
+        Assignment a1_2 = new Assignment();
+        a1_2.setGiverMember(m1_2);
+        a1_2.setReceiverMember(m2_2);
+        Assignment a2_2 = new Assignment();
+        a2_2.setGiverMember(m2_2);
+        a2_2.setReceiverMember(m1_2);
+
+        mDatabaseManager.create(a1_2);
+        mDatabaseManager.create(a2_2);
+
+        List<Assignment> assignments = mDatabaseManager.queryAllAssignmentsForGroup(group1.getId());
+        assertEquals(3, assignments.size());
+        // FIXME This is order dependent - really only care it contains the Assignments.
+        assertEquals(a1.getId(), assignments.get(0).getId());
+        assertEquals(a2.getId(), assignments.get(1).getId());
+        assertEquals(a3.getId(), assignments.get(2).getId());
+    }
+
+    public void testDeleteAllAssignmentsForGroup() {
+        Group group1 = new GroupBuilder().build();
+        mDatabaseManager.create(group1);
+
+        // Add some Members
+        Member m1 = new MemberBuilder().withName("m1").build();
+        Member m2 = new MemberBuilder().withName("m2").build();
+        Member m3 = new MemberBuilder().withName("m3").build();
+        m1.setGroup(group1);
+        m2.setGroup(group1);
+        m3.setGroup(group1);
+        mDatabaseManager.create(m1);
+        mDatabaseManager.create(m2);
+        mDatabaseManager.create(m3);
+
+        Assignment a1 = new Assignment();
+        a1.setGiverMember(m1);
+        a1.setReceiverMember(m2);
+        Assignment a2 = new Assignment();
+        a2.setGiverMember(m2);
+        a2.setReceiverMember(m3);
+        Assignment a3 = new Assignment();
+        a3.setGiverMember(m3);
+        a3.setReceiverMember(m1);
+        mDatabaseManager.create(a1);
+        mDatabaseManager.create(a2);
+        mDatabaseManager.create(a3);
+
+        /**
+         * Make a second group - testing query doesn't pull these in.
+         */
+
+        Group group2 = new GroupBuilder().withName("group2").build();
+        mDatabaseManager.create(group2);
+
+        // Add some Members
+        Member m1_2 = new MemberBuilder().withName("m1-2").build();
+        Member m2_2 = new MemberBuilder().withName("m2-2").build();
+        m1_2.setGroup(group2);
+        m2_2.setGroup(group2);
+        mDatabaseManager.create(m1_2);
+        mDatabaseManager.create(m2_2);
+
+        Assignment a1_2 = new Assignment();
+        a1_2.setGiverMember(m1_2);
+        a1_2.setReceiverMember(m2_2);
+        Assignment a2_2 = new Assignment();
+        a2_2.setGiverMember(m2_2);
+        a2_2.setReceiverMember(m1_2);
+
+        mDatabaseManager.create(a1_2);
+        mDatabaseManager.create(a2_2);
+
+        int rowsDeleted = mDatabaseManager.deleteAllAssignmentsForGroup(group1.getId());
+        assertEquals(3, rowsDeleted);
+
+        List<Assignment> fromGroup2 = mDatabaseManager.queryAllAssignmentsForGroup(group2.getId());
+        assertEquals(2, fromGroup2.size());
     }
 
     /*
@@ -495,7 +464,6 @@ public class DatabaseTests extends AndroidTestCase {
             assertTrue(true);
         }
     }
-
 
     public void testQueryMemberByName() {
         Group g1 = new GroupBuilder().build();

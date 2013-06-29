@@ -23,8 +23,8 @@ public class AssignmentSharerActivity extends Activity {
 //    DatabaseManager mDatabase;
 //    DrawEngineFactory mDrawEngineProv;
 //
-//    private List<DrawResultEntry> items;
-//    private ArrayAdapter<DrawResultEntry> aa;
+//    private List<Assignment> items;
+//    private ArrayAdapter<Assignment> aa;
 //    ListView mList;
 //
 //    ImageView mShareButton;
@@ -62,7 +62,7 @@ public class AssignmentSharerActivity extends Activity {
 //        //mDateTextView = (TextView)findViewById(R.id.dateValue);
 //        mList = (ListView) findViewById(R.id.assignmentsListView);
 //
-//        items = new ArrayList<DrawResultEntry>();
+//        items = new ArrayList<Assignment>();
 //        aa = new AssignmentsListAdapter(this, R.layout.assignment_row, items, new OnClickListener() {
 //
 //            @Override
@@ -70,7 +70,7 @@ public class AssignmentSharerActivity extends Activity {
 //
 //                Log.v(TAG, "setOnItemClickListener() onItemClick - start");
 //
-//                DrawResultEntry selectedItem = (DrawResultEntry) view.getTag();
+//                Assignment selectedItem = (Assignment) view.getTag();
 //                // Has been viewed now - so updated the DB (async)
 //                updateDrawResultEntry(selectedItem);
 //
@@ -400,12 +400,12 @@ public class AssignmentSharerActivity extends Activity {
 //            String name2 = mDatabase.queryById(_assignments.get(m1Id), Member.class).getName();
 //            Log.v(TAG, "saveDrawResult() - saving dre: " + m1.getName() + " - " + name2 + " with: " + m1.getContactMode() + " " + m1.getContactAddress());
 //
-//            DrawResultEntry dre = new DrawResultEntry();
+//            Assignment dre = new Assignment();
 //            dre.setGiverName(m1.getName());
 //            dre.setReceiverName(name2);
 //            dre.setContactMode(m1.getContactMode());
 //            dre.setContactAddress(m1.getContactAddress());
-//            dre.setDrawResult(dr);
+//            dre.setGroup(dr);
 //            mDatabase.create(dre);
 //        }
 //
@@ -416,7 +416,7 @@ public class AssignmentSharerActivity extends Activity {
 //
 //    private static class DrawResultDetails {
 //        DrawResult dr;
-//        List<DrawResultEntry> dres = new ArrayList<DrawResultEntry>();
+//        List<Assignment> dres = new ArrayList<Assignment>();
 //    }
 //
 //    private void populateAssignmentsList(final boolean isNewDraw) {
@@ -440,7 +440,7 @@ public class AssignmentSharerActivity extends Activity {
 //                // Populate
 //                drDetails = new DrawResultDetails();
 //                drDetails.dr = mDrawResult;
-//                drDetails.dres = mDatabase.queryAllDrawResultEntriesForDrawId(mDrawResult.getId());
+//                drDetails.dres = mDatabase.queryAllAssignmentsForGroup(mDrawResult.getId());
 //                Collections.sort(drDetails.dres);
 //
 //                Log.v(TAG, "populateAssignmentsList() - row count: " + drDetails.dres.size());
@@ -460,7 +460,7 @@ public class AssignmentSharerActivity extends Activity {
 //
 //                    // Enable/Disable the share button if appropriate
 //                    aa.clear();
-//                    for(DrawResultEntry dre : drDetails.dres) {
+//                    for(Assignment dre : drDetails.dres) {
 //                        aa.add(dre);
 //                    }
 //                    Log.v(TAG, "onPostExecute() rows: " + drDetails.dres.size());
@@ -509,9 +509,9 @@ public class AssignmentSharerActivity extends Activity {
 //        mShareButton.setVisibility(_enabled ? View.VISIBLE : View.GONE);
 //    }
 //
-//    private void updateDrawResultEntry(DrawResultEntry assignment) {
+//    private void updateDrawResultEntry(Assignment assignment) {
 //
-//        final DrawResultEntry assign = assignment;
+//        final Assignment assign = assignment;
 //
 //        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
 //
@@ -675,7 +675,7 @@ public class AssignmentSharerActivity extends Activity {
 //
 //            @Override
 //            protected Boolean doInBackground(Void... voids) {
-//                boolean authRequired = Utils.containsEmailSendableEntry(mDatabase.queryAllDrawResultEntriesForDrawId(mDrawResult.getId()));
+//                boolean authRequired = Utils.containsEmailSendableEntry(mDatabase.queryAllAssignmentsForGroup(mDrawResult.getId()));
 //                // Reset.
 //                mToken = null;
 //                mAccount = null;
@@ -733,10 +733,10 @@ public class AssignmentSharerActivity extends Activity {
 //
 //                // Is better to prevent failures, than to send out some SMSs
 //                // then fail on one... much confusion would result.
-//                List<DrawResultEntry> drawEntries = mDatabase.queryAllDrawResultEntriesForDrawId(mDrawResult.getId());
+//                List<Assignment> drawEntries = mDatabase.queryAllAssignmentsForGroup(mDrawResult.getId());
 //
 //                // Ok, Iterate through these objects.
-//                for(DrawResultEntry entry : drawEntries) {
+//                for(Assignment entry : drawEntries) {
 //                    try {
 //
 //                        Log.v(TAG, "Sharing using mode: " + entry.getContactMode());

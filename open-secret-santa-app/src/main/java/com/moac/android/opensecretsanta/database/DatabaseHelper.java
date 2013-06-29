@@ -38,10 +38,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private static final String TAG = DatabaseHelper.class.getSimpleName();
 
     private static final String DATABASE_NAME = "opensecretsanta.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     private static final Class[] PERSISTABLE_OBJECTS =
-      { DrawResult.class, DrawResultEntry.class, Group.class, Member.class, Restriction.class };
+      { Group.class, Member.class, Restriction.class, Assignment.class };
 
     private final Map<Class<? extends PersistableObject>, Dao<? extends PersistableObject, Long>> daos =
       new HashMap<Class<? extends PersistableObject>, Dao<? extends PersistableObject, Long>>();
@@ -77,6 +77,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
                 switch(nextVersion) {
                     case 2:
                         success = upgradeToVersion2(db);
+                        break;
+                    case 3:
+                        success = upgradeToVersion3(db);
                         break;
                 }
                 if(!success) {
@@ -199,12 +202,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         Log.i(TAG, "upgradeToVersion2 - start.");
 
         // Something like - update members set contact_detail = null  where contact_detail = '';
-        final String CONTACT_DETAIL_COLUMN="CONTACT_DETAIL"; // Column has changed.
+        final String CONTACT_DETAIL_COLUMN="CONTACT_DETAIL"; // Hard code old column name.
         ContentValues values = new ContentValues();
         values.putNull(CONTACT_DETAIL_COLUMN);
 
         int updatedRows = db.update(Member.TABLE_NAME, values, CONTACT_DETAIL_COLUMN + " = ''", null);
         Log.i(TAG, "upgradeToVersion2 - updatedRows: " + updatedRows);
+        return true;
+    }
+
+    private boolean upgradeToVersion3(SQLiteDatabase db) {
+        // TODO Drop all old tables
         return true;
     }
 }

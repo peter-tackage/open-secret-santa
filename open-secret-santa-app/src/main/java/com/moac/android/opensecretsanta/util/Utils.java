@@ -53,24 +53,24 @@ public class Utils {
 
         return s.toString();
     }
-
-    public static String buildSuccessMessage(ShareResults result) {
-
-        // TODO Change for different model.
-        StringBuilder s = new StringBuilder();
-        //s.append(result.sentSMSCount);
-        s.append("Messages sent to ");
-        s.append(result.sentRecipientCount);
-        if(result.sentRecipientCount > 1) {
-            s.append(" members");
-        } else {
-            s.append(" member");
-        }
-
-        Log.v(TAG, "buildPersonalisedMsg() - result: " + s.toString());
-
-        return s.toString();
-    }
+// TODO Fix this
+//    public static String buildSuccessMessage(ShareResults result) {
+//
+//        // TODO Change for different model.
+//        StringBuilder s = new StringBuilder();
+//        //s.append(result.sentSMSCount);
+//        s.append("Messages sent to ");
+//        s.append(result.sentRecipientCount);
+//        if(result.sentRecipientCount > 1) {
+//            s.append(" members");
+//        } else {
+//            s.append(" member");
+//        }
+//
+//        Log.v(TAG, "buildPersonalisedMsg() - result: " + s.toString());
+//
+//        return s.toString();
+//    }
 
     public static boolean containsSendableEntry(List<Member> _members) {
         for(Member member : _members) {

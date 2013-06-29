@@ -127,15 +127,14 @@ public class NewDrawActivity extends Activity implements DrawManager {
     }
 
     private void prepareDraw(Group _group) {
-        // The current design only allows one Draw Result per group.
-        int count = mDb.deleteAllDrawResultsForGroup(_group.getId());
-        Log.v(TAG, "prepareDraw() - deleted Draw Result count: " + count);
+        int count = mDb.deleteAllAssignmentsForGroup(_group.getId());
+        Log.v(TAG, "prepareDraw() - deleted Assignment count: " + count);
         mMembersListFragment.onDrawCleared();
         // TODO Notify cleared.
     }
 
     @Override
-    public void onNotifyDraw(DrawResult _result) {
+    public void onNotifyDraw(Group _group) {
         Toast.makeText(this, "Requesting Notify", Toast.LENGTH_SHORT).show();
     }
 
@@ -239,11 +238,9 @@ public class NewDrawActivity extends Activity implements DrawManager {
 
         Toast.makeText(this, R.string.draw_success_message, Toast.LENGTH_SHORT).show();
 
-        // Create the top level Draw Result
-        DrawResult dr = new DrawResult();
-        dr.setDrawDate(System.currentTimeMillis());
-        dr.setGroup(_group);
-        mDb.create(dr);
+        // Flag the draw time.
+        _group.setDrawDate(System.currentTimeMillis());
+        mDb.update(_group);
 
         // Now add the corresponding draw result entries.
         for(Long m1Id : _status.getAssignments().keySet()) {
@@ -256,14 +253,13 @@ public class NewDrawActivity extends Activity implements DrawManager {
               + m1.getContactMode() + " " + m1.getContactAddress());
 
             // Create the individual Draw Result Entry
-            DrawResultEntry dre = new DrawResultEntry();
-            dre.setGiverMember(m1);
-            dre.setReceiverMember(m2);
-            dre.setDrawResult(dr);
-            mDb.create(dre);
+            Assignment assignment = new Assignment();
+            assignment.setGiverMember(m1);
+            assignment.setReceiverMember(m2);
+            mDb.create(assignment);
         }
         // TODO Is this reference going to be correct on group change??
-        mMembersListFragment.onDrawAvailable(dr);
+        mMembersListFragment.onDrawAvailable();
     }
 
     private class DrawStatus {
