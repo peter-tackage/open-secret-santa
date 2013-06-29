@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.adapter.GroupListAdapter;
+import com.moac.android.opensecretsanta.adapter.GroupRowDetails;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.fragment.MemberListFragment;
 import com.moac.android.opensecretsanta.model.*;
@@ -68,7 +69,7 @@ public class NewDrawActivity extends Activity implements DrawManager {
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
 
-        populateGroupsList(mDrawerList);
+        populateGroupRowDetailsList(mDrawerList);
 
         // Add the Members List for the most recent Group
         displayInitialGroup();
@@ -138,11 +139,17 @@ public class NewDrawActivity extends Activity implements DrawManager {
         Toast.makeText(this, "Requesting Notify", Toast.LENGTH_SHORT).show();
     }
 
-    private void populateGroupsList(ListView _groupsList) {
+    private void populateGroupRowDetailsList(ListView _groupRowDetailsList) {
         // Retrieve the list of groups from database.
         List<Group> groups = OpenSecretSantaApplication.getDatabase().queryAll(Group.class);
+
         Log.v(TAG, "initialiseUI() - group count: " + groups.size());
-        ((GroupListAdapter) _groupsList.getAdapter()).update(groups);
+        List<GroupRowDetails> groupRowDetails =  new ArrayList<GroupRowDetails>();
+        for(Group g : groups) {
+            List<Member> groupMembers = OpenSecretSantaApplication.getDatabase().queryAllMembersForGroup(g.getId());
+            groupRowDetails.add(new GroupRowDetails(g.getId(), g.getName(), g.getCreatedAt(), groupMembers));
+        }
+        ((GroupListAdapter) _groupRowDetailsList.getAdapter()).update(groupRowDetails);
     }
 
     private void displayInitialGroup() {
@@ -199,7 +206,7 @@ public class NewDrawActivity extends Activity implements DrawManager {
         DrawStatus drawStatus = new DrawStatus();
 
         // Build these assignments.
-        Map<Long, Long> assignments = null;
+        Map<Long, Long> assignments;
 
         List<Member> members = mDb.queryAllMembersForGroup(_group.getId());
         Log.v(TAG, "executeDraw() - Group: " + _group.getId() + " has member count: " + members.size());
