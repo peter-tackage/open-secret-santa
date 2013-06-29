@@ -1,30 +1,19 @@
 package com.moac.android.opensecretsanta.adapter;
 
-public class MemberRowDetails implements Comparable<MemberRowDetails> {
+import com.moac.android.opensecretsanta.model.Assignment;
+import com.moac.android.opensecretsanta.model.Member;
 
-    protected long mMemberId;
-    protected String mLookupKey;
-    protected String mMemberName;
-    protected String mContactDetail;
-    protected int mContactMode;
-    protected long mRestrictionCount;
+public class MemberRowDetails {
 
-    public MemberRowDetails(long _memberId, String _lookupKey, String _memberName,
-                            int _contactMode, String _contactDetail, long _restrictionCount) {
-        mMemberId = _memberId;
-        mLookupKey = _lookupKey;
-        mMemberName = _memberName;
-        mContactMode = _contactMode;
-        mContactDetail = _contactDetail;
-        mRestrictionCount = _restrictionCount;
+    protected Member mMember;
+    protected Assignment mAssignment;
+
+    public MemberRowDetails(Member _member, Assignment _assignment) {
+        mMember = _member;
+        mAssignment = _assignment;
     }
 
-    public long getMemberId() { return mMemberId; }
-    public String getMemberName() { return mMemberName; }
-    public String getLookupKey() { return mLookupKey; }
+    public Member getMember() { return mMember; }
+    public Assignment getAssignment() { return mAssignment; }
 
-    @Override
-    public int compareTo(MemberRowDetails _that) {
-        return String.CASE_INSENSITIVE_ORDER.compare(this.mMemberName, _that.mMemberName);
-    }
 }
