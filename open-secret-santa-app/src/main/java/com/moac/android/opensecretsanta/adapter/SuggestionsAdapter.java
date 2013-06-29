@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.moac.android.opensecretsanta.R;
-import com.moac.android.opensecretsanta.activity.ContactModes;
+import com.moac.android.opensecretsanta.activity.ContactMode;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.util.ContactUtils;
 
@@ -126,7 +126,7 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
         {
             Member manualSuggestion = new Member();
             manualSuggestion.setName(_constraint);
-            manualSuggestion.setContactMode(ContactModes.NAME_ONLY_CONTACT_MODE);
+            manualSuggestion.setContactMode(ContactMode.REVEAL_ONLY);
             results.add(manualSuggestion);
         }
 
@@ -145,10 +145,10 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
 
         try {
             phoneCursor = doQuery(mContext, Queries.PHONE, _constraint);
-            results.addAll(processResults(phoneCursor, ContactModes.SMS_CONTACT_MODE));
+            results.addAll(processResults(phoneCursor, ContactMode.SMS));
 
             emailCursor = doQuery(mContext, Queries.EMAIL, _constraint);
-            results.addAll(processResults(emailCursor, ContactModes.EMAIL_CONTACT_MODE));
+            results.addAll(processResults(emailCursor, ContactMode.EMAIL));
         } finally {
             if(phoneCursor != null)
                 phoneCursor.close();
@@ -169,7 +169,7 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
         return cursor;
     }
 
-    public static List<Member> processResults(Cursor _cursor, int _contactMode) {
+    public static List<Member> processResults(Cursor _cursor, ContactMode _contactMode) {
         List<Member> results = new ArrayList<Member>();
         // Iterate through the cursor and build up a suggestions array.
         Log.i(TAG, "autoComplete() - cursor length: " + _cursor.getCount());

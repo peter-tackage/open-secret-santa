@@ -740,16 +740,16 @@ public class AssignmentSharerActivity extends Activity {
 //                    try {
 //
 //                        Log.v(TAG, "Sharing using mode: " + entry.getContactMode());
-//                        if(entry.getContactMode() == ContactModes.NAME_ONLY_CONTACT_MODE) {
+//                        if(entry.getContactMode() == ContactMode.NAME_ONLY_CONTACT_MODE) {
 //                            // Manual! no sending... (expect one less)
 //                            Log.v(TAG, "shareAllAssignments() - manual entry");
-//                        } else if(entry.getContactMode() == ContactModes.EMAIL_CONTACT_MODE) {
+//                        } else if(entry.getContactMode() == ContactMode.EMAIL_CONTACT_MODE) {
 //                            Log.v(TAG, "shareAllAssignments() - email entry");
 //
 //                            // Email-ru
 //                            sendEmail(entry.getContactAddress(),
 //                              Utils.buildPersonalisedMsg(msg, entry.getGiverName(), entry.getReceiverName()), "Your Secret Santa assignment from Open Secret Santa", mAccount.name, mToken);
-//                        } else if(entry.getContactMode() == ContactModes.SMS_CONTACT_MODE) {
+//                        } else if(entry.getContactMode() == ContactMode.SMS_CONTACT_MODE) {
 //                            Log.v(TAG, "shareAllAssignments() - SMS entry");
 //
 //                            // SMS

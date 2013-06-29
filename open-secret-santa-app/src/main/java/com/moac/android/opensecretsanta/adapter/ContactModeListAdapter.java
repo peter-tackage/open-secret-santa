@@ -1,16 +1,13 @@
 package com.moac.android.opensecretsanta.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.moac.android.opensecretsanta.R;
-import com.moac.android.opensecretsanta.activity.ContactModes;
 
 import java.util.List;
 
@@ -51,11 +48,11 @@ public class ContactModeListAdapter extends ArrayAdapter<ContactModeRowDetails> 
 
         contactModeView.setText(modeDetails.toString());
 //   PT HACK
-//        if(modeDetails.mContactMode == ContactModes.SMS_CONTACT_MODE) {
+//        if(modeDetails.mContactMode == ContactMode.SMS_CONTACT_MODE) {
 //            contactModeImageView.setImageResource(R.drawable.ic_phone);
-//        } else if(modeDetails.mContactMode == ContactModes.NAME_ONLY_CONTACT_MODE) {
+//        } else if(modeDetails.mContactMode == ContactMode.NAME_ONLY_CONTACT_MODE) {
 //            contactModeImageView.setImageResource(R.drawable.ic_menu_view);
-//        } else if(modeDetails.mContactMode == ContactModes.EMAIL_CONTACT_MODE) {
+//        } else if(modeDetails.mContactMode == ContactMode.EMAIL_CONTACT_MODE) {
 //            contactModeImageView.setImageResource(R.drawable.ic_email);
 //        }
 
