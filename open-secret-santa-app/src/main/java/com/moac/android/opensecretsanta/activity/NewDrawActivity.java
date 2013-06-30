@@ -65,12 +65,14 @@ public class NewDrawActivity extends Activity implements DrawManager {
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 getActionBar().setTitle(getString(R.string.app_name));
+                getActionBar().setIcon(R.drawable.icon);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
              /** Called when a drawer has settled in a completely open state. */
              public void onDrawerOpened(View drawerView) {
                 getActionBar().setTitle(getString(R.string.drawer_groups_title));
+                getActionBar().setIcon(R.drawable.people);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
                 populateGroupRowDetailsList(mDrawerList);
             }

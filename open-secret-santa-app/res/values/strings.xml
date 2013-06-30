@@ -64,7 +64,6 @@
   <string name="app_version_info">Version: 1.4.1</string>
   <string name="app_date_info">Date: 6th June 2013</string>
   <string name="title_activity_initialise">InitialiseActivity</string>
-  <string name="menu_settings">Settings</string>
   <string name="empty_member_list_label">No members in draw</string>
   <string name="prev_draw_label">Prev</string>
   <string name="next_draw_label">Next</string>
@@ -75,6 +74,7 @@
   <string name="member_avatar_accesshint">member avatar</string>
   <string name="drawer_groups_title">Your Groups</string>
 
+  <!-- Menu labels -->
   <string name="menu_done">Done</string>
   <string name="menu_edit">Edit</string>
   <string name="menu_restrictions">Restrictions</string>
@@ -82,6 +82,9 @@
   <string name="menu_notify">Notify</string>
   <string name="menu_draw">Draw</string>
   <string name="menu_reveal">Reveal</string>
+  <string name="menu_rename">Rename group</string>
+  <string name="menu_settings">Settings</string>
+  <string name="menu_new">New group</string>
 
 
 </resources>

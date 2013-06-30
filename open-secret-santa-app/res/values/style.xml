@@ -1,16 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+
   <!--
    Base application theme, dependent on API level. This theme is replaced
    by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
 -->
+
   <style name="AppBaseTheme" parent="android:Theme.Holo.Light">
+
     <!--
         Theme customizations available in newer API levels can go in
         res/values-vXX/styles.xml, while customizations related to
         backward-compatibility can go here.
     -->
+    <item name="android:actionBarItemBackground">
+      @drawable/selectable_background_mymenu
+    </item>
+    <item name="android:popupMenuStyle">@style/PopupMenu.Mymenu</item>
+    <item name="android:actionBarStyle">@style/ActionBar.Transparent.Mymenu
+    </item>
+    <item name="android:actionModeBackground">
+      @drawable/cab_background_top_mymenu
+    </item>
+    <item name="android:actionModeSplitBackground">
+      @drawable/cab_background_bottom_mymenu
+    </item>
+    <item name="android:actionModeCloseButtonStyle">
+      @style/ActionButton.CloseMode.Mymenu
+    </item>
+    <item name="android:textColor">@android:color/holo_blue_light</item>
+    <item name="android:actionMenuTextColor">@android:color/holo_blue_light
+    </item>
+    <item name="android:actionModeCloseDrawable">
+      @drawable/ic_navigation_accept
+    </item>
+  </style>
+
+  <style name="MyTheme.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+    <item name="android:textColor">@android:color/holo_blue_light</item>
+  </style>
+
+  <style parent="@android:style/Widget.Holo.Light.ActionBar" name="ActionBar.Transparent.Mymenu">
+    <item name="android:background">@android:color/white</item>
+    <!-- if we want the action bar to have the blue shadow or not ... drawable/ab_transparent_mymenu</item-->
+    <item name="android:titleTextStyle">
+      @style/MyTheme.ActionBar.TitleTextStyle
+    </item>
+  </style>
+
+  <!-- background for the overflow menu -->
+  <style parent="@android:style/Widget.Holo.Light.ListPopupWindow" name="PopupMenu.Mymenu">
+    <item name="android:popupBackground">@drawable/menu_dropdown_panel_mymenu
+    </item>
+  </style>
+
+  <!-- background on the CAB after long press on member -->
+  <style parent="@android:style/Widget.Holo.Light.ActionButton.CloseMode" name="ActionButton.CloseMode.Mymenu">
+    <item name="android:background">@drawable/selectable_background_mymenu</item>
   </style>
 
   <!-- Application theme. -->
@@ -20,7 +67,6 @@
   </style>
 
   <!-- Welcome theme. -->
-  <style name="WelcomeTheme" parent="AppTheme">
-  </style>
+  <style name="WelcomeTheme" parent="AppTheme"></style>
 
 </resources>
