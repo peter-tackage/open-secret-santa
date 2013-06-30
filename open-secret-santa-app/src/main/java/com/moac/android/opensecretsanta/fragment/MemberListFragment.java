@@ -1,8 +1,11 @@
 package com.moac.android.opensecretsanta.fragment;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.ListFragment;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
@@ -200,6 +203,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
             case R.id.menu_notify:
                 mode.finish();
             case R.id.menu_reveal:
+                doReveal(getListView().getCheckedItemIds()[0]);
                 mode.finish();
             default:
                 return false;
@@ -244,8 +248,28 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         mDrawManager.onRequestDraw(_group);
     }
 
-    private void doRestrictions(long _groupId, long _id) {
-        mDrawManager.onRestrictMember(_groupId, _id);
+    private void doRestrictions(long _groupId, long _memberId) {
+        mDrawManager.onRestrictMember(_groupId, _memberId);
+    }
+
+    private void doReveal(long _memberId) {
+        // TODO Mark as seen.
+        // Create an instance of the dialog fragment and show it
+        Member giver = mDb.queryById(_memberId, Member.class);
+        Log.i(TAG, "doReveal(): memberId: " + _memberId);
+        Log.i(TAG, "doReveal(): giver name: " + giver.getName());
+
+        Assignment assignment = mDb.queryAssignmentForMember(_memberId);
+        long _receiverId = assignment.getReceiverMemberId();
+        Member receiver = mDb.queryById(_receiverId, Member.class);
+        Uri contactUri = null;
+        // TODO Check the validity of URIs with various values. Write Utils method.
+        if(receiver.getContactId() != PersistableObject.UNSET_ID && receiver.getLookupKey() != null) {
+            Uri lookupUri = ContactsContract.Contacts.getLookupUri(receiver.getContactId(), receiver.getLookupKey());
+            contactUri = ContactsContract.Contacts.lookupContact(getActivity().getContentResolver(), lookupUri);
+        }
+        DialogFragment dialog = new AssignmentFragment(giver.getName(), receiver.getName(), contactUri);
+        dialog.show(getFragmentManager(), "AssignmentFragment");
     }
 
     // TODO Make this load asynchronously and somewhere else

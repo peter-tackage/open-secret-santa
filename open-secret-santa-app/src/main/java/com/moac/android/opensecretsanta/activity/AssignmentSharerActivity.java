@@ -78,7 +78,7 @@ public class AssignmentSharerActivity extends Activity {
 //
 //                Context mContext = AssignmentSharerActivity.this;
 //                LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
-//                View layout = inflater.inflate(R.layout.assignee_viewer_dialog,
+//                View layout = inflater.inflate(R.layout.assignment_fragment_dialog,
 //                  (ViewGroup) findViewById(R.id.layout_root));
 //
 //                ImageView image = (ImageView) layout.findViewById(R.id.image);

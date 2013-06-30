@@ -266,7 +266,7 @@ public class NewDrawActivity extends Activity implements DrawManager {
             Member m1 = mDb.queryById(m1Id, Member.class);
             Member m2 = mDb.queryById(_status.getAssignments().get(m1Id), Member.class);
 
-            Log.v(TAG, "saveDrawResult() - saving dre: " + m1.getName() + " - " + m2.getName() + " with: "
+            Log.v(TAG, "saveDrawResult() - saving Assignment: " + m1.getName() + " - " + m2.getName() + " with: "
               + m1.getContactMode() + " " + m1.getContactAddress());
 
             // Create the individual Draw Result Entry
