@@ -122,7 +122,7 @@ public class DatabaseManager {
             QueryBuilder<Assignment, Long> assignmentQuery =
               mDbHelper.getDaoEx(Assignment.class).queryBuilder();
 
-            assignmentQuery.selectColumns(Member.Columns._ID).where().eq(Assignment.Columns.GIVER_MEMBER_ID_COLUMN, _memberId);
+            assignmentQuery.where().eq(Assignment.Columns.GIVER_MEMBER_ID_COLUMN, _memberId);
             return assignmentQuery.queryForFirst();
 
         } catch(java.sql.SQLException e) {
