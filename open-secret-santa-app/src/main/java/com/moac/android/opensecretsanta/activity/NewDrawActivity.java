@@ -141,7 +141,7 @@ public class NewDrawActivity extends Activity implements DrawManager {
     private void prepareDraw(Group _group) {
         int count = mDb.deleteAllAssignmentsForGroup(_group.getId());
         Log.v(TAG, "prepareDraw() - deleted Assignment count: " + count);
-        mMembersListFragment.onDrawCleared();
+        mMembersListFragment.onAssignmentsCleared();
     }
 
     @Override
@@ -276,7 +276,7 @@ public class NewDrawActivity extends Activity implements DrawManager {
             mDb.create(assignment);
         }
         // TODO Is this reference going to be correct on group change??
-        mMembersListFragment.onDrawAvailable();
+        mMembersListFragment.onAssignmentsAvailable();
     }
 
     private class DrawStatus {

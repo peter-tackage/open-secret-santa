@@ -70,6 +70,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         mDb = OpenSecretSantaApplication.getDatabase();
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
+        mMode = determineMode();
     }
 
     @Override
@@ -231,6 +232,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     private void invalidateAssignments(long _groupId) {
         mDb.deleteAllAssignmentsForGroup(_groupId);
+        mMode = Mode.Building;
     }
 
     private void doNotify(Group _group) {
@@ -249,7 +251,6 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     // TODO Make this load asynchronously and somewhere else
     private void loadMembers(long _groupId) {
         List<MemberRowDetails> rows = buildMemberRowDetails(_groupId);
-        Log.i(TAG, "loadMembers() - retrieved members count: " + rows.size());
         setListAdapter(new MemberListAdapter(getActivity(), R.layout.member_row, rows));
     }
 
@@ -292,17 +293,21 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         addedToast.show();
     }
 
-    public void onDrawAvailable() {
+    public void onAssignmentsAvailable() {
+        // Move to Notify mode
         mMode = Mode.Notify;
         loadMembers(mGroup.getId());
         // TODO Show Notify button
     }
 
-    public void onDrawCleared() {
+    public void onAssignmentsCleared() {
         // Revert to building mode
         mMode = Mode.Building;
-        invalidateAssignments(mGroup.getId());
         loadMembers(mGroup.getId());
         // TODO Hide Notify button
+    }
+
+    private Mode determineMode() {
+       return mDb.queryHasAssignmentsForGroup(mGroup.getId()) ? Mode.Notify : Mode.Building;
     }
 }

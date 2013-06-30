@@ -520,4 +520,43 @@ public class DatabaseTests extends AndroidTestCase {
         // Verify restrictions correctly deleted by cascade
         assertEquals(0, mDatabaseManager.queryAllRestrictionsForMemberId(m1.getId()).size());
     }
+
+    public void testQueryHasAssignmentsForGroup() {
+
+        Group group1 = new GroupBuilder().build();
+        mDatabaseManager.create(group1);
+
+        boolean beforeMembersResult = mDatabaseManager.queryHasAssignmentsForGroup(group1.getId());
+        assertTrue(!beforeMembersResult);
+
+        // Add some Members
+        Member m1 = new MemberBuilder().withName("m1").build();
+        Member m2 = new MemberBuilder().withName("m2").build();
+        Member m3 = new MemberBuilder().withName("m3").build();
+        m1.setGroup(group1);
+        m2.setGroup(group1);
+        m3.setGroup(group1);
+        mDatabaseManager.create(m1);
+        mDatabaseManager.create(m2);
+        mDatabaseManager.create(m3);
+
+        boolean beforeAssigmentsResult = mDatabaseManager.queryHasAssignmentsForGroup(group1.getId());
+        assertTrue(!beforeAssigmentsResult);
+
+        Assignment a1 = new Assignment();
+        a1.setGiverMember(m1);
+        a1.setReceiverMember(m2);
+        Assignment a2 = new Assignment();
+        a2.setGiverMember(m2);
+        a2.setReceiverMember(m3);
+        Assignment a3 = new Assignment();
+        a3.setGiverMember(m3);
+        a3.setReceiverMember(m1);
+        mDatabaseManager.create(a1);
+        mDatabaseManager.create(a2);
+        mDatabaseManager.create(a3);
+
+        boolean afterResult = mDatabaseManager.queryHasAssignmentsForGroup(group1.getId());
+        assertTrue(afterResult);
+    }
 }
