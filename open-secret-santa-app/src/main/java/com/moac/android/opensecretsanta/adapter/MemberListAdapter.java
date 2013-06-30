@@ -49,10 +49,10 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
         View v = _convertView;
 
         ImageView avatarView;
-        View statusIndicatorView;
         TextView memberNameView;
         TextView contactAddressView;
         TextView restrictionsView;
+        TextView sendStatusTextView;
 
         // Attempt to reuse recycled view if possible
         // Refer - http://lucasr.org/2012/04/05/performance-tips-for-androids-listview/
@@ -63,22 +63,23 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
             v = LayoutInflater.from(getContext()).inflate(mResource, _parent, false);
 
             avatarView = (ImageView) v.findViewById(R.id.member_imageview);
-            statusIndicatorView = v.findViewById(R.id.member_status_indicator_view);
             memberNameView = (TextView) v.findViewById(R.id.member_name_textview);
             contactAddressView = (TextView) v.findViewById(R.id.contact_address_textview);
             restrictionsView = (TextView) v.findViewById(R.id.restriction_count_textview);
+            sendStatusTextView = (TextView) v.findViewById(R.id.sent_status_textview);
 
             v.setTag(R.id.member_imageview, avatarView);
             v.setTag(R.id.member_name_textview, memberNameView);
             v.setTag(R.id.contact_address_textview, contactAddressView);
             v.setTag(R.id.restriction_count_textview, restrictionsView);
+            v.setTag(R.id.sent_status_textview, sendStatusTextView);
         } else {
             // Recycled View is available, retrieve the holder instance from the View
             avatarView = (ImageView) v.getTag(R.id.member_imageview);
-            statusIndicatorView = (View) v.getTag(R.id.member_status_indicator_view);
             memberNameView = (TextView) v.getTag(R.id.member_name_textview);
             contactAddressView = (TextView) v.getTag(R.id.contact_address_textview);
             restrictionsView = (TextView) v.getTag(R.id.restriction_count_textview);
+            sendStatusTextView = (TextView) v.getTag(R.id.sent_status_textview);
         }
 
         MemberRowDetails row = getItem(_position);
@@ -107,19 +108,23 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
             restrictionsView.setVisibility(View.GONE);
         }
 
-        if(statusIndicatorView != null) {
-            statusIndicatorView.setVisibility(assignment == null ? View.GONE : View.VISIBLE);
-            if(assignment != null) {
-                setIndicatorColor(statusIndicatorView, member, assignment);
-            }
+        sendStatusTextView.setVisibility(assignment == null ? View.INVISIBLE : View.VISIBLE);
+
+        if(assignment != null) {
+            setSendStatusText(sendStatusTextView, assignment);
+            setStatusColor(sendStatusTextView, assignment);
         }
 
         return v;
     }
 
-    private void setIndicatorColor(View _view, Member _member, Assignment _assignment) {
+    private void setSendStatusText(TextView _sendStatusTextView, Assignment _assignment) {
+        _sendStatusTextView.setText(_assignment.getSendStatus().getText());
+    }
+
+    private void setStatusColor(View _view, Assignment _assignment) {
         switch(_assignment.getSendStatus()) {
-            case Successful:
+            case Ok:
                 _view.setBackgroundResource(android.R.color.holo_green_light);
                 break;
             case Failed:

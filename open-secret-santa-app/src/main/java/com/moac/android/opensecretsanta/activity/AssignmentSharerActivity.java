@@ -328,7 +328,7 @@ public class AssignmentSharerActivity extends Activity {
 //                        // Now write the DRE
 //                        saveDrawResult(assignments, mGroup);
 //
-//                        // Successful draw, so update the group flag.
+//                        // Ok draw, so update the group flag.
 //                        mGroup.setReady(true);
 //                        mDatabase.update(mGroup);
 //

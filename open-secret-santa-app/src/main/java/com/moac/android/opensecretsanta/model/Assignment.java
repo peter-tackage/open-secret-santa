@@ -7,7 +7,7 @@ import com.j256.ormlite.table.DatabaseTable;
 public class Assignment extends PersistableObject {
 
     public enum Status {
-        Not_Sent("Not Sent"), Successful("Successful"), Failed("Failed");
+        Not_Sent("Not Sent"), Ok("Ok"), Failed("Failed");
 
         private String mText;
         Status(String _text) {  mText = _text; }

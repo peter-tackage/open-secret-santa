@@ -70,7 +70,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         mDb = OpenSecretSantaApplication.getDatabase();
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
-        mMode = determineMode();
+        mMode = evaluateMode();
     }
 
     @Override
@@ -288,9 +288,9 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
                msg = String.format(getString(R.string.failed_add_member_msg), _member.getName());
             }
         }
-        Toast addedToast = Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT);
-        addedToast.setGravity(Gravity.CENTER, 0,0);
-        addedToast.show();
+        Toast toast = Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
     }
 
     public void onAssignmentsAvailable() {
@@ -307,7 +307,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         // TODO Hide Notify button
     }
 
-    private Mode determineMode() {
+    private Mode evaluateMode() {
        return mDb.queryHasAssignmentsForGroup(mGroup.getId()) ? Mode.Notify : Mode.Building;
     }
 }
