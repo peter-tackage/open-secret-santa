@@ -269,20 +269,22 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     private void addMember(Member _member, Group _group) {
+        final String msg;
         _member.setGroup(_group);
+
         // Test to see if we already have this member in the gorup.
         Member existing = mDb.queryMemberWithNameForGroup(_group.getId(), _member.getName());
-        String msg;
+
         if(existing != null) {
-            msg = _member.getName() + " is already in the draw";
+            msg = String.format(getString(R.string.duplicate_name_msg), _member.getName());
         } else {
             long id = mDb.create(_member);
             if(id != PersistableObject.UNSET_ID) {
-                msg = _member.getName() + " added";
+                msg = String.format(getString(R.string.member_add_msg), _member.getName());
                 invalidateAssignments(_group.getId());
                 loadMembers(_group.getId());
             } else {
-               msg = "Failed to add" + _member.getName();
+               msg = String.format(getString(R.string.failed_add_member_msg), _member.getName());
             }
         }
         Toast addedToast = Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT);

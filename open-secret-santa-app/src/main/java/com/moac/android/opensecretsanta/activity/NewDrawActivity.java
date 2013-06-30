@@ -134,7 +134,7 @@ public class NewDrawActivity extends Activity implements DrawManager {
             processDrawStatus(status, _group);
         } catch(InvalidDrawEngineException exp) {
             Log.e(TAG, "onRequestDraw() - Unable to load Draw Engine", exp);
-            Toast.makeText(this, R.string.no_engine_error_message, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.no_engine_error_msg, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -249,11 +249,11 @@ public class NewDrawActivity extends Activity implements DrawManager {
     private void processDrawStatus(DrawStatus _status, Group _group) {
         if(!_status.isSuccess()) {
             // Report failure
-            Toast.makeText(this, R.string.draw_failed_message, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.draw_failed_msg, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Toast.makeText(this, R.string.draw_success_message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.draw_success_msg, Toast.LENGTH_SHORT).show();
 
         // Flag the draw time.
         _group.setDrawDate(System.currentTimeMillis());

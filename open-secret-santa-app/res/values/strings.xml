@@ -26,12 +26,7 @@
   </string>
   <string name="message_count_label">"Characters: "</string>
 
-
-  <string name="draw_failed_message">"Couldn't complete the draw"</string>
-  <string name="draw_success_message">Draw was successful!</string>
-  <string name="no_engine_error_message">Error: Could not find Draw Engine</string>
-
-  <!-- Preferences - Algorithm -->
+   <!-- Preferences - Algorithm -->
   <string name="algorithm_preferences">Algorithm Preferences</string>
   <string name="algorithm_list_preference">Draw Engine</string>
   <string name="summary_list_preference">The algorithm that is used to calculate
@@ -83,5 +78,12 @@
   <string name="menu_draw">Draw</string>
   <string name="menu_reveal">Reveal</string>
 
+  <!-- Toast messages -->
+  <string name="duplicate_name_msg">%s is already in the draw</string>
+  <string name="member_add_msg">%s added</string>
+  <string name="failed_add_member_msg">Failed to add %s</string>
+  <string name="draw_failed_msg">"Couldn't complete the draw"</string>
+  <string name="draw_success_msg">Draw was successful!</string>
+  <string name="no_engine_error_msg">Error: Could not find Draw Engine</string>
 
 </resources>
