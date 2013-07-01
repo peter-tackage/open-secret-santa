@@ -249,7 +249,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     private void doNotify(long[] _memberIds) {
         if(_memberIds != null)
-            mDrawManager.onNotifyDraw(_memberIds);
+            mDrawManager.onNotifyDraw(mGroup, _memberIds);
     }
 
     private void doDraw(Group _group) {

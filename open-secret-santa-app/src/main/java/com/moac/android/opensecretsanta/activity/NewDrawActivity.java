@@ -147,10 +147,16 @@ public class NewDrawActivity extends Activity implements DrawManager {
     }
 
     @Override
-    public void onNotifyDraw(long[] _memberIds) {
+    public void onNotifyDraw(Group _group, long[] _memberIds) {
         Toast.makeText(this, "Requesting Notify", Toast.LENGTH_SHORT).show();
-        DialogFragment dialog = new NotifyFragment("test msg");
+        DialogFragment dialog = new NotifyFragment(mDb, _group, _memberIds);
         dialog.show(getFragmentManager(), "NotifyFragment");
+    }
+
+    @Override
+    public void onNotifyDraw(Group _group) {
+        List<Member> members = mDb.queryAllMembersForGroup(_group.getId());
+        // TODO Handle send all.
     }
 
     private void populateGroupRowDetailsList(ListView _groupRowDetailsList) {
