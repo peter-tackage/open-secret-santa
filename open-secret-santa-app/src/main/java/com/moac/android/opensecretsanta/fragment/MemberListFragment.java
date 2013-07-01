@@ -1,8 +1,11 @@
 package com.moac.android.opensecretsanta.fragment;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.ListFragment;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
@@ -70,6 +73,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         mDb = OpenSecretSantaApplication.getDatabase();
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
+        mMode = evaluateMode();
     }
 
     @Override
@@ -91,9 +95,6 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
                 addMember(selected, mGroup);
                 mCompleteTextView.setText("");
                 mCompleteTextView.requestFocus(); // Keep focus for more entries
-                Toast addedToast = Toast.makeText(getActivity(), selected.getName() + " added", Toast.LENGTH_SHORT);
-                addedToast.setGravity(Gravity.CENTER, 0,0);
-                addedToast.show();
             }
         });
 
@@ -176,11 +177,16 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
                 doDraw(mGroup);
                 return true;
             case R.id.menu_notify:
-                doNotify(mGroup);
+                doNotifyAll(mGroup);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void doNotifyAll(Group group) {
+        // TODO Implement
+        //mDrawManager.onNotifyDraw();
     }
 
     @Override
@@ -199,10 +205,14 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
                 mode.finish();
                 loadMembers(mGroup.getId());
                 return true;
-            case R.id.menu_notify:
+            case R.id.menu_notify_selection:
+                doNotify(getListView().getCheckedItemIds());
                 mode.finish();
+                return true;
             case R.id.menu_reveal:
+                doReveal(getListView().getCheckedItemIds()[0]);
                 mode.finish();
+                return true;
             default:
                 return false;
         }
@@ -234,25 +244,50 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     private void invalidateAssignments(long _groupId) {
         mDb.deleteAllAssignmentsForGroup(_groupId);
+        mMode = Mode.Building;
     }
 
-    private void doNotify(Group _group) {
-        if(_group != null)
-            mDrawManager.onNotifyDraw(_group);
+    private void doNotify(long[] _memberIds) {
+        if(_memberIds != null)
+            mDrawManager.onNotifyDraw(mGroup, _memberIds);
     }
 
     private void doDraw(Group _group) {
         mDrawManager.onRequestDraw(_group);
     }
 
-    private void doRestrictions(long _groupId, long _id) {
-        mDrawManager.onRestrictMember(_groupId, _id);
+    private void doRestrictions(long _groupId, long _memberId) {
+        mDrawManager.onRestrictMember(_groupId, _memberId);
     }
 
-    // TODO Make this load asynchronously and somewhere else
+    private void doReveal(long _memberId) {
+        // TODO Mark as seen.
+        Member giver = mDb.queryById(_memberId, Member.class);
+        Log.i(TAG, "doReveal(): memberId: " + _memberId);
+        Log.i(TAG, "doReveal(): giver name: " + giver.getName());
+
+        Assignment assignment = mDb.queryAssignmentForMember(_memberId);
+        long _receiverId = assignment.getReceiverMemberId();
+        Member receiver = mDb.queryById(_receiverId, Member.class);
+        Uri contactUri = null;
+        // TODO Check the validity of URIs with various values. Write Utils method.
+        if(receiver.getContactId() != PersistableObject.UNSET_ID && receiver.getLookupKey() != null) {
+            Uri lookupUri = ContactsContract.Contacts.getLookupUri(receiver.getContactId(), receiver.getLookupKey());
+            contactUri = ContactsContract.Contacts.lookupContact(getActivity().getContentResolver(), lookupUri);
+        }
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = new AssignmentFragment(giver.getName(), receiver.getName(), contactUri);
+        dialog.show(getFragmentManager(), "AssignmentFragment");
+
+        // Set as Revealed
+        assignment.setSendStatus(Assignment.Status.Revealed);
+        mDb.update(assignment);
+        loadMembers(mGroup.getId());
+    }
+
+    // TODO Make calls do this asynchronously
     private void loadMembers(long _groupId) {
         List<MemberRowDetails> rows = buildMemberRowDetails(_groupId);
-        Log.i(TAG, "loadMembers() - retrieved members count: " + rows.size());
         setListAdapter(new MemberListAdapter(getActivity(), R.layout.member_row, rows));
     }
 
@@ -272,25 +307,44 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     private void addMember(Member _member, Group _group) {
+        final String msg;
         _member.setGroup(_group);
-        long id = mDb.create(_member);
-        if(id != PersistableObject.UNSET_ID) {
-            invalidateAssignments(_group.getId());
-            loadMembers(_group.getId());
+
+        // Test to see if we already have this member in the gorup.
+        Member existing = mDb.queryMemberWithNameForGroup(_group.getId(), _member.getName());
+
+        if(existing != null) {
+            msg = String.format(getString(R.string.duplicate_name_msg), _member.getName());
+        } else {
+            long id = mDb.create(_member);
+            if(id != PersistableObject.UNSET_ID) {
+                msg = String.format(getString(R.string.member_add_msg), _member.getName());
+                invalidateAssignments(_group.getId());
+                loadMembers(_group.getId());
+            } else {
+               msg = String.format(getString(R.string.failed_add_member_msg), _member.getName());
+            }
         }
+        Toast toast = Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
     }
 
-    public void onDrawAvailable() {
+    public void onAssignmentsAvailable() {
+        // Move to Notify mode
         mMode = Mode.Notify;
         loadMembers(mGroup.getId());
         // TODO Show Notify button
     }
 
-    public void onDrawCleared() {
+    public void onAssignmentsCleared() {
         // Revert to building mode
         mMode = Mode.Building;
-        invalidateAssignments(mGroup.getId());
         loadMembers(mGroup.getId());
         // TODO Hide Notify button
+    }
+
+    private Mode evaluateMode() {
+       return mDb.queryHasAssignmentsForGroup(mGroup.getId()) ? Mode.Notify : Mode.Building;
     }
 }

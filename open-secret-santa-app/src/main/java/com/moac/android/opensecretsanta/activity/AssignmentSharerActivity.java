@@ -78,7 +78,7 @@ public class AssignmentSharerActivity extends Activity {
 //
 //                Context mContext = AssignmentSharerActivity.this;
 //                LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
-//                View layout = inflater.inflate(R.layout.assignee_viewer_dialog,
+//                View layout = inflater.inflate(R.layout.assignment_fragment_dialog,
 //                  (ViewGroup) findViewById(R.id.layout_root));
 //
 //                ImageView image = (ImageView) layout.findViewById(R.id.image);
@@ -328,7 +328,7 @@ public class AssignmentSharerActivity extends Activity {
 //                        // Now write the DRE
 //                        saveDrawResult(assignments, mGroup);
 //
-//                        // Successful draw, so update the group flag.
+//                        // Ok draw, so update the group flag.
 //                        mGroup.setReady(true);
 //                        mDatabase.update(mGroup);
 //
@@ -629,7 +629,7 @@ public class AssignmentSharerActivity extends Activity {
 //                    LinearLayout dialogContents = new LinearLayout(AssignmentSharerActivity.this);
 //                    String inflator = Context.LAYOUT_INFLATER_SERVICE;
 //                    LayoutInflater vi = (LayoutInflater) AssignmentSharerActivity.this.getSystemService(inflator);
-//                    vi.inflate(R.layout.message_view, dialogContents, true);
+//                    vi.inflate(R.layout.notify_fragment_dialog, dialogContents, true);
 //                    builder.setView(dialogContents);
 //
 //                    // Add the callback to the field

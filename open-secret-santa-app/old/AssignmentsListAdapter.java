@@ -68,7 +68,7 @@ public class AssignmentsListAdapter extends ArrayAdapter<DrawResultEntry> {
 //            if(dre.getViewedDate() > dre.getSentDate()) {
 //                Date date = new Date(dre.getViewedDate());
 //                String dateString = sdf.format(date);
-//                tv2.setText("Viewed: " + dateString);
+//                tv2.setText("Revealed: " + dateString);
 //            } else {
 //                Date date = new Date(dre.getSentDate());
 //                String dateString = sdf.format(date);

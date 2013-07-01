@@ -7,6 +7,7 @@ public interface DrawManager {
     public void onEditMember(long _groupId, long _memberId);
     public void onRestrictMember(long _groupId, long _memberId);
     public void onRequestDraw(Group _group);
+    public void onNotifyDraw(Group _group, long[] _memberIds);
     public void onNotifyDraw(Group _group);
 
 }

@@ -1,6 +1,7 @@
 package com.moac.android.opensecretsanta.activity;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import com.moac.android.opensecretsanta.adapter.GroupListAdapter;
 import com.moac.android.opensecretsanta.adapter.GroupRowDetails;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.fragment.MemberListFragment;
+import com.moac.android.opensecretsanta.fragment.NotifyFragment;
 import com.moac.android.opensecretsanta.model.*;
 import com.moac.android.opensecretsanta.util.InvalidDrawEngineException;
 import com.moac.drawengine.DrawEngine;
@@ -136,19 +138,27 @@ public class NewDrawActivity extends Activity implements DrawManager {
             processDrawStatus(status, _group);
         } catch(InvalidDrawEngineException exp) {
             Log.e(TAG, "onRequestDraw() - Unable to load Draw Engine", exp);
-            Toast.makeText(this, R.string.no_engine_error_message, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.no_engine_error_msg, Toast.LENGTH_LONG).show();
         }
     }
 
     private void prepareDraw(Group _group) {
         int count = mDb.deleteAllAssignmentsForGroup(_group.getId());
         Log.v(TAG, "prepareDraw() - deleted Assignment count: " + count);
-        mMembersListFragment.onDrawCleared();
+        mMembersListFragment.onAssignmentsCleared();
+    }
+
+    @Override
+    public void onNotifyDraw(Group _group, long[] _memberIds) {
+        Toast.makeText(this, "Requesting Notify", Toast.LENGTH_SHORT).show();
+        DialogFragment dialog = new NotifyFragment(mDb, _group, _memberIds);
+        dialog.show(getFragmentManager(), "NotifyFragment");
     }
 
     @Override
     public void onNotifyDraw(Group _group) {
-        Toast.makeText(this, "Requesting Notify", Toast.LENGTH_SHORT).show();
+        List<Member> members = mDb.queryAllMembersForGroup(_group.getId());
+        // TODO Handle send all.
     }
 
     private void populateGroupRowDetailsList(ListView _groupRowDetailsList) {
@@ -251,11 +261,11 @@ public class NewDrawActivity extends Activity implements DrawManager {
     private void processDrawStatus(DrawStatus _status, Group _group) {
         if(!_status.isSuccess()) {
             // Report failure
-            Toast.makeText(this, R.string.draw_failed_message, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.draw_failed_msg, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Toast.makeText(this, R.string.draw_success_message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.draw_success_msg, Toast.LENGTH_SHORT).show();
 
         // Flag the draw time.
         _group.setDrawDate(System.currentTimeMillis());
@@ -268,7 +278,7 @@ public class NewDrawActivity extends Activity implements DrawManager {
             Member m1 = mDb.queryById(m1Id, Member.class);
             Member m2 = mDb.queryById(_status.getAssignments().get(m1Id), Member.class);
 
-            Log.v(TAG, "saveDrawResult() - saving dre: " + m1.getName() + " - " + m2.getName() + " with: "
+            Log.v(TAG, "saveDrawResult() - saving Assignment: " + m1.getName() + " - " + m2.getName() + " with: "
               + m1.getContactMode() + " " + m1.getContactAddress());
 
             // Create the individual Draw Result Entry
@@ -278,7 +288,7 @@ public class NewDrawActivity extends Activity implements DrawManager {
             mDb.create(assignment);
         }
         // TODO Is this reference going to be correct on group change??
-        mMembersListFragment.onDrawAvailable();
+        mMembersListFragment.onAssignmentsAvailable();
     }
 
     private class DrawStatus {

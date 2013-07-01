@@ -93,7 +93,6 @@ public class DatabaseManager {
         try {
             QueryBuilder<Member, Long> groupMembersQuery =
               mDbHelper.getDaoEx(Member.class).queryBuilder();
-
             groupMembersQuery.selectColumns(Member.Columns._ID).where().eq(Member.Columns.GROUP_ID_COLUMN, groupId);
 
             return mDbHelper.getDaoEx(Assignment.class).queryBuilder()
@@ -104,12 +103,26 @@ public class DatabaseManager {
         }
     }
 
+    public boolean queryHasAssignmentsForGroup(long groupId) {
+        try {
+            QueryBuilder<Member, Long> groupMembersQuery =
+              mDbHelper.getDaoEx(Member.class).queryBuilder();
+            groupMembersQuery.selectColumns(Member.Columns._ID).where().eq(Member.Columns.GROUP_ID_COLUMN, groupId);
+
+            return mDbHelper.getDaoEx(Assignment.class).queryBuilder()
+              .where().in(Assignment.Columns.GIVER_MEMBER_ID_COLUMN, groupMembersQuery)
+              .queryForFirst() != null;
+        } catch(java.sql.SQLException e) {
+            throw new SQLException(e.getMessage());
+        }
+    }
+
     public Assignment queryAssignmentForMember(long _memberId) {
         try {
             QueryBuilder<Assignment, Long> assignmentQuery =
               mDbHelper.getDaoEx(Assignment.class).queryBuilder();
 
-            assignmentQuery.selectColumns(Member.Columns._ID).where().eq(Assignment.Columns.GIVER_MEMBER_ID_COLUMN, _memberId);
+            assignmentQuery.where().eq(Assignment.Columns.GIVER_MEMBER_ID_COLUMN, _memberId);
             return assignmentQuery.queryForFirst();
 
         } catch(java.sql.SQLException e) {
