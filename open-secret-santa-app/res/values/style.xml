@@ -23,7 +23,6 @@
     </item>
     <item name="android:actionMenuTextColor">@android:color/holo_blue_light
     </item>
-    <item name="android:textColor">@color/white</item>
     <item name="android:actionModeCloseDrawable">
       @drawable/ic_navigation_accept
     </item>
