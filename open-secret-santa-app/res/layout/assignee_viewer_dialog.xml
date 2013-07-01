@@ -22,13 +22,13 @@
       android:id="@+id/assignmentMemberText"
       android:layout_width="wrap_content"
       android:textAppearance="?android:attr/textAppearanceSmall"
-      android:layout_height="wrap_content"/>
+      android:layout_height="wrap_content" />
 
     <TextView
       android:id="@+id/assignmentAssigneeText"
       android:layout_width="wrap_content"
       android:textAppearance="?android:attr/textAppearanceLarge"
       android:layout_height="30dp"
-      android:gravity="center"/>
+      android:gravity="center" />
   </LinearLayout>
 </LinearLayout>

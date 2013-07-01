@@ -13,16 +13,14 @@
     android:layout_width="wrap_content"
     android:layout_weight="0"
     android:layout_gravity="center_vertical"
-    android:paddingBottom="5dp">
-    </ImageView>
+    android:paddingBottom="5dp"></ImageView>
 
   <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/contactModeTextView"
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
     android:layout_weight="1.0"
-    android:layout_gravity="center_vertical">
-    </TextView>
+    android:layout_gravity="center_vertical"></TextView>
 
   <RadioButton
     android:layout_weight="0"
@@ -31,6 +29,5 @@
     android:id="@+id/radioButton1"
     android:focusable="false"
     android:layout_gravity="center_vertical"
-    android:clickable="false">
-    </RadioButton>
+    android:clickable="false"></RadioButton>
 </LinearLayout>

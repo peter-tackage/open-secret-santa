@@ -14,33 +14,23 @@
         res/values-vXX/styles.xml, while customizations related to
         backward-compatibility can go here.
     -->
-    <item name="android:actionBarItemBackground">
+    <!-- if we want to have a custom select color. currently the default is the holo blue
+      item name="android:actionBarItemBackground">
       @drawable/selectable_background_mymenu
-    </item>
+    </item-->
     <item name="android:popupMenuStyle">@style/PopupMenu.Mymenu</item>
     <item name="android:actionBarStyle">@style/ActionBar.Transparent.Mymenu
     </item>
-    <item name="android:actionModeBackground">
-      @drawable/cab_background_top_mymenu
-    </item>
-    <item name="android:actionModeSplitBackground">
-      @drawable/cab_background_bottom_mymenu
-    </item>
-    <item name="android:actionModeCloseButtonStyle">
-      @style/ActionButton.CloseMode.Mymenu
-    </item>
-    <item name="android:textColor">@android:color/holo_blue_light</item>
     <item name="android:actionMenuTextColor">@android:color/holo_blue_light
     </item>
+    <item name="android:textColor">@color/white</item>
     <item name="android:actionModeCloseDrawable">
       @drawable/ic_navigation_accept
     </item>
   </style>
 
-  <style name="MyTheme.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
-    <item name="android:textColor">@android:color/holo_blue_light</item>
-  </style>
 
+  <!-- Action bar background -->
   <style parent="@android:style/Widget.Holo.Light.ActionBar" name="ActionBar.Transparent.Mymenu">
     <item name="android:background">@android:color/white</item>
     <!-- if we want the action bar to have the blue shadow or not ... drawable/ab_transparent_mymenu</item-->
@@ -49,15 +39,16 @@
     </item>
   </style>
 
-  <!-- background for the overflow menu -->
-  <style parent="@android:style/Widget.Holo.Light.ListPopupWindow" name="PopupMenu.Mymenu">
-    <item name="android:popupBackground">@drawable/menu_dropdown_panel_mymenu
-    </item>
+  <!-- Action bar text color -->
+  <style name="MyTheme.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+    <item name="android:textColor">@android:color/holo_blue_light</item>
   </style>
 
-  <!-- background on the CAB after long press on member -->
-  <style parent="@android:style/Widget.Holo.Light.ActionButton.CloseMode" name="ActionButton.CloseMode.Mymenu">
-    <item name="android:background">@drawable/selectable_background_mymenu</item>
+  <!-- background for the overflow menu -->
+  <style parent="@android:style/Widget.Holo.Light.ListPopupWindow" name="PopupMenu.Mymenu">
+    <item name="android:popupBackground">@color/holo_lighter_blue
+    </item>
+    <item name="android:alpha">0.90</item>
   </style>
 
   <!-- Application theme. -->

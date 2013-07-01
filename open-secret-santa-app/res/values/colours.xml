@@ -3,17 +3,26 @@
 <resources>
   <color name="white">#ffffffff</color>
   <color name="black">#ff000000</color>
+
+  <color name="beige">#eeeecc</color>
   <color name="orange">#ffffcc00</color>
 
   <color name="green">#ffccff66</color>
   <color name="light_green">#ff99c033</color>
 
-  <color name="grey">#ffaaaaaa</color>
-  <color name="brown">#802A2A</color>
 
   <color name="dark_grey">#ff555555</color>
-  <color name="light_grey">#d3d3d3</color>
+  <color name="shade_of_grey1">#ffaaaaaa</color>
+  <color name="shade_of_grey2">#d3d3d3</color>
+  <color name="shade_of_grey3">#dddddd</color>
+  <!-- gmail row tag -->
+  <color name="shade_of_grey4">#eeeeee</color>
+  <!-- gmail row -->
+
+  <color name="brown">#802A2A</color>
+
   <color name="blue">#ff003366</color>
-  <color name="beige">#eeeecc</color>
+  <color name="holo_lighter_blue">#a8dff4</color>
+  <color name="lighter_blue">#cfe9f3</color>
 
 </resources>

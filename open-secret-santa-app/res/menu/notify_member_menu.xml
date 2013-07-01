@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-  <group android:id="@+id/menu_group_notify">
-    <item
-      android:id="@+id/menu_notify_single"
-      android:icon="@drawable/ic_menu_notify"
-      android:title="@string/menu_notify"
-      android:showAsAction="always" />
-  </group>
   <group android:id="@+id/menu_group_notify_single_selection">
     <item
       android:id="@+id/menu_reveal"
       android:icon="@drawable/ic_menu_reveal"
       android:title="@string/menu_reveal"
+      android:showAsAction="always" />
+  </group>
+  <group android:id="@+id/menu_group_notify">
+    <item
+      android:id="@+id/menu_notify_single"
+      android:icon="@drawable/ic_menu_notify"
+      android:title="@string/menu_notify"
       android:showAsAction="always" />
   </group>
 </menu>
