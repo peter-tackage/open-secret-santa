@@ -1,42 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:padding="10dp"
-  android:id="@+id/linearLayout1"
   android:orientation="vertical"
   android:layout_height="wrap_content"
   android:layout_width="match_parent"
   android:background="@android:color/transparent">
 
   <EditText
-    android:hint="@string/messageTextHintText"
-    android:singleLine="false"
-    android:lines="10"
-    android:gravity="top"
     android:id="@+id/messageTxtEditText"
     android:layout_height="wrap_content"
-    android:textAppearance="?android:attr/textAppearanceSmall"
     android:layout_width="match_parent"
     android:scrollbars="vertical"
+    android:hint="@string/notify_message_text_hint"
+    android:gravity="top"
+    android:singleLine="false"
+    android:lines="10"
+    android:textAppearance="?android:attr/textAppearanceSmall"
     android:inputType="textMultiLine|textLongMessage|textCapSentences"
     android:maxLength="500"/>
 
   <LinearLayout
-    android:id="@+id/linearLayout2"
     android:layout_height="wrap_content"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    android:orientation="horizontal">
 
     <TextView
       android:textAppearance="?android:attr/textAppearanceSmall"
       android:layout_height="wrap_content"
-      android:id="@+id/textView1"
       android:text="@string/message_count_label"
       android:layout_width="wrap_content"/>
 
     <TextView
+      android:id="@+id/msg_char_count"
       android:layout_width="wrap_content"
       android:textAppearance="?android:attr/textAppearanceSmall"
       android:gravity="right"
-      android:layout_height="wrap_content"
-      android:id="@+id/msg_char_count"/>
+      android:layout_height="wrap_content"/>
+
   </LinearLayout>
 </LinearLayout>

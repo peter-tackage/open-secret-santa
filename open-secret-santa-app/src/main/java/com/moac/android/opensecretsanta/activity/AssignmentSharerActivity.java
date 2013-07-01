@@ -629,7 +629,7 @@ public class AssignmentSharerActivity extends Activity {
 //                    LinearLayout dialogContents = new LinearLayout(AssignmentSharerActivity.this);
 //                    String inflator = Context.LAYOUT_INFLATER_SERVICE;
 //                    LayoutInflater vi = (LayoutInflater) AssignmentSharerActivity.this.getSystemService(inflator);
-//                    vi.inflate(R.layout.message_view, dialogContents, true);
+//                    vi.inflate(R.layout.notify_fragment_dialog, dialogContents, true);
 //                    builder.setView(dialogContents);
 //
 //                    // Add the callback to the field

@@ -131,7 +131,7 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
             case Failed:
                 _view.setBackgroundResource(android.R.color.holo_red_light);
                 break;
-            case Drawn:
+            case Assigned:
             default:
                 _view.setBackgroundResource(android.R.color.holo_orange_light);
         }

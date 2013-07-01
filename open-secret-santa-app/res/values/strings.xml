@@ -20,13 +20,10 @@
   <string name="restrictionPopupTitle">Restrictions for</string>
 
   <!-- Message Dialog -->
-  <string name="messageTextHintText">"Enter a short optional message to be sent
-    to the members along with their assignment.\n\n"
-    "Note that your normal SMS and data charges still apply."
-  </string>
-  <string name="message_count_label">"Characters: "</string>
+  <string name="notify_message_text_hint">Enter a short optional message to be sent to the members along with their assignment.\n\nYour normal SMS and data charges still apply.</string>
+  <string name="message_count_label">Characters: </string>
 
-   <!-- Preferences - Algorithm -->
+  <!-- Preferences - Algorithm -->
   <string name="algorithm_preferences">Algorithm Preferences</string>
   <string name="algorithm_list_preference">Draw Engine</string>
   <string name="summary_list_preference">The algorithm that is used to calculate

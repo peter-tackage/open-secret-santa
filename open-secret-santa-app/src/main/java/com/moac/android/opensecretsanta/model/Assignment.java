@@ -7,7 +7,7 @@ import com.j256.ormlite.table.DatabaseTable;
 public class Assignment extends PersistableObject {
 
     public enum Status {
-        Drawn("Drawn"), Revealed("Revealed"), Sent("Sent"), Failed("Failed");
+        Assigned("Assigned"), Revealed("Revealed"), Sent("Sent"), Failed("Failed");
 
         private String mText;
         Status(String _text) {  mText = _text; }
@@ -39,7 +39,7 @@ public class Assignment extends PersistableObject {
     private long mSentDate = UNSET_DATE;
 
     @DatabaseField(columnName = Columns.SEND_STATUS_COLUMN)
-    private Status mSendStatus = Status.Drawn;
+    private Status mSendStatus = Status.Assigned;
 
     public long getGiverMemberId() { return mGiver.getId(); }
     public void setGiverMember(Member _giver) { mGiver = _giver; }

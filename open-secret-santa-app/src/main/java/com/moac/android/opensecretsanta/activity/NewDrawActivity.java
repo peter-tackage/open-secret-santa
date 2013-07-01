@@ -1,6 +1,7 @@
 package com.moac.android.opensecretsanta.activity;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import com.moac.android.opensecretsanta.adapter.GroupListAdapter;
 import com.moac.android.opensecretsanta.adapter.GroupRowDetails;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.fragment.MemberListFragment;
+import com.moac.android.opensecretsanta.fragment.NotifyFragment;
 import com.moac.android.opensecretsanta.model.*;
 import com.moac.android.opensecretsanta.util.InvalidDrawEngineException;
 import com.moac.drawengine.DrawEngine;
@@ -145,8 +147,10 @@ public class NewDrawActivity extends Activity implements DrawManager {
     }
 
     @Override
-    public void onNotifyDraw(Group _group) {
+    public void onNotifyDraw(long[] _memberIds) {
         Toast.makeText(this, "Requesting Notify", Toast.LENGTH_SHORT).show();
+        DialogFragment dialog = new NotifyFragment("test msg");
+        dialog.show(getFragmentManager(), "NotifyFragment");
     }
 
     private void populateGroupRowDetailsList(ListView _groupRowDetailsList) {

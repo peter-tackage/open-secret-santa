@@ -177,11 +177,16 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
                 doDraw(mGroup);
                 return true;
             case R.id.menu_notify:
-                doNotify(mGroup);
+                doNotifyAll(mGroup);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void doNotifyAll(Group group) {
+        // TODO Implement
+        //mDrawManager.onNotifyDraw();
     }
 
     @Override
@@ -200,11 +205,14 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
                 mode.finish();
                 loadMembers(mGroup.getId());
                 return true;
-            case R.id.menu_notify:
+            case R.id.menu_notify_selection:
+                doNotify(getListView().getCheckedItemIds());
                 mode.finish();
+                return true;
             case R.id.menu_reveal:
                 doReveal(getListView().getCheckedItemIds()[0]);
                 mode.finish();
+                return true;
             default:
                 return false;
         }
@@ -239,9 +247,9 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         mMode = Mode.Building;
     }
 
-    private void doNotify(Group _group) {
-        if(_group != null)
-            mDrawManager.onNotifyDraw(_group);
+    private void doNotify(long[] _memberIds) {
+        if(_memberIds != null)
+            mDrawManager.onNotifyDraw(_memberIds);
     }
 
     private void doDraw(Group _group) {
@@ -254,7 +262,6 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     private void doReveal(long _memberId) {
         // TODO Mark as seen.
-        // Create an instance of the dialog fragment and show it
         Member giver = mDb.queryById(_memberId, Member.class);
         Log.i(TAG, "doReveal(): memberId: " + _memberId);
         Log.i(TAG, "doReveal(): giver name: " + giver.getName());
@@ -268,6 +275,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
             Uri lookupUri = ContactsContract.Contacts.getLookupUri(receiver.getContactId(), receiver.getLookupKey());
             contactUri = ContactsContract.Contacts.lookupContact(getActivity().getContentResolver(), lookupUri);
         }
+        // Create an instance of the dialog fragment and show it
         DialogFragment dialog = new AssignmentFragment(giver.getName(), receiver.getName(), contactUri);
         dialog.show(getFragmentManager(), "AssignmentFragment");
 

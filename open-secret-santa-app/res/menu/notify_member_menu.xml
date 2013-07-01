@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
   <group android:id="@+id/menu_group_notify">
     <item
-      android:id="@+id/menu_notify_single"
+      android:id="@+id/menu_notify_selection"
       android:icon="@drawable/ic_menu_notify"
       android:title="@string/menu_notify"
       android:showAsAction="always" />
