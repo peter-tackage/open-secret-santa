@@ -270,6 +270,11 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         }
         DialogFragment dialog = new AssignmentFragment(giver.getName(), receiver.getName(), contactUri);
         dialog.show(getFragmentManager(), "AssignmentFragment");
+
+        // Set as Revealed
+        assignment.setSendStatus(Assignment.Status.Revealed);
+        mDb.update(assignment);
+        loadMembers(mGroup.getId());
     }
 
     // TODO Make calls do this asynchronously
