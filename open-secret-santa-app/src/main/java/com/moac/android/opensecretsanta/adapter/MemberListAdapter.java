@@ -124,13 +124,14 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
 
     private void setStatusColor(View _view, Assignment _assignment) {
         switch(_assignment.getSendStatus()) {
-            case Ok:
+            case Sent:
+            case Revealed:
                 _view.setBackgroundResource(android.R.color.holo_green_light);
                 break;
             case Failed:
                 _view.setBackgroundResource(android.R.color.holo_red_light);
                 break;
-            case Not_Sent:
+            case Drawn:
             default:
                 _view.setBackgroundResource(android.R.color.holo_orange_light);
         }

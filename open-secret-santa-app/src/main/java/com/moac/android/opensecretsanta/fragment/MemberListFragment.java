@@ -272,7 +272,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         dialog.show(getFragmentManager(), "AssignmentFragment");
     }
 
-    // TODO Make this load asynchronously and somewhere else
+    // TODO Make calls do this asynchronously
     private void loadMembers(long _groupId) {
         List<MemberRowDetails> rows = buildMemberRowDetails(_groupId);
         setListAdapter(new MemberListAdapter(getActivity(), R.layout.member_row, rows));
