@@ -24,9 +24,8 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
 
     private int mResource;
 
-    public MemberListAdapter(Context _context, int _resource,
-                             List<MemberRowDetails> _members) {
-        super(_context, _resource, _members);
+    public MemberListAdapter(Context _context, int _resource, List<MemberRowDetails> _items) {
+        super(_context, _resource, _items);
         mResource = _resource;
     }
 

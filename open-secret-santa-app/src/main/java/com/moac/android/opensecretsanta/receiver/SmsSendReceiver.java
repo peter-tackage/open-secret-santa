@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import com.moac.android.opensecretsanta.activity.Intents;
+import com.moac.android.opensecretsanta.content.AssignmentEvent;
+import com.moac.android.opensecretsanta.content.BusProvider;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.PersistableObject;
@@ -56,8 +58,11 @@ public class SmsSendReceiver extends BroadcastReceiver {
                     Log.i(TAG, "onReceive() - Failure sending SMS");
                     assignment.setSendStatus(Assignment.Status.Failed);
             }
-            // Update Assignment with Sent Statua
+            Log.d(TAG, "OnReceive() - updating Assignment and posting to bus: " +assignment);
+            // Update Assignment with Sent Status
             mDb.update(assignment);
+            // Post update to Bus.
+            BusProvider.getInstance().post(new AssignmentEvent(assignment));
         } finally {
             // Register ourselves.
             context.unregisterReceiver(this);
