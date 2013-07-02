@@ -4,6 +4,7 @@ import com.moac.android.opensecretsanta.model.Group;
 
 public interface DrawManager {
 
+    // Requests to perform actions.
     public void onEditMember(long _groupId, long _memberId);
     public void onRestrictMember(long _groupId, long _memberId);
     public void onRequestDraw(Group _group);

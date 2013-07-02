@@ -10,6 +10,12 @@ import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 
+/**
+ * A Receiver will get all events that match the IntentFilter, so we can't
+ * initialise it with an Assignment and assume that the onReceive callback is
+ * for that Assignment. receipt. Instead we use the Extra in the Intent
+ * to determine which Assignment is being processed.
+ */
 public class SmsSendReceiver extends BroadcastReceiver {
 
     private static final String TAG = SmsSendReceiver.class.getSimpleName();
@@ -53,6 +59,7 @@ public class SmsSendReceiver extends BroadcastReceiver {
             // Update Assignment with Sent Statua
             mDb.update(assignment);
         } finally {
+            // Register ourselves.
             context.unregisterReceiver(this);
         }
     }
