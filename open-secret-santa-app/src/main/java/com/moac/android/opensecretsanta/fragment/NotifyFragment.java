@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
@@ -20,6 +23,7 @@ import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.receiver.SmsSendReceiver;
 import com.moac.android.opensecretsanta.util.Notifier;
 import com.moac.android.opensecretsanta.util.SmsNotifier;
+import com.squareup.picasso.Picasso;
 
 public class NotifyFragment extends DialogFragment {
 
@@ -36,6 +40,11 @@ public class NotifyFragment extends DialogFragment {
         mDb = _db;
         mGroup = _group;
         mMemberIds = _memberIds;
+    }
+
+    public NotifyFragment(DatabaseManager _db, Group _group) {
+        mDb = _db;
+        mGroup = _group;
     }
 
     @Override
@@ -70,6 +79,23 @@ public class NotifyFragment extends DialogFragment {
                 charCountView.setText(String.valueOf(s.length()));
             }
         });
+
+        if (mMemberIds != null) {
+            LinearLayout container = (LinearLayout)view.findViewById(R.id.avatar_container_layout);
+            for(long id: mMemberIds) {
+                Member member = mDb.queryById(id, Member.class);
+                Uri uri = member.getContactUri(getActivity());
+                if(uri != null) {
+                    Log.v(TAG, "onCreateDialog() - adding avatar: " + member.getName());
+                    Log.v(TAG, "onCreateDialog() - uri: " + uri);
+                    ImageView avatar = new ImageView(getActivity());
+                    avatar.setLayoutParams(new LinearLayout.LayoutParams(80, 80));
+                    avatar.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    container.addView(avatar);
+                    Picasso.with(getActivity()).load(uri).into(avatar);
+                }
+            }
+        }
 
         builder.setCancelable(true);
         builder.setNegativeButton(android.R.string.cancel, null);

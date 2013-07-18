@@ -119,21 +119,19 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         // Initially don't perform check selection.
         getListView().setChoiceMode(ListView.CHOICE_MODE_NONE);
         getListView().setMultiChoiceModeListener(this);
-
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Remove this for now.
+                // TODO This should open member editor.
             }
         });
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                // Trigger CAB
+               getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 
-                // Allow selection mode
-                getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-
-                // Visual indicator of selection and launch CAB.
+                // Visual indicator of selection and trigger CAB.
                 ((ListView) parent).setItemChecked(position, true);
                 return true;
             }
@@ -142,16 +140,6 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         mRows = buildMemberRowDetails(mGroup.getId());
         mAdapter = new MemberListAdapter(getActivity(), R.layout.member_row, mRows);
         setListAdapter(mAdapter);
-    }
-
-    @Override
-    public void onDestroyView() {
-        Log.i(TAG, "onDestroyView()");
-        // TODO Is this necessary now we are using the CHOICE_MODE_MULTIPLE_MODAL trigger?
-        // Force the ending of the CAB
-        getListView().clearChoices();
-        getListView().setChoiceMode(ListView.CHOICE_MODE_NONE);
-        super.onDestroyView();
     }
 
     @Override

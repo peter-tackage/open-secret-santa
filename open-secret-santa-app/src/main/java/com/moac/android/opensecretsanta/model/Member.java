@@ -1,12 +1,15 @@
 package com.moac.android.opensecretsanta.model;
 
+import android.content.Context;
+import android.net.Uri;
+import android.provider.ContactsContract;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.moac.android.opensecretsanta.activity.ContactMode;
 
 @DatabaseTable(tableName = Member.TABLE_NAME)
-public final class Member extends PersistableObject implements Comparable<Member>  {
+public final class Member extends PersistableObject  {
 
     public static final String TABLE_NAME =  "members";
 
@@ -29,11 +32,11 @@ public final class Member extends PersistableObject implements Comparable<Member
     @DatabaseField(columnName = Columns.NAME_COLUMN, canBeNull = false, uniqueCombo = true)
     private String mName;
 
-    // the email, the  phone number, the whatever.
+    // The actual email, the phone number, the whatever.
     @DatabaseField(columnName = Columns.CONTACT_ADDRESS_COLUMN)
     private String mContactAddress;
 
-    // The model of communication to be used.
+    // The mode of communication to be used.
     @DatabaseField(columnName = Columns.CONTACT_MODE_COLUMN, canBeNull = false)
     private ContactMode mContactMode = ContactMode.REVEAL_ONLY;
 
@@ -99,11 +102,18 @@ public final class Member extends PersistableObject implements Comparable<Member
 //            &&
 //            this.mContactMode == that.mContactMode;
 //    }
+//
+//
+//    @Override
+//    public int compareTo(Member _that) {
+//        return String.CASE_INSENSITIVE_ORDER.compare(this.mName, _that.mName);
+//    }
 
-
-    @Override
-    public int compareTo(Member _that) {
-        return String.CASE_INSENSITIVE_ORDER.compare(this.mName, _that.mName);
+    public Uri getContactUri(Context _context) {
+        if(mContactId == PersistableObject.UNSET_ID && mLookupKey == null)
+            return null;
+        Uri lookupUri = ContactsContract.Contacts.getLookupUri(mContactId, mLookupKey);
+        return ContactsContract.Contacts.lookupContact(_context.getContentResolver(), lookupUri);
     }
 
 }

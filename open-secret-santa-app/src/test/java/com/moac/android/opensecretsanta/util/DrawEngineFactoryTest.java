@@ -35,6 +35,7 @@ public class DrawEngineFactoryTest {
         assertTrue(engine.getClass().equals(BasicDrawEngine.class));
     }
 
+    @Test
     public void testSetInvalidDrawEngine() {
         try {
             DrawEngineFactory.createDrawEngine("NOT A VALID CLASSNAME");
