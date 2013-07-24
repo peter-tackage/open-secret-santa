@@ -3,6 +3,7 @@ package com.moac.android.opensecretsanta.activity;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,5 +53,11 @@ public class RestrictionsActivity extends Activity {
             actionBar.setCustomView(customActionBarView);
         }
 
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
     }
 }

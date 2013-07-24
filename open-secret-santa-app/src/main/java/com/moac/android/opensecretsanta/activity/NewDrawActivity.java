@@ -1,11 +1,9 @@
 package com.moac.android.opensecretsanta.activity;
 
-import android.app.Activity;
-import android.app.DialogFragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.app.*;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -121,10 +119,18 @@ public class NewDrawActivity extends Activity implements DrawManager {
 
     @Override
     public void onRestrictMember(long _groupId, long _memberId) {
-        Intent intent = new Intent(this, RestrictionsActivity.class);
+        Intent intent = new Intent(NewDrawActivity.this, RestrictionsActivity.class);
         intent.putExtra(Intents.GROUP_ID_INTENT_EXTRA, _groupId);
         intent.putExtra(Intents.MEMBER_ID_INTENT_EXTRA, _memberId);
-        startActivity(intent);
+        // Activity options is since API 16.
+        // Got this idea from Android Dev Bytes video - https://www.youtube.com/watch?v=Ho8vk61lVIU
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
+        } else {
+            Bundle translateBundle = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_left, R.anim.slide_out_left).toBundle();
+            startActivity(intent, translateBundle);
+        }
     }
 
     @Override
