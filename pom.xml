@@ -11,8 +11,8 @@
   <name>open-secret-santa-app - Parent</name>
 
   <properties>
-    <!-- Min. supported Android version - version in android-maven-plugin matches -->
-    <platform.version>4.0.1.2</platform.version>
+    <!-- Target Android version - version in android-maven-plugin matches -->
+    <platform.version>4.2.2_r2</platform.version>
     <support-library.version>r13</support-library.version>
     <junit4.version>4.10</junit4.version>
   </properties>
@@ -21,14 +21,14 @@
     <dependencies>
       <!-- References official Maven Central Android artifacts, not maven-android-sdk-deployer -->
       <dependency>
-        <groupId>com.google.android</groupId>
+        <groupId>android</groupId>
         <artifactId>android</artifactId>
         <version>${platform.version}</version>
         <scope>provided</scope>
       </dependency>
 
       <dependency>
-        <groupId>com.google.android</groupId>
+        <groupId>android</groupId>
         <artifactId>android-test</artifactId>
         <version>${platform.version}</version>
         <scope>provided</scope>
@@ -59,7 +59,7 @@
           <version>3.6.0</version>
           <configuration>
             <sdk>
-              <platform>14</platform>
+              <platform>17</platform>
             </sdk>
             <zipalign>
               <skip>false</skip>
