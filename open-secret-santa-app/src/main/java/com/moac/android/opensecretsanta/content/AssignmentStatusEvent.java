@@ -2,18 +2,11 @@ package com.moac.android.opensecretsanta.content;
 
 import com.moac.android.opensecretsanta.model.Assignment;
 
-/**
- * Created with IntelliJ IDEA.
- * User: peter
- * Date: 7/2/13
- * Time: 12:57 PM
- * To change this template use File | Settings | File Templates.
- */
-public class AssignmentEvent {
+public class AssignmentStatusEvent {
 
     private final Assignment mAssignment;
 
-    public AssignmentEvent(Assignment _assignment) {
+    public AssignmentStatusEvent(Assignment _assignment) {
         mAssignment = _assignment;
     }
 

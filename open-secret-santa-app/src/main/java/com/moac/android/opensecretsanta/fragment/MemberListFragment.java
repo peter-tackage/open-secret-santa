@@ -16,7 +16,7 @@ import com.moac.android.opensecretsanta.activity.DrawManager;
 import com.moac.android.opensecretsanta.adapter.MemberListAdapter;
 import com.moac.android.opensecretsanta.adapter.MemberRowDetails;
 import com.moac.android.opensecretsanta.adapter.SuggestionsAdapter;
-import com.moac.android.opensecretsanta.content.AssignmentEvent;
+import com.moac.android.opensecretsanta.content.AssignmentStatusEvent;
 import com.moac.android.opensecretsanta.content.BusProvider;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
@@ -122,7 +122,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // TODO This should open member editor.
+                // Remove this for now.
             }
         });
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -186,13 +186,13 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         // Handle contextual action bar selection
+        // Some actions will end the current action mode on completion, others not.
         switch(item.getItemId()) {
             case R.id.menu_edit:
-                mode.finish();
+                // TODO Open edit fragment
                 return true;
             case R.id.menu_restrictions:
                 doRestrictions(getListView().getCheckedItemIds()[0]);
-                mode.finish();
                 return true;
             case R.id.menu_delete:
                 doDelete(getListView().getCheckedItemIds());
@@ -227,7 +227,8 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     @Subscribe
-    public void onAssignmentChanged(AssignmentEvent event) {
+    public void onAssignmentChanged(AssignmentStatusEvent event) {
+       // TODO Currently reloads all for any change - should be more fine grained
        Log.i(TAG, "onAssignmentChanged() - got event");
        loadMembers();
     }
@@ -238,7 +239,6 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
             mDb.delete(id, Member.class);
         }
         invalidateAssignments(mGroup.getId());
-        // Reload list
         loadMembers();
     }
 
