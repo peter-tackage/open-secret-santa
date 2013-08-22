@@ -12,8 +12,8 @@
 
   <properties>
     <!-- Target Android version - version in android-maven-plugin matches -->
-    <platform.version>4.2.2_r2</platform.version>
-    <support-library.version>r13</support-library.version>
+    <platform.version>4.3_r1</platform.version>
+    <support-library.version>r18</support-library.version>
     <junit4.version>4.10</junit4.version>
   </properties>
 
@@ -28,7 +28,7 @@
       </dependency>
 
       <dependency>
-        <groupId>android</groupId>
+        <groupId>com.google.android</groupId>
         <artifactId>android-test</artifactId>
         <version>${platform.version}</version>
         <scope>provided</scope>
@@ -59,7 +59,7 @@
           <version>3.6.0</version>
           <configuration>
             <sdk>
-              <platform>17</platform>
+              <platform>18</platform>
             </sdk>
             <zipalign>
               <skip>false</skip>
