@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
@@ -29,6 +30,8 @@ public class RestrictionsListFragment extends ListFragment {
     private DatabaseManager mDb;
     private Member mFromMember;
     private Group mGroup;
+    private ListAdapter mAdapter;
+    List<Restriction> mInitialRestrictionsForMember;
 
     /**
      * Factory method for this fragment class
@@ -46,11 +49,27 @@ public class RestrictionsListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+
         mDb = OpenSecretSantaApplication.getDatabase();
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
         long memberId = getArguments().getLong(Intents.MEMBER_ID_INTENT_EXTRA);
         mFromMember = mDb.queryById(memberId, Member.class);
+
+        // TODO Make this load asynchronously
+        long fromMemberId = mFromMember.getId();
+        List<Member> otherMembers = mDb.queryAllMembersForGroupExcept(mGroup.getId(), fromMemberId);
+        mInitialRestrictionsForMember = mDb.queryAllRestrictionsForMemberId(fromMemberId);
+        Set<Long> restrictionSet = buildRestrictionSet(mInitialRestrictionsForMember);
+        List<RestrictionRowDetails> rows = buildRowData(fromMemberId, otherMembers, restrictionSet);
+        mAdapter = new RestrictionListAdapter(getActivity(), rows, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RestrictionRowDetails details = (RestrictionRowDetails)v.getTag();
+                handleRestrictionToggle(details);
+            }
+        });
     }
 
     @Override
@@ -58,33 +77,17 @@ public class RestrictionsListFragment extends ListFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.restrictions_list_fragment, container, false);
-
         TextView titleTextView = (TextView) view.findViewById(R.id.content_title_textview);
         titleTextView.setText("Restrictions for " + mFromMember.getName());
+
+        setListAdapter(mAdapter);
+
         return view;
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        // TODO Make this load asynchronously
-        long fromMemberId = mFromMember.getId();
-        List<Member> otherMembers = mDb.queryAllMembersForGroupExcept(mGroup.getId(), fromMemberId);
-        List<Restriction> restrictionsForMember = mDb.queryAllRestrictionsForMemberId(fromMemberId);
-        Set<Long> restrictionSet = buildRestrictionSet(restrictionsForMember);
-        List<RestrictionRowDetails> rows = buildRowData(fromMemberId, otherMembers, restrictionSet);
-        setListAdapter(new RestrictionListAdapter(getActivity(), rows, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                RestrictionRowDetails details = (RestrictionRowDetails)v.getTag();
-                handleRestrictionToggle(details);
-            }
-        }));
-    }
-
     private void handleRestrictionToggle(RestrictionRowDetails _details) {
-     }
+
+    }
 
     private static List<RestrictionRowDetails> buildRowData(long _fromMemberId, List<Member> _otherMembers, Set<Long> _restrictions) {
         List<RestrictionRowDetails> rows = new ArrayList<RestrictionRowDetails>(_otherMembers.size());
@@ -112,6 +115,8 @@ public class RestrictionsListFragment extends ListFragment {
 
     public boolean doSaveAction() {
         Log.i(TAG, "doSaveAction() called");
+        // Compare to Initial. If different, save, return true.
         return true;
+        // if the same, return false.
     }
 }
