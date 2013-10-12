@@ -12,24 +12,18 @@
 
   <properties>
     <!-- Target Android version - version in android-maven-plugin matches -->
-    <platform.version>4.3_r1</platform.version>
+    <platform.version>4.3_r2</platform.version>
     <support-library.version>r18</support-library.version>
     <junit4.version>4.10</junit4.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
-      <!-- References official Maven Central Android artifacts, not maven-android-sdk-deployer -->
+
+      <!-- Reference maven android sdk deployer versions -->
       <dependency>
         <groupId>android</groupId>
         <artifactId>android</artifactId>
-        <version>${platform.version}</version>
-        <scope>provided</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>com.google.android</groupId>
-        <artifactId>android-test</artifactId>
         <version>${platform.version}</version>
         <scope>provided</scope>
       </dependency>
@@ -44,7 +38,7 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${junit4.version}</version>
-        <scope>provided</scope>
+        <scope>test</scope>
       </dependency>
 
     </dependencies>

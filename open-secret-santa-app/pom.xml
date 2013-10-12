@@ -28,6 +28,13 @@
   <dependencies>
 
     <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit4.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>android</groupId>
       <artifactId>android</artifactId>
     </dependency>
@@ -36,6 +43,7 @@
       <groupId>com.google.android</groupId>
       <artifactId>support-v13</artifactId>
     </dependency>
+
 
     <dependency>
       <groupId>com.moac.drawengine</groupId>
@@ -83,13 +91,6 @@
       <groupId>com.squareup</groupId>
       <artifactId>otto</artifactId>
       <version>${otto.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit4.version}</version>
-      <scope>test</scope>
     </dependency>
 
   </dependencies>
@@ -210,8 +211,10 @@
                   <storepass>${sign.storepass}</storepass>
                   <keypass>${sign.keypass}</keypass>
                   <arguments>
-                    <argument>-sigalg</argument><argument>MD5withRSA</argument>
-                    <argument>-digestalg</argument><argument>SHA1</argument>
+                    <argument>-sigalg</argument>
+                    <argument>MD5withRSA</argument>
+                    <argument>-digestalg</argument>
+                    <argument>SHA1</argument>
                   </arguments>
                   <verbose>true</verbose>
                 </configuration>
