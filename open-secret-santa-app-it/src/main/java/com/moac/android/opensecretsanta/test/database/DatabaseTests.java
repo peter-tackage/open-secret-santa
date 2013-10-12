@@ -34,6 +34,41 @@ public class DatabaseTests extends AndroidTestCase {
      * Bespoke Query Tests
      */
 
+    public void testDeleteRestrictionBetweenMembers() {
+        // Add a Group
+        Group group1 = new GroupBuilder().build();
+        mDatabaseManager.create(group1);
+
+        // Add some Members
+        Member m1 = new MemberBuilder().build();
+        Member m2 = new MemberBuilder().withName("m2").build();
+        Member m3 = new MemberBuilder().withName("m3").build();
+        m1.setGroup(group1);
+        m2.setGroup(group1);
+        m3.setGroup(group1);
+        mDatabaseManager.create(m1);
+        mDatabaseManager.create(m2);
+        mDatabaseManager.create(m3);
+
+        // Add Restrictions
+        Restriction m1m2 = new Restriction();
+        m1m2.setMember(m1);
+        m1m2.setOtherMember(m2);
+        long r1Id = mDatabaseManager.create(m1m2);
+        assertTrue(r1Id != PersistableObject.UNSET_ID);
+
+        Restriction m1m3 = new Restriction();
+        m1m3.setMember(m1);
+        m1m3.setOtherMember(m3);
+        long r2Id = mDatabaseManager.create(m1m3);
+        assertTrue(r2Id != PersistableObject.UNSET_ID);
+
+        long rowsDeleted = mDatabaseManager.deleteRestrictionBetweenMembers(m1.getId(), m2.getId());
+        assertEquals(1, rowsDeleted);
+        assertNull(mDatabaseManager.queryById(r1Id, Restriction.class));
+        assertNotNull(mDatabaseManager.queryById(r2Id, Restriction.class));
+    }
+
     public void testQueryAllRestrictionsForMemberId() {
         // Add a Group
         Group group1 = new GroupBuilder().build();
@@ -331,7 +366,7 @@ public class DatabaseTests extends AndroidTestCase {
         mDatabaseManager.create(a1_2);
         mDatabaseManager.create(a2_2);
 
-        int rowsDeleted = mDatabaseManager.deleteAllAssignmentsForGroup(group1.getId());
+        long rowsDeleted = mDatabaseManager.deleteAllAssignmentsForGroup(group1.getId());
         assertEquals(3, rowsDeleted);
 
         List<Assignment> fromGroup2 = mDatabaseManager.queryAllAssignmentsForGroup(group2.getId());

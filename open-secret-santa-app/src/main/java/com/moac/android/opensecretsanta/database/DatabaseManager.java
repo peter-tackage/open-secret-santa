@@ -124,7 +124,6 @@ public class DatabaseManager {
 
             assignmentQuery.where().eq(Assignment.Columns.GIVER_MEMBER_ID_COLUMN, _memberId);
             return assignmentQuery.queryForFirst();
-
         } catch(java.sql.SQLException e) {
             throw new SQLException(e.getMessage(), e);
         }
@@ -163,7 +162,7 @@ public class DatabaseManager {
         }
     }
 
-    public int deleteAllRestrictionsForMember(long memberId) {
+    public long deleteAllRestrictionsForMember(long memberId) {
         try {
             DeleteBuilder<Restriction, Long> deleteBuilder = mDbHelper.getDaoEx(Restriction.class).deleteBuilder();
             deleteBuilder.where().eq(Restriction.Columns.MEMBER_ID_COLUMN, memberId);
@@ -173,7 +172,21 @@ public class DatabaseManager {
         }
     }
 
-    public int deleteAllAssignmentsForGroup(long groupId) {
+    public long deleteRestrictionBetweenMembers(long fromMember, long otherMember) {
+        try {
+            DeleteBuilder<Restriction, Long> deleteBuilder =
+              mDbHelper.getDaoEx(Restriction.class).deleteBuilder();
+            deleteBuilder.where()
+              .eq(Restriction.Columns.MEMBER_ID_COLUMN, fromMember).
+              and().
+              eq(Restriction.Columns.OTHER_MEMBER_ID_COLUMN, otherMember);
+            return deleteBuilder.delete();
+        } catch(java.sql.SQLException e) {
+            throw new SQLException(e.getMessage(), e);
+        }
+    }
+
+    public long deleteAllAssignmentsForGroup(long groupId) {
         try {
             QueryBuilder<Member, Long> groupMembersQuery =
               mDbHelper.getDaoEx(Member.class).queryBuilder();
@@ -182,7 +195,7 @@ public class DatabaseManager {
             DeleteBuilder<Assignment, Long> deleteBuilder = mDbHelper.getDaoEx(Assignment.class).deleteBuilder();
             deleteBuilder.where().in(Assignment.Columns.GIVER_MEMBER_ID_COLUMN, groupMembersQuery);
             return deleteBuilder.delete();
-            } catch(java.sql.SQLException e) {
+        } catch(java.sql.SQLException e) {
             throw new SQLException(e.getMessage(), e);
         }
     }

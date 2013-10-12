@@ -149,7 +149,7 @@ public class NewDrawActivity extends Activity implements DrawManager {
     }
 
     private void prepareDraw(Group _group) {
-        int count = mDb.deleteAllAssignmentsForGroup(_group.getId());
+        long count = mDb.deleteAllAssignmentsForGroup(_group.getId());
         Log.v(TAG, "prepareDraw() - deleted Assignment count: " + count);
         mMembersListFragment.onAssignmentsCleared();
     }

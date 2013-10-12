@@ -129,14 +129,19 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 // Trigger CAB
-               getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+                getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 
                 // Visual indicator of selection and trigger CAB.
                 ((ListView) parent).setItemChecked(position, true);
                 return true;
             }
         });
-        // Set initial adapter state.
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Populate member list
         mRows = buildMemberRowDetails(mGroup.getId());
         mAdapter = new MemberListAdapter(getActivity(), R.layout.member_row, mRows);
         setListAdapter(mAdapter);
@@ -150,7 +155,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     @Override
-    public void onCreateOptionsMenu (Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.draw_menu, menu);
     }
 
@@ -171,7 +176,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle *non-contextual* action bar selection
-        switch (item.getItemId()) {
+        switch(item.getItemId()) {
             case R.id.menu_draw:
                 doDraw();
                 return true;
@@ -193,6 +198,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
                 return true;
             case R.id.menu_restrictions:
                 doRestrictions(getListView().getCheckedItemIds()[0]);
+                mode.finish();
                 return true;
             case R.id.menu_delete:
                 doDelete(getListView().getCheckedItemIds());
@@ -228,9 +234,9 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     @Subscribe
     public void onAssignmentChanged(AssignmentStatusEvent event) {
-       // TODO Currently reloads all for any change - should be more fine grained
-       Log.i(TAG, "onAssignmentChanged() - got event");
-       loadMembers();
+        // TODO Currently reloads all for any change - should be more fine grained
+        Log.i(TAG, "onAssignmentChanged() - got event");
+        loadMembers();
     }
 
     // TODO Do in background & add confirm dialog
@@ -331,7 +337,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
                 invalidateAssignments(_group.getId());
                 loadMembers();
             } else {
-               msg = String.format(getString(R.string.failed_add_member_msg), _member.getName());
+                msg = String.format(getString(R.string.failed_add_member_msg), _member.getName());
             }
         }
         Toast toast = Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT);
@@ -354,6 +360,6 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     private Mode evaluateMode() {
-       return mDb.queryHasAssignmentsForGroup(mGroup.getId()) ? Mode.Notify : Mode.Building;
+        return mDb.queryHasAssignmentsForGroup(mGroup.getId()) ? Mode.Notify : Mode.Building;
     }
 }

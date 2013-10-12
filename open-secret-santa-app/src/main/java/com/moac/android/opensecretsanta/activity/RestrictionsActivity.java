@@ -33,7 +33,7 @@ public class RestrictionsActivity extends Activity {
 
         // Action bar should always exist for our API levels.
         ActionBar actionBar = getActionBar();
-        if (actionBar != null) {
+        if(actionBar != null) {
             // Inflate a custom action bar that contains the "Done" button for saving changes
             LayoutInflater inflater = (LayoutInflater) getSystemService
               (Context.LAYOUT_INFLATER_SERVICE);
@@ -42,8 +42,8 @@ public class RestrictionsActivity extends Activity {
             saveMenuItem.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mRestrictionsListFragment.doSaveAction())
-                        finish();
+                    mRestrictionsListFragment.doSaveAction();
+                    finish();
                 }
             });
             // Show the custom action bar but hide the home icon and title
@@ -52,7 +52,6 @@ public class RestrictionsActivity extends Activity {
                 ActionBar.DISPLAY_SHOW_TITLE);
             actionBar.setCustomView(customActionBarView);
         }
-
     }
 
     @Override
