@@ -26,4 +26,24 @@ public class Restriction extends PersistableObject {
 
     public long getOtherMemberId() { return mOtherMember.getId(); }
     public void setOtherMember(Member _otherMember) { mOtherMember = _otherMember; }
+
+    public static class Builder {
+        Restriction mRestriction;
+        public Builder() {
+            mRestriction = new Restriction();
+        }
+        public Builder withMemberId(long _id) {
+            Member member = new Member();
+            member.setId(_id);
+            mRestriction.setMember(member);
+            return this;
+        }
+        public Builder withOtherMemberId(long _id) {
+            Member member = new Member();
+            member.setId(_id);
+            mRestriction.setOtherMember(member);
+            return this;
+        }
+        public Restriction build() { return mRestriction; }
+    }
 }
