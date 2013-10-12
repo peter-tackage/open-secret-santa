@@ -122,7 +122,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             try {
                 result = getDao(objClass);
             } catch(java.sql.SQLException e) {
-                throw new SQLException(e.getMessage());
+                throw new SQLException(e.getMessage(), e);
             }
             daos.put(objClass, result);
         }
@@ -140,7 +140,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         try {
             TableUtils.createTable(cs, objClass);
         } catch(java.sql.SQLException e) {
-            throw new SQLException(e.getMessage());
+            throw new SQLException(e.getMessage(), e);
         }
     }
 
@@ -149,7 +149,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         try {
             entity = getDaoEx(objClass).queryForAll();
         } catch(java.sql.SQLException e) {
-            throw new SQLException(e.getMessage());
+            throw new SQLException(e.getMessage(), e);
         }
         return entity;
     }
@@ -159,7 +159,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         try {
             entity = getDaoEx(objClass).queryForId(id);
         } catch(java.sql.SQLException e) {
-            throw new SQLException(e.getMessage());
+            throw new SQLException(e.getMessage(), e);
         }
         return entity;
     }
@@ -171,7 +171,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
                 id = entity.getId();
             }
         } catch(java.sql.SQLException e) {
-            throw new SQLException(e.getMessage());
+            throw new SQLException(e.getMessage(), e);
         }
         return id;
     }
@@ -181,7 +181,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             int count = getDaoEx(objClass).update(objClass.cast(entity));
             assert (count == 1);
         } catch(java.sql.SQLException e) {
-            throw new SQLException(e.getMessage());
+            throw new SQLException(e.getMessage(), e);
         }
     }
 
@@ -190,7 +190,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             int count = getDaoEx(objClass).deleteById(id);
             assert (count == 1);
         } catch(java.sql.SQLException e) {
-            throw new SQLException(e.getMessage());
+            throw new SQLException(e.getMessage(), e);
         }
     }
 

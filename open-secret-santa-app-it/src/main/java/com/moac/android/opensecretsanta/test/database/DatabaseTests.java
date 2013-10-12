@@ -594,6 +594,5 @@ public class DatabaseTests extends AndroidTestCase {
 
         assertEquals(m2.getId(), a2Query.getGiverMemberId());
         assertEquals(m1.getId(), a2Query.getReceiverMemberId());
-
     }
 }

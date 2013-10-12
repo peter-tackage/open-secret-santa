@@ -27,6 +27,7 @@
 
   <dependencies>
 
+    <!-- Required before Android to use Junit4 not Junit3 for unit tests -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

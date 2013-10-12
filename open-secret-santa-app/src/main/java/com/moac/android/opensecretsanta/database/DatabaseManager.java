@@ -73,7 +73,7 @@ public class DatabaseManager {
               .where().eq(Restriction.Columns.MEMBER_ID_COLUMN, memberId)
               .query();
         } catch(java.sql.SQLException e) {
-            throw new SQLException(e.getMessage());
+            throw new SQLException(e.getMessage(), e);
         }
     }
 
@@ -85,7 +85,7 @@ public class DatabaseManager {
               .queryForFirst();
             return restriction != null;
         } catch(java.sql.SQLException e) {
-            throw new SQLException(e.getMessage());
+            throw new SQLException(e.getMessage(), e);
         }
     }
 
@@ -99,7 +99,7 @@ public class DatabaseManager {
               .where().in(Assignment.Columns.GIVER_MEMBER_ID_COLUMN, groupMembersQuery)
               .query();
         } catch(java.sql.SQLException e) {
-            throw new SQLException(e.getMessage());
+            throw new SQLException(e.getMessage(), e);
         }
     }
 
@@ -113,7 +113,7 @@ public class DatabaseManager {
               .where().in(Assignment.Columns.GIVER_MEMBER_ID_COLUMN, groupMembersQuery)
               .queryForFirst() != null;
         } catch(java.sql.SQLException e) {
-            throw new SQLException(e.getMessage());
+            throw new SQLException(e.getMessage(), e);
         }
     }
 
@@ -126,7 +126,7 @@ public class DatabaseManager {
             return assignmentQuery.queryForFirst();
 
         } catch(java.sql.SQLException e) {
-            throw new SQLException(e.getMessage());
+            throw new SQLException(e.getMessage(), e);
         }
     }
 
@@ -136,7 +136,7 @@ public class DatabaseManager {
               .where().eq(Member.Columns.GROUP_ID_COLUMN, groupId)
               .query();
         } catch(java.sql.SQLException e) {
-            throw new SQLException(e.getMessage());
+            throw new SQLException(e.getMessage(), e);
         }
     }
 
@@ -147,7 +147,7 @@ public class DatabaseManager {
               .and().ne(Member.Columns._ID, exceptMemberId)
               .query();
         } catch(java.sql.SQLException e) {
-            throw new SQLException(e.getMessage());
+            throw new SQLException(e.getMessage(), e);
         }
     }
 
@@ -159,7 +159,7 @@ public class DatabaseManager {
               .eq(Member.Columns.NAME_COLUMN, name)
               .queryForFirst();
         } catch(java.sql.SQLException e) {
-            throw new SQLException(e.getMessage());
+            throw new SQLException(e.getMessage(), e);
         }
     }
 
@@ -169,7 +169,7 @@ public class DatabaseManager {
             deleteBuilder.where().eq(Restriction.Columns.MEMBER_ID_COLUMN, memberId);
             return deleteBuilder.delete();
         } catch(java.sql.SQLException e) {
-            throw new SQLException(e.getMessage());
+            throw new SQLException(e.getMessage(), e);
         }
     }
 
@@ -183,7 +183,7 @@ public class DatabaseManager {
             deleteBuilder.where().in(Assignment.Columns.GIVER_MEMBER_ID_COLUMN, groupMembersQuery);
             return deleteBuilder.delete();
             } catch(java.sql.SQLException e) {
-            throw new SQLException(e.getMessage());
+            throw new SQLException(e.getMessage(), e);
         }
     }
 }
