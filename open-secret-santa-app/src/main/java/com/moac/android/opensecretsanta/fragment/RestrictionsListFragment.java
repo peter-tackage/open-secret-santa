@@ -34,6 +34,10 @@ public class RestrictionsListFragment extends ListFragment {
 
     /**
      * Factory method for this fragment class
+     *
+     * We do this because according to the Fragment docs -
+     *
+     * "It is strongly recommended that subclasses do not have other constructors with parameters"
      */
     public static RestrictionsListFragment create(long _groupId, long _fromMemberId) {
         Log.i(TAG, "RestrictionsListFragment() - factory creating for groupId: " + _groupId + " fromMemberId: " + _fromMemberId);

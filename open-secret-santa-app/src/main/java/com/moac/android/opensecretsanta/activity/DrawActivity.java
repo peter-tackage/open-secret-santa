@@ -28,11 +28,12 @@ import com.moac.drawengine.DrawFailureException;
 
 import java.util.*;
 
-public class NewDrawActivity extends Activity implements DrawSequencer {
+public class DrawActivity extends Activity implements DrawSequencer {
 
-    private static final String TAG = NewDrawActivity.class.getSimpleName();
+    private static final String TAG = DrawActivity.class.getSimpleName();
 
-    private static final String MEMBERS_LIST_TAG = "member_list";
+    private static final String MEMBERS_LIST_FRAGMENT_TAG = "MemberListFragment";
+    private static final String NOTIFY_FRAGMENT_TAG = "NotifyFragment";
     private static final String MOST_RECENT_GROUP_KEY = "most_recent_group_id";
 
     protected DrawerLayout mDrawerLayout;
@@ -119,7 +120,7 @@ public class NewDrawActivity extends Activity implements DrawSequencer {
 
     @Override
     public void onRestrictMember(long _groupId, long _memberId) {
-        Intent intent = new Intent(NewDrawActivity.this, RestrictionsActivity.class);
+        Intent intent = new Intent(DrawActivity.this, RestrictionsActivity.class);
         intent.putExtra(Intents.GROUP_ID_INTENT_EXTRA, _groupId);
         intent.putExtra(Intents.MEMBER_ID_INTENT_EXTRA, _memberId);
         // Activity options is since API 16.
@@ -135,7 +136,7 @@ public class NewDrawActivity extends Activity implements DrawSequencer {
 
     @Override
     public void onRequestDraw(Group _group) {
-        Toast.makeText(this, "Requesting Draw", Toast.LENGTH_SHORT).show();
+        Log.i(TAG, "onRequestDraw() - Requesting Draw");
         try {
             prepareDraw(_group);
             DrawEngine engine = OpenSecretSantaApplication.getCurrentDrawEngineInstance(getApplicationContext());
@@ -156,13 +157,14 @@ public class NewDrawActivity extends Activity implements DrawSequencer {
 
     @Override
     public void onNotifyDraw(Group _group, long[] _memberIds) {
-        Toast.makeText(this, "Requesting Notify", Toast.LENGTH_SHORT).show();
-        DialogFragment dialog = new NotifyFragment(mDb, _group, _memberIds);
-        dialog.show(getFragmentManager(), "NotifyFragment");
+        Log.i(TAG, "onNotifyDraw() - Requesting Notify member set");
+        DialogFragment dialog = NotifyFragment.create(_group.getId(), _memberIds);
+        dialog.show(getFragmentManager(), NOTIFY_FRAGMENT_TAG);
     }
 
     @Override
     public void onNotifyDraw(Group _group) {
+        Log.i(TAG, "onNotifyDraw() - Requesting Notify entire Group");
         List<Member> members = mDb.queryAllMembersForGroup(_group.getId());
         // TODO Handle send all.
     }
@@ -204,7 +206,7 @@ public class NewDrawActivity extends Activity implements DrawSequencer {
         FragmentManager fragmentManager = getFragmentManager();
 
         // Can we find the fragment we're attempting to create?
-        MemberListFragment existing = (MemberListFragment)fragmentManager.findFragmentByTag(MEMBERS_LIST_TAG);
+        MemberListFragment existing = (MemberListFragment)fragmentManager.findFragmentByTag(MEMBERS_LIST_FRAGMENT_TAG);
         if (existing != null && existing.getGroupId() == _groupId)  {
             Log.i(TAG, "showGroup() - found matching required fragment");
             mMembersListFragment = existing;
@@ -221,7 +223,7 @@ public class NewDrawActivity extends Activity implements DrawSequencer {
 
         Log.i(TAG, "showGroup() - creating new fragment");
         MemberListFragment newFragment = MemberListFragment.create(_groupId);
-        transaction.add(R.id.content_frame, newFragment, MEMBERS_LIST_TAG)
+        transaction.add(R.id.content_frame, newFragment, MEMBERS_LIST_FRAGMENT_TAG)
           .commit();
         mMembersListFragment = newFragment;
 

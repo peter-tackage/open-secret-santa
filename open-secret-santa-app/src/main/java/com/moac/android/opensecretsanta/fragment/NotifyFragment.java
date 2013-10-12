@@ -15,7 +15,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
+import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Group;
@@ -32,23 +34,37 @@ public class NotifyFragment extends DialogFragment {
     private static final String TAG = NotifyFragment.class.getSimpleName();
 
     protected EditText mMsgField;
-    protected final DatabaseManager mDb;
+    protected DatabaseManager mDb;
     protected Group mGroup;
     protected long[] mMemberIds;
 
-    public NotifyFragment(DatabaseManager _db, Group _group, long[] _memberIds) {
-        mDb = _db;
-        mGroup = _group;
-        mMemberIds = _memberIds;
-    }
-
-    public NotifyFragment(DatabaseManager _db, Group _group) {
-        mDb = _db;
-        mGroup = _group;
+    /**
+     * Factory method for this fragment class
+     *
+     * We do this because according to the Fragment docs -
+     *
+     * "It is strongly recommended that subclasses do not have other constructors with parameters"
+     */
+    public static NotifyFragment create(long _groupId, long[] _memberIds) {
+        Log.i(TAG, "NotifyFragment() - factory creating for groupId: " + _groupId + " memberIds: " + _memberIds);
+        NotifyFragment fragment = new NotifyFragment();
+        Bundle args = new Bundle();
+        args.putLong(Intents.GROUP_ID_INTENT_EXTRA, _groupId);
+        args.putLongArray(Intents.MEMBER_ID_ARRAY_INTENT_EXTRA, _memberIds);
+        fragment.setArguments(args);
+        // Android Bug - setRetainInstance(true) actually causes dismissal on rotate!
+        // See - http://code.google.com/p/android/issues/detail?id=17423
+        // fragment.setRetainInstance(true);
+        return fragment;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        mDb = OpenSecretSantaApplication.getDatabase();
+        long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
+        long[] memberIds = getArguments().getLongArray(Intents.MEMBER_ID_ARRAY_INTENT_EXTRA);
+        mGroup = mDb.queryById(groupId, Group.class);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         // Inflate layout
@@ -80,9 +96,9 @@ public class NotifyFragment extends DialogFragment {
             }
         });
 
-        if (mMemberIds != null) {
-            LinearLayout container = (LinearLayout)view.findViewById(R.id.avatar_container_layout);
-            for(long id: mMemberIds) {
+        if(mMemberIds != null) {
+            LinearLayout container = (LinearLayout) view.findViewById(R.id.avatar_container_layout);
+            for(long id : mMemberIds) {
                 Member member = mDb.queryById(id, Member.class);
                 Uri uri = member.getContactUri(getActivity());
                 if(uri != null) {
