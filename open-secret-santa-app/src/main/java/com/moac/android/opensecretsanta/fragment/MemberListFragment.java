@@ -230,6 +230,8 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         mode.getMenu().setGroupVisible(R.id.menu_group_single_selection, (selectedCount == 1));
         mode.getMenu().setGroupVisible(R.id.menu_group_notify, mMode == Mode.Notify);
         mode.getMenu().setGroupVisible(R.id.menu_group_notify_single_selection, mMode == Mode.Notify && (selectedCount == 1));
+        MenuItem restrictionsMenu = mode.getMenu().findItem(R.id.menu_restrictions);
+        restrictionsMenu.setVisible(getListAdapter().getCount() > 1);
     }
 
     @Subscribe
