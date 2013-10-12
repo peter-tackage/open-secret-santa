@@ -28,7 +28,7 @@ import com.moac.drawengine.DrawFailureException;
 
 import java.util.*;
 
-public class NewDrawActivity extends Activity implements DrawManager {
+public class NewDrawActivity extends Activity implements DrawSequencer {
 
     private static final String TAG = NewDrawActivity.class.getSimpleName();
 

@@ -11,8 +11,8 @@ import android.view.*;
 import android.widget.*;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
+import com.moac.android.opensecretsanta.activity.DrawSequencer;
 import com.moac.android.opensecretsanta.activity.Intents;
-import com.moac.android.opensecretsanta.activity.DrawManager;
 import com.moac.android.opensecretsanta.adapter.MemberListAdapter;
 import com.moac.android.opensecretsanta.adapter.MemberRowDetails;
 import com.moac.android.opensecretsanta.adapter.SuggestionsAdapter;
@@ -41,7 +41,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     private Group mGroup;
     private DatabaseManager mDb;
-    private DrawManager mDrawManager;
+    private DrawSequencer mDrawSequencer;
     private AutoCompleteTextView mCompleteTextView;
 
     private Mode mMode = Mode.Building;
@@ -63,9 +63,9 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         Log.i(TAG, "onAttach()");
         super.onAttach(_activity);
         try {
-            mDrawManager = (DrawManager) _activity;
+            mDrawSequencer = (DrawSequencer) _activity;
         } catch(ClassCastException e) {
-            throw new ClassCastException(_activity.toString() + " must implement DrawManager");
+            throw new ClassCastException(_activity.toString() + " must implement DrawSequencer");
         }
     }
 
@@ -257,19 +257,19 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     private void doNotify(long[] _memberIds) {
         if(_memberIds != null)
-            mDrawManager.onNotifyDraw(mGroup, _memberIds);
+            mDrawSequencer.onNotifyDraw(mGroup, _memberIds);
     }
 
     private void doNotifyAll() {
-        mDrawManager.onNotifyDraw(mGroup);
+        mDrawSequencer.onNotifyDraw(mGroup);
     }
 
     private void doDraw() {
-        mDrawManager.onRequestDraw(mGroup);
+        mDrawSequencer.onRequestDraw(mGroup);
     }
 
     private void doRestrictions(long _memberId) {
-        mDrawManager.onRestrictMember(mGroup.getId(), _memberId);
+        mDrawSequencer.onRestrictMember(mGroup.getId(), _memberId);
     }
 
     private void doReveal(long _memberId) {
