@@ -36,6 +36,8 @@ public class NotifyFragment extends DialogFragment {
     protected DatabaseManager mDb;
     protected Group mGroup;
     protected long[] mMemberIds;
+
+    // Apparently this is how you retain EditText fields - http://code.google.com/p/android/issues/detail?id=18719
     private String cachedMsg;
 
     /**
@@ -64,7 +66,6 @@ public class NotifyFragment extends DialogFragment {
         long[] memberIds = getArguments().getLongArray(Intents.MEMBER_ID_ARRAY_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
 
-        Log.i(TAG, "onCreateDialog() - savedInstanceState"  + savedInstanceState);
         String message = cachedMsg == null ? mGroup.getMessage() :
           savedInstanceState.getString(MESSAGE_TAG);
 
@@ -140,7 +141,7 @@ public class NotifyFragment extends DialogFragment {
 
     @Override
     public void onDestroyView() {
-        // http://code.google.com/p/android/issues/detail?id=17423
+        // Refer to - http://code.google.com/p/android/issues/detail?id=17423
         if (getDialog() != null && getRetainInstance())
             getDialog().setDismissMessage(null);
         super.onDestroyView();
