@@ -3,7 +3,6 @@ package com.moac.android.opensecretsanta.fragment;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,18 +13,20 @@ import com.squareup.picasso.Picasso;
 
 public class AssignmentFragment extends DialogFragment {
 
-    // TODO Handle rotation.
-
     private static final String TAG = AssignmentFragment.class.getSimpleName();
 
-    private final String mGiverName;
-    private final String mReceiverName;
-    private final Uri mAvatarUri;
+    private static final String GIVER_NAME_EXTRA = "GiverName";
+    private static final String RECEIVER_NAME_EXTRA = "ReceiverName";
+    private static final String AVATAR_URL_EXTRA = "AvatarUrl";
 
-    public AssignmentFragment(String _giverName, String _receiverName, Uri _avatarUri) {
-        mGiverName = _giverName;
-        mReceiverName = _receiverName;
-        mAvatarUri = _avatarUri;
+    public static AssignmentFragment create(String _giverName, String _receiverName, String _avatarUri) {
+        AssignmentFragment fragment = new AssignmentFragment();
+        Bundle args = new Bundle();
+        args.putString(GIVER_NAME_EXTRA, _giverName);
+        args.putString(RECEIVER_NAME_EXTRA, _receiverName);
+        args.putString(AVATAR_URL_EXTRA, _avatarUri);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -38,15 +39,20 @@ public class AssignmentFragment extends DialogFragment {
         // Pass null as the parent view because its going in the dialog layout
         View view = inflater.inflate(R.layout.assignment_fragment_dialog, null);
 
+        // Extract arguments
+        String giverName = getArguments().getString(GIVER_NAME_EXTRA);
+        String receiverName = getArguments().getString(RECEIVER_NAME_EXTRA);
+        String avatarUrl = getArguments().getString(AVATAR_URL_EXTRA);
+
         // Set the values
         TextView giver = (TextView) view.findViewById(R.id.giver_name_textview);
-        giver.setText(mGiverName + " was assigned");
+        giver.setText(giverName + " was assigned");
         TextView receiver = (TextView) view.findViewById(R.id.receiver_name_textview);
-        receiver.setText(mReceiverName);
+        receiver.setText(receiverName);
 
         ImageView avatarView = (ImageView) view.findViewById(R.id.receiver_avatar_imageview);
-        if(mAvatarUri != null) {
-            Picasso.with(getActivity()).load(mAvatarUri).error(R.drawable.ic_contact_picture).into(avatarView);
+        if(avatarUrl != null) {
+            Picasso.with(getActivity()).load(avatarUrl).error(R.drawable.ic_contact_picture).into(avatarView);
         } else {
             Picasso.with(getActivity()).load(R.drawable.ic_contact_picture).into(avatarView);
         }

@@ -281,14 +281,15 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         Assignment assignment = mDb.queryAssignmentForMember(_memberId);
         long _receiverId = assignment.getReceiverMemberId();
         Member receiver = mDb.queryById(_receiverId, Member.class);
-        Uri contactUri = null;
+        String avatarUri = null;
         // TODO Check the validity of URIs with various values. Write Utils method.
         if(receiver.getContactId() != PersistableObject.UNSET_ID && receiver.getLookupKey() != null) {
             Uri lookupUri = ContactsContract.Contacts.getLookupUri(receiver.getContactId(), receiver.getLookupKey());
-            contactUri = ContactsContract.Contacts.lookupContact(getActivity().getContentResolver(), lookupUri);
+            Uri contactUri = ContactsContract.Contacts.lookupContact(getActivity().getContentResolver(), lookupUri);
+            avatarUri = contactUri.toString();
         }
         // Create an instance of the dialog fragment and show it
-        DialogFragment dialog = new AssignmentFragment(giver.getName(), receiver.getName(), contactUri);
+        DialogFragment dialog = AssignmentFragment.create(giver.getName(), receiver.getName(), avatarUri);
         dialog.show(getFragmentManager(), "AssignmentFragment");
 
         // Set as Revealed
