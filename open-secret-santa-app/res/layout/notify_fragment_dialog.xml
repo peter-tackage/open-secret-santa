@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/dialog_container_layout"
   android:padding="16dp"
   android:orientation="vertical"
   android:layout_height="wrap_content"
@@ -37,10 +38,10 @@
 
   <TextView
     android:id="@+id/msg_char_count"
-    android:layout_width="10dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textAppearance="?android:attr/textAppearanceSmall"
-    android:layout_below="@+id/messageTxtEditText"
-    android:layout_toRightOf="@+id/textView" />
+    android:layout_toRightOf="@+id/textView"
+    android:layout_below="@+id/messageTxtEditText" />
 
 </RelativeLayout>
