@@ -29,14 +29,14 @@ import com.squareup.picasso.Picasso;
 
 public class NotifyFragment extends DialogFragment {
 
-    // TODO Handle rotation.
-
     private static final String TAG = NotifyFragment.class.getSimpleName();
+    private static final String MESSAGE_TAG = "MESSAGE";
 
     protected EditText mMsgField;
     protected DatabaseManager mDb;
     protected Group mGroup;
     protected long[] mMemberIds;
+    private String cachedMsg;
 
     /**
      * Factory method for this fragment class
@@ -52,18 +52,21 @@ public class NotifyFragment extends DialogFragment {
         args.putLong(Intents.GROUP_ID_INTENT_EXTRA, _groupId);
         args.putLongArray(Intents.MEMBER_ID_ARRAY_INTENT_EXTRA, _memberIds);
         fragment.setArguments(args);
-        // Android Bug - setRetainInstance(true) actually causes dismissal on rotate!
-        // See - http://code.google.com/p/android/issues/detail?id=17423
-        // fragment.setRetainInstance(true);
         return fragment;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        Log.i(TAG, "onCreateDialog() - start: " + this);
         mDb = OpenSecretSantaApplication.getDatabase();
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         long[] memberIds = getArguments().getLongArray(Intents.MEMBER_ID_ARRAY_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
+
+        Log.i(TAG, "onCreateDialog() - savedInstanceState"  + savedInstanceState);
+        String message = cachedMsg == null ? mGroup.getMessage() :
+          savedInstanceState.getString(MESSAGE_TAG);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -76,7 +79,7 @@ public class NotifyFragment extends DialogFragment {
         builder.setIcon(R.drawable.ic_menu_notify);
 
         mMsgField = (EditText) view.findViewById(R.id.messageTxtEditText);
-        mMsgField.setText(mGroup.getMessage());
+        mMsgField.setText(message);
 
         final TextView charCountView = (TextView) view.findViewById(R.id.msg_char_count);
         charCountView.setText(String.valueOf(mMsgField.length()));
@@ -124,6 +127,23 @@ public class NotifyFragment extends DialogFragment {
 
         builder.setView(view);
         return builder.create();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.i(TAG, "onSaveInstanceState()");
+        super.onSaveInstanceState(outState);
+        outState.putString(MESSAGE_TAG, mMsgField.getText().toString());
+        Log.d(TAG,  "onSaveInstanceState() msg: " + outState.getString(MESSAGE_TAG));
+        cachedMsg = outState.getString(MESSAGE_TAG);
+    }
+
+    @Override
+    public void onDestroyView() {
+        // http://code.google.com/p/android/issues/detail?id=17423
+        if (getDialog() != null && getRetainInstance())
+            getDialog().setDismissMessage(null);
+        super.onDestroyView();
     }
 
     private void executeNotify() {
