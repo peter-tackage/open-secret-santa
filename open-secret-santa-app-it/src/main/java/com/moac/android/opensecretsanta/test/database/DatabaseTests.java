@@ -429,4 +429,38 @@ public class DatabaseTests extends AndroidTestCase {
         assertEquals(0, mDatabaseManager.queryAllRestrictionsForMemberId(m1.getId()).size());
     }
 
+    /**
+     * Test that names with inverted commas and quotes don't cause exceptions!
+     *
+     * android.database.SQLException: Problems executing Android query: SELECT * FROM `members` WHERE (`GROUP_ID` = 1 AND `NAME` = 'Father O'Leary' )
+     *
+     */
+    public void testQueryMemberNameWithApostrophesOk() {
+        Group group1 = new GroupBuilder().build();
+        mDatabaseManager.create(group1);
+
+        // Add a Member with an apostrophe in the name
+        Member m1 = new MemberBuilder().withName("Father O'Leary").build();
+        m1.setGroup(group1);
+        mDatabaseManager.create(m1);
+
+        // Previously the following query would throw an SQLException
+        Member m1Back = mDatabaseManager.queryMemberWithNameForGroup(group1.getId(), m1.getName());
+        assertEquals("Father O'Leary", m1Back.getName());
+    }
+
+    public void testQueryMemberNameWithQuotesOk() {
+        Group group1 = new GroupBuilder().build();
+        mDatabaseManager.create(group1);
+
+        // Add a Member with an inverted commas in the name
+        Member m1 = new MemberBuilder().withName("Father O\"Leary").build();
+        m1.setGroup(group1);
+        mDatabaseManager.create(m1);
+
+        // Previously the following query would throw an SQLException
+        Member m1Back = mDatabaseManager.queryMemberWithNameForGroup(group1.getId(), m1.getName());
+        assertEquals("Father O\"Leary", m1Back.getName());
+    }
+
 }
