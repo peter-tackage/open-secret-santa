@@ -1,3 +1,7 @@
+Version - 1.4.3
+---------------
+Version bump
+
 Version - 1.4.2
 ---------------
 Fix to allow querying of Member names that contain apostrophes.
