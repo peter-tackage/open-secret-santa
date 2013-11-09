@@ -59,4 +59,10 @@ public class RestrictionsActivity extends Activity {
         super.finish();
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
     }
+
+    @Override
+    public void onBackPressed() {
+        mRestrictionsListFragment.doSaveAction();
+        super.onBackPressed();
+    }
 }

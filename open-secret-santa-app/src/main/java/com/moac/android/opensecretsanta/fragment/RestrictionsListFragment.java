@@ -105,7 +105,7 @@ public class RestrictionsListFragment extends ListFragment {
             Action action = !_details.isRestricted() ? Action.Create : Action.Delete;
             mChanges.put(id, action);
         }
-        Log.i(TAG, "handleRestrictionToggle() - change list:" + mChanges);
+        Log.d(TAG, "handleRestrictionToggle() - change list:" + mChanges);
     }
 
     private static List<RestrictionRowDetails> buildRowData(long _fromMemberId, List<Member> _otherMembers, Set<Long> _restrictions) {
@@ -136,6 +136,7 @@ public class RestrictionsListFragment extends ListFragment {
         boolean isDirty = mChanges.size() > 0;
         Log.i(TAG, "doSaveAction() - isDirty: " + isDirty);
 
+        // TODO Make this a background task
         if(isDirty) {
             Log.i(TAG, "doSaveAction() - Restrictions have changed: deleting existing assignments");
             // Restrictions have changed - invalidate the draw.
