@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import com.moac.android.opensecretsanta.activity.ContactMode;
+import com.moac.android.opensecretsanta.model.ContactMode;
 import com.moac.android.opensecretsanta.model.Member;
 
 import java.io.IOException;

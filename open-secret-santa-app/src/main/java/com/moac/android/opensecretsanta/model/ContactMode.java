@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.activity;
+package com.moac.android.opensecretsanta.model;
 
 public enum ContactMode {
 

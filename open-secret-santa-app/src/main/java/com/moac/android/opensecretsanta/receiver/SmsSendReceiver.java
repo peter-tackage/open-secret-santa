@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import com.moac.android.opensecretsanta.activity.Intents;
-import com.moac.android.opensecretsanta.content.AssignmentStatusEvent;
+import com.moac.android.opensecretsanta.content.NotifyStatusEvent;
 import com.moac.android.opensecretsanta.content.BusProvider;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
@@ -62,7 +62,7 @@ public class SmsSendReceiver extends BroadcastReceiver {
             // Update Assignment with Sent Status
             mDb.update(assignment);
             // Post update of Assignment status to Bus.
-            BusProvider.getInstance().post(new AssignmentStatusEvent(assignment));
+            BusProvider.getInstance().post(new NotifyStatusEvent(assignment));
         } finally {
             // Register ourselves.
             context.unregisterReceiver(this);

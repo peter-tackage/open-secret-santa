@@ -2,11 +2,11 @@ package com.moac.android.opensecretsanta.content;
 
 import com.moac.android.opensecretsanta.model.Assignment;
 
-public class AssignmentStatusEvent {
+public class NotifyStatusEvent {
 
     private final Assignment mAssignment;
 
-    public AssignmentStatusEvent(Assignment _assignment) {
+    public NotifyStatusEvent(Assignment _assignment) {
         mAssignment = _assignment;
     }
 

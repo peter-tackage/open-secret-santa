@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.mail;
+package com.moac.android.opensecretsanta.notify.mail;
 
 import java.util.Properties;
 

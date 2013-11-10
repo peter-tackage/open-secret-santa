@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.moac.android.opensecretsanta.R;
-import com.moac.android.opensecretsanta.activity.ContactMode;
+import com.moac.android.opensecretsanta.model.ContactMode;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.util.ContactUtils;
 

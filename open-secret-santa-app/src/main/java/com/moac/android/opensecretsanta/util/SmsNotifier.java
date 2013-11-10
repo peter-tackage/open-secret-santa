@@ -1,6 +1,5 @@
 package com.moac.android.opensecretsanta.util;
 
-import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -56,7 +55,7 @@ public class SmsNotifier implements Notifier {
             // Build the multipart SMS before sending.
             ArrayList<PendingIntent> sentIntents = new ArrayList<PendingIntent>();
             for(String part : messages) {
-                sentIntents.add(sentPI);
+                sentIntents.add(sentPI); // one per part
             }
             smsManager.sendMultipartTextMessage(phoneNumber, null, messages, sentIntents, null);
         } else {

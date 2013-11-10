@@ -13,26 +13,29 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.adapter.GroupListAdapter;
 import com.moac.android.opensecretsanta.adapter.GroupRowDetails;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
+import com.moac.android.opensecretsanta.draw.DrawExecutor;
+import com.moac.android.opensecretsanta.draw.MemberEditor;
+import com.moac.android.opensecretsanta.fragment.DrawExecutorFragment;
 import com.moac.android.opensecretsanta.fragment.MemberListFragment;
 import com.moac.android.opensecretsanta.fragment.NotifyFragment;
-import com.moac.android.opensecretsanta.model.*;
-import com.moac.android.opensecretsanta.util.InvalidDrawEngineException;
-import com.moac.drawengine.DrawEngine;
-import com.moac.drawengine.DrawFailureException;
+import com.moac.android.opensecretsanta.model.Group;
+import com.moac.android.opensecretsanta.model.Member;
+import com.moac.android.opensecretsanta.model.PersistableObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class DrawActivity extends Activity implements DrawSequencer {
+public class MainActivity extends Activity implements MemberListFragment.FragmentContainer, MemberEditor {
 
-    private static final String TAG = DrawActivity.class.getSimpleName();
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final String MEMBERS_LIST_FRAGMENT_TAG = "MemberListFragment";
+    private static final String DRAW_EXECUTOR_FRAGMENT_TAG = "DrawExecutorFragment";
     private static final String NOTIFY_FRAGMENT_TAG = "NotifyFragment";
     private static final String MOST_RECENT_GROUP_KEY = "most_recent_group_id";
 
@@ -41,11 +44,21 @@ public class DrawActivity extends Activity implements DrawSequencer {
     protected ListView mDrawerList;
     protected DatabaseManager mDb; // shorthand.
     protected MemberListFragment mMembersListFragment;
+    protected DrawExecutorFragment mDrawExecutorFragment;
 
     @Override
     public void onCreate(Bundle _savedInstanceState) {
         super.onCreate(_savedInstanceState);
         mDb = OpenSecretSantaApplication.getDatabase();
+
+        // Find existing worker fragment
+        FragmentManager fm = getFragmentManager();
+        mDrawExecutorFragment = (DrawExecutorFragment) fm.findFragmentByTag(DRAW_EXECUTOR_FRAGMENT_TAG);
+
+        if (mDrawExecutorFragment == null) {
+            mDrawExecutorFragment = DrawExecutorFragment.create();
+            fm.beginTransaction().add(mDrawExecutorFragment, DRAW_EXECUTOR_FRAGMENT_TAG).commit();
+        }
         initialiseUI();
     }
 
@@ -57,11 +70,11 @@ public class DrawActivity extends Activity implements DrawSequencer {
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(
-          this,                  /* host Activity */
-          mDrawerLayout,         /* DrawerLayout object */
-          R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
-          R.string.drawer_open_accesshint,  /* "open drawer" description */
-          R.string.drawer_close_accesshint) /* "close drawer" description */  {
+                this,                  /* host Activity */
+                mDrawerLayout,         /* DrawerLayout object */
+                R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
+                R.string.drawer_open_accesshint,  /* "open drawer" description */
+                R.string.drawer_close_accesshint) /* "close drawer" description */ {
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
@@ -70,8 +83,8 @@ public class DrawActivity extends Activity implements DrawSequencer {
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
-             /** Called when a drawer has settled in a completely open state. */
-             public void onDrawerOpened(View drawerView) {
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
                 getActionBar().setTitle(getString(R.string.drawer_groups_title));
                 getActionBar().setIcon(R.drawable.people);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
@@ -106,7 +119,7 @@ public class DrawActivity extends Activity implements DrawSequencer {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Pass the event to ActionBarDrawerToggle, if it returns
         // true, then it has handled the app icon touch event
-        if(mDrawerToggle.onOptionsItemSelected(item)) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
         // TODO Handle other action bar items...
@@ -120,39 +133,18 @@ public class DrawActivity extends Activity implements DrawSequencer {
 
     @Override
     public void onRestrictMember(long _groupId, long _memberId) {
-        Intent intent = new Intent(DrawActivity.this, RestrictionsActivity.class);
+        Intent intent = new Intent(MainActivity.this, RestrictionsActivity.class);
         intent.putExtra(Intents.GROUP_ID_INTENT_EXTRA, _groupId);
         intent.putExtra(Intents.MEMBER_ID_INTENT_EXTRA, _memberId);
         // Activity options is since API 16.
         // Got this idea from Android Dev Bytes video - https://www.youtube.com/watch?v=Ho8vk61lVIU
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         } else {
             Bundle translateBundle = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_left, R.anim.slide_out_left).toBundle();
             startActivity(intent, translateBundle);
         }
-    }
-
-    @Override
-    public void onRequestDraw(Group _group) {
-        Log.i(TAG, "onRequestDraw() - Requesting Draw");
-        try {
-            prepareDraw(_group);
-            DrawEngine engine = OpenSecretSantaApplication.getCurrentDrawEngineInstance(getApplicationContext());
-            DrawStatus status = executeDraw(engine, _group);
-            Log.i(TAG, "onRequestDraw() - DrawStatus.isSuccess(): " + status.isSuccess());
-            processDrawStatus(status, _group);
-        } catch(InvalidDrawEngineException exp) {
-            Log.e(TAG, "onRequestDraw() - Unable to load Draw Engine", exp);
-            Toast.makeText(this, R.string.no_engine_error_msg, Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void prepareDraw(Group _group) {
-        long count = mDb.deleteAllAssignmentsForGroup(_group.getId());
-        Log.v(TAG, "prepareDraw() - deleted Assignment count: " + count);
-        mMembersListFragment.onAssignmentsCleared();
     }
 
     @Override
@@ -174,8 +166,8 @@ public class DrawActivity extends Activity implements DrawSequencer {
         List<Group> groups = OpenSecretSantaApplication.getDatabase().queryAll(Group.class);
 
         Log.v(TAG, "initialiseUI() - group count: " + groups.size());
-        List<GroupRowDetails> groupRowDetails =  new ArrayList<GroupRowDetails>();
-        for(Group g : groups) {
+        List<GroupRowDetails> groupRowDetails = new ArrayList<GroupRowDetails>();
+        for (Group g : groups) {
             List<Member> groupMembers = OpenSecretSantaApplication.getDatabase().queryAllMembersForGroup(g.getId());
             groupRowDetails.add(new GroupRowDetails(g.getId(), g.getName(), g.getCreatedAt(), groupMembers));
         }
@@ -185,9 +177,20 @@ public class DrawActivity extends Activity implements DrawSequencer {
     private void displayInitialGroup() {
         // Fetch the most recently used Group Id from preferences
         long groupId = PreferenceManager.getDefaultSharedPreferences(this).getLong(MOST_RECENT_GROUP_KEY, PersistableObject.UNSET_ID);
-        if(groupId == PersistableObject.UNSET_ID)
+        if (groupId == PersistableObject.UNSET_ID)
             return;
         showGroup(groupId);
+    }
+
+    @Override
+    public DrawExecutor getDrawExecutor() {
+        return mDrawExecutorFragment;
+    }
+
+    @Override
+    public MemberEditor getMemberEditor() {
+        // FIXME for now.
+        return this;
     }
 
     private class GroupListItemClickListener implements AdapterView.OnItemClickListener {
@@ -206,8 +209,8 @@ public class DrawActivity extends Activity implements DrawSequencer {
         FragmentManager fragmentManager = getFragmentManager();
 
         // Can we find the fragment we're attempting to create?
-        MemberListFragment existing = (MemberListFragment)fragmentManager.findFragmentByTag(MEMBERS_LIST_FRAGMENT_TAG);
-        if (existing != null && existing.getGroupId() == _groupId)  {
+        MemberListFragment existing = (MemberListFragment) fragmentManager.findFragmentByTag(MEMBERS_LIST_FRAGMENT_TAG);
+        if (existing != null && existing.getGroupId() == _groupId) {
             Log.i(TAG, "showGroup() - found matching required fragment");
             mMembersListFragment = existing;
             return;
@@ -216,7 +219,7 @@ public class DrawActivity extends Activity implements DrawSequencer {
         // Replace existing fragment
         // Can't call replace, seems to replace ALL fragments in the layout.
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        if(existing != null) {
+        if (existing != null) {
             Log.i(TAG, "showGroup() - removing existing fragment");
             transaction.remove(mMembersListFragment);
         }
@@ -224,96 +227,11 @@ public class DrawActivity extends Activity implements DrawSequencer {
         Log.i(TAG, "showGroup() - creating new fragment");
         MemberListFragment newFragment = MemberListFragment.create(_groupId);
         transaction.add(R.id.content_frame, newFragment, MEMBERS_LIST_FRAGMENT_TAG)
-          .commit();
+                .commit();
         mMembersListFragment = newFragment;
 
         // Update preferences to save last viewed Group
         PreferenceManager.getDefaultSharedPreferences(this).edit().putLong(MOST_RECENT_GROUP_KEY, _groupId).commit();
     }
 
-    private DrawStatus executeDraw(DrawEngine _engine, Group _group) {
-
-        DrawStatus drawStatus = new DrawStatus();
-
-        // Build these assignments.
-        Map<Long, Long> assignments;
-
-        List<Member> members = mDb.queryAllMembersForGroup(_group.getId());
-        Log.v(TAG, "executeDraw() - Group: " + _group.getId() + " has member count: " + members.size());
-        Map<Long, Set<Long>> participants = new HashMap<Long, Set<Long>>();
-
-        for(Member m : members) {
-            List<Restriction> restrictions = mDb.queryAllRestrictionsForMemberId(m.getId());
-            Set<Long> restrictionIds = new HashSet<Long>();
-            for(Restriction r : restrictions) {
-                restrictionIds.add(r.getOtherMemberId());
-            }
-            participants.put(m.getId(), restrictionIds);
-            Log.v(TAG, "executeDraw() - " + m.getName() + "(" + m.getId() + ") has restriction count: " + restrictionIds.size());
-        }
-
-        try {
-            assignments = _engine.generateDraw(participants);
-            Log.v(TAG, "executeDraw() - Assignments size: " + assignments.size());
-            drawStatus.setAssignments(assignments);
-        } catch(DrawFailureException e) {
-            // Not necessarily an error. But is draw failure regardless.
-            Log.w(TAG, "executeDraw() - Couldn't produce assignments", e);
-            drawStatus.setException(e);
-            drawStatus.setMsg("Couldn't produce assignments");
-        }
-
-        return drawStatus;
-    }
-
-    private void processDrawStatus(DrawStatus _status, Group _group) {
-        if(!_status.isSuccess()) {
-            // Report failure
-            Toast.makeText(this, R.string.draw_failed_msg, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Toast.makeText(this, R.string.draw_success_msg, Toast.LENGTH_SHORT).show();
-
-        // Flag the draw time.
-        _group.setDrawDate(System.currentTimeMillis());
-        mDb.update(_group);
-
-        // Now add the corresponding draw result entries.
-        for(Long m1Id : _status.getAssignments().keySet()) {
-
-            // We are notifying m1 that they have been assigned m2.
-            Member m1 = mDb.queryById(m1Id, Member.class);
-            Member m2 = mDb.queryById(_status.getAssignments().get(m1Id), Member.class);
-
-            Log.v(TAG, "saveDrawResult() - saving Assignment: " + m1.getName() + " - " + m2.getName() + " with: "
-              + m1.getContactMode() + " " + m1.getContactAddress());
-
-            // Create the individual Draw Result Entry
-            Assignment assignment = new Assignment();
-            assignment.setGiverMember(m1);
-            assignment.setReceiverMember(m2);
-            mDb.create(assignment);
-        }
-        // TODO Is this reference going to be correct on group change??
-        mMembersListFragment.onAssignmentsAvailable();
-    }
-
-    private class DrawStatus {
-
-        private Exception mException;
-        private String mMsg;
-        private Map<Long, Long> mAssignments;
-
-        private Exception getException() { return mException; }
-        private void setException(Exception exception) { mException = exception; }
-
-        private String getMsg() { return mMsg; }
-        private void setMsg(String msg) { mMsg = msg; }
-
-        private Map<Long, Long> getAssignments() { return mAssignments; }
-        private void setAssignments(Map<Long, Long> assignments) {  mAssignments = assignments;}
-
-        public boolean isSuccess() { return mAssignments != null && mException == null;}
-    }
 }

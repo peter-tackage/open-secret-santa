@@ -11,12 +11,14 @@ import android.view.*;
 import android.widget.*;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
-import com.moac.android.opensecretsanta.activity.DrawSequencer;
+import com.moac.android.opensecretsanta.draw.AssignmentsEvent;
+import com.moac.android.opensecretsanta.draw.DrawExecutor;
+import com.moac.android.opensecretsanta.draw.DrawResultEvent;
+import com.moac.android.opensecretsanta.draw.MemberEditor;
 import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.adapter.MemberListAdapter;
 import com.moac.android.opensecretsanta.adapter.MemberRowDetails;
 import com.moac.android.opensecretsanta.adapter.SuggestionsAdapter;
-import com.moac.android.opensecretsanta.content.AssignmentStatusEvent;
 import com.moac.android.opensecretsanta.content.BusProvider;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
@@ -41,7 +43,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     private Group mGroup;
     private DatabaseManager mDb;
-    private DrawSequencer mDrawSequencer;
+    private FragmentContainer mFragmentContainer;
     private AutoCompleteTextView mCompleteTextView;
 
     private Mode mMode = Mode.Building;
@@ -50,7 +52,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
      * Factory method for this fragment class
      */
     public static MemberListFragment create(long _groupId) {
-        Log.i(TAG, "MemberListFragment() - factory creating for id: " + _groupId);
+        Log.i(TAG, "MemberListFragment() - factory creating for groupId: " + _groupId);
         MemberListFragment fragment = new MemberListFragment();
         Bundle args = new Bundle();
         args.putLong(Intents.GROUP_ID_INTENT_EXTRA, _groupId);
@@ -63,24 +65,21 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         Log.i(TAG, "onAttach()");
         super.onAttach(_activity);
         try {
-            mDrawSequencer = (DrawSequencer) _activity;
+            mFragmentContainer = (FragmentContainer) _activity;
         } catch(ClassCastException e) {
-            throw new ClassCastException(_activity.toString() + " must implement DrawSequencer");
+            throw new ClassCastException(_activity.toString() + " must implement FragmentContainer");
         }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "onCreate() - registering with bus");
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         setHasOptionsMenu(true);
 
         mDb = OpenSecretSantaApplication.getDatabase();
-        BusProvider.getInstance().register(this);
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
-        mMode = evaluateMode();
     }
 
     @Override
@@ -139,8 +138,10 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onResume() {
+        super.onResume();
+        BusProvider.getInstance().register(this);
+        mMode = evaluateMode();
         // Populate member list
         mRows = buildMemberRowDetails(mGroup.getId());
         mAdapter = new MemberListAdapter(getActivity(), R.layout.member_row, mRows);
@@ -148,10 +149,10 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     @Override
-    public void onDestroy() {
-        Log.i(TAG, "onDestroy() - unregistering from bus");
+    public void onPause() {
+        super.onPause();
+        Log.i(TAG, "onPause() - unregistering from bus");
         BusProvider.getInstance().unregister(this);
-        super.onDestroy();
     }
 
     @Override
@@ -234,11 +235,27 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         restrictionsMenu.setVisible(getListAdapter().getCount() > 1);
     }
 
+    /*
+     * Bus methods
+     */
+
     @Subscribe
-    public void onAssignmentChanged(AssignmentStatusEvent event) {
-        // TODO Currently reloads all for any change - should be more fine grained
+    public void onAssignmentChanged(AssignmentsEvent event) {
         Log.i(TAG, "onAssignmentChanged() - got event");
-        loadMembers();
+        mMode = evaluateMode();
+        populateMemberList();
+    }
+
+    @Subscribe
+    public void onDrawResult(DrawResultEvent event) {
+        Log.i(TAG, "onDrawResult() - got event");
+        mMode = evaluateMode();
+        populateMemberList();
+        if(event.isSuccess()) {
+            Toast.makeText(getActivity(), "Draw Success!", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getActivity(), "Draw Failed :(", Toast.LENGTH_SHORT).show();
+        }
     }
 
     // TODO Do in background & add confirm dialog
@@ -246,30 +263,32 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         for(long id : _ids) {
             mDb.delete(id, Member.class);
         }
-        invalidateAssignments(mGroup.getId());
-        loadMembers();
+        invalidateAssignments(mGroup);
+        populateMemberList();
     }
 
-    private void invalidateAssignments(long _groupId) {
-        mDb.deleteAllAssignmentsForGroup(_groupId);
+    private void invalidateAssignments(Group group) {
+        group.setDrawDate(Group.UNSET_DATE);
+        mDb.update(group);
+        mDb.deleteAllAssignmentsForGroup(group.getId());
         mMode = Mode.Building;
     }
 
     private void doNotify(long[] _memberIds) {
         if(_memberIds != null)
-            mDrawSequencer.onNotifyDraw(mGroup, _memberIds);
+            getMemberEditor().onNotifyDraw(mGroup, _memberIds);
     }
 
     private void doNotifyAll() {
-        mDrawSequencer.onNotifyDraw(mGroup);
+        getMemberEditor().onNotifyDraw(mGroup);
     }
 
     private void doDraw() {
-        mDrawSequencer.onRequestDraw(mGroup);
+        getDrawExecutor().onRequestDraw(mGroup);
     }
 
     private void doRestrictions(long _memberId) {
-        mDrawSequencer.onRestrictMember(mGroup.getId(), _memberId);
+        getMemberEditor().onRestrictMember(mGroup.getId(), _memberId);
     }
 
     private void doReveal(long _memberId) {
@@ -297,11 +316,11 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         mDb.update(assignment);
 
         // Reload list
-        loadMembers();
+        populateMemberList();
     }
 
     // TODO Make calls do this asynchronously
-    private void loadMembers() {
+    private void populateMemberList() {
         mRows.clear();
         mRows.addAll(buildMemberRowDetails(mGroup.getId()));
         if(mAdapter != null) {
@@ -328,7 +347,8 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         final String msg;
         _member.setGroup(_group);
 
-        // Test to see if we already have this member in the gorup.
+        // Test to see if we already have this member in the group.
+        // TODO This should test for equality in a case insensitive way
         Member existing = mDb.queryMemberWithNameForGroup(_group.getId(), _member.getName());
 
         if(existing != null) {
@@ -337,8 +357,8 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
             long id = mDb.create(_member);
             if(id != PersistableObject.UNSET_ID) {
                 msg = String.format(getString(R.string.member_add_msg), _member.getName());
-                invalidateAssignments(_group.getId());
-                loadMembers();
+                invalidateAssignments(_group);
+                populateMemberList();
             } else {
                 msg = String.format(getString(R.string.failed_add_member_msg), _member.getName());
             }
@@ -351,18 +371,27 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     public void onAssignmentsAvailable() {
         // Move to Notify mode
         mMode = Mode.Notify;
-        loadMembers();
-        // TODO Show Notify button
-    }
-
-    public void onAssignmentsCleared() {
-        // Revert to building mode
-        mMode = Mode.Building;
-        loadMembers();
-        // TODO Hide Notify button
+        populateMemberList();
     }
 
     private Mode evaluateMode() {
         return mDb.queryHasAssignmentsForGroup(mGroup.getId()) ? Mode.Notify : Mode.Building;
+    }
+
+    /*
+     * Fragment Container methods
+     */
+
+    public DrawExecutor getDrawExecutor() {
+        return mFragmentContainer.getDrawExecutor();
+    }
+
+    public MemberEditor getMemberEditor() {
+        return mFragmentContainer.getMemberEditor();
+    }
+
+    public interface FragmentContainer {
+        DrawExecutor getDrawExecutor();
+        MemberEditor getMemberEditor();
     }
 }

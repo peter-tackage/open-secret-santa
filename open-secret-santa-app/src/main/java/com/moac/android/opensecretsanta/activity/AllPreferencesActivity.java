@@ -7,9 +7,8 @@ import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.util.Log;
 import com.moac.android.opensecretsanta.R;
-import com.moac.android.opensecretsanta.mail.GmailOAuth2Sender;
+import com.moac.android.opensecretsanta.notify.mail.GmailOAuth2Sender;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

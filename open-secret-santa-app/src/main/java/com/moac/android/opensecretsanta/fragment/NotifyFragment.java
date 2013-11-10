@@ -3,8 +3,10 @@ package com.moac.android.opensecretsanta.fragment;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -38,7 +40,7 @@ public class NotifyFragment extends DialogFragment {
     protected long[] mMemberIds;
 
     // Apparently this is how you retain EditText fields - http://code.google.com/p/android/issues/detail?id=18719
-    private String cachedMsg;
+    private String mSavedMsg;
 
     /**
      * Factory method for this fragment class
@@ -63,10 +65,10 @@ public class NotifyFragment extends DialogFragment {
         Log.i(TAG, "onCreateDialog() - start: " + this);
         mDb = OpenSecretSantaApplication.getDatabase();
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
-        long[] memberIds = getArguments().getLongArray(Intents.MEMBER_ID_ARRAY_INTENT_EXTRA);
+        mMemberIds = getArguments().getLongArray(Intents.MEMBER_ID_ARRAY_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
 
-        String message = cachedMsg == null ? mGroup.getMessage() :
+        String message = mSavedMsg == null ? mGroup.getMessage() :
           savedInstanceState.getString(MESSAGE_TAG);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -122,7 +124,11 @@ public class NotifyFragment extends DialogFragment {
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                executeNotify();
+                // Get the custom message.
+                mGroup.setMessage(mMsgField.getText().toString().trim());
+                mDb.update(mGroup);
+                NotifierTask task = new NotifierTask(getActivity(), mDb, mGroup, mMemberIds);
+                task.execute();
             }
         });
 
@@ -135,47 +141,74 @@ public class NotifyFragment extends DialogFragment {
         Log.i(TAG, "onSaveInstanceState()");
         super.onSaveInstanceState(outState);
         outState.putString(MESSAGE_TAG, mMsgField.getText().toString());
-        Log.d(TAG,  "onSaveInstanceState() msg: " + outState.getString(MESSAGE_TAG));
-        cachedMsg = outState.getString(MESSAGE_TAG);
+        Log.d(TAG, "onSaveInstanceState() msg: " + outState.getString(MESSAGE_TAG));
+        mSavedMsg = outState.getString(MESSAGE_TAG);
     }
 
     @Override
     public void onDestroyView() {
         // Refer to - http://code.google.com/p/android/issues/detail?id=17423
-        if (getDialog() != null && getRetainInstance())
+        if(getDialog() != null && getRetainInstance())
             getDialog().setDismissMessage(null);
         super.onDestroyView();
     }
 
-    private void executeNotify() {
-        // Get the custom message.
-        mGroup.setMessage(mMsgField.getText().toString().trim());
-        mDb.update(mGroup);
+    public static class NotifierTask extends AsyncTask<Void, Void, Boolean> {
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);    //To change body of overridden methods use File | Settings | File Templates.
+        }
 
-        // Iterate through the provided members - get their Assignment.
-        for(long memberId : mMemberIds) {
-            Member member = mDb.queryById(memberId, Member.class);
-            Assignment assignment = mDb.queryAssignmentForMember(memberId);
-            if(assignment == null) {
-                Log.e(TAG, "executeNotify() - No Assignment for Member: " + member.getName());
-                continue;
-            }
-            Member giftReceiver = mDb.queryById(assignment.getReceiverMemberId(), Member.class);
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();    //To change body of overridden methods use File | Settings | File Templates.
+        }
 
-            switch(member.getContactMode()) {
-                case SMS:
-                    Log.i(TAG, "executeNotify() - Building SMS Notifier for: " + member.getName());
-                    Notifier notifier = new SmsNotifier(getActivity(), new SmsSendReceiver(mDb), true);
-                    notifier.notify(member, giftReceiver.getName(), mGroup.getMessage());
-                    break;
-                case EMAIL:
-                    Log.i(TAG, "executeNotify() - Building Email Notifier for: " + member.getName());
-                    break;
-                case REVEAL_ONLY:
-                    break;
-                default:
-                    Log.e(TAG, "executeNotify() - Unknown contact mode: " + member.getContactMode());
+        Context mApplicationContext;
+        DatabaseManager mDatabaseManager;
+        Group mGroup;
+        long[] mMemberIds;
+
+        public NotifierTask(Context _context, DatabaseManager _db, Group _group, long[] _memberIds) {
+            mApplicationContext = _context.getApplicationContext();
+            mDatabaseManager = _db;
+            mGroup = _group;
+            mMemberIds = _memberIds;
+        }
+
+        private boolean executeNotify() {
+
+            // Iterate through the provided members - get their Assignment.
+            for(long memberId : mMemberIds) {
+                Member member = mDatabaseManager.queryById(memberId, Member.class);
+                Assignment assignment = mDatabaseManager.queryAssignmentForMember(memberId);
+                if(assignment == null) {
+                    Log.e(TAG, "executeNotify() - No Assignment for Member: " + member.getName());
+                    continue;
+                }
+                Member giftReceiver = mDatabaseManager.queryById(assignment.getReceiverMemberId(), Member.class);
+
+                switch(member.getContactMode()) {
+                    case SMS:
+                        Log.i(TAG, "executeNotify() - Building SMS Notifier for: " + member.getName());
+                        Notifier notifier = new SmsNotifier(mApplicationContext, new SmsSendReceiver(mDatabaseManager), true);
+                        notifier.notify(member, giftReceiver.getName(), mGroup.getMessage());
+                        break;
+                    case EMAIL:
+                        Log.i(TAG, "executeNotify() - Building Email Notifier for: " + member.getName());
+                        break;
+                    case REVEAL_ONLY:
+                        break;
+                    default:
+                        Log.e(TAG, "executeNotify() - Unknown contact mode: " + member.getContactMode());
+                }
             }
+            return true;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            return executeNotify();
         }
     }
 }

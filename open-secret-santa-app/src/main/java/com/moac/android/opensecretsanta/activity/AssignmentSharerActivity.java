@@ -17,7 +17,7 @@ public class AssignmentSharerActivity extends Activity {
 //    static final int DIALOG_ASSIGNMENT = 2;
 //    static final int CONFIRM_REDRAW_DIALOG = 3;
 //
-//    DrawResult mDrawResult;
+//    DrawResultEvent mDrawResult;
 //    Group mGroup;
 //
 //    DatabaseManager mDatabase;
@@ -251,11 +251,11 @@ public class AssignmentSharerActivity extends Activity {
 //        task.execute();
 //    }
 //
-//    private class DrawStatus {
+//    private class DrawResultEvent {
 //        private String msg = "";
 //        private boolean successful;
 //
-//        public DrawStatus(boolean successful, String msg) {
+//        public DrawResultEvent(boolean successful, String msg) {
 //            this.successful = successful;
 //            this.msg = msg;
 //        }
@@ -266,7 +266,7 @@ public class AssignmentSharerActivity extends Activity {
 //     */
 //    private void executeDraw() {
 //
-//        AsyncTask<Void, Void, DrawStatus> task = new AsyncTask<Void, Void, DrawStatus>() {
+//        AsyncTask<Void, Void, DrawResultEvent> task = new AsyncTask<Void, Void, DrawResultEvent>() {
 //
 //            ProgressDialog dialog = null;
 //            String mStatusMsg = "";
@@ -278,7 +278,7 @@ public class AssignmentSharerActivity extends Activity {
 //            }
 //
 //            @Override
-//            protected DrawStatus doInBackground(Void... params) {
+//            protected DrawResultEvent doInBackground(Void... params) {
 //                mStatusMsg = "Starting...";
 //                Log.v(TAG, "performDraw() - doInBackgrounnd()");
 //
@@ -333,7 +333,7 @@ public class AssignmentSharerActivity extends Activity {
 //                        mDatabase.update(mGroup);
 //
 //                        // Return the successful result indication.
-//                        return new DrawStatus(true, mStatusMsg);
+//                        return new DrawResultEvent(true, mStatusMsg);
 //
 //                    } catch(DrawFailureException e) {
 //                        // Not necessarily an error. But log it - in just it is.
@@ -349,11 +349,11 @@ public class AssignmentSharerActivity extends Activity {
 //                mGroup.setReady(false);
 //                mDatabase.update(mGroup);
 //
-//                return new DrawStatus(false, mStatusMsg);
+//                return new DrawResultEvent(false, mStatusMsg);
 //            }
 //
 //            @Override
-//            protected void onPostExecute(DrawStatus status) {
+//            protected void onPostExecute(DrawResultEvent status) {
 //                Log.v(TAG, "performDraw() - onPostExecute() ");
 //                dialog.cancel();
 //
@@ -382,7 +382,7 @@ public class AssignmentSharerActivity extends Activity {
 //        Log.v(TAG, "saveDrawResult() - start");
 //        Log.v(TAG, "saveDrawResult() - length: " + _assignments.size());
 //
-//        DrawResult dr = new DrawResult();
+//        DrawResultEvent dr = new DrawResultEvent();
 //        dr.setDrawDate(System.currentTimeMillis());
 //        dr.setGroup(_group);
 //        mDatabase.update(dr);
@@ -409,13 +409,13 @@ public class AssignmentSharerActivity extends Activity {
 //            mDatabase.create(dre);
 //        }
 //
-//        Log.v(TAG, "saveDrawResult() - inserted DrawResult: " + id);
+//        Log.v(TAG, "saveDrawResult() - inserted DrawResultEvent: " + id);
 //
 //        return id;
 //    }
 //
 //    private static class DrawResultDetails {
-//        DrawResult dr;
+//        DrawResultEvent dr;
 //        List<Assignment> dres = new ArrayList<Assignment>();
 //    }
 //

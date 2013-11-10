@@ -24,7 +24,7 @@
     android:theme="@style/AppTheme">
 
     <activity
-      android:name=".activity.DrawActivity"
+      android:name=".activity.MainActivity"
       android:launchMode="singleTop"
       android:uiOptions="splitActionBarWhenNarrow"
       android:windowSoftInputMode="adjustPan">
