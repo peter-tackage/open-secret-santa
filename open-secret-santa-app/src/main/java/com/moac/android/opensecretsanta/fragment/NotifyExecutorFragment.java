@@ -11,9 +11,11 @@ import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
+import com.moac.android.opensecretsanta.notify.EmailNotifier;
 import com.moac.android.opensecretsanta.notify.Notifier;
 import com.moac.android.opensecretsanta.notify.NotifyExecutor;
 import com.moac.android.opensecretsanta.notify.SmsNotifier;
+import com.moac.android.opensecretsanta.notify.mail.GmailOAuth2Sender;
 import com.moac.android.opensecretsanta.notify.receiver.SmsSendReceiver;
 import com.squareup.otto.Bus;
 
@@ -48,19 +50,21 @@ public class NotifyExecutorFragment extends Fragment implements NotifyExecutor {
 
     @Override
     public void notifyDraw(Group group, List<Member> members) {
-        NotifierTask task = new NotifierTask(getActivity(), mDb, group, members);
+        NotifierTask task = new NotifierTask(getActivity(), mBus, mDb, group, members);
         task.execute();
     }
 
     public static class NotifierTask extends AsyncTask<Void, Void, Boolean> {
 
-        Context mApplicationContext;
-        DatabaseManager mDatabaseManager;
-        Group mGroup;
-        List<Member> mMembers;
+        private final Bus mBus;
+        private final Context mApplicationContext;
+        private final DatabaseManager mDatabaseManager;
+        private final Group mGroup;
+        private final List<Member> mMembers;
 
-        public NotifierTask(Context _context, DatabaseManager _db, Group _group, List<Member> members) {
+        public NotifierTask(Context _context, Bus _bus, DatabaseManager _db, Group _group, List<Member> members) {
             mApplicationContext = _context.getApplicationContext();
+            mBus = _bus;
             mDatabaseManager = _db;
             mGroup = _group;
             mMembers = members;
@@ -89,11 +93,15 @@ public class NotifyExecutorFragment extends Fragment implements NotifyExecutor {
                 switch(member.getContactMode()) {
                     case SMS:
                         Log.i(TAG, "executeNotify() - Building SMS Notifier for: " + member.getName());
-                        Notifier notifier = new SmsNotifier(mApplicationContext, new SmsSendReceiver(mDatabaseManager), true);
-                        notifier.notify(member, giftReceiver.getName(), mGroup.getMessage());
+                        SmsNotifier smsNotifier = new SmsNotifier(mApplicationContext, new SmsSendReceiver(mBus, mDatabaseManager), true);
+                        smsNotifier.notify(member, giftReceiver.getName(), mGroup.getMessage());
                         break;
                     case EMAIL:
                         Log.i(TAG, "executeNotify() - Building Email Notifier for: " + member.getName());
+                        GmailOAuth2Sender sender = new GmailOAuth2Sender();
+                        // FIXME Use Account details
+                        EmailNotifier emailNotifier = new EmailNotifier(mApplicationContext, mBus, mDatabaseManager, sender , "senderAddress@somewehre.com", "accountToken");
+                        emailNotifier.notify(member, giftReceiver.getName(), mGroup.getMessage());
                         break;
                     case REVEAL_ONLY:
                         break;

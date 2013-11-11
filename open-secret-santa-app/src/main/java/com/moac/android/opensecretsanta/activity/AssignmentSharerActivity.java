@@ -748,13 +748,13 @@ public class AssignmentSharerActivity extends Activity {
 //
 //                            // Email-ru
 //                            sendEmail(entry.getContactAddress(),
-//                              Utils.buildPersonalisedMsg(msg, entry.getGiverName(), entry.getReceiverName()), "Your Secret Santa assignment from Open Secret Santa", mAccount.name, mToken);
+//                              Utils.buildMsg(msg, entry.getGiverName(), entry.getReceiverName()), "Your Secret Santa assignment from Open Secret Santa", mAccount.name, mToken);
 //                        } else if(entry.getContactMode() == ContactMode.SMS_CONTACT_MODE) {
 //                            Log.v(TAG, "shareAllAssignments() - SMS entry");
 //
 //                            // SMS
 //                            results.sentSMSCount += sendSms(entry.getContactAddress(),
-//                              Utils.buildPersonalisedMsg(msg, entry.getGiverName(), entry.getReceiverName()),
+//                              Utils.buildMsg(msg, entry.getGiverName(), entry.getReceiverName()),
 //                              mSendMultipartSMS);
 //                        } else {
 //                            // We didn't get a known contact mode - so fail.

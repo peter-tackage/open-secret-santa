@@ -10,6 +10,8 @@ import com.moac.android.opensecretsanta.model.PersistableObject;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import static com.google.common.io.Closeables.closeQuietly;
+
 public class ContactUtils {
 
     private static final String TAG = ContactUtils.class.getSimpleName();
@@ -60,7 +62,8 @@ public class ContactUtils {
             try {
                 return Drawable.createFromStream(stream, null);
             } finally {
-                Utils.safeClose(stream);
+                // TODO Use Closer
+                closeQuietly(stream);
             }
         } catch(FileNotFoundException fnfe) {
             Log.w(TAG, "Photo not found for lookupKey: " + _lookupKey + ", " + fnfe.getMessage());

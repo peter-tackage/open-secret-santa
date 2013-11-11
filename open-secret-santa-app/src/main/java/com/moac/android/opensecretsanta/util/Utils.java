@@ -3,12 +3,9 @@ package com.moac.android.opensecretsanta.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import com.moac.android.opensecretsanta.model.ContactMode;
 import com.moac.android.opensecretsanta.model.Member;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 public class Utils {
@@ -21,7 +18,7 @@ public class Utils {
         final String prefTag = DO_ONCE_TAG + _taskTag;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(_context);
         boolean isDone = prefs.getBoolean(prefTag, false);
-        if (!isDone) {
+        if(!isDone) {
             _task.run();
             prefs.edit().putBoolean(prefTag, true).commit();
             return true;
@@ -29,29 +26,6 @@ public class Utils {
         return false;
     }
 
-    public static void safeClose(InputStream _stream) {
-        if(_stream == null)
-            return;
-        try {
-            _stream.close();
-        } catch(IOException e) { }
-    }
-
-    public static String buildPersonalisedMsg(String extraMsg, String from, String to) {
-        Log.v(TAG, "buildPersonalisedMsg() - start");
-
-        StringBuilder s = new StringBuilder();
-        s.append("Hi ");
-        s.append(from);
-        s.append(", Open Secret Santa has assigned you: ");
-        s.append(to);
-        s.append(".\n");
-        s.append(extraMsg == null ? "" : extraMsg);
-
-        Log.v(TAG, "buildPersonalisedMsg() - result: " + s.toString());
-
-        return s.toString();
-    }
 // TODO Fix this
 //    public static String buildSuccessMessage(ShareResults result) {
 //
@@ -66,15 +40,16 @@ public class Utils {
 //            s.append(" member");
 //        }
 //
-//        Log.v(TAG, "buildPersonalisedMsg() - result: " + s.toString());
+//        Log.v(TAG, "buildMsg() - result: " + s.toString());
 //
 //        return s.toString();
 //    }
 
     public static boolean containsSendableEntry(List<Member> _members) {
         for(Member member : _members) {
-            if(isSendable(member))
+            if(member.getContactMode().isSendable()) {
                 return true;
+            }
         }
         return false;
     }
@@ -90,13 +65,10 @@ public class Utils {
     public static int getShareableCount(List<Member> _members) {
         int count = 0;
         for(Member member : _members) {
-            if(isSendable(member))
+            if(member.getContactMode().isSendable()) {
                 count++;
+            }
         }
         return count;
-    }
-
-    public static boolean isSendable(Member _member) {
-        return _member.getContactMode() != ContactMode.REVEAL_ONLY;
     }
 }

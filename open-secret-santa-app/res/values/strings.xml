@@ -92,4 +92,9 @@
   <string name="draw_success_msg">Draw was successful!</string>
   <string name="no_engine_error_msg">Error: Could not find Draw Engine</string>
 
+  <!-- Assignment Messages -->
+  <string name="standard_assignment_msg" formatted="false">Hi %s, you\'re giving a gift to %s. Sent via the Open Secret Santa app.</string>
+  <string name="email_footer_msg"><![CDATA[<hr><p>This message was sent by the <a href="https://play.google.com/store/apps/details?id=com.moac.android.opensecretsanta">Open Secret Santa</a> Android app</p>]]></string>
+  <string name="email_subject_msg">Your Secret Santa assignment from Open Secret Santa</string>
+
 </resources>
