@@ -19,6 +19,9 @@
   <!-- Restrictions Popup -->
   <string name="restrictionPopupTitle">Restrictions for</string>
 
+   <!-- Member row restrictions label -->
+  <string name="restrictions_label">restriction</string>
+
   <!-- Message Dialog -->
   <string name="draw_failed_message">"Couldn't complete the draw"</string>
   <string name="draw_success_message">Draw was successful!</string>
@@ -91,5 +94,7 @@
   <string name="draw_failed_msg">"Couldn't complete the draw"</string>
   <string name="draw_success_msg">Draw was successful!</string>
   <string name="no_engine_error_msg">Error: Could not find Draw Engine</string>
+
+
 
 </resources>

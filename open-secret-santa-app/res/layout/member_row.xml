@@ -4,7 +4,7 @@
   android:layout_height="wrap_content"
   android:orientation="horizontal"
   android:padding="4dp"
-  android:background="@color/shade_of_grey4"
+  android:background="@drawable/member_listview_row"
   android:alpha="0.98"
   android:id="@+id/member_relativeLayout">
 
@@ -66,7 +66,6 @@
     android:id="@+id/restriction_count_textview"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_alignParentTop="true"
     android:layout_alignParentRight="true"
     android:minWidth="48dp"
     android:text="2 restrictions"
@@ -74,6 +73,9 @@
     android:textAppearance="?android:attr/textAppearanceListItemSmall"
     android:textSize="10sp"
     android:background="@android:color/holo_purple"
-    android:gravity="right" />
+    android:gravity="right"
+    android:layout_alignTop="@+id/member_imageview"
+    android:layout_marginLeft="2dp"
+    android:layout_marginRight="2dp"/>
 
 </RelativeLayout>

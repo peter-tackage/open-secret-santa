@@ -11,16 +11,16 @@ import android.view.*;
 import android.widget.*;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
-import com.moac.android.opensecretsanta.draw.AssignmentsEvent;
-import com.moac.android.opensecretsanta.draw.DrawExecutor;
-import com.moac.android.opensecretsanta.draw.DrawResultEvent;
-import com.moac.android.opensecretsanta.draw.MemberEditor;
 import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.adapter.MemberListAdapter;
 import com.moac.android.opensecretsanta.adapter.MemberRowDetails;
 import com.moac.android.opensecretsanta.adapter.SuggestionsAdapter;
 import com.moac.android.opensecretsanta.content.BusProvider;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
+import com.moac.android.opensecretsanta.draw.AssignmentsEvent;
+import com.moac.android.opensecretsanta.draw.DrawExecutor;
+import com.moac.android.opensecretsanta.draw.DrawResultEvent;
+import com.moac.android.opensecretsanta.draw.MemberEditor;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
@@ -195,7 +195,8 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         // Some actions will end the current action mode on completion, others not.
         switch(item.getItemId()) {
             case R.id.menu_edit:
-                // TODO Open edit fragment
+                doEdit(getListView().getCheckedItemIds()[0]);
+                mode.finish();
                 return true;
             case R.id.menu_restrictions:
                 doRestrictions(getListView().getCheckedItemIds()[0]);
@@ -285,6 +286,10 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     private void doDraw() {
         getDrawExecutor().onRequestDraw(mGroup);
+    }
+
+    private void doEdit(long _memberId) {
+        getMemberEditor().onEditMember(mGroup.getId(), _memberId);
     }
 
     private void doRestrictions(long _memberId) {

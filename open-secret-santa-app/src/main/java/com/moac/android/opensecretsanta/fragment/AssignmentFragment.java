@@ -36,6 +36,9 @@ public class AssignmentFragment extends DialogFragment {
         // Get a layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
+        builder.setTitle("Reveal Secret");
+        builder.setIcon(R.drawable.ic_menu_reveal);
+
         // Pass null as the parent view because its going in the dialog layout
         View view = inflater.inflate(R.layout.assignment_fragment_dialog, null);
 
@@ -46,7 +49,7 @@ public class AssignmentFragment extends DialogFragment {
 
         // Set the values
         TextView giver = (TextView) view.findViewById(R.id.giver_name_textview);
-        giver.setText(giverName + " was assigned");
+        giver.setText(giverName + " is giving a gift to");
         TextView receiver = (TextView) view.findViewById(R.id.receiver_name_textview);
         receiver.setText(receiverName);
 

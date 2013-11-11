@@ -101,7 +101,7 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
 
         final long restrictionCount = member.getRestrictionCount();
         if(restrictionCount > 0) {
-            restrictionsView.setText(String.valueOf(restrictionCount));
+            restrictionsView.setText(String.valueOf(restrictionCount) + " " + getContext().getString(R.string.restrictions_label) + (restrictionCount > 1?"s":""));
             restrictionsView.setVisibility(View.VISIBLE);
         } else {
             restrictionsView.setVisibility(View.GONE);
