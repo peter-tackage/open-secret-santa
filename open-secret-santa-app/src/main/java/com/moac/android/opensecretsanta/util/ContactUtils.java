@@ -1,14 +1,12 @@
 package com.moac.android.opensecretsanta.util;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.util.Log;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 

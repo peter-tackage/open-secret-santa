@@ -22,7 +22,7 @@ import com.moac.android.opensecretsanta.draw.DrawExecutor;
 import com.moac.android.opensecretsanta.draw.MemberEditor;
 import com.moac.android.opensecretsanta.fragment.DrawExecutorFragment;
 import com.moac.android.opensecretsanta.fragment.MemberListFragment;
-import com.moac.android.opensecretsanta.fragment.NotifyFragment;
+import com.moac.android.opensecretsanta.fragment.NotifyDialogFragment;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
@@ -36,7 +36,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
 
     private static final String MEMBERS_LIST_FRAGMENT_TAG = "MemberListFragment";
     private static final String DRAW_EXECUTOR_FRAGMENT_TAG = "DrawExecutorFragment";
-    private static final String NOTIFY_FRAGMENT_TAG = "NotifyFragment";
+    private static final String NOTIFY_FRAGMENT_TAG = "NotifyDialogFragment";
     private static final String MOST_RECENT_GROUP_KEY = "most_recent_group_id";
 
     protected DrawerLayout mDrawerLayout;
@@ -150,7 +150,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     @Override
     public void onNotifyDraw(Group _group, long[] _memberIds) {
         Log.i(TAG, "onNotifyDraw() - Requesting Notify member set");
-        DialogFragment dialog = NotifyFragment.create(_group.getId(), _memberIds);
+        DialogFragment dialog = NotifyDialogFragment.create(_group.getId(), _memberIds);
         dialog.show(getFragmentManager(), NOTIFY_FRAGMENT_TAG);
     }
 

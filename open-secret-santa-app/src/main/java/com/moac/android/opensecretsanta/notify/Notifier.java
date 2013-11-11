@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.util;
+package com.moac.android.opensecretsanta.notify;
 
 import com.moac.android.opensecretsanta.model.Member;
 

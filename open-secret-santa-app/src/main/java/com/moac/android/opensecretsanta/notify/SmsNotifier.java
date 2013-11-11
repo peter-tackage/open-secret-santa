@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.util;
+package com.moac.android.opensecretsanta.notify;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;

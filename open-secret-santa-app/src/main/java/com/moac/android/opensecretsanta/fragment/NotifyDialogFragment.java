@@ -21,17 +21,13 @@ import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
-import com.moac.android.opensecretsanta.receiver.SmsSendReceiver;
-import com.moac.android.opensecretsanta.util.Notifier;
-import com.moac.android.opensecretsanta.util.SmsNotifier;
 import com.squareup.picasso.Picasso;
 
-public class NotifyFragment extends DialogFragment {
+public class NotifyDialogFragment extends DialogFragment {
 
-    private static final String TAG = NotifyFragment.class.getSimpleName();
+    private static final String TAG = NotifyDialogFragment.class.getSimpleName();
     private static final String MESSAGE_TAG = "MESSAGE";
 
     protected EditText mMsgField;
@@ -49,9 +45,9 @@ public class NotifyFragment extends DialogFragment {
      *
      * "It is strongly recommended that subclasses do not have other constructors with parameters"
      */
-    public static NotifyFragment create(long _groupId, long[] _memberIds) {
-        Log.i(TAG, "NotifyFragment() - factory creating for groupId: " + _groupId + " memberIds: " + _memberIds);
-        NotifyFragment fragment = new NotifyFragment();
+    public static NotifyDialogFragment create(long _groupId, long[] _memberIds) {
+        Log.i(TAG, "NotifyDialogFragment() - factory creating for groupId: " + _groupId + " memberIds: " + _memberIds);
+        NotifyDialogFragment fragment = new NotifyDialogFragment();
         Bundle args = new Bundle();
         args.putLong(Intents.GROUP_ID_INTENT_EXTRA, _groupId);
         args.putLongArray(Intents.MEMBER_ID_ARRAY_INTENT_EXTRA, _memberIds);
@@ -127,8 +123,7 @@ public class NotifyFragment extends DialogFragment {
                 // Get the custom message.
                 mGroup.setMessage(mMsgField.getText().toString().trim());
                 mDb.update(mGroup);
-                NotifierTask task = new NotifierTask(getActivity(), mDb, mGroup, mMemberIds);
-                task.execute();
+                // TODO Notify
             }
         });
 
@@ -153,62 +148,4 @@ public class NotifyFragment extends DialogFragment {
         super.onDestroyView();
     }
 
-    public static class NotifierTask extends AsyncTask<Void, Void, Boolean> {
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);    //To change body of overridden methods use File | Settings | File Templates.
-        }
-
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();    //To change body of overridden methods use File | Settings | File Templates.
-        }
-
-        Context mApplicationContext;
-        DatabaseManager mDatabaseManager;
-        Group mGroup;
-        long[] mMemberIds;
-
-        public NotifierTask(Context _context, DatabaseManager _db, Group _group, long[] _memberIds) {
-            mApplicationContext = _context.getApplicationContext();
-            mDatabaseManager = _db;
-            mGroup = _group;
-            mMemberIds = _memberIds;
-        }
-
-        private boolean executeNotify() {
-
-            // Iterate through the provided members - get their Assignment.
-            for(long memberId : mMemberIds) {
-                Member member = mDatabaseManager.queryById(memberId, Member.class);
-                Assignment assignment = mDatabaseManager.queryAssignmentForMember(memberId);
-                if(assignment == null) {
-                    Log.e(TAG, "executeNotify() - No Assignment for Member: " + member.getName());
-                    continue;
-                }
-                Member giftReceiver = mDatabaseManager.queryById(assignment.getReceiverMemberId(), Member.class);
-
-                switch(member.getContactMode()) {
-                    case SMS:
-                        Log.i(TAG, "executeNotify() - Building SMS Notifier for: " + member.getName());
-                        Notifier notifier = new SmsNotifier(mApplicationContext, new SmsSendReceiver(mDatabaseManager), true);
-                        notifier.notify(member, giftReceiver.getName(), mGroup.getMessage());
-                        break;
-                    case EMAIL:
-                        Log.i(TAG, "executeNotify() - Building Email Notifier for: " + member.getName());
-                        break;
-                    case REVEAL_ONLY:
-                        break;
-                    default:
-                        Log.e(TAG, "executeNotify() - Unknown contact mode: " + member.getContactMode());
-                }
-            }
-            return true;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            return executeNotify();
-        }
-    }
 }

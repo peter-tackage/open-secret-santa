@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.receiver;
+package com.moac.android.opensecretsanta.notify.receiver;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import com.moac.android.opensecretsanta.activity.Intents;
-import com.moac.android.opensecretsanta.content.NotifyStatusEvent;
+import com.moac.android.opensecretsanta.notify.NotifyStatusEvent;
 import com.moac.android.opensecretsanta.content.BusProvider;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
