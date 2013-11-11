@@ -26,7 +26,6 @@
     <activity
       android:name=".activity.MainActivity"
       android:launchMode="singleTop"
-      android:uiOptions="splitActionBarWhenNarrow"
       android:windowSoftInputMode="adjustPan">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />

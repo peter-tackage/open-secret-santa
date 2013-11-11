@@ -3,6 +3,7 @@
   android:orientation="vertical"
   android:layout_width="wrap_content"
   android:layout_height="match_parent"
+  android:background="@color/lighter_blue"
   android:padding="16dp">
 
   <TextView
@@ -10,6 +11,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textAppearance="?android:attr/textAppearanceSmall"
+    android:textColor="@color/dark_grey"
     android:gravity="center" />
 
   <ImageView
@@ -20,14 +22,22 @@
     android:cropToPadding="true"
     android:scaleType="centerCrop"
     android:contentDescription="@string/assignment_avatar_accesshint"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp" />
+    android:paddingTop="16dp" />
 
     <TextView
-      android:id="@+id/receiver_name_textview"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:textAppearance="?android:attr/textAppearanceLarge"
-      android:gravity="center"/>
+        android:id="@+id/receiver_name_textview"
+        android:layout_width="144dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignBottom="@+id/receiver_avatar_imageview"
+        android:layout_alignLeft="@+id/receiver_avatar_imageview"
+        android:layout_alignRight="@+id/receiver_avatar_imageview"
+        android:textColor="@android:color/white"
+        android:background="@android:color/holo_green_light"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal"/>
+
 
 </LinearLayout>

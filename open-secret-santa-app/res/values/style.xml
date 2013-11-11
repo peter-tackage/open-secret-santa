@@ -41,6 +41,7 @@
   <!-- Action bar text color -->
   <style name="MyTheme.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
     <item name="android:textColor">@android:color/holo_blue_light</item>
+      <item name="android:textSize">15sp</item>
   </style>
 
   <!-- background for the overflow menu -->
