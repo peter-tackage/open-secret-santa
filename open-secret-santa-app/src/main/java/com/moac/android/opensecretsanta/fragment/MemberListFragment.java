@@ -25,6 +25,7 @@ import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
+import com.moac.android.opensecretsanta.notify.NotifyStatusEvent;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -122,6 +123,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Remove this for now.
+                // TODO View or edit?
             }
         });
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -151,7 +153,6 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     @Override
     public void onPause() {
         super.onPause();
-        Log.i(TAG, "onPause() - unregistering from bus");
         BusProvider.getInstance().unregister(this);
     }
 
@@ -259,6 +260,12 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         }
     }
 
+    @Subscribe
+    public void onNotifyStatusChanged(NotifyStatusEvent event) {
+        Log.i(TAG, "onNotifyStatusChanged() - got event");
+        populateMemberList();
+    }
+
     // TODO Do in background & add confirm dialog
     private void doDelete(long[] _ids) {
         for(long id : _ids) {
@@ -285,7 +292,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     private void doDraw() {
-        getDrawExecutor().onRequestDraw(mGroup);
+        getDrawExecutor().requestDraw(mGroup);
     }
 
     private void doEdit(long _memberId) {
@@ -371,12 +378,6 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         Toast toast = Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
-    }
-
-    public void onAssignmentsAvailable() {
-        // Move to Notify mode
-        mMode = Mode.Notify;
-        populateMemberList();
     }
 
     private Mode evaluateMode() {

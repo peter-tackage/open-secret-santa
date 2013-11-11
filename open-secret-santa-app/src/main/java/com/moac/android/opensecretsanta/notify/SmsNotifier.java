@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.util;
+package com.moac.android.opensecretsanta.notify;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.telephony.SmsManager;
 import android.util.Log;
+import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.model.Member;
 
@@ -29,10 +30,10 @@ public class SmsNotifier implements Notifier {
     }
 
     @Override
-    public void notify(Member _giver, String _receiverName, String _customMsg) {
+    public void notify(Member _giver, String _receiverName, String _groupMsg) {
 
         String phoneNumber = _giver.getContactAddress();
-        String msg = buildPersonalisedMsg(_customMsg, _giver.getName(), _receiverName);
+        String msg = buildMsg(mContext.getString(R.string.standard_assignment_msg), _groupMsg, _giver.getName(), _receiverName);
 
         SmsManager smsManager = SmsManager.getDefault();
 
@@ -68,16 +69,15 @@ public class SmsNotifier implements Notifier {
         Log.v(TAG, "notify() - end");
     }
 
-    public static String buildPersonalisedMsg(String _customMsg, String _giverName, String _receiverName) {
+    /**
+     * Generate a concise notification message to send via SMS
+     */
+    public static String buildMsg(String _baseMsg, String _groupMsg, String _giverName, String _receiverName) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Hi ");
-        sb.append(_giverName);
-        sb.append(", Open Secret Santa has assigned you: ");
-        sb.append(_receiverName);
-        sb.append(".\n");
-        sb.append(_customMsg == null ? "" : _customMsg);
+        sb.append(String.format(_baseMsg, _giverName, _receiverName));
+        sb.append(_groupMsg == null ? "" : _groupMsg);
 
-        Log.v(TAG, "buildPersonalisedMsg() - result: " + sb.toString());
+        Log.v(TAG, "buildMsg() - result: " + sb.toString());
 
         return sb.toString();
     }

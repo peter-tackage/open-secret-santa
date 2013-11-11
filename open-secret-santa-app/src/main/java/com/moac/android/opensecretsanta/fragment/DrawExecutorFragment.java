@@ -16,8 +16,8 @@ import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.Restriction;
-import com.moac.android.opensecretsanta.util.DrawEngineFactory;
-import com.moac.android.opensecretsanta.util.InvalidDrawEngineException;
+import com.moac.android.opensecretsanta.draw.DrawEngineFactory;
+import com.moac.android.opensecretsanta.draw.InvalidDrawEngineException;
 import com.moac.drawengine.DrawEngine;
 import com.moac.drawengine.DrawFailureException;
 import com.squareup.otto.Bus;
@@ -46,15 +46,15 @@ public class DrawExecutorFragment extends Fragment implements DrawExecutor {
     }
 
     @Override
-    public void onRequestDraw(Group _group) {
-        Log.i(TAG, "onRequestDraw() - Requesting Draw");
+    public void requestDraw(Group _group) {
+        Log.i(TAG, "requestDraw() - Requesting Draw");
 
         // Find the current DrawEngine to use
         DrawEngine engine;
         try {
             engine = getCurrentDrawEngine();
         } catch (InvalidDrawEngineException exp) {
-            Log.e(TAG, "onRequestDraw() - Unable to load Draw Engine", exp);
+            Log.e(TAG, "requestDraw() - Unable to load Draw Engine", exp);
             mBus.post(DrawResultEvent.failure(_group.getId(), exp));
             return;
         }
@@ -66,8 +66,9 @@ public class DrawExecutorFragment extends Fragment implements DrawExecutor {
         // Execute the draw
         DrawResultEvent result = executeDraw(engine, _group);
 
+        // TODO Should we post separate events for pass or fail - we already know.
         // Persist the generated assignments
-        Log.i(TAG, "onRequestDraw() - success: " + result.isSuccess());
+        Log.i(TAG, "requestDraw() - success: " + result.isSuccess());
         if (result.isSuccess()) {
             setAssignments(_group, result.getAssignments());
         }

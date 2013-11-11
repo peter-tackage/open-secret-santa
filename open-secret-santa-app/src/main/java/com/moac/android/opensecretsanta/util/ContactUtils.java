@@ -1,16 +1,16 @@
 package com.moac.android.opensecretsanta.util;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.util.Log;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+
+import static com.google.common.io.Closeables.closeQuietly;
 
 public class ContactUtils {
 
@@ -62,7 +62,8 @@ public class ContactUtils {
             try {
                 return Drawable.createFromStream(stream, null);
             } finally {
-                Utils.safeClose(stream);
+                // TODO Use Closer
+                closeQuietly(stream);
             }
         } catch(FileNotFoundException fnfe) {
             Log.w(TAG, "Photo not found for lookupKey: " + _lookupKey + ", " + fnfe.getMessage());

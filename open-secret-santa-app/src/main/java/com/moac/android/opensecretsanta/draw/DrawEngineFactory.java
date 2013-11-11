@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.util;
+package com.moac.android.opensecretsanta.draw;
 
 import com.moac.drawengine.DrawEngine;
 

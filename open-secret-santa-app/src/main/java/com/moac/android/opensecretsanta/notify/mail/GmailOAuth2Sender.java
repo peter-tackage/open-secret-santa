@@ -1,16 +1,15 @@
 package com.moac.android.opensecretsanta.notify.mail;
 
-import java.util.Properties;
+import com.sun.mail.smtp.SMTPTransport;
+import com.sun.mail.util.BASE64EncoderStream;
 
+import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.URLName;
-import javax.mail.Message;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
-import com.sun.mail.smtp.SMTPTransport;
-import com.sun.mail.util.BASE64EncoderStream;
+import java.util.Properties;
 
 /**
  * From http://stackoverflow.com/questions/12503303/javamail-api-in-android-using-xoauth
@@ -21,7 +20,7 @@ public class GmailOAuth2Sender {
 
     public static final String ACCOUNT_TYPE_GOOGLE = "com.google";
     public static final String[] FEATURES_MAIL = { "service_mail" };
-    public static final String GMAIL_TOKEN_TYPE =  "oauth2:https://mail.google.com/";
+    public static final String GMAIL_TOKEN_TYPE = "oauth2:https://mail.google.com/";
 
     private Session session;
 
