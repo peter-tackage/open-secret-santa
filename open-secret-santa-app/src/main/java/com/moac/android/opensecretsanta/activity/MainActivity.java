@@ -49,7 +49,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     @Override
     public void onCreate(Bundle _savedInstanceState) {
         super.onCreate(_savedInstanceState);
-        mDb = OpenSecretSantaApplication.getDatabase();
+        mDb = OpenSecretSantaApplication.getInstance().getDatabase();
 
         // Find existing worker fragment
         FragmentManager fm = getFragmentManager();
@@ -164,12 +164,12 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
 
     private void populateGroupRowDetailsList(ListView _groupRowDetailsList) {
         // Retrieve the list of groups from database.
-        List<Group> groups = OpenSecretSantaApplication.getDatabase().queryAll(Group.class);
+        List<Group> groups = OpenSecretSantaApplication.getInstance().getDatabase().queryAll(Group.class);
 
         Log.v(TAG, "initialiseUI() - group count: " + groups.size());
         List<GroupRowDetails> groupRowDetails = new ArrayList<GroupRowDetails>();
         for (Group g : groups) {
-            List<Member> groupMembers = OpenSecretSantaApplication.getDatabase().queryAllMembersForGroup(g.getId());
+            List<Member> groupMembers = OpenSecretSantaApplication.getInstance().getDatabase().queryAllMembersForGroup(g.getId());
             groupRowDetails.add(new GroupRowDetails(g.getId(), g.getName(), g.getCreatedAt(), groupMembers));
         }
         ((GroupListAdapter) _groupRowDetailsList.getAdapter()).update(groupRowDetails);

@@ -17,12 +17,18 @@ public class OpenSecretSantaApplication extends Application {
 
     private static final String TAG = "OpenSecretSantaApp";
 
-    private static DatabaseManager sDatabaseManager = null;
+    private static OpenSecretSantaApplication sInstance;
+    private DatabaseManager mDatabaseManager;
 
+    public OpenSecretSantaApplication() {
+        super();
+        if(sInstance == null)
+            sInstance = this; // init self singleton.
+    }
     @Override
     public void onCreate() {
         super.onCreate();
-        sDatabaseManager = initDatabase();
+        mDatabaseManager = initDatabase();
         Utils.doOnce(getApplicationContext(), "initTestData", new Runnable() {
             @Override
             public void run() {
@@ -31,16 +37,18 @@ public class OpenSecretSantaApplication extends Application {
         });
     }
 
-    public static DatabaseManager getDatabase() {
-        return sDatabaseManager;
+    public static OpenSecretSantaApplication getInstance() {
+        return sInstance;
+    }
+
+    public DatabaseManager getDatabase() {
+        return mDatabaseManager;
     }
 
     private DatabaseManager initDatabase() {
         DatabaseHelper databaseHelper = new DatabaseHelper(this);
         return new DatabaseManager(databaseHelper);
     }
-
-
 
     public Account getAvailableGmailAccount() {
         Log.i(TAG, "getAvailableGmailAccount() - start");
@@ -95,7 +103,7 @@ public class OpenSecretSantaApplication extends Application {
         // Add a Group
         Group group1 = new Group();
         group1.setName("Test Group - 1 " + _instance);
-        sDatabaseManager.create(group1);
+        mDatabaseManager.create(group1);
 
         // Add some Members
         Member m1 = new Member();
@@ -115,14 +123,14 @@ public class OpenSecretSantaApplication extends Application {
         m1.setGroup(group1);
         m2.setGroup(group1);
         m3.setGroup(group1);
-        sDatabaseManager.create(m1);
-        sDatabaseManager.create(m2);
-        sDatabaseManager.create(m3);
+        mDatabaseManager.create(m1);
+        mDatabaseManager.create(m2);
+        mDatabaseManager.create(m3);
 
         Restriction r1 = new Restriction();
         r1.setMember(m1);
         r1.setOtherMember(m2);
-        sDatabaseManager.create(r1);
+        mDatabaseManager.create(r1);
     }
 
 

@@ -41,7 +41,7 @@ public class DrawExecutorFragment extends Fragment implements DrawExecutor {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDb = OpenSecretSantaApplication.getDatabase();
+        mDb = OpenSecretSantaApplication.getInstance().getDatabase();
         mBus = BusProvider.getInstance();
     }
 

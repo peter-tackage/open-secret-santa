@@ -78,7 +78,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         setRetainInstance(true);
         setHasOptionsMenu(true);
 
-        mDb = OpenSecretSantaApplication.getDatabase();
+        mDb = OpenSecretSantaApplication.getInstance().getDatabase();
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
     }

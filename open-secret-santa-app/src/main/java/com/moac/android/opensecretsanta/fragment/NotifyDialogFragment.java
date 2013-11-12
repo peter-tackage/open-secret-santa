@@ -59,7 +59,7 @@ public class NotifyDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         Log.i(TAG, "onCreateDialog() - start: " + this);
-        mDb = OpenSecretSantaApplication.getDatabase();
+        mDb = OpenSecretSantaApplication.getInstance().getDatabase();
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         mMemberIds = getArguments().getLongArray(Intents.MEMBER_ID_ARRAY_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);

@@ -12,7 +12,6 @@ import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.notify.EmailNotifier;
-import com.moac.android.opensecretsanta.notify.Notifier;
 import com.moac.android.opensecretsanta.notify.NotifyExecutor;
 import com.moac.android.opensecretsanta.notify.SmsNotifier;
 import com.moac.android.opensecretsanta.notify.mail.GmailOAuth2Sender;
@@ -38,7 +37,7 @@ public class NotifyExecutorFragment extends Fragment implements NotifyExecutor {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDb = OpenSecretSantaApplication.getDatabase();
+        mDb = OpenSecretSantaApplication.getInstance().getDatabase();
         mBus = BusProvider.getInstance();
     }
 
@@ -86,7 +85,7 @@ public class NotifyExecutorFragment extends Fragment implements NotifyExecutor {
                 Assignment assignment = mDatabaseManager.queryAssignmentForMember(member.getId());
                 if(assignment == null) {
                     Log.e(TAG, "executeNotify() - No Assignment for Member: " + member.getName());
-                    continue;
+                    return false;
                 }
                 Member giftReceiver = mDatabaseManager.queryById(assignment.getReceiverMemberId(), Member.class);
 
@@ -100,7 +99,7 @@ public class NotifyExecutorFragment extends Fragment implements NotifyExecutor {
                         Log.i(TAG, "executeNotify() - Building Email Notifier for: " + member.getName());
                         GmailOAuth2Sender sender = new GmailOAuth2Sender();
                         // FIXME Use Account details
-                        EmailNotifier emailNotifier = new EmailNotifier(mApplicationContext, mBus, mDatabaseManager, sender , "senderAddress@somewehre.com", "accountToken");
+                        EmailNotifier emailNotifier = new EmailNotifier(mApplicationContext, mBus, mDatabaseManager, sender, "senderAddress@somewehre.com", "accountToken");
                         emailNotifier.notify(member, giftReceiver.getName(), mGroup.getMessage());
                         break;
                     case REVEAL_ONLY:
