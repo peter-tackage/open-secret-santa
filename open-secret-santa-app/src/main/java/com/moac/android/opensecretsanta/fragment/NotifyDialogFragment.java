@@ -1,12 +1,11 @@
 package com.moac.android.opensecretsanta.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -23,6 +22,7 @@ import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
+import com.moac.android.opensecretsanta.notify.NotifyExecutor;
 import com.squareup.picasso.Picasso;
 
 public class NotifyDialogFragment extends DialogFragment {
@@ -37,6 +37,7 @@ public class NotifyDialogFragment extends DialogFragment {
 
     // Apparently this is how you retain EditText fields - http://code.google.com/p/android/issues/detail?id=18719
     private String mSavedMsg;
+    private FragmentContainer mFragmentContainer;
 
     /**
      * Factory method for this fragment class
@@ -123,7 +124,7 @@ public class NotifyDialogFragment extends DialogFragment {
                 // Get the custom message.
                 mGroup.setMessage(mMsgField.getText().toString().trim());
                 mDb.update(mGroup);
-                // TODO Notify
+                getNotifyExecutor().notifyDraw(mGroup, mMemberIds);
             }
         });
 
@@ -148,4 +149,21 @@ public class NotifyDialogFragment extends DialogFragment {
         super.onDestroyView();
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mFragmentContainer = (FragmentContainer) activity;
+        } catch(ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement FragmentContainer");
+        }
+    }
+
+    NotifyExecutor getNotifyExecutor() {
+        return mFragmentContainer.getNotifyExecutor();
+    }
+
+    public interface FragmentContainer {
+        NotifyExecutor getNotifyExecutor();
+    }
 }

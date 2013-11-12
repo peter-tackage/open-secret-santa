@@ -4,6 +4,8 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.content.BusProvider;
@@ -17,8 +19,6 @@ import com.moac.android.opensecretsanta.notify.SmsNotifier;
 import com.moac.android.opensecretsanta.notify.mail.GmailOAuth2Sender;
 import com.moac.android.opensecretsanta.notify.receiver.SmsSendReceiver;
 import com.squareup.otto.Bus;
-
-import java.util.List;
 
 public class NotifyExecutorFragment extends Fragment implements NotifyExecutor {
 
@@ -42,14 +42,8 @@ public class NotifyExecutorFragment extends Fragment implements NotifyExecutor {
     }
 
     @Override
-    public void notifyDraw(Group group) {
-        List<Member> members = mDb.queryAllMembersForGroup(group.getId());
-        notifyDraw(group, members);
-    }
-
-    @Override
-    public void notifyDraw(Group group, List<Member> members) {
-        NotifierTask task = new NotifierTask(getActivity(), mBus, mDb, group, members);
+    public void notifyDraw(Group group, long[] memberIds) {
+        NotifierTask task = new NotifierTask(getActivity(), mBus, mDb, group, memberIds);
         task.execute();
     }
 
@@ -59,14 +53,14 @@ public class NotifyExecutorFragment extends Fragment implements NotifyExecutor {
         private final Context mApplicationContext;
         private final DatabaseManager mDatabaseManager;
         private final Group mGroup;
-        private final List<Member> mMembers;
+        private final long[] mMemberIds;
 
-        public NotifierTask(Context _context, Bus _bus, DatabaseManager _db, Group _group, List<Member> members) {
+        public NotifierTask(Context _context, Bus _bus, DatabaseManager _db, Group _group, long[] memberIds) {
             mApplicationContext = _context.getApplicationContext();
             mBus = _bus;
             mDatabaseManager = _db;
             mGroup = _group;
-            mMembers = members;
+            mMemberIds = memberIds;
         }
 
         @Override
@@ -81,15 +75,16 @@ public class NotifyExecutorFragment extends Fragment implements NotifyExecutor {
 
         private boolean executeNotify() {
             // Iterate through the provided members - get their Assignment.
-            for(Member member : mMembers) {
+            for (long memberId : mMemberIds) {
+                Member member = mDatabaseManager.queryById(memberId, Member.class);
                 Assignment assignment = mDatabaseManager.queryAssignmentForMember(member.getId());
-                if(assignment == null) {
+                if (assignment == null) {
                     Log.e(TAG, "executeNotify() - No Assignment for Member: " + member.getName());
                     return false;
                 }
                 Member giftReceiver = mDatabaseManager.queryById(assignment.getReceiverMemberId(), Member.class);
 
-                switch(member.getContactMode()) {
+                switch (member.getContactMode()) {
                     case SMS:
                         Log.i(TAG, "executeNotify() - Building SMS Notifier for: " + member.getName());
                         SmsNotifier smsNotifier = new SmsNotifier(mApplicationContext, new SmsSendReceiver(mBus, mDatabaseManager), true);
@@ -99,7 +94,8 @@ public class NotifyExecutorFragment extends Fragment implements NotifyExecutor {
                         Log.i(TAG, "executeNotify() - Building Email Notifier for: " + member.getName());
                         GmailOAuth2Sender sender = new GmailOAuth2Sender();
                         // FIXME Use Account details
-                        EmailNotifier emailNotifier = new EmailNotifier(mApplicationContext, mBus, mDatabaseManager, sender, "senderAddress@somewehre.com", "accountToken");
+                        EmailNotifier emailNotifier = new EmailNotifier(mApplicationContext, mBus, mDatabaseManager,
+                                new Handler(Looper.getMainLooper()), sender, "senderAddress@somewehre.com", "accountToken");
                         emailNotifier.notify(member, giftReceiver.getName(), mGroup.getMessage());
                         break;
                     case REVEAL_ONLY:
