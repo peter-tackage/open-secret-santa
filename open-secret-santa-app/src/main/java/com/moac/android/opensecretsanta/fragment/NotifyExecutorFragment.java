@@ -15,6 +15,7 @@ import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.notify.EmailNotifier;
 import com.moac.android.opensecretsanta.notify.NotifyExecutor;
+import com.moac.android.opensecretsanta.notify.NotifyStatusEvent;
 import com.moac.android.opensecretsanta.notify.SmsNotifier;
 import com.moac.android.opensecretsanta.notify.mail.GmailOAuth2Sender;
 import com.moac.android.opensecretsanta.notify.receiver.SmsSendReceiver;
@@ -74,6 +75,7 @@ public class NotifyExecutorFragment extends Fragment implements NotifyExecutor {
         }
 
         private boolean executeNotify() {
+            Handler handler = new Handler(Looper.getMainLooper());
             // Iterate through the provided members - get their Assignment.
             for (long memberId : mMemberIds) {
                 Member member = mDatabaseManager.queryById(memberId, Member.class);
@@ -82,20 +84,28 @@ public class NotifyExecutorFragment extends Fragment implements NotifyExecutor {
                     Log.e(TAG, "executeNotify() - No Assignment for Member: " + member.getName());
                     return false;
                 }
+                Log.i(TAG, "executeNotify() - preparing Assignment: " + assignment);
+
                 Member giftReceiver = mDatabaseManager.queryById(assignment.getReceiverMemberId(), Member.class);
 
                 switch (member.getContactMode()) {
                     case SMS:
                         Log.i(TAG, "executeNotify() - Building SMS Notifier for: " + member.getName());
+                        assignment.setSendStatus(Assignment.Status.Assigned);
+                        postOnHandler(handler, mBus, new NotifyStatusEvent(assignment));
+                        mDatabaseManager.update(assignment);
                         SmsNotifier smsNotifier = new SmsNotifier(mApplicationContext, new SmsSendReceiver(mBus, mDatabaseManager), true);
                         smsNotifier.notify(member, giftReceiver.getName(), mGroup.getMessage());
                         break;
                     case EMAIL:
                         Log.i(TAG, "executeNotify() - Building Email Notifier for: " + member.getName());
+                        assignment.setSendStatus(Assignment.Status.Assigned);
+                        postOnHandler(handler, mBus, new NotifyStatusEvent(assignment));
+                        mDatabaseManager.update(assignment);
                         GmailOAuth2Sender sender = new GmailOAuth2Sender();
                         // FIXME Use Account details
                         EmailNotifier emailNotifier = new EmailNotifier(mApplicationContext, mBus, mDatabaseManager,
-                                new Handler(Looper.getMainLooper()), sender, "senderAddress@somewehre.com", "accountToken");
+                                handler, sender, "senderAddress@somewehre.com", "accountToken");
                         emailNotifier.notify(member, giftReceiver.getName(), mGroup.getMessage());
                         break;
                     case REVEAL_ONLY:
@@ -110,6 +120,15 @@ public class NotifyExecutorFragment extends Fragment implements NotifyExecutor {
         @Override
         protected Boolean doInBackground(Void... params) {
             return executeNotify();
+        }
+
+        private void postOnHandler(Handler handler, final Bus bus, final NotifyStatusEvent event) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    bus.post(event);
+                }
+            });
         }
     }
 }

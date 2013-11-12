@@ -262,7 +262,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     @Subscribe
     public void onNotifyStatusChanged(NotifyStatusEvent event) {
-        Log.i(TAG, "onNotifyStatusChanged() - got event");
+        Log.i(TAG, "onNotifyStatusChanged() - got event: " + event.getAssignment());
         populateMemberList();
     }
 

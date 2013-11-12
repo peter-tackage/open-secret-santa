@@ -31,7 +31,7 @@ public class SmsNotifier implements Notifier {
 
     @Override
     public void notify(Member _giver, String _receiverName, String _groupMsg) {
-
+        Log.i(TAG, "notify() - SMS. giver:" + _giver + " receiverName:" + _receiverName + "groupMsg: " + _groupMsg);
         String phoneNumber = _giver.getContactAddress();
         String msg = buildMsg(mContext.getString(R.string.standard_assignment_msg), _groupMsg, _giver.getName(), _receiverName);
 
