@@ -19,8 +19,6 @@ public class Assignment extends PersistableObject {
     public static interface Columns extends PersistableObject.Columns {
         public static final String GIVER_MEMBER_ID_COLUMN = "GIVER_MEMBER_ID";
         public static final String RECEIVER_MEMBER_ID_COLUMN = "RECEIVER_MEMBER_ID";
-        public static final String VIEWED_DATE_COLUMN = "VIEWED_DATE";
-        public static final String SENT_DATE_COLUMN = "SENT_DATE";
         public static final String SEND_STATUS_COLUMN = "SEND_STATUS";
     }
 
@@ -32,12 +30,6 @@ public class Assignment extends PersistableObject {
       columnDefinition = "integer references members (_id) on delete cascade")
     private Member mReceiver;
 
-    @DatabaseField(columnName = Columns.VIEWED_DATE_COLUMN)
-    private long mViewedDate = UNSET_DATE;
-
-    @DatabaseField(columnName = Columns.SENT_DATE_COLUMN)
-    private long mSentDate = UNSET_DATE;
-
     @DatabaseField(columnName = Columns.SEND_STATUS_COLUMN)
     private Status mSendStatus = Status.Assigned;
 
@@ -47,13 +39,12 @@ public class Assignment extends PersistableObject {
     public long getReceiverMemberId() { return mReceiver.getId(); }
     public void setReceiverMember(Member _receiver) { mReceiver = _receiver; }
 
-    public long getViewedDate() { return mViewedDate; }
-    public void setViewedDate(long _viewedDate) { mViewedDate = _viewedDate; }
-
-    public long getSentDate() { return mSentDate; }
-    public void setSentDate(long _sentDate) { mSentDate = _sentDate; }
-
     public Status getSendStatus() { return mSendStatus; }
     public void setSendStatus(Status _sendStatus) { mSendStatus = _sendStatus; }
+
+    @Override
+    public String toString() {
+        return "Giver: " + getGiverMemberId() + " Receiver: " + getReceiverMemberId() + " Status: " + mSendStatus;
+    }
 
 }
