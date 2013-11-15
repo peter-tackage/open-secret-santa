@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.util.Log;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.draw.AssignmentsEvent;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.notify.mail.GmailOAuth2Sender;
