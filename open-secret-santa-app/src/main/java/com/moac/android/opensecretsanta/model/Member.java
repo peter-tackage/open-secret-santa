@@ -65,10 +65,6 @@ public final class Member extends PersistableObject  {
     public void setContactId(long contactId) { mContactId = contactId; }
 
     public long getRestrictionCount() { return mRestrictions == null ? 0 : mRestrictions.size(); }
-    @Override
-    public String toString() {
-        return mName;
-    }
 
     public String toDebugString() {
         StringBuilder sb = new StringBuilder();

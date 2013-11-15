@@ -4,6 +4,8 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.util.Collection;
+
 @DatabaseTable(tableName = Group.TABLE_NAME)
 public class Group extends PersistableObject {
 
@@ -29,7 +31,7 @@ public class Group extends PersistableObject {
     private long mDrawDate = UNSET_DATE;
 
     @ForeignCollectionField(eager = false)
-    private java.util.Collection<Member> mMembers;
+    private Collection<Member> mMembers;
 
     public String getName() { return mName; }
     public void setName(String _name) { mName = _name; }

@@ -3,8 +3,11 @@ package com.moac.android.opensecretsanta.fragment;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.ListFragment;
+import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.*;
@@ -17,16 +20,19 @@ import com.moac.android.opensecretsanta.adapter.MemberRowDetails;
 import com.moac.android.opensecretsanta.adapter.SuggestionsAdapter;
 import com.moac.android.opensecretsanta.content.BusProvider;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.draw.AssignmentsEvent;
-import com.moac.android.opensecretsanta.draw.DrawExecutor;
-import com.moac.android.opensecretsanta.draw.DrawResultEvent;
-import com.moac.android.opensecretsanta.draw.MemberEditor;
+import com.moac.android.opensecretsanta.draw.*;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 import com.moac.android.opensecretsanta.notify.NotifyStatusEvent;
+import com.moac.drawengine.DrawEngine;
 import com.squareup.otto.Subscribe;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
+import rx.android.concurrency.AndroidSchedulers;
+import rx.concurrency.Schedulers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,20 +40,24 @@ import java.util.List;
 public class MemberListFragment extends ListFragment implements AbsListView.MultiChoiceModeListener {
 
     private static final String TAG = MemberListFragment.class.getSimpleName();
+    private static final String DRAW_IN_PROGRESS_KEY = "drawInProgress";
 
-    private List<MemberRowDetails> mRows = new ArrayList<MemberRowDetails>();
-    private MemberListAdapter mAdapter;
 
     private enum Mode {
-        Building, Notify
+        Building, Notify;
     }
+    private List<MemberRowDetails> mRows = new ArrayList<MemberRowDetails>();
 
+    private MemberListAdapter mAdapter;
     private Group mGroup;
+
     private DatabaseManager mDb;
     private FragmentContainer mFragmentContainer;
     private AutoCompleteTextView mCompleteTextView;
-
     private Mode mMode = Mode.Building;
+
+    private ProgressDialog mDrawProgressDialog;
+    private Subscription mDrawSubscription;
 
     /**
      * Factory method for this fragment class
@@ -78,7 +88,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         setRetainInstance(true);
         setHasOptionsMenu(true);
 
-        mDb = OpenSecretSantaApplication.getDatabase();
+        mDb = OpenSecretSantaApplication.getInstance().getDatabase();
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
     }
@@ -107,6 +117,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
         TextView titleText = (TextView) view.findViewById(R.id.content_title_textview);
         titleText.setText(mGroup.getName());
+
         return view;
     }
 
@@ -157,6 +168,12 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(DRAW_IN_PROGRESS_KEY, mDrawSubscription != null);
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.draw_menu, menu);
     }
@@ -180,13 +197,22 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         // Handle *non-contextual* action bar selection
         switch(item.getItemId()) {
             case R.id.menu_draw:
-                doDraw();
+                attemptDraw();
                 return true;
             case R.id.menu_notify:
                 doNotifyAll();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void attemptDraw() {
+        try {
+            mDrawSubscription = doDraw();
+        } catch(InvalidDrawEngineException e) {
+            Log.e(TAG, "Failed to load Draw Engine: " + e.getMessage());
+            Toast.makeText(getActivity(), "Failed to load Draw Engine", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -221,6 +247,14 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     @Override
+    public void onDestroy() {
+        if(mDrawSubscription != null) {
+            mDrawSubscription.unsubscribe();
+        }
+        super.onDestroy();
+    }
+
+    @Override
     public void onDestroyActionMode(ActionMode mode) {
         Log.i(TAG, "onDestroyActionMode()");
     }
@@ -238,31 +272,12 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     /*
-     * Bus methods
+     * Bus method - receives events for changes in the notified state.
      */
 
     @Subscribe
-    public void onAssignmentChanged(AssignmentsEvent event) {
-        Log.i(TAG, "onAssignmentChanged() - got event");
-        mMode = evaluateMode();
-        populateMemberList();
-    }
-
-    @Subscribe
-    public void onDrawResult(DrawResultEvent event) {
-        Log.i(TAG, "onDrawResult() - got event");
-        mMode = evaluateMode();
-        populateMemberList();
-        if(event.isSuccess()) {
-            Toast.makeText(getActivity(), "Draw Success!", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getActivity(), "Draw Failed :(", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Subscribe
     public void onNotifyStatusChanged(NotifyStatusEvent event) {
-        Log.i(TAG, "onNotifyStatusChanged() - got event");
+        Log.i(TAG, "onNotifyStatusChanged() - got event: " + event.getAssignment());
         populateMemberList();
     }
 
@@ -283,16 +298,56 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     private void doNotify(long[] _memberIds) {
-        if(_memberIds != null)
+        if(_memberIds != null) {
             getMemberEditor().onNotifyDraw(mGroup, _memberIds);
+        }
     }
 
     private void doNotifyAll() {
         getMemberEditor().onNotifyDraw(mGroup);
     }
 
-    private void doDraw() {
-        getDrawExecutor().requestDraw(mGroup);
+    private Subscription doDraw() throws InvalidDrawEngineException {
+        Log.v(TAG, "doDraw() - start");
+        // Find the current DrawEngine to use
+        DrawEngine engine = getCurrentDrawEngine();
+
+        // Show the progress dialog
+        showDrawProgressDialog();
+
+        DrawExecutor drawExecutor = new DefaultDrawExecutor(mDb);
+        Observable<DrawResultEvent> ob = drawExecutor.requestDraw(engine, mGroup);
+        return ob.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).
+          subscribe(new Observer<DrawResultEvent>() {
+              @Override
+              public void onCompleted() {
+                  Log.i(TAG, "onCompleted");
+                  mDrawSubscription = null;
+                  mDrawProgressDialog.dismiss();
+                  mDrawProgressDialog = null;
+                  Log.i(TAG, "onDrawResult() - got event");
+                  mMode = evaluateMode();
+                  populateMemberList();
+              }
+
+              @Override
+              public void onError(Throwable e) {
+                  Log.i(TAG, "onError");
+                  mDrawProgressDialog.dismiss();
+                  Toast.makeText(getActivity(), "Draw Failed :(", Toast.LENGTH_SHORT).show();
+              }
+
+              @Override
+              public void onNext(DrawResultEvent args) {
+                  Log.i(TAG, "onNext");
+                  Toast.makeText(getActivity(), "Draw Success!", Toast.LENGTH_SHORT).show();
+              }
+          });
+    }
+
+    private void showDrawProgressDialog() {
+        Log.v(TAG, "showDrawProgressDialog() - start");
+        mDrawProgressDialog = ProgressDialog.show(getActivity(), "", getString(R.string.draw_in_progress_msg), true);
     }
 
     private void doEdit(long _memberId) {
@@ -384,20 +439,46 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         return mDb.queryHasAssignmentsForGroup(mGroup.getId()) ? Mode.Notify : Mode.Building;
     }
 
+    // Returns an instance of the currently preferred DrawEngine
+    private DrawEngine getCurrentDrawEngine() throws InvalidDrawEngineException {
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String defaultName = getActivity().getString(R.string.defaultDrawEngine);
+        String classname = prefs.getString("engine_preference",
+          defaultName);
+
+        Log.i(TAG, "getCurrentDrawEngine() - setting draw engine to: " + classname);
+
+        try {
+            return DrawEngineFactory.createDrawEngine(classname);
+        } catch(InvalidDrawEngineException e) {
+            // Error: If we weren't attempting to load the default name, then try that instead
+            if(!classname.equals(defaultName)) {
+                Log.w(TAG, "Failed to initialise draw engine class: " + classname);
+                try {
+                    // Try to set the default then.
+                    DrawEngine engine = DrawEngineFactory.createDrawEngine(defaultName);
+                    // Success - update preference to use the default.
+                    prefs.edit().putString("engine_preference", defaultName).commit();
+                    return engine;
+                } catch(InvalidDrawEngineException ideexp2) {
+                    Log.e(TAG, "Unable to initialise default draw engine class: " + classname, ideexp2);
+                    throw ideexp2;
+                }
+            }
+            throw e;
+        }
+    }
+
     /*
      * Fragment Container methods
      */
-
-    public DrawExecutor getDrawExecutor() {
-        return mFragmentContainer.getDrawExecutor();
-    }
 
     public MemberEditor getMemberEditor() {
         return mFragmentContainer.getMemberEditor();
     }
 
     public interface FragmentContainer {
-        DrawExecutor getDrawExecutor();
         MemberEditor getMemberEditor();
     }
 }

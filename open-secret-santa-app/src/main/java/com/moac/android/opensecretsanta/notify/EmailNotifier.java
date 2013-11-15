@@ -1,6 +1,7 @@
 package com.moac.android.opensecretsanta.notify;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
@@ -22,11 +23,14 @@ public class EmailNotifier implements Notifier {
     private final GmailOAuth2Sender mGmailSender;
     private final String mSenderAddress; // The device owner's address!
     private final String mToken;
+    private final Handler mHandler;
 
-    public EmailNotifier(Context context, Bus bus, DatabaseManager db,  GmailOAuth2Sender sender, String senderAddress, String token) {
+    public EmailNotifier(Context context, Bus bus, DatabaseManager db, Handler handler,
+                         GmailOAuth2Sender sender, String senderAddress, String token) {
         mContext = context;
         mBus = bus;
         mDb = db;
+        mHandler = handler;
         mGmailSender = sender;
         mSenderAddress = senderAddress;
         mToken = token;
@@ -36,7 +40,7 @@ public class EmailNotifier implements Notifier {
     public void notify(Member _giver, String _receiverName, String _groupMsg) {
         String body = buildMsg(mContext.getString(R.string.standard_assignment_msg), _giver.getName(),
           _receiverName, _groupMsg, mContext.getString(R.string.email_footer_msg));
-        Assignment assignment = mDb.queryAssignmentForMember(_giver.getId());
+        final Assignment assignment = mDb.queryAssignmentForMember(_giver.getId());
 
         try {
             mGmailSender.sendMail(mContext.getString(R.string.email_subject_msg), body, mSenderAddress,
@@ -49,7 +53,12 @@ public class EmailNotifier implements Notifier {
         // Persist the result
         mDb.update(assignment);
         // Notify via bus
-        mBus.post(new NotifyStatusEvent(assignment));
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mBus.post(new NotifyStatusEvent(assignment));
+            }
+        });
     }
 
     /**

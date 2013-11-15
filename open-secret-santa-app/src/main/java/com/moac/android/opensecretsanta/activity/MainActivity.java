@@ -13,30 +13,31 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import com.google.common.primitives.Longs;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.adapter.GroupListAdapter;
 import com.moac.android.opensecretsanta.adapter.GroupRowDetails;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.draw.DrawExecutor;
 import com.moac.android.opensecretsanta.draw.MemberEditor;
-import com.moac.android.opensecretsanta.fragment.DrawExecutorFragment;
 import com.moac.android.opensecretsanta.fragment.MemberListFragment;
 import com.moac.android.opensecretsanta.fragment.NotifyDialogFragment;
+import com.moac.android.opensecretsanta.fragment.NotifyExecutorFragment;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
+import com.moac.android.opensecretsanta.notify.NotifyExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity implements MemberListFragment.FragmentContainer, MemberEditor {
+public class MainActivity extends Activity implements MemberListFragment.FragmentContainer, NotifyDialogFragment.FragmentContainer, MemberEditor {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final String MEMBERS_LIST_FRAGMENT_TAG = "MemberListFragment";
-    private static final String DRAW_EXECUTOR_FRAGMENT_TAG = "DrawExecutorFragment";
-    private static final String NOTIFY_FRAGMENT_TAG = "NotifyDialogFragment";
+    private static final String NOTIFY_DIALOG_FRAGMENT_TAG = "NotifyDialogFragment";
+    private static final String NOTIFY_EXECUTOR_FRAGMENT_TAG = "NotifyExecutorFragment";
     private static final String MOST_RECENT_GROUP_KEY = "most_recent_group_id";
 
     protected DrawerLayout mDrawerLayout;
@@ -44,20 +45,22 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     protected ListView mDrawerList;
     protected DatabaseManager mDb; // shorthand.
     protected MemberListFragment mMembersListFragment;
-    protected DrawExecutorFragment mDrawExecutorFragment;
+    private NotifyExecutorFragment mNotifyExecutorFragment;
 
     @Override
     public void onCreate(Bundle _savedInstanceState) {
         super.onCreate(_savedInstanceState);
-        mDb = OpenSecretSantaApplication.getDatabase();
+        mDb = OpenSecretSantaApplication.getInstance().getDatabase();
 
-        // Find existing worker fragment
+        // Find or create existing worker fragment
         FragmentManager fm = getFragmentManager();
-        mDrawExecutorFragment = (DrawExecutorFragment) fm.findFragmentByTag(DRAW_EXECUTOR_FRAGMENT_TAG);
 
-        if (mDrawExecutorFragment == null) {
-            mDrawExecutorFragment = DrawExecutorFragment.create();
-            fm.beginTransaction().add(mDrawExecutorFragment, DRAW_EXECUTOR_FRAGMENT_TAG).commit();
+        // Find or create existing worker fragment
+        mNotifyExecutorFragment = (NotifyExecutorFragment) fm.findFragmentByTag(NOTIFY_EXECUTOR_FRAGMENT_TAG);
+
+        if (mNotifyExecutorFragment == null) {
+            mNotifyExecutorFragment = NotifyExecutorFragment.create();
+            fm.beginTransaction().add(mNotifyExecutorFragment, NOTIFY_EXECUTOR_FRAGMENT_TAG).commit();
         }
         initialiseUI();
     }
@@ -150,26 +153,31 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
 
     @Override
     public void onNotifyDraw(Group _group, long[] _memberIds) {
-        Log.i(TAG, "onNotifyDraw() - Requesting Notify member set");
+        Log.i(TAG, "onNotifyDraw() - Requesting Notify member set size:" + _memberIds.length);
         DialogFragment dialog = NotifyDialogFragment.create(_group.getId(), _memberIds);
-        dialog.show(getFragmentManager(), NOTIFY_FRAGMENT_TAG);
+        dialog.show(getFragmentManager(), NOTIFY_DIALOG_FRAGMENT_TAG);
     }
 
     @Override
     public void onNotifyDraw(Group _group) {
         Log.i(TAG, "onNotifyDraw() - Requesting Notify entire Group");
         List<Member> members = mDb.queryAllMembersForGroup(_group.getId());
-        // TODO Handle send all.
+        List<Long> memberIds = new ArrayList<Long>(members.size());
+        for(Member member: members) {
+            memberIds.add(member.getId());
+        }
+        DialogFragment dialog = NotifyDialogFragment.create(_group.getId(), Longs.toArray(memberIds));
+        dialog.show(getFragmentManager(), NOTIFY_DIALOG_FRAGMENT_TAG);
     }
 
     private void populateGroupRowDetailsList(ListView _groupRowDetailsList) {
         // Retrieve the list of groups from database.
-        List<Group> groups = OpenSecretSantaApplication.getDatabase().queryAll(Group.class);
+        List<Group> groups = OpenSecretSantaApplication.getInstance().getDatabase().queryAll(Group.class);
 
         Log.v(TAG, "initialiseUI() - group count: " + groups.size());
         List<GroupRowDetails> groupRowDetails = new ArrayList<GroupRowDetails>();
         for (Group g : groups) {
-            List<Member> groupMembers = OpenSecretSantaApplication.getDatabase().queryAllMembersForGroup(g.getId());
+            List<Member> groupMembers = OpenSecretSantaApplication.getInstance().getDatabase().queryAllMembersForGroup(g.getId());
             groupRowDetails.add(new GroupRowDetails(g.getId(), g.getName(), g.getCreatedAt(), groupMembers));
         }
         ((GroupListAdapter) _groupRowDetailsList.getAdapter()).update(groupRowDetails);
@@ -184,14 +192,14 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     }
 
     @Override
-    public DrawExecutor getDrawExecutor() {
-        return mDrawExecutorFragment;
-    }
-
-    @Override
     public MemberEditor getMemberEditor() {
         // FIXME for now.
         return this;
+    }
+
+    @Override
+    public NotifyExecutor getNotifyExecutor() {
+        return mNotifyExecutorFragment;
     }
 
     private class GroupListItemClickListener implements AdapterView.OnItemClickListener {
