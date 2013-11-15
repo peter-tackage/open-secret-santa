@@ -19,9 +19,7 @@ import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.adapter.GroupListAdapter;
 import com.moac.android.opensecretsanta.adapter.GroupRowDetails;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.draw.DrawExecutor;
 import com.moac.android.opensecretsanta.draw.MemberEditor;
-import com.moac.android.opensecretsanta.fragment.DrawExecutorFragment;
 import com.moac.android.opensecretsanta.fragment.MemberListFragment;
 import com.moac.android.opensecretsanta.fragment.NotifyDialogFragment;
 import com.moac.android.opensecretsanta.fragment.NotifyExecutorFragment;
@@ -38,7 +36,6 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final String MEMBERS_LIST_FRAGMENT_TAG = "MemberListFragment";
-    private static final String DRAW_EXECUTOR_FRAGMENT_TAG = "DrawExecutorFragment";
     private static final String NOTIFY_DIALOG_FRAGMENT_TAG = "NotifyDialogFragment";
     private static final String NOTIFY_EXECUTOR_FRAGMENT_TAG = "NotifyExecutorFragment";
     private static final String MOST_RECENT_GROUP_KEY = "most_recent_group_id";
@@ -48,7 +45,6 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     protected ListView mDrawerList;
     protected DatabaseManager mDb; // shorthand.
     protected MemberListFragment mMembersListFragment;
-    protected DrawExecutorFragment mDrawExecutorFragment;
     private NotifyExecutorFragment mNotifyExecutorFragment;
 
     @Override
@@ -58,12 +54,6 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
 
         // Find or create existing worker fragment
         FragmentManager fm = getFragmentManager();
-        mDrawExecutorFragment = (DrawExecutorFragment) fm.findFragmentByTag(DRAW_EXECUTOR_FRAGMENT_TAG);
-
-        if (mDrawExecutorFragment == null) {
-            mDrawExecutorFragment = DrawExecutorFragment.create();
-            fm.beginTransaction().add(mDrawExecutorFragment, DRAW_EXECUTOR_FRAGMENT_TAG).commit();
-        }
 
         // Find or create existing worker fragment
         mNotifyExecutorFragment = (NotifyExecutorFragment) fm.findFragmentByTag(NOTIFY_EXECUTOR_FRAGMENT_TAG);
@@ -199,11 +189,6 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         if (groupId == PersistableObject.UNSET_ID)
             return;
         showGroup(groupId);
-    }
-
-    @Override
-    public DrawExecutor getDrawExecutor() {
-        return mDrawExecutorFragment;
     }
 
     @Override
