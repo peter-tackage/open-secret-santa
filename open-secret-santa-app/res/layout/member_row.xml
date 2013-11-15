@@ -5,7 +5,7 @@
   android:orientation="horizontal"
   android:padding="4dp"
   android:background="@drawable/member_listview_row"
-  android:alpha="0.98"
+  android:alpha="0.95"
   android:id="@+id/member_relativeLayout">
 
   <!-- android:background sets visual indicator of list item selection -->
@@ -44,7 +44,8 @@
     android:layout_toLeftOf="@+id/restriction_count_textview"
     android:layout_toRightOf="@+id/member_imageview"
     android:textAppearance="@android:style/TextAppearance.Medium"
-    android:textColor="@android:color/holo_blue_light" />
+    android:textColor="@android:color/holo_blue_light"
+    android:layout_above="@+id/contact_address_textview"/>
 
   <TextView
     android:layout_width="wrap_content"
@@ -56,11 +57,10 @@
     android:layout_toRightOf="@+id/member_imageview"
     android:layout_toLeftOf="@+id/restriction_count_textview"
     android:singleLine="true"
-    android:textColor="@color/dark_grey"
+    android:textColor="@android:color/holo_green_light"
     android:textSize="12sp"
-    android:paddingTop="4dp"
     android:textAppearance="@android:style/TextAppearance.Small"
-    android:layout_below="@+id/member_name_textview" />
+    android:layout_alignBottom="@+id/member_imageview"/>
 
   <TextView
     android:id="@+id/restriction_count_textview"
