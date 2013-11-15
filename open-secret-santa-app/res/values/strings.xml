@@ -3,7 +3,7 @@
 
   <!-- Add member search -->
   <string name="search_label">Search</string>
-  <string name="search_hint_label">Invite your friends</string>
+  <string name="search_hint_label">Add people to the group</string>
   <string name="search_setting_description">Your contacts</string>
 
   <!-- New Member -->

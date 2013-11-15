@@ -1,16 +1,18 @@
 package com.moac.android.opensecretsanta;
 
-import android.accounts.*;
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerFuture;
 import android.app.Application;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import com.moac.android.opensecretsanta.model.ContactMode;
 import com.moac.android.opensecretsanta.database.DatabaseHelper;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.notify.mail.GmailOAuth2Sender;
+import com.moac.android.opensecretsanta.model.ContactMode;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.Restriction;
+import com.moac.android.opensecretsanta.notify.mail.GmailOAuth2Sender;
 import com.moac.android.opensecretsanta.util.Utils;
 
 public class OpenSecretSantaApplication extends Application {
@@ -94,23 +96,23 @@ public class OpenSecretSantaApplication extends Application {
     private void createTestDraw(int _instance ) {
         // Add a Group
         Group group1 = new Group();
-        group1.setName("Test Group - 1 " + _instance);
+        group1.setName("Party " + _instance);
         sDatabaseManager.create(group1);
 
         // Add some Members
         Member m1 = new Member();
-        m1.setName("John Goodman"+_instance);
+        m1.setName("Grandpa");
         m1.setContactMode(ContactMode.REVEAL_ONLY);
 
         Member m2 = new Member();
-        m2.setName("Mary Arthur"+_instance);
+        m2.setName("Auntie Mary");
         m2.setContactMode(ContactMode.EMAIL);
-        m2.setContactAddress("test@tester.com");
+        m2.setContactAddress("auntie@mary.com");
 
         Member m3 = new Member();
-        m3.setName("Some Person"+_instance);
+        m3.setName("Melissa");
         m3.setContactMode(ContactMode.SMS);
-        m3.setContactAddress("+49232267513213");
+        m3.setContactAddress("+1234567890");
 
         m1.setGroup(group1);
         m2.setGroup(group1);
