@@ -1,10 +1,8 @@
 package com.moac.android.opensecretsanta.notify;
 
 import com.moac.android.opensecretsanta.model.Group;
-import com.moac.android.opensecretsanta.model.Member;
-
-import java.util.List;
+import rx.Observable;
 
 public interface NotifyExecutor {
-    public void notifyDraw(Group group, long[] membersIds);
+    public Observable<NotifyStatusEvent> notifyDraw(Group group, long[] membersIds);
 }

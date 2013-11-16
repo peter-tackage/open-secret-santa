@@ -40,7 +40,7 @@ public class AssignmentFragment extends DialogFragment {
         builder.setIcon(R.drawable.ic_menu_reveal);
 
         // Pass null as the parent view because its going in the dialog layout
-        View view = inflater.inflate(R.layout.assignment_fragment_dialog, null);
+        View view = inflater.inflate(R.layout.fragment_dialog_assignment, null);
 
         // Extract arguments
         String giverName = getArguments().getString(GIVER_NAME_EXTRA);

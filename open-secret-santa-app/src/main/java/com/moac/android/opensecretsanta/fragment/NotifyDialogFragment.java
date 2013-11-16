@@ -22,7 +22,6 @@ import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
-import com.moac.android.opensecretsanta.notify.NotifyExecutor;
 import com.squareup.picasso.Picasso;
 
 public class NotifyDialogFragment extends DialogFragment {
@@ -72,7 +71,7 @@ public class NotifyDialogFragment extends DialogFragment {
 
         // Inflate layout
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.notify_fragment_dialog, null);
+        View view = inflater.inflate(R.layout.fragment_dialog_notify, null);
 
         // Take the values and populate the dialog
         builder.setTitle("Notify Group");
@@ -124,7 +123,7 @@ public class NotifyDialogFragment extends DialogFragment {
                 // Get the custom message.
                 mGroup.setMessage(mMsgField.getText().toString().trim());
                 mDb.update(mGroup);
-                getNotifyExecutor().notifyDraw(mGroup, mMemberIds);
+                notifyDraw(mGroup, mMemberIds);
             }
         });
 
@@ -159,11 +158,11 @@ public class NotifyDialogFragment extends DialogFragment {
         }
     }
 
-    NotifyExecutor getNotifyExecutor() {
-        return mFragmentContainer.getNotifyExecutor();
+    void notifyDraw(Group group, long[] members) {
+        mFragmentContainer.notifyDraw(group, members);
     }
 
     public interface FragmentContainer {
-        NotifyExecutor getNotifyExecutor();
+        public void notifyDraw(Group group, long[] members);
     }
 }

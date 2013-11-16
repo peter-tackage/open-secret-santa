@@ -99,7 +99,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         Log.i(TAG, "onCreateView()");
 
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.members_list_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_members_list, container, false);
 
         mCompleteTextView = (AutoCompleteTextView) view.findViewById(R.id.add_autoCompleteTextView);
         mCompleteTextView.setThreshold(1);
@@ -299,12 +299,12 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     private void doNotify(long[] _memberIds) {
         if(_memberIds != null) {
-            getMemberEditor().onNotifyDraw(mGroup, _memberIds);
+            requestNotifyDraw(mGroup, _memberIds);
         }
     }
 
     private void doNotifyAll() {
-        getMemberEditor().onNotifyDraw(mGroup);
+        requestNotifyDraw(mGroup);
     }
 
     private Subscription doDraw() throws InvalidDrawEngineException {
@@ -474,11 +474,20 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
      * Fragment Container methods
      */
 
-    public MemberEditor getMemberEditor() {
+    MemberEditor getMemberEditor() {
         return mFragmentContainer.getMemberEditor();
+    }
+
+    void requestNotifyDraw(Group group) {
+        mFragmentContainer.requestNotifyDraw(group);
+    }
+    void requestNotifyDraw(Group group, long[] memberIds) {
+        mFragmentContainer.requestNotifyDraw(group, memberIds);
     }
 
     public interface FragmentContainer {
         MemberEditor getMemberEditor();
+        void requestNotifyDraw(Group group);
+        void requestNotifyDraw(Group group, long[] memberIds);
     }
 }

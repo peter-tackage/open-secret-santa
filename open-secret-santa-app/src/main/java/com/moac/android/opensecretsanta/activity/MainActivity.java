@@ -26,7 +26,7 @@ import com.moac.android.opensecretsanta.fragment.NotifyExecutorFragment;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
-import com.moac.android.opensecretsanta.notify.NotifyExecutor;
+import com.moac.android.opensecretsanta.notify.DrawNotifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,8 +65,13 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         initialiseUI();
     }
 
+    @Override
+    public void notifyDraw(Group group, long[] members) {
+       mNotifyExecutorFragment.notifyDraw(group, members);
+    }
+
     private void initialiseUI() {
-        setContentView(R.layout.new_draw_activity);
+        setContentView(R.layout.activity_main);
         mDrawerList = (ListView) findViewById(R.id.left_drawer_list);
         mDrawerList.setAdapter(new GroupListAdapter(this));
         mDrawerList.setOnItemClickListener(new GroupListItemClickListener());
@@ -152,14 +157,14 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     }
 
     @Override
-    public void onNotifyDraw(Group _group, long[] _memberIds) {
+    public void requestNotifyDraw(Group _group, long[] _memberIds) {
         Log.i(TAG, "onNotifyDraw() - Requesting Notify member set size:" + _memberIds.length);
         DialogFragment dialog = NotifyDialogFragment.create(_group.getId(), _memberIds);
         dialog.show(getFragmentManager(), NOTIFY_DIALOG_FRAGMENT_TAG);
     }
 
     @Override
-    public void onNotifyDraw(Group _group) {
+    public void requestNotifyDraw(Group _group) {
         Log.i(TAG, "onNotifyDraw() - Requesting Notify entire Group");
         List<Member> members = mDb.queryAllMembersForGroup(_group.getId());
         List<Long> memberIds = new ArrayList<Long>(members.size());
@@ -194,12 +199,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     @Override
     public MemberEditor getMemberEditor() {
         // FIXME for now.
-        return this;
-    }
-
-    @Override
-    public NotifyExecutor getNotifyExecutor() {
-        return mNotifyExecutorFragment;
+        throw new UnsupportedOperationException("No MemberEditor yet");
     }
 
     private class GroupListItemClickListener implements AdapterView.OnItemClickListener {
