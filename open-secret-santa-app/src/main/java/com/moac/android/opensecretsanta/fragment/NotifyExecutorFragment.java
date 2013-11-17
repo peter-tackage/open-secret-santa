@@ -12,6 +12,7 @@ import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.notify.DefaultNotifyExecutor;
 import com.moac.android.opensecretsanta.notify.DrawNotifier;
+import com.moac.android.opensecretsanta.notify.NotifyAuthorization;
 import com.moac.android.opensecretsanta.notify.NotifyStatusEvent;
 import com.squareup.otto.Bus;
 import rx.Observable;
@@ -25,7 +26,7 @@ public class NotifyExecutorFragment extends Fragment implements DrawNotifier, Ob
     private static final String TAG = NotifyExecutorFragment.class.getSimpleName();
 
     // TODO Inject
-    // TODO We don't handle multiple requests
+    // TODO We don't handle multiple requests at once
     DatabaseManager mDb;
     Bus mBus;
     private ProgressDialog mDrawProgressDialog;
@@ -45,19 +46,19 @@ public class NotifyExecutorFragment extends Fragment implements DrawNotifier, Ob
     }
 
     @Override
-    public void notifyDraw(Group group, long[] memberIds) {
+    public void notifyDraw(NotifyAuthorization auth, Group group, long[] memberIds) {
         // Show the progress dialog
         showDrawProgressDialog();
         // FIXME Um... what if it exists already
         Log.i(TAG, "Current thread is: " + Thread.currentThread().toString());
-        mSubscription = createNotifyObservable(group, memberIds)
+        mSubscription = createNotifyObservable(auth, group, memberIds)
           .observeOn(AndroidSchedulers.mainThread())
           .subscribeOn(Schedulers.newThread())
           .subscribe(this);
     }
 
-    private Observable<NotifyStatusEvent> createNotifyObservable(Group group, long[] memberIds) {
-        DefaultNotifyExecutor executor = new DefaultNotifyExecutor(getActivity(), mDb, mBus);
+    private Observable<NotifyStatusEvent> createNotifyObservable(NotifyAuthorization auth, Group group, long[] memberIds) {
+        DefaultNotifyExecutor executor = new DefaultNotifyExecutor(getActivity(), auth, mDb, mBus);
         return executor.notifyDraw(group, memberIds);
     }
 
@@ -88,6 +89,7 @@ public class NotifyExecutorFragment extends Fragment implements DrawNotifier, Ob
         if(mDrawProgressDialog != null && mDrawProgressDialog.isShowing()) {
             dismissProgressDialog();
         }
+        super.onDestroy();
     }
 
     private void showDrawProgressDialog() {

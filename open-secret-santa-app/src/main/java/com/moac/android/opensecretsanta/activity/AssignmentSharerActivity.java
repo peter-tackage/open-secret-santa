@@ -681,7 +681,7 @@ public class AssignmentSharerActivity extends Activity {
 //                mAccount = null;
 //                if(authRequired) {
 //                    try {
-//                        mAccount = ((OpenSecretSantaApplication) getApplication()).getAvailableGmailAccount();
+//                        mAccount = ((OpenSecretSantaApplication) getApplication()).getPreferedGmailAccount();
 //                        if(mAccount != null) {// Now let's get the token
 //                            Log.v(TAG, "openShareDialog() - got account: " + mAccount.toString());
 //                            // This might open the auth dialog.

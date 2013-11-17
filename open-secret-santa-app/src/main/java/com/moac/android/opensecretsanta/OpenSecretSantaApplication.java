@@ -50,47 +50,6 @@ public class OpenSecretSantaApplication extends Application {
         return new DatabaseManager(databaseHelper);
     }
 
-    public Account getAvailableGmailAccount() {
-        Log.i(TAG, "getAvailableGmailAccount() - start");
-        Account result = null;
-        // Use the one in the preferences, otherwise just pick the first one.
-        String emailPrefKey =  getString(R.string.gmail_account_preference);
-        String emailAddress = PreferenceManager.getDefaultSharedPreferences(this).getString(emailPrefKey, null);
-
-        Log.v(TAG, "getAvailableGmailAccount() - current Gmail Account preference: " + emailAddress);
-
-        AccountManagerFuture<Account[]> accountsFuture =
-              AccountManager.get(this).getAccountsByTypeAndFeatures(GmailOAuth2Sender.ACCOUNT_TYPE_GOOGLE, GmailOAuth2Sender.FEATURES_MAIL, null, null);
-            try {
-                Account[] accounts = accountsFuture.getResult();
-                if(accounts != null && accounts.length > 0) {
-                    Log.v(TAG, "getAvailableGmailAccount() - found some Gmail Accounts, size: " + accounts.length);
-                    if (emailAddress == null) {
-                        Log.v(TAG, "getAvailableGmailAccount() - no preference, so use first Gmail account.");
-                        //String token = AccountManager.get(this).peekAuthToken();
-                        // Set into preferences for next time.
-                       PreferenceManager.getDefaultSharedPreferences(this).edit().putString(emailPrefKey, accounts[0].name).commit();
-                       return accounts[0];
-                   } else {
-                        Log.v(TAG, "getAvailableGmailAccount() - found Gmail preference: " + emailAddress);
-                        // Find matching account
-                       for (int i=0; i < accounts.length; i++) {
-                           Account acc = accounts[i];
-                           if (acc.name.equals(emailAddress)){
-                               result = acc;
-                               break;
-                           }
-                       }
-                   }
-                }
-            } catch(Exception e) {
-               Log.e(TAG, "getAvailableGmailAccount() - Error when fetching account", e);
-            }
-        Log.v(TAG, "getAvailableGmailAccount() - returning Gmail Account: " + result);
-
-        return result;
-    }
-
     private void loadTestData() {
         createTestDraw(0);
         createTestDraw(1);
@@ -113,12 +72,12 @@ public class OpenSecretSantaApplication extends Application {
         Member m2 = new Member();
         m2.setName("Mary Arthur"+_instance);
         m2.setContactMode(ContactMode.EMAIL);
-        m2.setContactAddress("test@tester.com");
+        m2.setContactAddress("peter.tackage@gmail.com");
 
         Member m3 = new Member();
         m3.setName("Some Person"+_instance);
         m3.setContactMode(ContactMode.SMS);
-        m3.setContactAddress("+49232267513213");
+        m3.setContactAddress("+4923229967513213");
 
         m1.setGroup(group1);
         m2.setGroup(group1);

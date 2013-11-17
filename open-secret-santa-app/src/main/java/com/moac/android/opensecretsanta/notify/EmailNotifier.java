@@ -81,14 +81,14 @@ public class EmailNotifier implements Notifier {
 //        mAccount = null;
 //        if(authRequired) {
 //            try {
-//                mAccount = ((OpenSecretSantaApplication) getApplication()).getAvailableGmailAccount();
-//                if(mAccount != null) {// Now let's get the token
+//                mAccount = ((OpenSecretSantaApplication) getApplication()).getPreferedGmailAccount();
+//                if(mAccount != null) {// Now let's get the mToken
 //                    Log.v(TAG, "openShareDialog() - got account: " + mAccount.toString());
 //                    // This might open the auth dialog.
 //                    AccountManagerFuture<Bundle> authTokenBundle = AccountManager.get(AssignmentSharerActivity.this).
 //                      getAuthToken(mAccount, Constants.GMAIL_TOKEN_TYPE , null, AssignmentSharerActivity.this, null, null);
 //                    mToken = authTokenBundle.getResult().getString(AccountManager.KEY_AUTHTOKEN);
-//                    Log.v(TAG, "openShareDialog() - got account token: " + mToken);
+//                    Log.v(TAG, "openShareDialog() - got account mToken: " + mToken);
 //                }
 //            } catch(Exception e) {
 //                Log.e(TAG, "openShareDialog() - Exception when obtaining authToken", e);

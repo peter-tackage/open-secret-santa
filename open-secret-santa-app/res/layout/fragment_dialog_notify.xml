@@ -8,14 +8,22 @@
   android:background="@android:color/transparent">
 
   <LinearLayout
-    android:id="@+id/avatar_container_layout"
+    android:id="@+id/layout_avatar_container"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="8dp" />
+    android:paddingBottom="8dp"
+    android:layout_alignParentTop="true"
+    android:layout_centerHorizontal="true">
+
+    <Spinner
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:id="@+id/spnr_email_selection" />
+  </LinearLayout>
 
   <EditText
-    android:id="@+id/messageTxtEditText"
+    android:id="@+id/tv_notify_msg"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:scrollbars="vertical"
@@ -26,22 +34,22 @@
     android:textAppearance="?android:attr/textAppearanceSmall"
     android:inputType="textMultiLine|textLongMessage|textCapSentences"
     android:maxLength="500"
-    android:layout_below="@+id/avatar_container_layout" />
+    android:layout_below="@+id/layout_avatar_container" />
 
   <TextView
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
-    android:layout_below="@+id/messageTxtEditText"
+    android:layout_below="@+id/tv_notify_msg"
     android:textAppearance="?android:attr/textAppearanceSmall"
     android:text="@string/message_count_label"
     android:id="@+id/textView" />
 
   <TextView
-    android:id="@+id/msg_char_count"
+    android:id="@+id/tv_notify_msg_char_count"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textAppearance="?android:attr/textAppearanceSmall"
     android:layout_toRightOf="@+id/textView"
-    android:layout_below="@+id/messageTxtEditText" />
+    android:layout_below="@+id/tv_notify_msg" />
 
 </RelativeLayout>

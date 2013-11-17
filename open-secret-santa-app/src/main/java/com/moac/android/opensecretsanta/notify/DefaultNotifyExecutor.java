@@ -1,9 +1,14 @@
 package com.moac.android.opensecretsanta.notify;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerFuture;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Group;
@@ -20,13 +25,15 @@ public class DefaultNotifyExecutor implements NotifyExecutor {
 
     // TODO Inject
     private final Context mContext;
+    private final NotifyAuthorization mAuth;
     DatabaseManager mDb;
     Bus mBus;
 
     private static final String TAG = DefaultNotifyExecutor.class.getSimpleName();
 
-    public DefaultNotifyExecutor(Context context, DatabaseManager db, Bus bus) {
+    public DefaultNotifyExecutor(Context context, NotifyAuthorization auth, DatabaseManager db, Bus bus) {
         mContext = context;
+        mAuth = auth;
         mDb = db;
         mBus = bus;
     }
@@ -36,6 +43,8 @@ public class DefaultNotifyExecutor implements NotifyExecutor {
         return Observable.create(new Observable.OnSubscribeFunc<NotifyStatusEvent>() {
             @Override
             public Subscription onSubscribe(Observer<? super NotifyStatusEvent> observer) {
+
+                // TODO Think better about how to handle failures - should we reset all first?
                 Handler handler = new Handler(Looper.getMainLooper());
                 // Iterate through the provided members - get their Assignment.
                 for(long memberId : memberIds) {
@@ -44,7 +53,6 @@ public class DefaultNotifyExecutor implements NotifyExecutor {
                     if(assignment == null) {
                         Log.e(TAG, "executeNotify() - No Assignment for Member: " + member.getName());
                         observer.onError(new Exception("No Assignment for Member: " + member.getName()));
-                        observer.onCompleted(); // This is really bad!
                         return Subscriptions.empty();
                     }
 
@@ -55,27 +63,43 @@ public class DefaultNotifyExecutor implements NotifyExecutor {
                     switch(member.getContactMode()) {
                         case SMS:
                             Log.i(TAG, "executeNotify() - Building SMS Notifier for: " + member.getName());
+                            // Reset the existing state
                             assignment.setSendStatus(Assignment.Status.Assigned);
                             observer.onNext(new NotifyStatusEvent(assignment));
                             mDb.update(assignment);
+
+                            // Build the notifier and execute
                             SmsNotifier smsNotifier = new SmsNotifier(mContext, new SmsSendReceiver(mBus, mDb), true);
                             smsNotifier.notify(member, giftReceiver.getName(), group.getMessage());
                             break;
                         case EMAIL:
                             Log.i(TAG, "executeNotify() - Building Email Notifier for: " + member.getName());
+                            // Reset the existing state
                             assignment.setSendStatus(Assignment.Status.Assigned);
                             observer.onNext(new NotifyStatusEvent(assignment));
                             mDb.update(assignment);
+
+                            // Get the authorization
+                            if(mAuth.getEmailAuth() == null) {
+                                // This is fatal
+                                observer.onError(new Exception("No Gmail Authorization found"));
+                                assignment.setSendStatus(Assignment.Status.Failed);
+                                mDb.update(assignment);
+                                return Subscriptions.empty();
+                            }
+                            String senderEmail = mAuth.getEmailAuth().getEmailAddress();
+                            String token = mAuth.getEmailAuth().getToken();
+
+                            // Build the notifier and execute
                             GmailOAuth2Sender sender = new GmailOAuth2Sender();
-                            // FIXME Use Account details
                             EmailNotifier emailNotifier = new EmailNotifier(mContext, mBus, mDb,
-                              handler, sender, "senderAddress@somewehre.com", "accountToken");
+                              handler, sender, senderEmail, token);
                             emailNotifier.notify(member, giftReceiver.getName(), group.getMessage());
                             break;
                         case REVEAL_ONLY:
                             break;
                         default:
-                            Log.e(TAG, "executeNotify() - Unknown contact mode: " + member.getContactMode());
+                            Log.e(TAG, "executeNotify() - Unsupported contact mode: " + member.getContactMode());
                     }
                 }
                 observer.onCompleted();

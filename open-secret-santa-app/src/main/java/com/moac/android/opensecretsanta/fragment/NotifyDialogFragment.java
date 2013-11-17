@@ -1,11 +1,11 @@
 package com.moac.android.opensecretsanta.fragment;
 
+import android.accounts.Account;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,21 +13,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.Intents;
+import com.moac.android.opensecretsanta.adapter.AccountAdapter;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Group;
-import com.moac.android.opensecretsanta.model.Member;
-import com.squareup.picasso.Picasso;
+import com.moac.android.opensecretsanta.util.AccountUtils;
+import rx.Observable;
+import rx.android.concurrency.AndroidSchedulers;
+import rx.concurrency.Schedulers;
+import rx.util.functions.Action1;
 
 public class NotifyDialogFragment extends DialogFragment {
 
     private static final String TAG = NotifyDialogFragment.class.getSimpleName();
-    private static final String MESSAGE_TAG = "MESSAGE";
+    private static final String MESSAGE_KEY = "message";
 
     protected EditText mMsgField;
     protected DatabaseManager mDb;
@@ -65,7 +68,7 @@ public class NotifyDialogFragment extends DialogFragment {
         mGroup = mDb.queryById(groupId, Group.class);
 
         String message = mSavedMsg == null ? mGroup.getMessage() :
-          savedInstanceState.getString(MESSAGE_TAG);
+          savedInstanceState.getString(MESSAGE_KEY);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -77,10 +80,10 @@ public class NotifyDialogFragment extends DialogFragment {
         builder.setTitle("Notify Group");
         builder.setIcon(R.drawable.ic_menu_notify);
 
-        mMsgField = (EditText) view.findViewById(R.id.messageTxtEditText);
+        mMsgField = (EditText) view.findViewById(R.id.tv_notify_msg);
         mMsgField.setText(message);
 
-        final TextView charCountView = (TextView) view.findViewById(R.id.msg_char_count);
+        final TextView charCountView = (TextView) view.findViewById(R.id.tv_notify_msg_char_count);
         charCountView.setText(String.valueOf(mMsgField.length()));
 
         // Add the callback to the field
@@ -98,22 +101,37 @@ public class NotifyDialogFragment extends DialogFragment {
             }
         });
 
-        if(mMemberIds != null) {
-            LinearLayout container = (LinearLayout) view.findViewById(R.id.avatar_container_layout);
-            for(long id : mMemberIds) {
-                Member member = mDb.queryById(id, Member.class);
-                Uri uri = member.getContactUri(getActivity());
-                if(uri != null) {
-                    Log.v(TAG, "onCreateDialog() - adding avatar: " + member.getName());
-                    Log.v(TAG, "onCreateDialog() - uri: " + uri);
-                    ImageView avatar = new ImageView(getActivity());
-                    avatar.setLayoutParams(new LinearLayout.LayoutParams(80, 80));
-                    avatar.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    container.addView(avatar);
-                    Picasso.with(getActivity()).load(uri).into(avatar);
-                }
-            }
-        }
+        final Spinner spinner = (Spinner) view.findViewById(R.id.spnr_email_selection);
+        final Observable<Account[]> accountsObservable = AccountUtils.getAllGmailAccountsObservable(getActivity());
+
+        accountsObservable.
+          subscribeOn(Schedulers.newThread()).
+          observeOn(AndroidSchedulers.mainThread()).
+          subscribe(new Action1<Account[]>() {
+              @Override
+              public void call(Account[] accounts) {
+                  Log.i(TAG, "Found accounts: " + accounts);
+                  AccountAdapter aa = new AccountAdapter(getActivity(), accounts);
+                  spinner.setAdapter(aa);
+              }
+          });
+
+//        if(mMemberIds != null) {
+//            LinearLayout container = (LinearLayout) view.findViewById(R.id.layout_avatar_container);
+//            for(long id : mMemberIds) {
+//                Member member = mDb.queryById(id, Member.class);
+//                Uri uri = member.getContactUri(getActivity());
+//                if(uri != null) {
+//                    Log.v(TAG, "onCreateDialog() - adding avatar: " + member.getName());
+//                    Log.v(TAG, "onCreateDialog() - uri: " + uri);
+//                    ImageView avatar = new ImageView(getActivity());
+//                    avatar.setLayoutParams(new LinearLayout.LayoutParams(80, 80));
+//                    avatar.setScaleType(ImageView.ScaleType.CENTER_CROP);
+//                    container.addView(avatar);
+//                    Picasso.with(getActivity()).load(uri).into(avatar);
+//                }
+//            }
+//        }
 
         builder.setCancelable(true);
         builder.setNegativeButton(android.R.string.cancel, null);
@@ -135,9 +153,9 @@ public class NotifyDialogFragment extends DialogFragment {
     public void onSaveInstanceState(Bundle outState) {
         Log.i(TAG, "onSaveInstanceState()");
         super.onSaveInstanceState(outState);
-        outState.putString(MESSAGE_TAG, mMsgField.getText().toString());
-        Log.d(TAG, "onSaveInstanceState() msg: " + outState.getString(MESSAGE_TAG));
-        mSavedMsg = outState.getString(MESSAGE_TAG);
+        outState.putString(MESSAGE_KEY, mMsgField.getText().toString());
+        Log.d(TAG, "onSaveInstanceState() msg: " + outState.getString(MESSAGE_KEY));
+        mSavedMsg = outState.getString(MESSAGE_KEY);
     }
 
     @Override
@@ -159,10 +177,10 @@ public class NotifyDialogFragment extends DialogFragment {
     }
 
     void notifyDraw(Group group, long[] members) {
-        mFragmentContainer.notifyDraw(group, members);
+        mFragmentContainer.executeNotifyDraw(group, members);
     }
 
     public interface FragmentContainer {
-        public void notifyDraw(Group group, long[] members);
+        public void executeNotifyDraw(Group group, long[] members);
     }
 }
