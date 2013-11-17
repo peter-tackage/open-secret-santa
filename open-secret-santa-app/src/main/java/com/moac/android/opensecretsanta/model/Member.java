@@ -53,8 +53,8 @@ public final class Member extends PersistableObject  {
     public String getContactDetails() { return mContactDetails; }
     public void setContactAddress(String _contactDetails) { mContactDetails = _contactDetails; }
 
-    public ContactMethod getContactMode() { return mContactMethod; }
-    public void setContactMode(ContactMethod _contactMethod) { mContactMethod = _contactMethod; }
+    public ContactMethod getContactMethod() { return mContactMethod; }
+    public void setContactMethod(ContactMethod _contactMethod) { mContactMethod = _contactMethod; }
 
     public String getLookupKey() { return mLookupKey; }
     public void setLookupKey(String _lookupKey) { mLookupKey = _lookupKey; }
@@ -75,8 +75,8 @@ public final class Member extends PersistableObject  {
         sb.append(getName());
         sb.append(", Contact Details: ");
         sb.append(getContactDetails());
-        sb.append(", Contact Mode: ");
-        sb.append(getContactMode());
+        sb.append(", Contact Method: ");
+        sb.append(getContactMethod());
         sb.append(", Lookup Key: ");
         sb.append(getLookupKey());
 

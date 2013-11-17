@@ -47,7 +47,7 @@ public class Utils {
 
     public static boolean containsSendableEntry(List<Member> _members) {
         for(Member member : _members) {
-            if(member.getContactMode().isSendable()) {
+            if(member.getContactMethod().isSendable()) {
                 return true;
             }
         }
@@ -56,7 +56,7 @@ public class Utils {
 
     public static boolean containsEmailSendableEntry(List<Member> _members) {
         for(Member member : _members) {
-            if(member.getContactMode() == ContactMethod.EMAIL)
+            if(member.getContactMethod() == ContactMethod.EMAIL)
                 return true;
         }
         return false;
@@ -65,7 +65,7 @@ public class Utils {
     public static int getShareableCount(List<Member> _members) {
         int count = 0;
         for(Member member : _members) {
-            if(member.getContactMode().isSendable()) {
+            if(member.getContactMethod().isSendable()) {
                 count++;
             }
         }

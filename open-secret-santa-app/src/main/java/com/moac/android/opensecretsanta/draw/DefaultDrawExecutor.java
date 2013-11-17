@@ -99,7 +99,7 @@ public class DefaultDrawExecutor implements DrawExecutor {
             Member m2 = mDb.queryById(_assignments.get(m1Id), Member.class);
 
             Log.v(TAG, "saveDrawResult() - saving Assignment: " + m1.getName() + " - " + m2.getName() + " with: "
-              + m1.getContactMode() + " " + m1.getContactDetails());
+              + m1.getContactMethod() + " " + m1.getContactDetails());
 
             // Create the individual Draw Result Entry
             Assignment assignment = new Assignment();

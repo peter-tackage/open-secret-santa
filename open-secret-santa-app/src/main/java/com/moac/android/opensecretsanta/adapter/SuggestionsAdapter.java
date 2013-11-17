@@ -126,7 +126,7 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
         {
             Member manualSuggestion = new Member();
             manualSuggestion.setName(_constraint);
-            manualSuggestion.setContactMode(ContactMethod.REVEAL_ONLY);
+            manualSuggestion.setContactMethod(ContactMethod.REVEAL_ONLY);
             results.add(manualSuggestion);
         }
 
@@ -186,7 +186,7 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
             member.setContactId(id);
             member.setLookupKey(lookupKey);
             member.setContactAddress(address);
-            member.setContactMode(_contactMethod);
+            member.setContactMethod(_contactMethod);
             results.add(member);
         }
         return results;

@@ -110,16 +110,16 @@ public class OpenSecretSantaApplication extends Application {
         // Add some Members
         Member m1 = new Member();
         m1.setName("Grandpa");
-        m1.setContactMode(ContactMethod.REVEAL_ONLY);
+        m1.setContactMethod(ContactMethod.REVEAL_ONLY);
 
         Member m2 = new Member();
         m2.setName("Auntie Mary");
-        m2.setContactMode(ContactMethod.EMAIL);
+        m2.setContactMethod(ContactMethod.EMAIL);
         m2.setContactAddress("auntie@mary.com");
 
         Member m3 = new Member();
         m3.setName("Melissa");
-        m3.setContactMode(ContactMethod.SMS);
+        m3.setContactMethod(ContactMethod.SMS);
         m3.setContactAddress("+1234567890");
 
         m1.setGroup(group1);

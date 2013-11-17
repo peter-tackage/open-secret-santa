@@ -88,7 +88,7 @@ public class NotifyExecutorFragment extends Fragment implements NotifyExecutor {
 
                 Member giftReceiver = mDatabaseManager.queryById(assignment.getReceiverMemberId(), Member.class);
 
-                switch (member.getContactMode()) {
+                switch (member.getContactMethod()) {
                     case SMS:
                         Log.i(TAG, "executeNotify() - Building SMS Notifier for: " + member.getName());
                         assignment.setSendStatus(Assignment.Status.Assigned);
@@ -111,7 +111,7 @@ public class NotifyExecutorFragment extends Fragment implements NotifyExecutor {
                     case REVEAL_ONLY:
                         break;
                     default:
-                        Log.e(TAG, "executeNotify() - Unknown contact mode: " + member.getContactMode());
+                        Log.e(TAG, "executeNotify() - Unknown contact mode: " + member.getContactMethod());
                 }
             }
             return true;

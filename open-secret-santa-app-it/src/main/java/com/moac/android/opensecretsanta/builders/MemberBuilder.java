@@ -7,7 +7,7 @@ public class MemberBuilder {
 
     private String name = "member1";
     private String address = "+1191191";
-    private ContactMethod mode = ContactMethod.SMS;
+    private ContactMethod method = ContactMethod.SMS;
     private String lookupKey = "AAABBB1111";
 
 
@@ -21,8 +21,8 @@ public class MemberBuilder {
         return this;
     }
 
-    public MemberBuilder withContactMode(ContactMethod mode) {
-        this.mode = mode;
+    public MemberBuilder withContactMethod(ContactMethod mode) {
+        this.method = mode;
         return this;
     }
 
@@ -36,7 +36,7 @@ public class MemberBuilder {
         member.setName(name);
         member.setLookupKey(lookupKey);
         member.setContactAddress(address);
-        member.setContactMode(mode);
+        member.setContactMethod(method);
         return member;
     }
 }

@@ -199,7 +199,7 @@ public class DatabaseUpgrader {
     private long createMemberEntry(String memberName, long groupId) {
         Member newMember = new Member();
         newMember.setName(memberName);
-        newMember.setContactMode(ContactMethod.REVEAL_ONLY);
+        newMember.setContactMethod(ContactMethod.REVEAL_ONLY);
 
         try {
             // we need the Group object to set it in the Member, so let's query the db
