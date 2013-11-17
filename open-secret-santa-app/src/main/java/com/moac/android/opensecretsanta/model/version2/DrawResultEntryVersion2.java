@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.model.migration;
+package com.moac.android.opensecretsanta.model.version2;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,8 +13,10 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 
-@DatabaseTable(tableName = "draw_result_entries")
-public class OldDrawResultEntry extends PersistableObject implements Comparable<OldDrawResultEntry> {
+@DatabaseTable(tableName = DrawResultEntryVersion2.TABLE_NAME)
+public class DrawResultEntryVersion2 extends PersistableObject implements Comparable<DrawResultEntryVersion2> {
+
+    public static final String TABLE_NAME = "draw_result_entries";
 
     public static interface Columns extends BaseColumns {
 
@@ -40,20 +42,20 @@ public class OldDrawResultEntry extends PersistableObject implements Comparable<
     private String mReceiverName;
 
     @DatabaseField(columnName = Columns.CONTACT_MODE_COLUMN)
-    private int mContactMode = OldConstants.NAME_ONLY_CONTACT_MODE;
+    private int mContactMode = ConstantsVersion2.NAME_ONLY_CONTACT_MODE;
 
     @DatabaseField(columnName = Columns.CONTACT_DETAIL_COLUMN)
     private String mContactDetail; // the email, the  phone number, the whatever.
 
     @DatabaseField(columnName = Columns.VIEWED_DATE_COLUMN)
-    private long mViewedDate = OldConstants.UNVIEWED_DATE;
+    private long mViewedDate = ConstantsVersion2.UNVIEWED_DATE;
 
     @DatabaseField(columnName = Columns.SENT_DATE_COLUMN)
-    private long mSentDate = OldConstants.UNSENT_DATE;
+    private long mSentDate = ConstantsVersion2.UNSENT_DATE;
 
     @DatabaseField(columnName = Columns.DRAW_RESULT_ID_COLUMN, foreign = true, canBeNull = false,
             columnDefinition = "integer references draw_results (_id) on delete cascade")
-    private OldDrawResult mDrawResult;
+    private DrawResultVersion2 mDrawResult;
 
     public String getGiverName() { return mGiverName;}
 
@@ -79,14 +81,16 @@ public class OldDrawResultEntry extends PersistableObject implements Comparable<
 
     public void setSentDate(long _sentDate) { mSentDate = _sentDate; }
 
-    public void setDrawResult(OldDrawResult drawResult) { mDrawResult = drawResult; }
+    public void setDrawResult(DrawResultVersion2 drawResult) { mDrawResult = drawResult; }
+
+    public DrawResultVersion2 getDrawResult() { return mDrawResult;}
 
     public boolean isSendable() {
-        return mContactMode == OldConstants.EMAIL_CONTACT_MODE || mContactMode == OldConstants.SMS_CONTACT_MODE;
+        return mContactMode == ConstantsVersion2.EMAIL_CONTACT_MODE || mContactMode == ConstantsVersion2.SMS_CONTACT_MODE;
     }
 
     @Override
-    public int compareTo(OldDrawResultEntry another) {
+    public int compareTo(DrawResultEntryVersion2 another) {
         return String.CASE_INSENSITIVE_ORDER.compare(this.mGiverName, another.mGiverName);
     }
 }

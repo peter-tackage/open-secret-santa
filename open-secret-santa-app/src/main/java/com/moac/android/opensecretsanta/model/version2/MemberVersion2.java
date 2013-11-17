@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.model.migration;
+package com.moac.android.opensecretsanta.model.version2;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,8 +13,8 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 
-@DatabaseTable(tableName = OldMember.TABLE_NAME)
-public final class OldMember extends PersistableObject {
+@DatabaseTable(tableName = MemberVersion2.TABLE_NAME)
+public final class MemberVersion2 extends PersistableObject {
 
     public static final String TAG = "Member";
     public static final String TABLE_NAME =  "members";
@@ -52,11 +52,11 @@ public final class OldMember extends PersistableObject {
 
     // The types of communication to be used.
     @DatabaseField(columnName = Columns.CONTACT_MODE_COLUMN, canBeNull = false)
-    private int mContactMode = OldConstants.NAME_ONLY_CONTACT_MODE;
+    private int mContactMode = ConstantsVersion2.NAME_ONLY_CONTACT_MODE;
 
     @DatabaseField(columnName = Columns.GROUP_ID_COLUMN, foreign = true, canBeNull = false,
             columnDefinition = "integer references groups (_id) on delete cascade")
-    private OldGroup mGroup;
+    private GroupVersion2 mGroup;
 
 
     public String getName() { return mName; }
@@ -75,7 +75,7 @@ public final class OldMember extends PersistableObject {
 
     public void setLookupKey(String _lookupKey) { mLookupKey = _lookupKey; }
 
-    public void setGroup(OldGroup group) { mGroup = group; }
+    public void setGroup(GroupVersion2 group) { mGroup = group; }
 
     public long getGroupId() { return mGroup.getId(); }
 

@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.model.migration;
+package com.moac.android.opensecretsanta.model.version2;
 
 /**
  * Created with IntelliJ IDEA.
@@ -7,7 +7,7 @@ package com.moac.android.opensecretsanta.model.migration;
  * Time: 23:22
  * To change this template use File | Settings | File Templates.
  */
-public class OldConstants {
+public class ConstantsVersion2 {
 
     public static final String MEMBER_ID = "memberId";
     public static final String MEMBER_NAME = "memberName";

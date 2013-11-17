@@ -3,7 +3,7 @@ package com.moac.android.opensecretsanta.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import com.moac.android.opensecretsanta.model.ContactMode;
+import com.moac.android.opensecretsanta.model.ContactMethod;
 import com.moac.android.opensecretsanta.model.Member;
 
 import java.util.List;
@@ -56,7 +56,7 @@ public class Utils {
 
     public static boolean containsEmailSendableEntry(List<Member> _members) {
         for(Member member : _members) {
-            if(member.getContactMode() == ContactMode.EMAIL)
+            if(member.getContactMode() == ContactMethod.EMAIL)
                 return true;
         }
         return false;

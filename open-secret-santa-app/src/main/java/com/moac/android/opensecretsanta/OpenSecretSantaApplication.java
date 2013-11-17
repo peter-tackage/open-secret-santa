@@ -8,7 +8,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import com.moac.android.opensecretsanta.database.DatabaseHelper;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.model.ContactMode;
+import com.moac.android.opensecretsanta.model.ContactMethod;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.Restriction;
@@ -110,16 +110,16 @@ public class OpenSecretSantaApplication extends Application {
         // Add some Members
         Member m1 = new Member();
         m1.setName("Grandpa");
-        m1.setContactMode(ContactMode.REVEAL_ONLY);
+        m1.setContactMode(ContactMethod.REVEAL_ONLY);
 
         Member m2 = new Member();
         m2.setName("Auntie Mary");
-        m2.setContactMode(ContactMode.EMAIL);
+        m2.setContactMode(ContactMethod.EMAIL);
         m2.setContactAddress("auntie@mary.com");
 
         Member m3 = new Member();
         m3.setName("Melissa");
-        m3.setContactMode(ContactMode.SMS);
+        m3.setContactMode(ContactMethod.SMS);
         m3.setContactAddress("+1234567890");
 
         m1.setGroup(group1);

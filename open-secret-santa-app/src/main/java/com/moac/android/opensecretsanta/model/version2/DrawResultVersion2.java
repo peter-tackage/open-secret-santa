@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.model.migration;
+package com.moac.android.opensecretsanta.model.version2;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,25 +14,27 @@ import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 
-@DatabaseTable(tableName = "draw_results")
-public class OldDrawResult extends PersistableObject {
+@DatabaseTable(tableName = DrawResultVersion2.TABLE_NAME)
+public class DrawResultVersion2 extends PersistableObject {
+
+    public static final String TABLE_NAME =  "draw_results";
 
     @DatabaseField(columnName = Columns.DRAW_DATE_COLUMN)
-    private long mDrawDate = OldConstants.UNDRAWN_DATE;
+    private long mDrawDate = ConstantsVersion2.UNDRAWN_DATE;
 
     @DatabaseField(columnName = Columns.SEND_DATE_COLUMN)
-    private long mSendDate = OldConstants.UNSENT_DATE;
+    private long mSendDate = ConstantsVersion2.UNSENT_DATE;
 
     @DatabaseField(columnName = Columns.MESSAGE_COLUMN)
     private String mMessage = "";
 
     @DatabaseField(columnName = Columns.GROUP_ID_COLUMN, foreign = true, canBeNull = false,
             columnDefinition = "integer references groups (_id) on delete cascade")
-    private OldGroup mGroup;
+    private GroupVersion2 mGroup;
 
 
     @ForeignCollectionField(eager = false)
-    private java.util.Collection<OldDrawResultEntry> mDrawResultEntries;
+    private java.util.Collection<DrawResultEntryVersion2> mDrawResultEntries;
 
     public static interface Columns extends BaseColumns {
 
@@ -53,7 +55,23 @@ public class OldDrawResult extends PersistableObject {
     public long getSendDate() { return mSendDate; }
     public void setMessage(String message) { mMessage = message; }
     public String getMessage() { return mMessage; }
-    public void setGroup(OldGroup group) { mGroup = group; }
+    public void setGroup(GroupVersion2 group) { mGroup = group; }
     public long getGroupId() { return mGroup.getId(); }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        DrawResultVersion2 drawResult = (DrawResultVersion2) obj;
+        return (mDrawDate == (drawResult.getDrawDate()) &&
+                mSendDate == (drawResult.getSendDate()) &&
+                mMessage.equals(drawResult.getMessage()) &&
+                (mGroup.getId() == (drawResult.getGroupId())));
+    }
 
 }

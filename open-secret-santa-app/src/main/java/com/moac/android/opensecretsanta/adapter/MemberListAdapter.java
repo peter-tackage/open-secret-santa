@@ -97,7 +97,7 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
         }
 
         memberNameView.setText(member.getName());
-        contactAddressView.setText(member.getContactAddress());
+        contactAddressView.setText(member.getContactDetails());
 
         final long restrictionCount = member.getRestrictionCount();
         if(restrictionCount > 0) {

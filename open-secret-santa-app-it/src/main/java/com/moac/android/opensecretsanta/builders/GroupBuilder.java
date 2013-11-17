@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.test.builders;
+package com.moac.android.opensecretsanta.builders;
 
 import com.moac.android.opensecretsanta.model.Group;
 

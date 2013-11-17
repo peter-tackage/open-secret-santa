@@ -43,10 +43,10 @@ public class EmailNotifier implements Notifier {
 
         try {
             mGmailSender.sendMail(mContext.getString(R.string.email_subject_msg), body, mSenderAddress,
-              mToken, _giver.getContactAddress());
+              mToken, _giver.getContactDetails());
             assignment.setSendStatus(Assignment.Status.Sent);
         } catch(MessagingException e) {
-            Log.e(TAG, "Exception when sending email to: " + _giver.getContactAddress(), e);
+            Log.e(TAG, "Exception when sending email to: " + _giver.getContactDetails(), e);
             assignment.setSendStatus(Assignment.Status.Failed);
         }
         // Persist the result
