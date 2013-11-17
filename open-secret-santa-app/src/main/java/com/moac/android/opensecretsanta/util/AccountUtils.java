@@ -38,7 +38,7 @@ public class AccountUtils {
 
                 // No preference.
                 if(emailAddress == null || emailAddress.isEmpty()) {
-                    observer.onError(new Exception("No preferred email found"));
+                    observer.onError(new Exception("No preferred Gmail account found"));
                     return Subscriptions.empty();
                 }
 
@@ -58,14 +58,14 @@ public class AccountUtils {
                             return Subscriptions.empty();
                         }
                     }
-                    observer.onError(new Exception("Preferred email address no longer exists"));
+                    observer.onError(new Exception("Your preferred email address no longer exists"));
                 }
                 return Subscriptions.empty();
             }
         });
     }
 
-    // Must be background call
+    // Must run on new thread
     public static Account[] getAllGmailAccounts(Context context) {
         AccountManagerFuture<Account[]> accountsFuture =
           AccountManager.get(context).getAccountsByTypeAndFeatures(GmailOAuth2Sender.ACCOUNT_TYPE_GOOGLE,
@@ -91,7 +91,7 @@ public class AccountUtils {
                     observer.onNext(accounts);
                     observer.onCompleted();
                 } else {
-                    observer.onError(new Exception("No Gmail Accounts available"));
+                    observer.onError(new Exception("You can't notify without a Gmail account!"));
                 }
                 return Subscriptions.empty();
             }

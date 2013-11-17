@@ -103,5 +103,6 @@
   <!-- Progress Dialog Messages -->
   <string name="draw_in_progress_msg">Drawing assigments</string>
   <string name="notify_in_progress_msg">Sending assigments</string>
+  <string name="notify_dialog_title">Notify Group</string>
 
 </resources>

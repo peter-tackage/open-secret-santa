@@ -13,6 +13,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -25,6 +26,7 @@ import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.notify.EmailAuthorization;
 import com.moac.android.opensecretsanta.notify.NotifyAuthorization;
 import com.moac.android.opensecretsanta.util.AccountUtils;
+import com.moac.android.opensecretsanta.util.NotifyUtils;
 import rx.Observable;
 import rx.android.concurrency.AndroidSchedulers;
 import rx.concurrency.Schedulers;
@@ -44,6 +46,9 @@ public class NotifyDialogFragment extends DialogFragment {
     private String mSavedMsg;
     private FragmentContainer mFragmentContainer;
     private Spinner mSpinner;
+    private TextView mInfoTextView;
+    private boolean mIsEmailAuthRequired;
+    private ViewGroup mEmailFromContainer;
 
     /**
      * Factory method for this fragment class
@@ -64,7 +69,6 @@ public class NotifyDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
         Log.i(TAG, "onCreateDialog() - start: " + this);
         mDb = OpenSecretSantaApplication.getInstance().getDatabase();
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
@@ -81,7 +85,7 @@ public class NotifyDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_dialog_notify, null);
 
         // Take the values and populate the dialog
-        builder.setTitle("Notify Group");
+        builder.setTitle(getString(R.string.notify_dialog_title));
         builder.setIcon(R.drawable.ic_menu_notify);
 
         mMsgField = (EditText) view.findViewById(R.id.tv_notify_msg);
@@ -105,67 +109,69 @@ public class NotifyDialogFragment extends DialogFragment {
             }
         });
 
+        // Visibility GONE by default
+        mEmailFromContainer = (ViewGroup)view.findViewById(R.id.layout_notify_email_container);
         mSpinner = (Spinner) view.findViewById(R.id.spnr_email_selection);
+        mInfoTextView = (TextView) view.findViewById(R.id.tv_notify_info);
 
-        // Add all Gmail accounts to list
-        final Observable<Account[]> accountsObservable = AccountUtils.getAllGmailAccountsObservable(getActivity());
-        accountsObservable.
-          subscribeOn(Schedulers.newThread()).
-          observeOn(AndroidSchedulers.mainThread()).
-          subscribe(new Action1<Account[]>() {
-              @Override
-              public void call(Account[] accounts) {
-                  Log.i(TAG, "Found accounts: " + accounts);
-                  AccountAdapter aa = new AccountAdapter(getActivity(), accounts);
-                  mSpinner.setAdapter(aa);
-                  // TODO Set to preference
-              }
-          });
-
-//        if(mMemberIds != null) {
-//            LinearLayout container = (LinearLayout) view.findViewById(R.id.layout_avatar_container);
-//            for(long id : mMemberIds) {
-//                Member member = mDb.queryById(id, Member.class);
-//                Uri uri = member.getContactUri(getActivity());
-//                if(uri != null) {
-//                    Log.v(TAG, "onCreateDialog() - adding avatar: " + member.getName());
-//                    Log.v(TAG, "onCreateDialog() - uri: " + uri);
-//                    ImageView avatar = new ImageView(getActivity());
-//                    avatar.setLayoutParams(new LinearLayout.LayoutParams(80, 80));
-//                    avatar.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//                    container.addView(avatar);
-//                    Picasso.with(getActivity()).load(uri).into(avatar);
-//                }
-//            }
-//        }
+        mIsEmailAuthRequired = NotifyUtils.containsEmailSendableEntry(mDb, mMemberIds);
+        if(mIsEmailAuthRequired) {
+            // Add all Gmail accounts to list
+            final Observable<Account[]> accountsObservable = AccountUtils.getAllGmailAccountsObservable(getActivity());
+            accountsObservable.
+              subscribeOn(Schedulers.newThread()).
+              observeOn(AndroidSchedulers.mainThread()).
+              subscribe(new Action1<Account[]>() {
+                            @Override
+                            public void call(Account[] accounts) {
+                                AccountAdapter aa = new AccountAdapter(getActivity(), accounts);
+                                mSpinner.setAdapter(aa);
+                                mEmailFromContainer.setVisibility(View.VISIBLE);
+                                // TODO Set to preference
+                            }
+                        },
+                new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mInfoTextView.setText(throwable.getMessage());
+                        mInfoTextView.setVisibility(View.VISIBLE);
+                    }
+                }
+              );
+        }
 
         builder.setCancelable(true);
         builder.setNegativeButton(android.R.string.cancel, null);
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // TODO Handle NO EMAIL required etc
                 final NotifyAuthorization.Builder auth = new NotifyAuthorization.Builder();
+
                 // Set the selected email as the user preference
-                Account acc = (Account)mSpinner.getSelectedItem();
-                String emailPrefKey = getActivity().getString(R.string.gmail_account_preference);
-                PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putString(emailPrefKey, acc.name).commit();
+                if(mIsEmailAuthRequired) {
+                    Account acc = (Account) mSpinner.getSelectedItem();
+                    if(acc != null) {
+                        String emailPrefKey = getActivity().getString(R.string.gmail_account_preference);
+                        PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putString(emailPrefKey, acc.name).commit();
 
-                // Get the custom message.
-                mGroup.setMessage(mMsgField.getText().toString().trim());
-                mDb.update(mGroup);
-
-                // TODO Check if required
-                AccountUtils.getPreferedGmailAuth(getActivity().getApplicationContext(), getActivity()).
-                  subscribeOn(Schedulers.newThread()).
-                  observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<EmailAuthorization>() {
-                    @Override
-                    public void call(EmailAuthorization emailAuth) {
-                        Log.d(TAG, "call() - got EmailAuthorization: " + emailAuth.getEmailAddress() + ":" + emailAuth.getToken());
-                        auth.withAuth(emailAuth);
-                        executeNotifyDraw(auth.build(), mGroup, mMemberIds);
+                        AccountUtils.getPreferedGmailAuth(getActivity().getApplicationContext(), getActivity()).
+                          subscribeOn(Schedulers.newThread()).
+                          observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<EmailAuthorization>() {
+                            @Override
+                            public void call(EmailAuthorization emailAuth) {
+                                Log.d(TAG, "call() - got EmailAuthorization: " + emailAuth.getEmailAddress() + ":" + emailAuth.getToken());
+                                auth.withAuth(emailAuth);
+                                executeNotifyDraw(auth.build(), mGroup, mMemberIds);
+                            }
+                        });
                     }
-                });
+                } else {
+                    // We have no additional authorization - just send as is
+                    // Get the custom message.
+                    mGroup.setMessage(mMsgField.getText().toString().trim());
+                    mDb.update(mGroup);
+                    executeNotifyDraw(auth.build(), mGroup, mMemberIds);
+                }
             }
         });
 

@@ -66,19 +66,19 @@ public class NotifyExecutorFragment extends Fragment implements DrawNotifier, Ob
     public void onCompleted() {
         Log.i(TAG, "onCompleted");
         dismissProgressDialog();
-        Toast.makeText(getActivity(), "All messages sent!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onError(Throwable e) {
-        Log.e(TAG, "onError() ", e);
+    public void onError(Throwable t) {
+        Log.e(TAG, "onError() ", t);
         dismissProgressDialog();
-        Toast.makeText(getActivity(), "Some went wrong", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
     }
 
     @Override
-    public void onNext(NotifyStatusEvent args) {
-        Log.i(TAG, "onNext");
+    public void onNext(NotifyStatusEvent event) {
+        Log.i(TAG, "onNext() - got event: " + event.getAssignment());
+        mBus.post(event);
     }
 
     @Override

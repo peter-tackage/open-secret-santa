@@ -1,14 +1,9 @@
 package com.moac.android.opensecretsanta.notify;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.accounts.AccountManagerFuture;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Group;
@@ -82,15 +77,16 @@ public class DefaultNotifyExecutor implements NotifyExecutor {
                             // Get the authorization
                             if(mAuth.getEmailAuth() == null) {
                                 // This is fatal
-                                observer.onError(new Exception("No Gmail Authorization found"));
                                 assignment.setSendStatus(Assignment.Status.Failed);
                                 mDb.update(assignment);
+                                observer.onNext(new NotifyStatusEvent(assignment));
+                                observer.onError(new Exception("Error - can't connect your Gmail account"));
                                 return Subscriptions.empty();
                             }
+
+                            // Build the notifier with auth and execute
                             String senderEmail = mAuth.getEmailAuth().getEmailAddress();
                             String token = mAuth.getEmailAuth().getToken();
-
-                            // Build the notifier and execute
                             GmailOAuth2Sender sender = new GmailOAuth2Sender();
                             EmailNotifier emailNotifier = new EmailNotifier(mContext, mBus, mDb,
                               handler, sender, senderEmail, token);

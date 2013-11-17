@@ -160,13 +160,13 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     @Override
     public void requestNotifyDraw(Group _group) {
         Log.i(TAG, "onNotifyDraw() - Requesting Notify entire Group");
+        // TODO Background
         List<Member> members = mDb.queryAllMembersForGroup(_group.getId());
         List<Long> memberIds = new ArrayList<Long>(members.size());
         for(Member member : members) {
             memberIds.add(member.getId());
         }
-        DialogFragment dialog = NotifyDialogFragment.create(_group.getId(), Longs.toArray(memberIds));
-        dialog.show(getFragmentManager(), NOTIFY_DIALOG_FRAGMENT_TAG);
+        requestNotifyDraw(_group, Longs.toArray(memberIds));
     }
 
     @Override
