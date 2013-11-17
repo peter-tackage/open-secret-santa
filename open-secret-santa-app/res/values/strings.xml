@@ -84,6 +84,7 @@
   <string name="menu_draw">Draw</string>
   <string name="menu_reveal">Reveal</string>
   <string name="menu_rename">Rename group</string>
+  <string name="menu_clear">Clear assignments</string>
   <string name="menu_settings">Settings</string>
   <string name="menu_new">New group</string>
 

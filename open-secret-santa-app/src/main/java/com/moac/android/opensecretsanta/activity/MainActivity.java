@@ -126,10 +126,12 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
             return true;
         }
         switch(item.getItemId()) {
-            case R.id.menu_settings:
-                Intent intent = new Intent(MainActivity.this, AllPreferencesActivity.class);
-                slideInIntent(intent);
-                return true;
+            // TODO Move to overlay menu
+            // TODO Rename group
+          //  case R.id.menu_settings:
+            //    Intent intent = new Intent(MainActivity.this, AllPreferencesActivity.class);
+            //    slideInIntent(intent);
+            //    return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

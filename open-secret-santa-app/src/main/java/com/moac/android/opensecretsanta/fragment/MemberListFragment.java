@@ -1,15 +1,14 @@
 package com.moac.android.opensecretsanta.fragment;
 
-import android.app.Activity;
-import android.app.DialogFragment;
-import android.app.ListFragment;
-import android.app.ProgressDialog;
+import android.app.*;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.*;
 import android.widget.*;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
@@ -41,22 +40,23 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     private static final String TAG = MemberListFragment.class.getSimpleName();
     private static final String DRAW_IN_PROGRESS_KEY = "drawInProgress";
+    public static final String ASSIGNMENT_FRAGMENT_KEY = "AssignmentFragment";
+    private enum Mode {Building, Notify;}
 
-    private enum Mode {
-        Building, Notify;
-    }
     private List<MemberRowDetails> mRows = new ArrayList<MemberRowDetails>();
 
-    private MemberListAdapter mAdapter;
-    private Group mGroup;
-
     private DatabaseManager mDb;
-    private FragmentContainer mFragmentContainer;
-    private AutoCompleteTextView mCompleteTextView;
+    private Group mGroup;
+    private MemberListAdapter mAdapter;
+
     private Mode mMode = Mode.Building;
+    private AutoCompleteTextView mCompleteTextView;
+    private Menu mMenu; // non CAB items
 
     private ProgressDialog mDrawProgressDialog;
     private Subscription mDrawSubscription;
+
+    private FragmentContainer mFragmentContainer;
 
     /**
      * Factory method for this fragment class
@@ -152,6 +152,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     @Override
     public void onResume() {
         super.onResume();
+        Log.i(TAG, "onResume() - registering event bus");
         BusProvider.getInstance().register(this);
         mMode = evaluateMode();
         // Populate member list
@@ -163,6 +164,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     @Override
     public void onPause() {
         super.onPause();
+        Log.i(TAG, "onPause() - deregistering event bus");
         BusProvider.getInstance().unregister(this);
     }
 
@@ -174,15 +176,18 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.draw_menu, menu);
+        Log.i(TAG, "onCreateOptionsMenu()");
+        inflater.inflate(R.menu.action_bar_menu, menu);
+        inflater.inflate(R.menu.dropdown_menu, menu);
+        mMenu = menu;
+        setMenuItems();
     }
 
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
         // Inflate a menu resource providing context menu items
         MenuInflater inflater = mode.getMenuInflater();
-        inflater.inflate(R.menu.edit_member_menu, menu);
-        inflater.inflate(R.menu.notify_member_menu, menu);
+        inflater.inflate(R.menu.cab_member_list_menu, menu);
         return true;
     }
 
@@ -195,10 +200,13 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle *non-contextual* action bar selection
         switch(item.getItemId()) {
-            case R.id.menu_draw:
+            case R.id.menu_item_clear:
+                confirmClearAssignments();
+                return true;
+            case R.id.menu_item_draw:
                 attemptDraw();
                 return true;
-            case R.id.menu_notify:
+            case R.id.menu_item_notify_group:
                 doNotifyAll();
                 return true;
             default:
@@ -220,23 +228,23 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         // Handle contextual action bar selection
         // Some actions will end the current action mode on completion, others not.
         switch(item.getItemId()) {
-            case R.id.menu_edit:
+            case R.id.menu_item_edit:
                 doEdit(getListView().getCheckedItemIds()[0]);
                 mode.finish();
                 return true;
-            case R.id.menu_restrictions:
+            case R.id.menu_item_restrict:
                 doRestrictions(getListView().getCheckedItemIds()[0]);
                 mode.finish();
                 return true;
-            case R.id.menu_delete:
+            case R.id.menu_item_delete:
                 doDelete(getListView().getCheckedItemIds());
                 mode.finish();
                 return true;
-            case R.id.menu_notify_selection:
+            case R.id.menu_item_notify_selection:
                 doNotify(getListView().getCheckedItemIds());
                 mode.finish();
                 return true;
-            case R.id.menu_reveal:
+            case R.id.menu_item_reveal:
                 doReveal(getListView().getCheckedItemIds()[0]);
                 mode.finish();
                 return true;
@@ -262,12 +270,14 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
         Log.i(TAG, "onItemCheckedStateChanged()");
         int selectedCount = getListView().getCheckedItemCount();
+        boolean isCheckedSelected = hasCheckedSendable();
+
         mode.setTitle(selectedCount + " selected");
-        mode.getMenu().setGroupVisible(R.id.menu_group_single_selection, (selectedCount == 1));
-        mode.getMenu().setGroupVisible(R.id.menu_group_notify, mMode == Mode.Notify);
-        mode.getMenu().setGroupVisible(R.id.menu_group_notify_single_selection, mMode == Mode.Notify && (selectedCount == 1));
-        MenuItem restrictionsMenu = mode.getMenu().findItem(R.id.menu_restrictions);
-        restrictionsMenu.setVisible(getListAdapter().getCount() > 1);
+        mode.getMenu().findItem(R.id.menu_item_edit).setVisible(selectedCount == 1);
+        mode.getMenu().findItem(R.id.menu_item_delete).setVisible(mMode == Mode.Building);
+        mode.getMenu().findItem(R.id.menu_item_notify_selection).setVisible(mMode == Mode.Notify && isCheckedSelected);
+        mode.getMenu().findItem(R.id.menu_item_restrict).setVisible(mMode == Mode.Building && selectedCount == 1);
+        mode.getMenu().findItem(R.id.menu_item_reveal).setVisible(mMode == Mode.Notify && selectedCount == 1);
     }
 
     /*
@@ -280,7 +290,11 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         populateMemberList();
     }
 
-    // TODO Do in background & add confirm dialog
+    private void onModeChanged() {
+        setMenuItems();
+    }
+
+    // TODO Do in background
     private void doDelete(long[] _ids) {
         for(long id : _ids) {
             mDb.delete(id, Member.class);
@@ -289,11 +303,40 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         populateMemberList();
     }
 
+    private void confirmClearAssignments() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        // Add the buttons
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked OK button
+                invalidateAssignments(mGroup);
+                populateMemberList();
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+            }
+        });
+
+        // Create the AlertDialog
+        AlertDialog dialog = builder.setTitle("Clear assignments?").create();
+        dialog.show();
+    }
+
+    private void setMenuItems() {
+        // Non-CAB buttons only
+        mMenu.findItem(R.id.menu_item_draw).setVisible(mMode == Mode.Building);
+        mMenu.findItem(R.id.menu_item_notify_group).setVisible(mMode == Mode.Notify);
+        mMenu.findItem(R.id.menu_item_clear).setVisible(mMode == Mode.Notify);
+    }
+
     private void invalidateAssignments(Group group) {
         group.setDrawDate(Group.UNSET_DATE);
         mDb.update(group);
         mDb.deleteAllAssignmentsForGroup(group.getId());
         mMode = Mode.Building;
+        onModeChanged();
     }
 
     private void doNotify(long[] _memberIds) {
@@ -326,6 +369,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
                   mDrawProgressDialog = null;
                   Log.i(TAG, "onDrawResult() - got event");
                   mMode = evaluateMode();
+                  onModeChanged();
                   populateMemberList();
               }
 
@@ -358,7 +402,6 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     private void doReveal(long _memberId) {
-        // TODO Mark as seen.
         Member giver = mDb.queryById(_memberId, Member.class);
         Log.i(TAG, "doReveal(): memberId: " + _memberId);
         Log.i(TAG, "doReveal(): giver name: " + giver.getName());
@@ -375,7 +418,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         }
         // Create an instance of the dialog fragment and show it
         DialogFragment dialog = AssignmentFragment.create(giver.getName(), receiver.getName(), avatarUri);
-        dialog.show(getFragmentManager(), "AssignmentFragment");
+        dialog.show(getFragmentManager(), ASSIGNMENT_FRAGMENT_KEY);
 
         // Set as Revealed
         assignment.setSendStatus(Assignment.Status.Revealed);
@@ -469,6 +512,20 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         }
     }
 
+    // Gah...
+    private boolean hasCheckedSendable() {
+        SparseBooleanArray checkedPositions = getListView().getCheckedItemPositions();
+        for(int i = 0; i < checkedPositions.size(); i++) {
+            int position = checkedPositions.keyAt(i);
+            boolean isChecked = checkedPositions.valueAt(i);
+            if(isChecked && ((MemberRowDetails)(getListAdapter().getItem(position))).getMember().getContactMode().isSendable()) {
+                Log.v(TAG, "hasCheckedSendable() - position checked: " + position);
+                return true;
+            }
+        }
+        return false;
+    }
+
     /*
      * Fragment Container methods
      */
@@ -480,13 +537,16 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     void requestNotifyDraw(Group group) {
         mFragmentContainer.requestNotifyDraw(group);
     }
+
     void requestNotifyDraw(Group group, long[] memberIds) {
         mFragmentContainer.requestNotifyDraw(group, memberIds);
     }
 
     public interface FragmentContainer {
         MemberEditor getMemberEditor();
+
         void requestNotifyDraw(Group group);
+
         void requestNotifyDraw(Group group, long[] memberIds);
     }
 }
