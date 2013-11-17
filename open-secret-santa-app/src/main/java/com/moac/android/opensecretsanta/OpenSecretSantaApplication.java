@@ -72,7 +72,7 @@ public class OpenSecretSantaApplication extends Application {
         Member m2 = new Member();
         m2.setName("Mary Arthur"+_instance);
         m2.setContactMode(ContactMode.EMAIL);
-        m2.setContactAddress("peter.tackage@gmail.com");
+        m2.setContactAddress("arthurmcauthur@longesttestdomain.ddd");
 
         Member m3 = new Member();
         m3.setName("Some Person"+_instance);
