@@ -79,7 +79,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
                         success = upgradeToVersion2(db);
                         break;
                     case 3:
-                       // success = upgradeToVersion3();
+                       // success = upgradeToVersion3(cs);
                         break;
                 }
                 if(!success) {
@@ -211,9 +211,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return true;
     }
 
-    private boolean upgradeToVersion3() {
+    private boolean upgradeToVersion3(ConnectionSource cs) {
         DatabaseUpgrader databaseUpgrader = new DatabaseUpgrader(this);
-        databaseUpgrader.upgradeDatabaseToVersion3();
+        databaseUpgrader.upgradeDatabaseToVersion3(cs);
 
         // let's not drop any tables (yet) just in case we need to rollback....
         return true;

@@ -12,12 +12,13 @@ public class DatabaseTests extends AndroidTestCase {
 
     private static final String TEST_DATABASE_NAME = "testopensecretsanta.db";
     DatabaseManager mDatabaseManager;
-    DatabaseHelper mDbHelper;
+    TestDatabaseHelper mDbHelper;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mDbHelper = new DatabaseHelper(getContext(), TEST_DATABASE_NAME);
+        Class[] PERSISTABLE_OBJECTS = new Class[] {Group.class, Member.class, Restriction.class, Assignment.class};
+        mDbHelper = new TestDatabaseHelper(getContext(), TEST_DATABASE_NAME, PERSISTABLE_OBJECTS);
         mDatabaseManager = new DatabaseManager(mDbHelper);
         mDbHelper.getWritableDatabase().beginTransaction();
     }
@@ -25,7 +26,9 @@ public class DatabaseTests extends AndroidTestCase {
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-        mDbHelper.getWritableDatabase().endTransaction();
+
+        getContext().deleteDatabase("/data/data/com.moac.android.opensecretsanta/databases/" + TEST_DATABASE_NAME);
+
         mDatabaseManager = null;
     }
 

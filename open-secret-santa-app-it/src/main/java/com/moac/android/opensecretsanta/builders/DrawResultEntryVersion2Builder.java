@@ -15,8 +15,8 @@ public class DrawResultEntryVersion2Builder {
     String mReceiverName = TEST_RECEIVER_NAME;
     int mContactMode = ConstantsVersion2.NAME_ONLY_CONTACT_MODE;
     String mContactDetails = TEST_DRE_CONTACT_DETAILS;
-    long mViewedDate = System.currentTimeMillis();
-    long mSentDate = System.currentTimeMillis();
+    long mViewedDate;
+    long mSentDate;
     DrawResultVersion2 mDrawResult;
 
     public DrawResultEntryVersion2Builder withDrawResultId(long drawResultId) {

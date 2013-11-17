@@ -1,5 +1,7 @@
 package com.moac.android.opensecretsanta.database;
 
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.ContactMethod;
 import com.moac.android.opensecretsanta.model.Group;
@@ -28,7 +30,8 @@ public class DatabaseUpgrader {
         this.mDbHelper = mDbHelper;
     }
 
-    public void upgradeDatabaseToVersion3() {
+    public void upgradeDatabaseToVersion3(ConnectionSource cs) {
+        addNewAssignmentTable(cs);
         alterMemberTable();
         alterGroupTable();
         migrateDataToVersion3AssignmentsTable();
@@ -39,6 +42,14 @@ public class DatabaseUpgrader {
      *  Database schema changes
      *
      **************************************************************/
+    protected void addNewAssignmentTable(ConnectionSource cs) {
+        try {
+            TableUtils.createTable(cs, Assignment.class);
+        } catch(java.sql.SQLException e) {
+            throw new android.database.SQLException(e.getMessage());
+        }
+    }
+
     protected void alterMemberTable() {
         try {
           // Member table now has an extra contact_id.
@@ -103,7 +114,7 @@ public class DatabaseUpgrader {
             }
 
             // remove old group
-            removeGroupVersion2(groupVersion2.getId());
+            //removeGroupVersion2(groupVersion2.getId());
         }
     }
 
