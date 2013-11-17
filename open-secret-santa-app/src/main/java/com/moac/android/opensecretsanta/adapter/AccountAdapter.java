@@ -8,6 +8,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+/**
+ * All because the default toString() of Account objects isn't appropriate
+ * when showing a list of email addresses and I don't want another wrapper
+ * object and the usual buildList boilerplate.
+ */
 public class AccountAdapter extends BaseAdapter {
 
     private Context mContext;

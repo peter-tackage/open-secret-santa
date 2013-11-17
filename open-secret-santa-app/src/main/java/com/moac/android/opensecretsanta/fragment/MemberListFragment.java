@@ -42,7 +42,6 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     private static final String TAG = MemberListFragment.class.getSimpleName();
     private static final String DRAW_IN_PROGRESS_KEY = "drawInProgress";
 
-
     private enum Mode {
         Building, Notify;
     }

@@ -19,7 +19,7 @@ public class NotifyAuthorization {
             auth = new NotifyAuthorization();
         }
 
-        public Builder withEmailAuthorization(EmailAuthorization emailAuth) {
+        public Builder withAuth(EmailAuthorization emailAuth) {
             auth.mEmailAuth = emailAuth;
             return this;
         }

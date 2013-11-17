@@ -1,9 +1,6 @@
 package com.moac.android.opensecretsanta.activity;
 
-import android.accounts.*;
 import android.app.*;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -16,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 import com.google.common.primitives.Longs;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
@@ -30,18 +26,8 @@ import com.moac.android.opensecretsanta.fragment.NotifyExecutorFragment;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
-import com.moac.android.opensecretsanta.notify.EmailAuthorization;
 import com.moac.android.opensecretsanta.notify.NotifyAuthorization;
-import com.moac.android.opensecretsanta.notify.mail.GmailOAuth2Sender;
-import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
-import rx.android.concurrency.AndroidSchedulers;
-import rx.concurrency.Schedulers;
-import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action1;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -139,8 +125,14 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         if(mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        // TODO Handle other action bar items...
-        return super.onOptionsItemSelected(item);
+        switch(item.getItemId()) {
+            case R.id.menu_settings:
+                Intent intent = new Intent(MainActivity.this, AllPreferencesActivity.class);
+                slideInIntent(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -154,15 +146,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         Intent intent = new Intent(MainActivity.this, RestrictionsActivity.class);
         intent.putExtra(Intents.GROUP_ID_INTENT_EXTRA, _groupId);
         intent.putExtra(Intents.MEMBER_ID_INTENT_EXTRA, _memberId);
-        // Activity options is since API 16.
-        // Got this idea from Android Dev Bytes video - https://www.youtube.com/watch?v=Ho8vk61lVIU
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
-        } else {
-            Bundle translateBundle = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_left, R.anim.slide_out_left).toBundle();
-            startActivity(intent, translateBundle);
-        }
+        slideInIntent(intent);
     }
 
     @Override
@@ -186,51 +170,8 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     }
 
     @Override
-    public void executeNotifyDraw(final Group group, final long[] members) {
-        // Provide any required authorization
-        final NotifyAuthorization.Builder auth = new NotifyAuthorization.Builder();
-
-        if(true) {
-//            // TODO
-//            //if(NotifyUtils.containsEmailSendableEntry(members)) {
-//            getPreferedGmailAuth(this).subscribeOn(Schedulers.newThread())
-//              .observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<EmailAuthorization>() {
-//                @Override
-//                public void onCompleted() {
-//                    Log.i(TAG, "onCompleted()");
-//                }
-//
-//                @Override
-//                public void onError(Throwable e) {
-//                    Log.e(TAG, "onError()", e);
-//                    Toast.makeText(MainActivity.this, "Couldn't get email: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-//                    getAllGmailAccountsObservable(MainActivity.this).
-//                      subscribeOn(Schedulers.newThread()).
-//                      observeOn(AndroidSchedulers.mainThread()).
-//                      subscribe(new Action1<Account[]>() {
-//                          @Override
-//                          public void call(final Account[] accounts) {
-//                              selectEmailOptions(accounts, new DialogInterface.OnClickListener() {
-//                                  @Override
-//                                  public void onClick(DialogInterface dialog, int which) {
-//                                      Log.i(TAG, "You selected account: " + accounts[which]);
-//                                  }
-//                              });
-//                          }
-//                      });
-//                }
-//
-//                @Override
-//                public void onNext(EmailAuthorization args) {
-//                    Log.i(TAG, "onNext()");
-//                    auth.withEmailAuthorization(args);
-//                    mNotifyExecutorFragment.notifyDraw(auth.build(), group, members);
-//                }
-//            }
-//            );
-        } else {
-            mNotifyExecutorFragment.notifyDraw(auth.build(), group, members);
-        }
+    public void executeNotifyDraw(NotifyAuthorization auth, final Group group, final long[] members) {
+        mNotifyExecutorFragment.notifyDraw(auth, group, members);
     }
 
     private void populateGroupRowDetailsList(ListView _groupRowDetailsList) {
@@ -270,6 +211,18 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         }
     }
 
+    private void slideInIntent(Intent intent) {
+        // Activity options is since API 16.
+        // Got this idea from Android Dev Bytes video - https://www.youtube.com/watch?v=Ho8vk61lVIU
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
+        } else {
+            Bundle translateBundle = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_left, R.anim.slide_out_left).toBundle();
+            startActivity(intent, translateBundle);
+        }
+    }
+
     private void showGroup(long _groupId) {
         Log.i(TAG, "showGroup() - start. groupId: " + _groupId);
 
@@ -299,18 +252,5 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
 
         // Update preferences to save last viewed Group
         PreferenceManager.getDefaultSharedPreferences(this).edit().putLong(MOST_RECENT_GROUP_KEY, _groupId).commit();
-    }
-
-
-
-    private void selectEmailOptions(Account[] accounts, DialogInterface.OnClickListener onClick) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        CharSequence[] choices = new CharSequence[accounts.length];
-        for(int i = 0; i < accounts.length; i++) {
-            choices[i] = accounts[i].name;
-        }
-        builder.setSingleChoiceItems(choices, 0, onClick).setTitle("Select your preferred email account");
-        builder.show();
     }
 }

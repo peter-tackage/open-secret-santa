@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -21,6 +22,8 @@ import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.adapter.AccountAdapter;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Group;
+import com.moac.android.opensecretsanta.notify.EmailAuthorization;
+import com.moac.android.opensecretsanta.notify.NotifyAuthorization;
 import com.moac.android.opensecretsanta.util.AccountUtils;
 import rx.Observable;
 import rx.android.concurrency.AndroidSchedulers;
@@ -40,6 +43,7 @@ public class NotifyDialogFragment extends DialogFragment {
     // Apparently this is how you retain EditText fields - http://code.google.com/p/android/issues/detail?id=18719
     private String mSavedMsg;
     private FragmentContainer mFragmentContainer;
+    private Spinner mSpinner;
 
     /**
      * Factory method for this fragment class
@@ -101,9 +105,10 @@ public class NotifyDialogFragment extends DialogFragment {
             }
         });
 
-        final Spinner spinner = (Spinner) view.findViewById(R.id.spnr_email_selection);
-        final Observable<Account[]> accountsObservable = AccountUtils.getAllGmailAccountsObservable(getActivity());
+        mSpinner = (Spinner) view.findViewById(R.id.spnr_email_selection);
 
+        // Add all Gmail accounts to list
+        final Observable<Account[]> accountsObservable = AccountUtils.getAllGmailAccountsObservable(getActivity());
         accountsObservable.
           subscribeOn(Schedulers.newThread()).
           observeOn(AndroidSchedulers.mainThread()).
@@ -112,7 +117,8 @@ public class NotifyDialogFragment extends DialogFragment {
               public void call(Account[] accounts) {
                   Log.i(TAG, "Found accounts: " + accounts);
                   AccountAdapter aa = new AccountAdapter(getActivity(), accounts);
-                  spinner.setAdapter(aa);
+                  mSpinner.setAdapter(aa);
+                  // TODO Set to preference
               }
           });
 
@@ -138,10 +144,28 @@ public class NotifyDialogFragment extends DialogFragment {
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                // TODO Handle NO EMAIL required etc
+                final NotifyAuthorization.Builder auth = new NotifyAuthorization.Builder();
+                // Set the selected email as the user preference
+                Account acc = (Account)mSpinner.getSelectedItem();
+                String emailPrefKey = getActivity().getString(R.string.gmail_account_preference);
+                PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putString(emailPrefKey, acc.name).commit();
+
                 // Get the custom message.
                 mGroup.setMessage(mMsgField.getText().toString().trim());
                 mDb.update(mGroup);
-                notifyDraw(mGroup, mMemberIds);
+
+                // TODO Check if required
+                AccountUtils.getPreferedGmailAuth(getActivity().getApplicationContext(), getActivity()).
+                  subscribeOn(Schedulers.newThread()).
+                  observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<EmailAuthorization>() {
+                    @Override
+                    public void call(EmailAuthorization emailAuth) {
+                        Log.d(TAG, "call() - got EmailAuthorization: " + emailAuth.getEmailAddress() + ":" + emailAuth.getToken());
+                        auth.withAuth(emailAuth);
+                        executeNotifyDraw(auth.build(), mGroup, mMemberIds);
+                    }
+                });
             }
         });
 
@@ -176,11 +200,11 @@ public class NotifyDialogFragment extends DialogFragment {
         }
     }
 
-    void notifyDraw(Group group, long[] members) {
-        mFragmentContainer.executeNotifyDraw(group, members);
+    void executeNotifyDraw(NotifyAuthorization auth, Group group, long[] members) {
+        mFragmentContainer.executeNotifyDraw(auth, group, members);
     }
 
     public interface FragmentContainer {
-        public void executeNotifyDraw(Group group, long[] members);
+        public void executeNotifyDraw(NotifyAuthorization auth, Group group, long[] members);
     }
 }
