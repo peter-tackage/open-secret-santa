@@ -115,7 +115,7 @@ public class DatabaseUpgrader {
     protected void insertMigratedGroupInfo(DrawResultVersion2 drawResultVersion2, String version2GroupName) {
         try {
             Group migratedGroup = new Group();
-            migratedGroup.setName("migrated " + version2GroupName + " " + drawResultVersion2.getDrawDate());
+            migratedGroup.setName(constructNewMigratedGroupName(version2GroupName, drawResultVersion2.getDrawDate()));
             migratedGroup.setMessage(drawResultVersion2.getMessage());
             migratedGroup.setDrawDate(drawResultVersion2.getDrawDate());
 
@@ -127,6 +127,10 @@ public class DatabaseUpgrader {
         } catch (SQLException e) {
             throw new android.database.SQLException(e.getMessage());
         }
+    }
+
+    public static String constructNewMigratedGroupName(String groupName, long drawDate) {
+        return "migrated " + groupName + " " + drawDate;
     }
 
     protected void insertMigratedAssignmentEntryInfo(DrawResultEntryVersion2 drawResultEntryVersion2, long groupId) {
@@ -179,12 +183,12 @@ public class DatabaseUpgrader {
     // if the member doesn't exist, it creates an entry
     protected long getMemberIdFromMemberName(String memberName, long groupId) {
         try {
-            MemberVersion2 memberVersion2 = mDbHelper.getDaoEx(MemberVersion2.class).queryBuilder()
-                                                  .where().eq(MemberVersion2.Columns.NAME_COLUMN, memberName).and()
-                                                          .eq(MemberVersion2.Columns.GROUP_ID_COLUMN, groupId)
-                                                 .queryForFirst();
-            if (memberVersion2 != null) {
-                return memberVersion2.getId();
+            Member member = mDbHelper.getDaoEx(Member.class).queryBuilder()
+                                       .where().eq(Member.Columns.NAME_COLUMN, memberName).and()
+                                               .eq(Member.Columns.GROUP_ID_COLUMN, groupId)
+                                       .queryForFirst();
+            if (member != null) {
+                return member.getId();
             } else {
                 return createMemberEntry(memberName, groupId);
             }
@@ -205,100 +209,9 @@ public class DatabaseUpgrader {
             // we need the Group object to set it in the Member, so let's query the db
             Group group = mDbHelper.getDaoEx(Group.class).queryForId(groupId);
             newMember.setGroup(group);
-            newMember.setGroup(new Group());
             return mDbHelper.getDaoEx(Member.class).create(newMember);
         } catch (SQLException e) {
             throw new android.database.SQLException(e.getMessage());
         }
     }
-
-    /*protected List<GroupVersion2> getAllGroupsVersion2() {
-        List<GroupVersion2> groupsVersion2 = new ArrayList<GroupVersion2>();
-        Cursor cursor = db.query(GroupVersion2.TABLE_NAME,
-                GroupVersion2.Columns.ALL, null, null, null, null, null);
-
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            GroupVersion2 groupVersion2 = cursorToGroupVersion2(cursor);
-            groupsVersion2.add(groupVersion2);
-            cursor.moveToNext();
-        }
-        // make sure to close the cursor
-        cursor.close();
-
-        return groupsVersion2;
-    }
-
-    private GroupVersion2 cursorToGroupVersion2(Cursor cursor) {
-        GroupVersion2 groupVersion2 = new GroupVersion2();
-        groupVersion2.setName(cursor.getString(cursor.getColumnIndex(GroupVersion2.Columns.NAME_COLUMN)));
-        groupVersion2.setReady(cursor.getInt(cursor.getColumnIndex(GroupVersion2.Columns.IS_READY)) == 1);
-        return groupVersion2;
-    }
-
-    private List<DrawResultVersion2> getAllDrawResultsVersion2ForGroup(long version2GroupId) {
-        // get the most recent draw result based on Draw Date
-        String selectQuery = "SELECT  * FROM " + DrawResultVersion2.TABLE_NAME + " WHERE "
-                + DrawResultVersion2.Columns.GROUP_ID_COLUMN + " = " + version2GroupId;
-
-        Log.i(TAG, selectQuery);
-        List<DrawResultVersion2> drawResultsVersion2 = new ArrayList<DrawResultVersion2>();
-
-        Cursor c = db.rawQuery(selectQuery, null);
-        c.moveToFirst();
-        while (!c.isAfterLast()) {
-            DrawResultVersion2 drawResultVersion2 = cursorToDrawResultVersion2(c);
-            drawResultsVersion2.add(drawResultVersion2);
-            c.moveToNext();
-        }
-
-        return drawResultsVersion2;
-    }
-
-    private DrawResultVersion2 cursorToDrawResultVersion2(Cursor c) {
-        DrawResultVersion2 drawResultVersion2 = new DrawResultVersion2();
-        drawResultVersion2.setDrawDate(c.getLong(c.getColumnIndex(DrawResultVersion2.Columns.DRAW_DATE_COLUMN)));
-        drawResultVersion2.setSendDate(c.getLong(c.getColumnIndex(DrawResultVersion2.Columns.SEND_DATE_COLUMN)));
-        drawResultVersion2.setMessage(c.getString(c.getColumnIndex(DrawResultVersion2.Columns.MESSAGE_COLUMN)));
-        return drawResultVersion2;
-    }
-
-    private List<DrawResultEntryVersion2> getAllDrawResultEntriesVersion2() {
-        List<DrawResultEntryVersion2> drawResultEntriesVersion2 = new ArrayList<DrawResultEntryVersion2>();
-        Cursor cursor = db.query(DrawResultEntryVersion2.TABLE_NAME,
-                DrawResultEntryVersion2.Columns.ALL, null, null, null, null, null);
-
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            DrawResultEntryVersion2 drawResultEntryVersion2 = cursorToDrawResultEntryVersion2(cursor);
-            drawResultEntriesVersion2.add(drawResultEntryVersion2);
-            cursor.moveToNext();
-        }
-        // make sure to close the cursor
-        cursor.close();
-
-        return drawResultEntriesVersion2;
-    }
-
-    private DrawResultEntryVersion2 cursorToDrawResultEntryVersion2(Cursor cursor) {
-        DrawResultEntryVersion2 drawResultEntryVersion2 = new DrawResultEntryVersion2();
-        drawResultEntryVersion2.setGiverName(cursor.getString(cursor.getColumnIndex(DrawResultEntryVersion2.Columns.MEMBER_NAME_COLUMN)));
-        drawResultEntryVersion2.setReceiverName(cursor.getString(cursor.getColumnIndex(DrawResultEntryVersion2.Columns.OTHER_MEMBER_NAME_COLUMN)));
-        drawResultEntryVersion2.setContactDetail(cursor.getString(cursor.getColumnIndex(DrawResultEntryVersion2.Columns.CONTACT_DETAIL_COLUMN)));
-        drawResultEntryVersion2.setViewedDate(cursor.getLong(cursor.getColumnIndex(DrawResultEntryVersion2.Columns.VIEWED_DATE_COLUMN)));
-        drawResultEntryVersion2.setSentDate(cursor.getLong(cursor.getColumnIndex(DrawResultEntryVersion2.Columns.SENT_DATE_COLUMN)));
-        return drawResultEntryVersion2;
-    }
-
-    private int getMemberIdFromMemberName(String memberName) {
-        // get the most recent draw result based on Draw Date
-        String selectQuery = "SELECT " + MemberVersion2.Columns._ID + " FROM " + MemberVersion2.TABLE_NAME + " WHERE "
-                + MemberVersion2.Columns.NAME_COLUMN + " = " + memberName;
-
-        Log.i(TAG, selectQuery);
-
-        Cursor c = db.rawQuery(selectQuery, null);
-        c.moveToFirst();
-        return c.getInt(c.getColumnIndex(MemberVersion2.Columns._ID));
-    }    */
 }

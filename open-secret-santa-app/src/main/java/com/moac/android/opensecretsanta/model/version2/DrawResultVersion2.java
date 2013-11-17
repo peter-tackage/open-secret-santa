@@ -1,11 +1,7 @@
 package com.moac.android.opensecretsanta.model.version2;
 
 /**
- * Created with IntelliJ IDEA.
- * User: amelysh
- * Date: 13.11.13
- * Time: 23:14
- * To change this template use File | Settings | File Templates.
+ * Old DrawResult for database version2
  */
 
 import android.provider.BaseColumns;

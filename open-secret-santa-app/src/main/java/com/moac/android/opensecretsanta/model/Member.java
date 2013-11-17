@@ -112,4 +112,23 @@ public final class Member extends PersistableObject  {
         return ContactsContract.Contacts.lookupContact(_context.getContentResolver(), lookupUri);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        Member member = (Member) obj;
+        return (mContactId == member.getContactId() &&
+                (mLookupKey == null ? member.getLookupKey() == null : mLookupKey.equals(member.getLookupKey())) &&
+                (mContactDetails == null ?  member.getContactDetails() == null : mContactDetails.equals(member.getContactDetails()) &&
+                mGroup.getId() == member.getGroupId() &&
+                mContactMethod == member.getContactMethod() &&
+                mName.equals(member.getName())));
+    }
+
+
 }

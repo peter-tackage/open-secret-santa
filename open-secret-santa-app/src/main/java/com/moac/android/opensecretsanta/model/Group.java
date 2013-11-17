@@ -45,4 +45,20 @@ public class Group extends PersistableObject {
     public void setMessage(String _message) { mMessage = _message; }
     public String getMessage() { return mMessage; }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        Group group = (Group) obj;
+        return (mDrawDate == (group.getDrawDate()) &&
+                mCreatedAt == (group.getCreatedAt()) &&
+                mMessage.equals(group.getMessage()) &&
+                mName.equals(group.getName()));
+    }
+
 }

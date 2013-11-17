@@ -1,7 +1,6 @@
 package com.moac.android.opensecretsanta.database;
 
 import android.test.AndroidTestCase;
-import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.version2.DrawResultEntryVersion2;
 import com.moac.android.opensecretsanta.model.version2.DrawResultVersion2;
 import com.moac.android.opensecretsanta.model.version2.GroupVersion2;
@@ -21,7 +20,7 @@ public class DatabaseUpgraderVersion2TablesTests extends AndroidTestCase {
         super.setUp();
 
         Class[] PERSISTABLE_OBJECTS = new Class[]
-                { Assignment.class, GroupVersion2.class, MemberVersion2.class, DrawResultVersion2.class, DrawResultEntryVersion2.class };
+                { GroupVersion2.class, MemberVersion2.class, DrawResultVersion2.class, DrawResultEntryVersion2.class };
 
         // TestDatabaseHelper deletes any existing table
         mTestDbHelper = new TestDatabaseHelper(getContext(), TEST_DATABASE_NAME, PERSISTABLE_OBJECTS);
@@ -35,6 +34,7 @@ public class DatabaseUpgraderVersion2TablesTests extends AndroidTestCase {
         super.tearDown();
 
         mTestDbHelper.getWritableDatabase().endTransaction();
+        getContext().deleteDatabase("/data/data/com.moac.android.opensecretsanta/databases/" + TEST_DATABASE_NAME);
         mDatabaseUpgrader = null;
     }
 

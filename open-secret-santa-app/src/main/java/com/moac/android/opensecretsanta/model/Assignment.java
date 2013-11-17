@@ -47,4 +47,18 @@ public class Assignment extends PersistableObject {
         return "Giver: " + getGiverMemberId() + " Receiver: " + getReceiverMemberId() + " Status: " + mSendStatus;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        Assignment assignment = (Assignment) obj;
+        return (mGiver.getId() == assignment.getGiverMemberId() &&
+                mReceiver.getId() == assignment.getReceiverMemberId() &&
+                mSendStatus == assignment.getSendStatus());
+    }
 }

@@ -2,10 +2,10 @@ package com.moac.android.opensecretsanta.database;
 
 import android.test.AndroidTestCase;
 import com.moac.android.opensecretsanta.model.Assignment;
-import com.moac.android.opensecretsanta.model.version2.DrawResultEntryVersion2;
-import com.moac.android.opensecretsanta.model.version2.DrawResultVersion2;
-import com.moac.android.opensecretsanta.model.version2.GroupVersion2;
-import com.moac.android.opensecretsanta.model.version2.MemberVersion2;
+import com.moac.android.opensecretsanta.model.ContactMethod;
+import com.moac.android.opensecretsanta.model.Group;
+import com.moac.android.opensecretsanta.model.Member;
+import com.moac.android.opensecretsanta.model.version2.*;
 
 import java.util.List;
 
@@ -20,7 +20,42 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+    }
 
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+
+        getContext().deleteDatabase("/data/data/com.moac.android.opensecretsanta/databases/" + TEST_DATABASE_NAME);
+        mDatabaseUpgrader = null;
+    }
+
+    private void getVersion3Tables() {
+        Class[] PERSISTABLE_OBJECTS = new Class[]
+                { Member.class, Group.class };
+
+        mTestDbHelper = new TestDatabaseHelper(getContext(), TEST_DATABASE_NAME, PERSISTABLE_OBJECTS);
+        mTestDbHelper.getWritableDatabase().beginTransaction();
+
+        mDatabaseUpgrader = new DatabaseUpgrader(mTestDbHelper);
+    }
+
+    private void getVersion2Tables() {
+        Class[] PERSISTABLE_OBJECTS = new Class[]
+                { GroupVersion2.class, MemberVersion2.class, DrawResultVersion2.class, DrawResultEntryVersion2.class, RestrictionVersion2.class};
+
+        mTestDbHelper = new TestDatabaseHelper(getContext(), TEST_DATABASE_NAME, PERSISTABLE_OBJECTS);
+        mTestDbHelper.getWritableDatabase().beginTransaction();
+
+        mDatabaseUpgrader = new DatabaseUpgrader(mTestDbHelper);
+
+        // we need to run the alter queries so as to get the new table version3 setup for these tests
+        mDatabaseUpgrader.alterMemberTable();
+        mDatabaseUpgrader.alterGroupTable();
+    }
+
+    // so that we can test migration of assignment
+    private void getVersion2TablesAndAssignment() {
         Class[] PERSISTABLE_OBJECTS = new Class[]
                 { Assignment.class, GroupVersion2.class, MemberVersion2.class, DrawResultVersion2.class, DrawResultEntryVersion2.class};
 
@@ -34,16 +69,9 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
         mDatabaseUpgrader.alterGroupTable();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        mTestDbHelper.dropAllTables();
-        mTestDbHelper.getWritableDatabase().endTransaction();
-        mDatabaseUpgrader = null;
-    }
-
     public void testInsertMigratedAssignmentEntryInfoAssigned () {
 
+        getVersion2TablesAndAssignment();
         String expectedGiverName = "giver";
         String expectedReceiverName = "receiver";
         // We need a group containing those two members giver and receiver
@@ -73,8 +101,6 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
 
         // only assigned, no sent date set
 
-        mTestDbHelper.create(drawResultEntry, DrawResultEntryVersion2.class);
-
         mDatabaseUpgrader.insertMigratedAssignmentEntryInfo(drawResultEntry, expectedGroupId);
 
         List<Assignment> assignmentsTestResult = mTestDbHelper.queryAll(Assignment.class);
@@ -89,6 +115,7 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
 
     public void testInsertMigratedAssignmentEntryInfoRevealed () {
 
+        getVersion2TablesAndAssignment();
         String expectedGiverName = "giver";
         String expectedReceiverName = "receiver";
         // We need a group containing those two members giver and receiver
@@ -133,38 +160,89 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
         assertEquals(Assignment.Status.Revealed, assignmentTestResult.getSendStatus());
     }
 
+    public void testInsertMigratedGroupInfo() {
+        getVersion2TablesAndAssignment();
+        String expectedGroupName = "migrated groupName 1234";
+        String groupName = "groupName";
+        String expectedTestMessage = "Hello there test message";
+        long expectedDrawDate = 1234;
 
+        Group expectedGroup = new Group();
+        expectedGroup.setName(expectedGroupName);
+        expectedGroup.setDrawDate(expectedDrawDate);
+        expectedGroup.setMessage(expectedTestMessage);
+        expectedGroup.setCreatedAt(expectedDrawDate);
 
-    // Can't really test this as we need both old group and new group table class... hmm
-//    public void testInsertMigratedGroupInfo() {
-//        String expectedGroupName = "groupName";
-//        String expectedTestMessage = "Hello there test message";
-//        long expectedDrawDate = 1234;
-//        DrawResultVersion2 drawResultVersion2 = new DrawResultVersion2();
-//        drawResultVersion2.setDrawDate(expectedDrawDate);
-//        drawResultVersion2.setMessage(expectedTestMessage);
-//
-//        mDatabaseUpgrader.insertMigratedGroupInfo(drawResultVersion2, expectedGroupName);
-//
-//        // query if expected group exists indeed
-//      //  Group testResultGroup = mTestDbHelper.queryAll(Group.class);
-//
-//    }
+        DrawResultVersion2 drawResultVersion2 = new DrawResultVersion2();
+        drawResultVersion2.setDrawDate(expectedDrawDate);
+        drawResultVersion2.setMessage(expectedTestMessage);
 
-    // Can't really test this as we need both old member and new member table class... hmm
-//    public void testCreateMemberIfInexistent() {
-//        // we need to have a group created as there is a constraint between the group and the member
-//        String groupName = "groupName";
-//        GroupVersion2 group = new GroupVersion2();
-//        group.setName(groupName);
-//        long groupId =  mTestDbHelper.create(group, GroupVersion2.class);
+        mDatabaseUpgrader.insertMigratedGroupInfo(drawResultVersion2, groupName);
+
+        // query if expected group exists indeed
+        List<Group> testResultGroups = mTestDbHelper.queryAll(Group.class);
+
+        assertEquals(1, testResultGroups.size());
+        // there should only be the one and only, let's grab it
+        Group oneAndOnlyTestResultGroup = testResultGroups.get(0);
+        assertEquals(expectedGroup, oneAndOnlyTestResultGroup);
+    }
+
+    public void testGetMemberIdFromMemberNameExistingMember() {
+        getVersion3Tables();
+        // we need to have a group created as there is a constraint between the group and the member
+        String groupName = "groupName";
+        Group group = new Group();
+        group.setName(groupName);
+        long groupId =  mTestDbHelper.create(group, Group.class);
+
+        String testMemberName = "memberName";
+        Member expectedMember = new Member();
+        expectedMember.setName(testMemberName);
+        expectedMember.setGroup(group);
+        expectedMember.setContactMethod(ContactMethod.EMAIL);
+        expectedMember.setContactAddress("member@me.com");
+        expectedMember.setLookupKey("lookupkey");
+        mTestDbHelper.create(expectedMember, Member.class);
+
+        mDatabaseUpgrader.getMemberIdFromMemberName(testMemberName, groupId);
+        // check that the member have been created
+        List<Member> membersTestResult = mTestDbHelper.queryAll(Member.class);
+        assertEquals(1, membersTestResult.size());
+        // we can assume that the entries will be in the same order i.e giver Member is first element
+        assertEquals(expectedMember, membersTestResult.get(0));
+    }
+
+     public void testGetMemberIdFromMemberNameInexistentMember() {
+        getVersion3Tables();
+        // we need to have a group created as there is a constraint between the group and the member
+        String groupName = "groupName";
+        Group group = new Group();
+        group.setName(groupName);
+        long groupId =  mTestDbHelper.create(group, Group.class);
+
+        String newMemberName = "newMemberName";
+
+        Member expectedMember = new Member();
+        expectedMember.setName(newMemberName);
+        expectedMember.setContactMethod(ContactMethod.REVEAL_ONLY);
+        expectedMember.setGroup(group);
+
+        mDatabaseUpgrader.getMemberIdFromMemberName(newMemberName, groupId);
+        // check that the member have been created
+        List<Member> membersTestResult = mTestDbHelper.queryAll(Member.class);
+        assertEquals(1, membersTestResult.size());
+        // we can assume that the entries will be in the same order i.e giver Member is first element
+        assertEquals(expectedMember, membersTestResult.get(0));
+    }
+
+//    public void testMigrateDataToVersion3AssignmentsTable() {
 //
-//        String newMemberName = "newMemberName";
-//        mDatabaseUpgrader.getMemberIdFromMemberName(newMemberName, groupId);
-//        // check that the members have been created
-//        List<Member> membersTestResult = mTestDbHelper.queryAll(Member.class);
-//        assertEquals(1, membersTestResult.size());
-//        // we can assume that the entries will be in the same order i.e giver Member is first element
-//        assertEquals(newMemberName, membersTestResult.get(0).getName());
+//        getVersion2Tables();
+//        // create an old db
+//        // big migration
+//
+//
+//        // query new tables to check results
 //    }
 }
