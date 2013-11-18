@@ -41,9 +41,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     private static final String TAG = MemberListFragment.class.getSimpleName();
     private static final String DRAW_IN_PROGRESS_KEY = "drawInProgress";
     public static final String ASSIGNMENT_FRAGMENT_KEY = "AssignmentFragment";
-    private enum Mode {Building, Notify;}
-
-    private List<MemberRowDetails> mRows = new ArrayList<MemberRowDetails>();
+    private enum Mode {Building, Notify}
 
     private DatabaseManager mDb;
     private Group mGroup;
@@ -156,8 +154,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         BusProvider.getInstance().register(this);
         mMode = evaluateMode();
         // Populate member list
-        mRows = buildMemberRowDetails(mGroup.getId());
-        mAdapter = new MemberListAdapter(getActivity(), R.layout.member_row, mRows);
+        mAdapter = new MemberListAdapter(getActivity(), R.layout.member_row, buildMemberRowDetails(mGroup.getId()));
         setListAdapter(mAdapter);
     }
 
@@ -430,8 +427,8 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     // TODO Make calls do this asynchronously
     private void populateMemberList() {
-        mRows.clear();
-        mRows.addAll(buildMemberRowDetails(mGroup.getId()));
+        mAdapter.clear();
+        mAdapter.addAll(buildMemberRowDetails(mGroup.getId()));
         if(mAdapter != null) {
             mAdapter.notifyDataSetChanged();
         }
