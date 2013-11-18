@@ -9,9 +9,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/content_title_textview"
-    android:gravity="center_horizontal"
+    android:gravity="center_vertical|right"
     android:textColor="@color/white"
-    android:background="@android:color/holo_blue_light" />
+    android:background="@android:color/holo_blue_light"
+    android:paddingRight="10dp"/>
 
   <AutoCompleteTextView
     android:layout_width="match_parent"

@@ -101,7 +101,7 @@ public class OpenSecretSantaApplication extends Application {
         createTestDraw(4);
      }
 
-    private void createTestDraw(int _instance ) {
+    private void createTestDraw(int _instance) {
         // Add a Group
         Group group1 = new Group();
         group1.setName("Party " + _instance);
@@ -109,25 +109,32 @@ public class OpenSecretSantaApplication extends Application {
 
         // Add some Members
         Member m1 = new Member();
-        m1.setName("Grandpa");
+        m1.setName("Jasmine");
         m1.setContactMethod(ContactMethod.REVEAL_ONLY);
 
         Member m2 = new Member();
-        m2.setName("Auntie Mary");
+        m2.setName("James");
         m2.setContactMethod(ContactMethod.EMAIL);
-        m2.setContactAddress("auntie@mary.com");
+        m2.setContactDetails("me@james.com");
 
         Member m3 = new Member();
-        m3.setName("Melissa");
+        m3.setName("Mandy");
         m3.setContactMethod(ContactMethod.SMS);
-        m3.setContactAddress("+1234567890");
+        m3.setContactDetails("+1083218723");
+
+        Member m4 = new Member();
+        m4.setName("Patrick");
+        m4.setContactMethod(ContactMethod.SMS);
+        m4.setContactDetails("+9827343983");
 
         m1.setGroup(group1);
         m2.setGroup(group1);
         m3.setGroup(group1);
+        m4.setGroup(group1);
         mDatabaseManager.create(m1);
         mDatabaseManager.create(m2);
         mDatabaseManager.create(m3);
+        mDatabaseManager.create(m4);
 
         Restriction r1 = new Restriction();
         r1.setMember(m1);
