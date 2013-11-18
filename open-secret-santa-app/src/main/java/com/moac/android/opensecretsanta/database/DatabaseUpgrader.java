@@ -53,7 +53,7 @@ public class DatabaseUpgrader {
     protected void alterMemberTable() {
         try {
           // Member table now has an extra contact_id.
-          mDbHelper.getDaoEx(MemberVersion2.class).executeRaw("ALTER TABLE '" + MemberVersion2.TABLE_NAME + "' ADD COLUMN " + Member.Columns.CONTACT_ID + " INTEGER;");
+          mDbHelper.getDaoEx(MemberVersion2.class).executeRaw("ALTER TABLE '" + MemberVersion2.TABLE_NAME + "' ADD COLUMN " + Member.Columns.CONTACT_ID + " INTEGER DEFAULT " + Member.UNSET_ID);
 
           // we are now using the ContactMethod enum,
           // hmmmmm you cannot DROP a column
@@ -99,7 +99,7 @@ public class DatabaseUpgrader {
         for (GroupVersion2 groupVersion2 : groupsVersion2) {
             List<DrawResultVersion2> drawResultsVersion2 = getAllDrawResultsVersion2ForGroup(groupVersion2.getId());
             for (DrawResultVersion2 drawResultVersion2 : drawResultsVersion2) {
-                insertMigratedGroupInfo(drawResultVersion2, groupVersion2.getName());
+                updateMigratedGroupInfo(drawResultVersion2, groupVersion2.getName());
                 // for each Draw Result Entry, build the entry for the new Assignment
                 //    Assignment columns are
                 //    - giver member id and receiver member id
@@ -112,36 +112,31 @@ public class DatabaseUpgrader {
                     insertMigratedAssignmentEntryInfo(drawResultEntryVersion2, groupVersion2.getId());
                 }
             }
-
-            // remove old group
-            //removeGroupVersion2(groupVersion2.getId());
         }
     }
 
-    protected void removeGroupVersion2(long version2GroupId) {
-        mDbHelper.getWritableDatabase().delete(Group.TABLE_NAME, Group.Columns._ID + " = ?",
-                new String[] { String.valueOf(version2GroupId) });
-    }
 
-    protected void insertMigratedGroupInfo(DrawResultVersion2 drawResultVersion2, String version2GroupName) {
+    protected void updateMigratedGroupInfo(DrawResultVersion2 drawResultVersion2, String version2GroupName) {
         try {
-            Group migratedGroup = new Group();
-            migratedGroup.setName(constructNewMigratedGroupName(version2GroupName, drawResultVersion2.getDrawDate()));
-            migratedGroup.setMessage(drawResultVersion2.getMessage());
-            migratedGroup.setDrawDate(drawResultVersion2.getDrawDate());
+            Group.GroupBuilder groupBuilder = new Group.GroupBuilder();
+            // we set created date = draw date
+            Group migratedGroup = groupBuilder
+                    .withGroupId(drawResultVersion2.getGroupId())
+                    .withName(constructNewMigratedGroupName(version2GroupName))
+                    .withMessage(drawResultVersion2.getMessage())
+                    .withDrawDate(drawResultVersion2.getDrawDate())
+                    .withCreatedDate(drawResultVersion2.getDrawDate())
+                    .build();
 
-            // this is  new field and we don't have old data for that, so we will set created date = draw date
-            migratedGroup.setCreatedAt(drawResultVersion2.getDrawDate());
-
-            mDbHelper.getDaoEx(Group.class).create(migratedGroup);
+            mDbHelper.getDaoEx(Group.class).update(migratedGroup);
 
         } catch (SQLException e) {
             throw new android.database.SQLException(e.getMessage());
         }
     }
 
-    public static String constructNewMigratedGroupName(String groupName, long drawDate) {
-        return "migrated " + groupName + " " + drawDate;
+    public static String constructNewMigratedGroupName(String groupName) {
+        return groupName + " (auto-migrated)";
     }
 
     protected void insertMigratedAssignmentEntryInfo(DrawResultEntryVersion2 drawResultEntryVersion2, long groupId) {
@@ -162,7 +157,7 @@ public class DatabaseUpgrader {
             if (drawResultEntryVersion2.getViewedDate() > 0) {
                 sendStatus = Assignment.Status.Revealed;
             }
-            else if (drawResultEntryVersion2.getSentDate() > 0) {
+            if (drawResultEntryVersion2.getSentDate() > 0) {
                 sendStatus = Assignment.Status.Sent;
             }
             newAssignment.setSendStatus(sendStatus);
@@ -199,9 +194,12 @@ public class DatabaseUpgrader {
                                                .eq(Member.Columns.GROUP_ID_COLUMN, groupId)
                                        .queryForFirst();
             if (member != null) {
-                return member.getId();
-            } else {
-                return createMemberEntry(memberName, groupId);
+                long memberId = member.getId();
+                return memberId;
+            }
+            else {
+                long newlyCreatedMemberId = createMemberEntry(memberName, groupId);
+                return newlyCreatedMemberId;
             }
         } catch (SQLException e) {
             throw new android.database.SQLException(e.getMessage());

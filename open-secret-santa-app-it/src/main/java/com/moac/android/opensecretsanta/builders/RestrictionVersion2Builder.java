@@ -5,19 +5,19 @@ import com.moac.android.opensecretsanta.model.version2.RestrictionVersion2;
 
 public class RestrictionVersion2Builder {
 
-    public static String TEST_GIVER_NAME = "giver";
-    public static String TEST_RECEIVER_NAME = "receiver";
+    public static String TEST_MEMBER_NAME = "member";
+    public static String OTHER_MEMBER_NAME = "other_member";
 
-    MemberVersion2 mGiver;
-    MemberVersion2 mReceiver;
+    MemberVersion2 mMember;
+    MemberVersion2 mOtherMember;
 
-    public RestrictionVersion2Builder withGiver(MemberVersion2 giver) {
-        mGiver = giver;
+    public RestrictionVersion2Builder withMember(MemberVersion2 giver) {
+        mMember = giver;
         return this;
     }
 
-    public RestrictionVersion2Builder withReceiver(MemberVersion2 receiver) {
-        mReceiver = receiver;
+    public RestrictionVersion2Builder withOtherMember(MemberVersion2 receiver) {
+        mOtherMember = receiver;
         return this;
     }
 
@@ -25,18 +25,18 @@ public class RestrictionVersion2Builder {
         RestrictionVersion2 restriction = new RestrictionVersion2();
 
         // build default required Member giver and receiver
-        if (mGiver == null) {
+        if (mMember == null) {
             MemberVersion2Builder memberBuilder = new MemberVersion2Builder();
-            mGiver = memberBuilder.withName(TEST_GIVER_NAME).build();
+            mMember = memberBuilder.withName(TEST_MEMBER_NAME).build();
         }
 
-        if (mReceiver == null) {
+        if (mOtherMember == null) {
             MemberVersion2Builder memberBuilder = new MemberVersion2Builder();
-            mReceiver = memberBuilder.withName(TEST_RECEIVER_NAME).build();
+            mOtherMember = memberBuilder.withName(OTHER_MEMBER_NAME).build();
         }
 
-        restriction.setMember(mGiver);
-        restriction.setMember(mReceiver);
+        restriction.setMember(mMember);
+        restriction.setOtherMember(mOtherMember);
         return restriction;
     }
 }

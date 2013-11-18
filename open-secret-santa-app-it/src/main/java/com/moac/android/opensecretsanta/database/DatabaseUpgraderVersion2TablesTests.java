@@ -72,31 +72,4 @@ public class DatabaseUpgraderVersion2TablesTests extends AndroidTestCase {
         List<DrawResultVersion2> testResults = mDatabaseUpgrader.getAllDrawResultsVersion2ForGroup(groupB.getId());
         assertEquals(0, testResults.size());
     }
-
-    public void testRemoveGroupVersion2() {
-        // add groupA, groupB, groupC
-        GroupVersion2 groupA = new GroupVersion2();
-        groupA.setName("gA");
-        groupA.setReady(true);
-        long groupAId = mTestDbHelper.create(groupA, GroupVersion2.class);
-
-        GroupVersion2 groupB = new GroupVersion2();
-        groupB.setName("gB");
-        groupB.setReady(false);
-        long groupBId = mTestDbHelper.create(groupB, GroupVersion2.class);
-
-        GroupVersion2 groupC = new GroupVersion2();
-        groupC.setName("gC");
-        groupC.setReady(false);
-        long groupCId =  mTestDbHelper.create(groupC, GroupVersion2.class);
-
-        // remove group groupB
-        mDatabaseUpgrader.removeGroupVersion2(groupBId);
-        List<GroupVersion2> groupsTestResults =  mTestDbHelper.queryAll(GroupVersion2.class);
-
-        // test that groupA and groupC remain
-        assertEquals(2, groupsTestResults.size());
-        assertTrue(groupsTestResults.contains(groupA));
-        assertTrue(groupsTestResults.contains(groupC));
-    }
 }

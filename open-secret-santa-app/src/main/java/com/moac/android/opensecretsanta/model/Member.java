@@ -51,7 +51,7 @@ public final class Member extends PersistableObject  {
     public void setName(String _name) { mName = _name; }
 
     public String getContactDetails() { return mContactDetails; }
-    public void setContactAddress(String _contactDetails) { mContactDetails = _contactDetails; }
+    public void setContactDetails(String _contactDetails) { mContactDetails = _contactDetails; }
 
     public ContactMethod getContactMethod() { return mContactMethod; }
     public void setContactMethod(ContactMethod _contactMethod) { mContactMethod = _contactMethod; }
@@ -128,6 +128,51 @@ public final class Member extends PersistableObject  {
                 mGroup.getId() == member.getGroupId() &&
                 mContactMethod == member.getContactMethod() &&
                 mName.equals(member.getName())));
+    }
+
+    public static class MemberBuilder {
+        Member mMember;
+
+        public MemberBuilder() {
+            mMember = new Member();
+        }
+
+        public MemberBuilder withMemberId(long _id) {
+            mMember.setId(_id);
+            return this;
+        }
+
+        public MemberBuilder withContactId(long contactId) {
+            mMember.setContactId(contactId);
+            return this;
+        }
+
+        public MemberBuilder withLookupKey(String key) {
+            mMember.setLookupKey(key);
+            return this;
+        }
+
+        public MemberBuilder withName(String name) {
+            mMember.setName(name);
+            return this;
+        }
+
+        public MemberBuilder withContactDetails(String details) {
+            mMember.setContactDetails(details);
+            return this;
+        }
+
+        public MemberBuilder withContactMethod(ContactMethod method) {
+            mMember.setContactMethod(method);
+            return this;
+        }
+
+        public MemberBuilder withGroup(Group group) {
+            mMember.setGroup(group);
+            return this;
+        }
+
+        public Member build() { return mMember; }
     }
 
 

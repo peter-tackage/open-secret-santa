@@ -178,14 +178,14 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
 
             long id = _cursor.getLong(Query.CONTACT_ID);
             String name = _cursor.getString(Query.NAME);
-            String address = _cursor.getString(Query.DESTINATION);
+            String contactDetails = _cursor.getString(Query.DESTINATION);
             String lookupKey = _cursor.getString(Query.LOOKUP_KEY);
 
             Member member = new Member();
             member.setName(name);
             member.setContactId(id);
             member.setLookupKey(lookupKey);
-            member.setContactAddress(address);
+            member.setContactDetails(contactDetails);
             member.setContactMethod(_contactMethod);
             results.add(member);
         }
