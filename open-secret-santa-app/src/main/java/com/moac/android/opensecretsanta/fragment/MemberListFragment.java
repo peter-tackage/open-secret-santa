@@ -41,6 +41,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     private static final String TAG = MemberListFragment.class.getSimpleName();
     private static final String DRAW_IN_PROGRESS_KEY = "drawInProgress";
     public static final String ASSIGNMENT_FRAGMENT_KEY = "AssignmentFragment";
+
     private enum Mode {Building, Notify}
 
     private DatabaseManager mDb;
@@ -151,8 +152,10 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     public void onResume() {
         super.onResume();
         Log.i(TAG, "onResume() - registering event bus");
+        // TODO A lot of this is unnecessarily rebuilding things.
         BusProvider.getInstance().register(this);
         mMode = evaluateMode();
+        setHeader();
         // Populate member list
         mAdapter = new MemberListAdapter(getActivity(), R.layout.member_row, buildMemberRowDetails(mGroup.getId()));
         setListAdapter(mAdapter);
@@ -289,9 +292,24 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     private void onModeChanged() {
         setMenuItems();
+        setHeader();
     }
 
-    // TODO Do in background
+    private void setHeader() {
+        switch(mMode) {
+            case Building:
+                mCompleteTextView.setEnabled(true);
+                break;
+            case Notify:
+                mCompleteTextView.setText("");
+                mCompleteTextView.setEnabled(false);
+                break;
+            default:
+                break;
+        }
+    }
+
+        // TODO Do in background
     private void doDelete(long[] _ids) {
         for(long id : _ids) {
             mDb.delete(id, Member.class);
@@ -317,7 +335,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         });
 
         // Create the AlertDialog
-        AlertDialog dialog = builder.setTitle("Clear assignments?").create();
+        AlertDialog dialog = builder.setMessage("Clear assignments?").create();
         dialog.show();
     }
 
@@ -427,11 +445,10 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     // TODO Make calls do this asynchronously
     private void populateMemberList() {
+        getListView().clearChoices();
         mAdapter.clear();
         mAdapter.addAll(buildMemberRowDetails(mGroup.getId()));
-        if(mAdapter != null) {
-            mAdapter.notifyDataSetChanged();
-        }
+        mAdapter.notifyDataSetChanged();
     }
 
     private List<MemberRowDetails> buildMemberRowDetails(long _groupId) {
@@ -515,7 +532,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         for(int i = 0; i < checkedPositions.size(); i++) {
             int position = checkedPositions.keyAt(i);
             boolean isChecked = checkedPositions.valueAt(i);
-            if(isChecked && ((MemberRowDetails)(getListAdapter().getItem(position))).getMember().getContactMode().isSendable()) {
+            if(isChecked && ((MemberRowDetails) (getListAdapter().getItem(position))).getMember().getContactMode().isSendable()) {
                 Log.v(TAG, "hasCheckedSendable() - position checked: " + position);
                 return true;
             }
