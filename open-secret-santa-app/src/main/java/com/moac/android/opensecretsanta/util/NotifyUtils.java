@@ -1,7 +1,7 @@
 package com.moac.android.opensecretsanta.util;
 
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.model.ContactMode;
+import com.moac.android.opensecretsanta.model.ContactMethod;
 import com.moac.android.opensecretsanta.model.Member;
 
 import java.util.List;
@@ -10,7 +10,7 @@ public class NotifyUtils {
 
     public static boolean containsSendableEntry(List<Member> _members) {
         for(Member member : _members) {
-            if(member.getContactMode().isSendable()) {
+            if(member.getContactMethod().isSendable()) {
                 return true;
             }
         }
@@ -19,7 +19,7 @@ public class NotifyUtils {
 
     public static boolean containsEmailSendableEntry(List<Member> _members) {
         for(Member member : _members) {
-            if(member.getContactMode() == ContactMode.EMAIL) {
+            if(member.getContactMethod() == ContactMethod.EMAIL) {
                 return true;
             }
         }
@@ -29,7 +29,7 @@ public class NotifyUtils {
     public static boolean containsEmailSendableEntry(DatabaseManager db, long[] _memberIds) {
         for(long id : _memberIds) {
             Member member = db.queryById(id, Member.class);
-            if(member.getContactMode() == ContactMode.EMAIL) {
+            if(member.getContactMethod() == ContactMethod.EMAIL) {
                 return true;
             }
         }
@@ -37,13 +37,13 @@ public class NotifyUtils {
     }
 
     private boolean isSendable(Member member) {
-        return (member != null && member.getContactMode() != null) && member.getContactMode().isSendable();
+        return (member != null && member.getContactMethod() != null) && member.getContactMethod().isSendable();
     }
 
     public static int getShareableCount(List<Member> _members) {
         int count = 0;
         for(Member member : _members) {
-            if(member.getContactMode().isSendable()) {
+            if(member.getContactMethod().isSendable()) {
                 count++;
             }
         }

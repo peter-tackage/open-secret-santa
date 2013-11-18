@@ -55,7 +55,7 @@ public class DefaultNotifyExecutor implements NotifyExecutor {
 
                     Member giftReceiver = mDb.queryById(assignment.getReceiverMemberId(), Member.class);
 
-                    switch(member.getContactMode()) {
+                    switch(member.getContactMethod()) {
                         case SMS:
                             Log.i(TAG, "executeNotify() - Building SMS Notifier for: " + member.getName());
                             // Reset the existing state
@@ -95,7 +95,7 @@ public class DefaultNotifyExecutor implements NotifyExecutor {
                         case REVEAL_ONLY:
                             break;
                         default:
-                            Log.e(TAG, "executeNotify() - Unsupported contact mode: " + member.getContactMode());
+                            Log.e(TAG, "executeNotify() - Unsupported contact mode: " + member.getContactMethod());
                     }
                 }
                 observer.onCompleted();

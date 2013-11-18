@@ -5,26 +5,19 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent">
 
-  <LinearLayout
-    android:orientation="vertical"
+  <TextView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:animateLayoutChanges="true"
-    android:layout_weight="0">
-
-    <TextView
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:id="@+id/content_title_textview"
-      android:gravity="center_horizontal"
-      android:textColor="@color/white"
-      android:background="@android:color/holo_blue_light" />
-  </LinearLayout>
+    android:id="@+id/content_title_textview"
+    android:gravity="center_horizontal"
+    android:textColor="@color/white"
+    android:background="@android:color/holo_blue_light" />
 
   <AutoCompleteTextView
     android:layout_width="match_parent"
     android:layout_height="48dp"
     android:id="@+id/add_autoCompleteTextView"
+    android:textAlignment="center"
     android:layout_gravity="center"
     android:padding="8dp"
     android:layout_marginLeft="8dp"
@@ -34,7 +27,7 @@
     android:hint="@string/search_hint_label"
     android:textColorHint="@color/shade_of_grey1"
     android:singleLine="true"
-    android:background="@drawable/search_bg_shape" />
+    android:background="@drawable/search_bg_shape"/>
 
   <ListView
     android:id="@id/android:list"

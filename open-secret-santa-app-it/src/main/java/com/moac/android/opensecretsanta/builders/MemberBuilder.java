@@ -1,13 +1,13 @@
-package com.moac.android.opensecretsanta.test.builders;
+package com.moac.android.opensecretsanta.builders;
 
-import com.moac.android.opensecretsanta.model.ContactMode;
+import com.moac.android.opensecretsanta.model.ContactMethod;
 import com.moac.android.opensecretsanta.model.Member;
 
 public class MemberBuilder {
 
     private String name = "member1";
-    private String address = "+1191191";
-    private ContactMode mode = ContactMode.SMS;
+    private String contactDetails = "+1191191";
+    private ContactMethod method = ContactMethod.SMS;
     private String lookupKey = "AAABBB1111";
 
 
@@ -16,13 +16,13 @@ public class MemberBuilder {
         return this;
     }
 
-    public MemberBuilder withContactAddress(String address) {
-        this.address = address;
+    public MemberBuilder withContactDetails(String address) {
+        this.contactDetails = address;
         return this;
     }
 
-    public MemberBuilder withContactMode(ContactMode mode) {
-        this.mode = mode;
+    public MemberBuilder withContactMethod(ContactMethod mode) {
+        this.method = mode;
         return this;
     }
 
@@ -35,8 +35,8 @@ public class MemberBuilder {
         Member member  = new Member();
         member.setName(name);
         member.setLookupKey(lookupKey);
-        member.setContactAddress(address);
-        member.setContactMode(mode);
+        member.setContactDetails(contactDetails);
+        member.setContactMethod(method);
         return member;
     }
 }

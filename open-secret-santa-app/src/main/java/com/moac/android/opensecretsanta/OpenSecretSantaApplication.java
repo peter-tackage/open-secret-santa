@@ -1,13 +1,9 @@
 package com.moac.android.opensecretsanta;
 
-import android.accounts.*;
 import android.app.Application;
-import android.preference.PreferenceManager;
-import android.util.Log;
-import com.moac.android.opensecretsanta.model.ContactMode;
 import com.moac.android.opensecretsanta.database.DatabaseHelper;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.notify.mail.GmailOAuth2Sender;
+import com.moac.android.opensecretsanta.model.ContactMethod;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.Restriction;
@@ -25,6 +21,7 @@ public class OpenSecretSantaApplication extends Application {
         if(sInstance == null)
             sInstance = this; // init self singleton.
     }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -32,7 +29,7 @@ public class OpenSecretSantaApplication extends Application {
         Utils.doOnce(getApplicationContext(), "initTestData", new Runnable() {
             @Override
             public void run() {
-              loadTestData();
+                loadTestData();
             }
         });
     }
@@ -56,42 +53,47 @@ public class OpenSecretSantaApplication extends Application {
         createTestDraw(2);
         createTestDraw(3);
         createTestDraw(4);
-     }
+    }
 
-    private void createTestDraw(int _instance ) {
+    private void createTestDraw(int _instance) {
         // Add a Group
         Group group1 = new Group();
-        group1.setName("Test Group - 1 " + _instance);
+        group1.setName("Party " + _instance);
         mDatabaseManager.create(group1);
 
         // Add some Members
         Member m1 = new Member();
-        m1.setName("John Goodman"+_instance);
-        m1.setContactMode(ContactMode.REVEAL_ONLY);
+        m1.setName("Jasmine");
+        m1.setContactMethod(ContactMethod.REVEAL_ONLY);
 
         Member m2 = new Member();
-        m2.setName("Mary Arthur"+_instance);
-        m2.setContactMode(ContactMode.EMAIL);
-        m2.setContactAddress("arthurmcauthur@longesttestdomain.ddd");
+
+        m2.setName("James");
+        m2.setContactMethod(ContactMethod.EMAIL);
+        m2.setContactDetails("me@somedomaiincalledjames.com");
 
         Member m3 = new Member();
-        m3.setName("Some Person"+_instance);
-        m3.setContactMode(ContactMode.SMS);
-        m3.setContactAddress("+4923229967513213");
+        m3.setName("Mandy");
+        m3.setContactMethod(ContactMethod.SMS);
+        m3.setContactDetails("+1083218723");
+
+        Member m4 = new Member();
+        m4.setName("Patrick");
+        m4.setContactMethod(ContactMethod.SMS);
+        m4.setContactDetails("+9827343983");
 
         m1.setGroup(group1);
         m2.setGroup(group1);
         m3.setGroup(group1);
+        m4.setGroup(group1);
         mDatabaseManager.create(m1);
         mDatabaseManager.create(m2);
         mDatabaseManager.create(m3);
+        mDatabaseManager.create(m4);
 
         Restriction r1 = new Restriction();
         r1.setMember(m1);
         r1.setOtherMember(m2);
         mDatabaseManager.create(r1);
     }
-
-
-
 }

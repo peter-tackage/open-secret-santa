@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.util.Log;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.draw.AssignmentsEvent;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.notify.mail.GmailOAuth2Sender;
@@ -44,10 +43,10 @@ public class EmailNotifier implements Notifier {
 
         try {
             mGmailSender.sendMail(mContext.getString(R.string.email_subject_msg), body, mSenderAddress,
-              mToken, _giver.getContactAddress());
+              mToken, _giver.getContactDetails());
             assignment.setSendStatus(Assignment.Status.Sent);
         } catch(MessagingException e) {
-            Log.e(TAG, "Exception when sending email to: " + _giver.getContactAddress(), e);
+            Log.e(TAG, "Exception when sending email to: " + _giver.getContactDetails(), e);
             assignment.setSendStatus(Assignment.Status.Failed);
         }
         // Persist the result

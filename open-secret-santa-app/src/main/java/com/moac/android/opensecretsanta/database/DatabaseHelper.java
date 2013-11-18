@@ -40,8 +40,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private static final String DATABASE_NAME = "opensecretsanta.db";
     private static final int DATABASE_VERSION = 3;
 
-    private static final Class[] PERSISTABLE_OBJECTS =
-      { Group.class, Member.class, Restriction.class, Assignment.class };
+    protected Class[] PERSISTABLE_OBJECTS;
 
     private final Map<Class<? extends PersistableObject>, Dao<? extends PersistableObject, Long>> daos =
       new HashMap<Class<? extends PersistableObject>, Dao<? extends PersistableObject, Long>>();
@@ -51,6 +50,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     public DatabaseHelper(Context ctx) {
         super(ctx, DATABASE_NAME, null, DATABASE_VERSION);
+        PERSISTABLE_OBJECTS = new Class[] {Group.class, Member.class, Restriction.class, Assignment.class};
     }
 
     // For testing use only
@@ -79,7 +79,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
                         success = upgradeToVersion2(db);
                         break;
                     case 3:
-                        success = upgradeToVersion3(db);
+                       // success = upgradeToVersion3(cs);
                         break;
                 }
                 if(!success) {
@@ -211,8 +211,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return true;
     }
 
-    private boolean upgradeToVersion3(SQLiteDatabase db) {
-        // TODO Drop all old tables
+    private boolean upgradeToVersion3(ConnectionSource cs) {
+        DatabaseUpgrader databaseUpgrader = new DatabaseUpgrader(this);
+        databaseUpgrader.upgradeDatabaseToVersion3(cs);
+
+        // let's not drop any tables (yet) just in case we need to rollback....
         return true;
     }
 }

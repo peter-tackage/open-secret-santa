@@ -309,7 +309,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         }
     }
 
-        // TODO Do in background
+    // TODO Do in background
     private void doDelete(long[] _ids) {
         for(long id : _ids) {
             mDb.delete(id, Member.class);
@@ -532,7 +532,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         for(int i = 0; i < checkedPositions.size(); i++) {
             int position = checkedPositions.keyAt(i);
             boolean isChecked = checkedPositions.valueAt(i);
-            if(isChecked && ((MemberRowDetails) (getListAdapter().getItem(position))).getMember().getContactMode().isSendable()) {
+            if(isChecked && ((MemberRowDetails) (getListAdapter().getItem(position))).getMember().getContactMethod().isSendable()) {
                 Log.v(TAG, "hasCheckedSendable() - position checked: " + position);
                 return true;
             }

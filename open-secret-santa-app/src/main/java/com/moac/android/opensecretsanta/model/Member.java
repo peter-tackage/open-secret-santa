@@ -16,8 +16,9 @@ public final class Member extends PersistableObject  {
         public static final String LOOKUP_KEY = "LOOKUP_KEY";
         public static final String CONTACT_ID = "CONTACT_ID";
         public static final String NAME_COLUMN = "NAME";
-        public static final String CONTACT_MODE_COLUMN = "CONTACT_MODE";
-        public static final String CONTACT_ADDRESS_COLUMN = "CONTACT_ADDRESS";
+        // Note that CONTACT_MODE is deprecated since v3
+        public static final String CONTACT_METHOD_COLUMN = "CONTACT_METHOD";
+        public static final String CONTACT_DETAIL_COLUMN = "CONTACT_DETAIL";
         public static final String GROUP_ID_COLUMN = "GROUP_ID";
     }
 
@@ -32,12 +33,12 @@ public final class Member extends PersistableObject  {
     private String mName;
 
     // The actual email, the phone number, the whatever.
-    @DatabaseField(columnName = Columns.CONTACT_ADDRESS_COLUMN)
-    private String mContactAddress;
+    @DatabaseField(columnName = Columns.CONTACT_DETAIL_COLUMN)
+    private String mContactDetails;
 
     // The mode of communication to be used.
-    @DatabaseField(columnName = Columns.CONTACT_MODE_COLUMN, canBeNull = false)
-    private ContactMode mContactMode = ContactMode.REVEAL_ONLY;
+    @DatabaseField(columnName = Columns.CONTACT_METHOD_COLUMN, canBeNull = false)
+    private ContactMethod mContactMethod = ContactMethod.REVEAL_ONLY;
 
     @DatabaseField(columnName = Columns.GROUP_ID_COLUMN, foreign = true, canBeNull = false, uniqueCombo = true,
       columnDefinition = "integer references groups (_id) on delete cascade")
@@ -49,11 +50,11 @@ public final class Member extends PersistableObject  {
     public String getName() { return mName; }
     public void setName(String _name) { mName = _name; }
 
-    public String getContactAddress() { return mContactAddress; }
-    public void setContactAddress(String _contactAddress) { mContactAddress = _contactAddress; }
+    public String getContactDetails() { return mContactDetails; }
+    public void setContactDetails(String _contactDetails) { mContactDetails = _contactDetails; }
 
-    public ContactMode getContactMode() { return mContactMode; }
-    public void setContactMode(ContactMode _contactMode) { mContactMode = _contactMode; }
+    public ContactMethod getContactMethod() { return mContactMethod; }
+    public void setContactMethod(ContactMethod _contactMethod) { mContactMethod = _contactMethod; }
 
     public String getLookupKey() { return mLookupKey; }
     public void setLookupKey(String _lookupKey) { mLookupKey = _lookupKey; }
@@ -72,10 +73,10 @@ public final class Member extends PersistableObject  {
         sb.append(getId());
         sb.append(", Name: ");
         sb.append(getName());
-        sb.append(", Contact Address: ");
-        sb.append(getContactAddress());
-        sb.append(", Contact Mode: ");
-        sb.append(getContactMode());
+        sb.append(", Contact Details: ");
+        sb.append(getContactDetails());
+        sb.append(", Contact Method: ");
+        sb.append(getContactMethod());
         sb.append(", Lookup Key: ");
         sb.append(getLookupKey());
 
@@ -89,13 +90,13 @@ public final class Member extends PersistableObject  {
 //
 //        Member that = (Member) other;
 //        return
-//          (null == this.mContactAddress ? (this.mContactAddress == that.mContactAddress) : this.mContactAddress.equals(that.mContactAddress))
+//          (null == this.mContactDetails ? (this.mContactDetails == that.mContactDetails) : this.mContactDetails.equals(that.mContactDetails))
 //            &&
 //            (null == this.mLookupKey ? (this.mLookupKey == that.mLookupKey) : this.mLookupKey.equals(that.mLookupKey))
 //            &&
 //            (null == this.mName ? (this.mName == that.mName) : this.mName.equals(that.mName))
 //            &&
-//            this.mContactMode == that.mContactMode;
+//            this.mContactMethod == that.mContactMethod;
 //    }
 //
 //
@@ -110,5 +111,69 @@ public final class Member extends PersistableObject  {
         Uri lookupUri = ContactsContract.Contacts.getLookupUri(mContactId, mLookupKey);
         return ContactsContract.Contacts.lookupContact(_context.getContentResolver(), lookupUri);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        Member member = (Member) obj;
+        return (mContactId == member.getContactId() &&
+                (mLookupKey == null ? member.getLookupKey() == null : mLookupKey.equals(member.getLookupKey())) &&
+                (mContactDetails == null ?  member.getContactDetails() == null : mContactDetails.equals(member.getContactDetails()) &&
+                mGroup.getId() == member.getGroupId() &&
+                mContactMethod == member.getContactMethod() &&
+                mName.equals(member.getName())));
+    }
+
+    public static class MemberBuilder {
+        Member mMember;
+
+        public MemberBuilder() {
+            mMember = new Member();
+        }
+
+        public MemberBuilder withMemberId(long _id) {
+            mMember.setId(_id);
+            return this;
+        }
+
+        public MemberBuilder withContactId(long contactId) {
+            mMember.setContactId(contactId);
+            return this;
+        }
+
+        public MemberBuilder withLookupKey(String key) {
+            mMember.setLookupKey(key);
+            return this;
+        }
+
+        public MemberBuilder withName(String name) {
+            mMember.setName(name);
+            return this;
+        }
+
+        public MemberBuilder withContactDetails(String details) {
+            mMember.setContactDetails(details);
+            return this;
+        }
+
+        public MemberBuilder withContactMethod(ContactMethod method) {
+            mMember.setContactMethod(method);
+            return this;
+        }
+
+        public MemberBuilder withGroup(Group group) {
+            mMember.setGroup(group);
+            return this;
+        }
+
+        public Member build() { return mMember; }
+    }
+
 
 }

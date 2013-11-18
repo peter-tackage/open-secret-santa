@@ -1,32 +1,31 @@
-package com.moac.android.opensecretsanta.test.database;
+package com.moac.android.opensecretsanta.database;
 
 import android.database.SQLException;
 import android.test.AndroidTestCase;
-
-import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.test.builders.GroupBuilder;
-import com.moac.android.opensecretsanta.test.builders.MemberBuilder;
+import com.moac.android.opensecretsanta.builders.GroupBuilder;
+import com.moac.android.opensecretsanta.builders.MemberBuilder;
 import com.moac.android.opensecretsanta.model.*;
 
 import java.util.List;
 
 public class DatabaseTests extends AndroidTestCase {
 
+    private static final String TEST_DATABASE_NAME = "testopensecretsanta.db";
     DatabaseManager mDatabaseManager;
     TestDatabaseHelper mDbHelper;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mDbHelper = new TestDatabaseHelper(getContext());
+        Class[] PERSISTABLE_OBJECTS = new Class[]{ Group.class, Member.class, Restriction.class, Assignment.class };
+        mDbHelper = new TestDatabaseHelper(getContext(), TEST_DATABASE_NAME, PERSISTABLE_OBJECTS);
         mDatabaseManager = new DatabaseManager(mDbHelper);
-        mDbHelper.getWritableDatabase().beginTransaction();
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-        mDbHelper.getWritableDatabase().endTransaction();
+        getContext().deleteDatabase(TEST_DATABASE_NAME);
         mDatabaseManager = null;
     }
 

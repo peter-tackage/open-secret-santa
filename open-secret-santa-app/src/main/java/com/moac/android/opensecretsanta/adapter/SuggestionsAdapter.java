@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.moac.android.opensecretsanta.R;
-import com.moac.android.opensecretsanta.model.ContactMode;
+import com.moac.android.opensecretsanta.model.ContactMethod;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.util.ContactUtils;
 
@@ -86,7 +86,7 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
             avatarView.setImageResource(R.drawable.ic_contact_picture);
         }
         nameView.setText(item.getName());
-        addressView.setText(item.getContactAddress());
+        addressView.setText(item.getContactDetails());
 
         return v;
     }
@@ -126,7 +126,7 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
         {
             Member manualSuggestion = new Member();
             manualSuggestion.setName(_constraint);
-            manualSuggestion.setContactMode(ContactMode.REVEAL_ONLY);
+            manualSuggestion.setContactMethod(ContactMethod.REVEAL_ONLY);
             results.add(manualSuggestion);
         }
 
@@ -145,10 +145,10 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
 
         try {
             phoneCursor = doQuery(mContext, Queries.PHONE, _constraint);
-            results.addAll(processResults(phoneCursor, ContactMode.SMS));
+            results.addAll(processResults(phoneCursor, ContactMethod.SMS));
 
             emailCursor = doQuery(mContext, Queries.EMAIL, _constraint);
-            results.addAll(processResults(emailCursor, ContactMode.EMAIL));
+            results.addAll(processResults(emailCursor, ContactMethod.EMAIL));
         } finally {
             if(phoneCursor != null)
                 phoneCursor.close();
@@ -169,7 +169,7 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
         return cursor;
     }
 
-    public static List<Member> processResults(Cursor _cursor, ContactMode _contactMode) {
+    public static List<Member> processResults(Cursor _cursor, ContactMethod _contactMethod) {
         List<Member> results = new ArrayList<Member>();
         // Iterate through the cursor and build up a suggestions array.
         Log.i(TAG, "autoComplete() - cursor length: " + _cursor.getCount());
@@ -178,15 +178,15 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
 
             long id = _cursor.getLong(Query.CONTACT_ID);
             String name = _cursor.getString(Query.NAME);
-            String address = _cursor.getString(Query.DESTINATION);
+            String contactDetails = _cursor.getString(Query.DESTINATION);
             String lookupKey = _cursor.getString(Query.LOOKUP_KEY);
 
             Member member = new Member();
             member.setName(name);
             member.setContactId(id);
             member.setLookupKey(lookupKey);
-            member.setContactAddress(address);
-            member.setContactMode(_contactMode);
+            member.setContactDetails(contactDetails);
+            member.setContactMethod(_contactMethod);
             results.add(member);
         }
         return results;
