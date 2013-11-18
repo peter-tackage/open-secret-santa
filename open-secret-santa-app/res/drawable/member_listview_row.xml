@@ -3,7 +3,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_focused="true" android:drawable="@color/holo_lighter_blue"/>
     <item android:state_pressed="true" android:drawable="@color/holo_lighter_blue"/>
-    <item android:state_activated="true" android:drawable="@color/lighter_blue"/>
-    <item android:drawable="@color/beige" />
+    <item android:state_activated="true" android:drawable="@android:color/holo_blue_dark"/>
+    <item android:drawable="@color/lighter_blue" />
 </selector>
 
