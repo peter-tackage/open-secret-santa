@@ -1,9 +1,7 @@
 package com.moac.android.opensecretsanta.model.version2;
 
 /**
- *
  * Old Constants for database version2
- *
  */
 public class ConstantsVersion2 {
 

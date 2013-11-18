@@ -17,18 +17,15 @@ public class DatabaseTests extends AndroidTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        Class[] PERSISTABLE_OBJECTS = new Class[] {Group.class, Member.class, Restriction.class, Assignment.class};
+        Class[] PERSISTABLE_OBJECTS = new Class[]{ Group.class, Member.class, Restriction.class, Assignment.class };
         mDbHelper = new TestDatabaseHelper(getContext(), TEST_DATABASE_NAME, PERSISTABLE_OBJECTS);
         mDatabaseManager = new DatabaseManager(mDbHelper);
-        mDbHelper.getWritableDatabase().beginTransaction();
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-
-        getContext().deleteDatabase("/data/data/com.moac.android.opensecretsanta/databases/" + TEST_DATABASE_NAME);
-
+        getContext().deleteDatabase(TEST_DATABASE_NAME);
         mDatabaseManager = null;
     }
 

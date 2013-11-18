@@ -3,19 +3,12 @@ package com.moac.android.opensecretsanta.builders;
 import com.moac.android.opensecretsanta.model.version2.DrawResultVersion2;
 import com.moac.android.opensecretsanta.model.version2.GroupVersion2;
 
-/**
- * Created with IntelliJ IDEA.
- * User: amelysh
- * Date: 17.11.13
- * Time: 14:13
- * To change this template use File | Settings | File Templates.
- */
 public class DrawResultVersion2Builder {
 
-    long mDrawDate;
-    long mSendDate;
-    String mMessage;
-    GroupVersion2 mGroup;
+    private long mDrawDate;
+    private long mSendDate;
+    private String mMessage;
+    private GroupVersion2 mGroup;
 
     public DrawResultVersion2Builder withDrawDate(long drawDate) {
         mDrawDate = drawDate;
@@ -37,7 +30,6 @@ public class DrawResultVersion2Builder {
         return this;
     }
 
-
     public DrawResultVersion2 build() {
         DrawResultVersion2 drawResult = new DrawResultVersion2();
         drawResult.setMessage(mMessage);
@@ -45,7 +37,7 @@ public class DrawResultVersion2Builder {
         drawResult.setSendDate(mSendDate);
 
         // build default required Group
-        if (mGroup == null) {
+        if(mGroup == null) {
             GroupVersion2Builder gBuilder = new GroupVersion2Builder();
             mGroup = gBuilder.build();
         }

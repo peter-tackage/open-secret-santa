@@ -309,7 +309,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         }
     }
 
-        // TODO Do in background
+    // TODO Do in background
     private void doDelete(long[] _ids) {
         for(long id : _ids) {
             mDb.delete(id, Member.class);

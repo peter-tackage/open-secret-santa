@@ -6,15 +6,15 @@ import com.moac.android.opensecretsanta.model.version2.MemberVersion2;
 
 public class MemberVersion2Builder {
 
-    public static String TEST_MEMBER_NAME = "member";
-    public static String TEST_MEMBER_CONTACT_DETAILS = "+1191191@";
-    public static String TEST_MEMBER_LOOKUP_KEY = "AAABBB1111";
+    public final static String TEST_MEMBER_NAME = "member";
+    public final static String TEST_MEMBER_CONTACT_DETAILS = "+1191191@";
+    public final static String TEST_MEMBER_LOOKUP_KEY = "AAABBB1111";
 
-    String mLookupKey = TEST_MEMBER_LOOKUP_KEY;
-    String mName = TEST_MEMBER_NAME;
-    String mContactDetails = TEST_MEMBER_CONTACT_DETAILS;
-    int mContactMode = ConstantsVersion2.NAME_ONLY_CONTACT_MODE;
-    GroupVersion2 mGroup;
+    private String mLookupKey = TEST_MEMBER_LOOKUP_KEY;
+    private String mName = TEST_MEMBER_NAME;
+    private String mContactDetails = TEST_MEMBER_CONTACT_DETAILS;
+    private int mContactMode = ConstantsVersion2.NAME_ONLY_CONTACT_MODE;
+    private GroupVersion2 mGroup;
 
     public MemberVersion2Builder withLookupKey(String key) {
         mLookupKey = key;
@@ -41,7 +41,6 @@ public class MemberVersion2Builder {
         return this;
     }
 
-
     public MemberVersion2 build() {
         MemberVersion2 member = new MemberVersion2();
         member.setLookupKey(mLookupKey);
@@ -50,7 +49,7 @@ public class MemberVersion2Builder {
         member.setContactMode(mContactMode);
 
         // build default required Group
-        if (mGroup == null) {
+        if(mGroup == null) {
             GroupVersion2Builder gBuilder = new GroupVersion2Builder();
             mGroup = gBuilder.build();
         }

@@ -3,6 +3,7 @@ package com.moac.android.opensecretsanta.model.version2;
 /**
  * Old Restriction for database version2
  */
+
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.moac.android.opensecretsanta.model.PersistableObject;
@@ -18,17 +19,20 @@ public class RestrictionVersion2 extends PersistableObject {
     }
 
     @DatabaseField(columnName = Columns.MEMBER_ID_COLUMN, foreign = true, canBeNull = false,
-            columnDefinition = "integer references members (_id) on delete cascade")
+      columnDefinition = "integer references members (_id) on delete cascade")
     private MemberVersion2 mMember;
 
     @DatabaseField(columnName = Columns.OTHER_MEMBER_ID_COLUMN, foreign = true, canBeNull = false,
-            columnDefinition = "integer references members (_id) on delete cascade")
+      columnDefinition = "integer references members (_id) on delete cascade")
     private MemberVersion2 mOtherMember;
 
     public long getMemberId() { return mMember.getId(); }
+
     public void setMember(MemberVersion2 _member) { mMember = _member; }
 
     public long getOtherMemberId() { return mOtherMember.getId(); }
-    public void setOtherMember(MemberVersion2 _otherMember) { mOtherMember = _otherMember; }
 
+    public void setOtherMember(MemberVersion2 _otherMember) {
+        mOtherMember = _otherMember;
+    }
 }

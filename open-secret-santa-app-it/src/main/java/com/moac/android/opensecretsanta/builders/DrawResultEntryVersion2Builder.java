@@ -6,18 +6,18 @@ import com.moac.android.opensecretsanta.model.version2.DrawResultVersion2;
 
 public class DrawResultEntryVersion2Builder {
 
-    public static String TEST_GIVER_NAME = "testGiver";
-    public static String TEST_RECEIVER_NAME = "testReceiver";
-    public static String TEST_DRE_CONTACT_DETAILS = "+1191191@";
+    public final static String TEST_GIVER_NAME = "testGiver";
+    public final static String TEST_RECEIVER_NAME = "testReceiver";
+    public final static String TEST_DRE_CONTACT_DETAILS = "+1191191@";
 
-    long mDrawResultId = DrawResultEntryVersion2.UNSET_ID;
-    String mGiverName = TEST_GIVER_NAME;
-    String mReceiverName = TEST_RECEIVER_NAME;
-    int mContactMode = ConstantsVersion2.NAME_ONLY_CONTACT_MODE;
-    String mContactDetails = TEST_DRE_CONTACT_DETAILS;
-    long mViewedDate;
-    long mSentDate;
-    DrawResultVersion2 mDrawResult;
+    private long mDrawResultId = DrawResultEntryVersion2.UNSET_ID;
+    private String mGiverName = TEST_GIVER_NAME;
+    private String mReceiverName = TEST_RECEIVER_NAME;
+    private int mContactMode = ConstantsVersion2.NAME_ONLY_CONTACT_MODE;
+    private String mContactDetails = TEST_DRE_CONTACT_DETAILS;
+    private long mViewedDate;
+    private long mSentDate;
+    private DrawResultVersion2 mDrawResult;
 
     public DrawResultEntryVersion2Builder withDrawResultId(long drawResultId) {
         mDrawResultId = drawResultId;
@@ -69,7 +69,7 @@ public class DrawResultEntryVersion2Builder {
         drawResultEntry.setSentDate(mSentDate);
 
         // build default required DrawResult
-        if (mDrawResult == null) {
+        if(mDrawResult == null) {
             DrawResultVersion2Builder drBuilder = new DrawResultVersion2Builder();
             mDrawResult = drBuilder.build();
         }

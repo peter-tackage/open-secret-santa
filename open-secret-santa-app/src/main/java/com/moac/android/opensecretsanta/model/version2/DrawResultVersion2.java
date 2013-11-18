@@ -13,7 +13,7 @@ import com.moac.android.opensecretsanta.model.PersistableObject;
 @DatabaseTable(tableName = DrawResultVersion2.TABLE_NAME)
 public class DrawResultVersion2 extends PersistableObject {
 
-    public static final String TABLE_NAME =  "draw_results";
+    public static final String TABLE_NAME = "draw_results";
 
     @DatabaseField(columnName = Columns.DRAW_DATE_COLUMN)
     private long mDrawDate = ConstantsVersion2.UNDRAWN_DATE;
@@ -25,9 +25,8 @@ public class DrawResultVersion2 extends PersistableObject {
     private String mMessage = "";
 
     @DatabaseField(columnName = Columns.GROUP_ID_COLUMN, foreign = true, canBeNull = false,
-            columnDefinition = "integer references groups (_id) on delete cascade")
+      columnDefinition = "integer references groups (_id) on delete cascade")
     private GroupVersion2 mGroup;
-
 
     @ForeignCollectionField(eager = false)
     private java.util.Collection<DrawResultEntryVersion2> mDrawResultEntries;
@@ -46,28 +45,34 @@ public class DrawResultVersion2 extends PersistableObject {
     }
 
     public long getDrawDate() { return mDrawDate; }
+
     public void setDrawDate(long _drawDate) { mDrawDate = _drawDate; }
+
     public void setSendDate(long sendDate) { mSendDate = sendDate; }
+
     public long getSendDate() { return mSendDate; }
+
     public void setMessage(String message) { mMessage = message; }
+
     public String getMessage() { return mMessage; }
+
     public void setGroup(GroupVersion2 group) { mGroup = group; }
+
     public long getGroupId() { return mGroup.getId(); }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) {
+        if(obj == this) {
             return true;
         }
-        if (obj == null || obj.getClass() != this.getClass()) {
+        if(obj == null || obj.getClass() != this.getClass()) {
             return false;
         }
 
         DrawResultVersion2 drawResult = (DrawResultVersion2) obj;
         return (mDrawDate == (drawResult.getDrawDate()) &&
-                mSendDate == (drawResult.getSendDate()) &&
-                mMessage.equals(drawResult.getMessage()) &&
-                (mGroup.getId() == (drawResult.getGroupId())));
+          mSendDate == (drawResult.getSendDate()) &&
+          mMessage.equals(drawResult.getMessage()) &&
+          (mGroup.getId() == (drawResult.getGroupId())));
     }
-
 }

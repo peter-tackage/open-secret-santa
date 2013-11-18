@@ -13,7 +13,7 @@ import com.moac.android.opensecretsanta.model.PersistableObject;
 public final class MemberVersion2 extends PersistableObject {
 
     public static final String TAG = "Member";
-    public static final String TABLE_NAME =  "members";
+    public static final String TABLE_NAME = "members";
 
     public static interface Columns extends BaseColumns {
 
@@ -26,12 +26,12 @@ public final class MemberVersion2 extends PersistableObject {
         public static final String DEFAULT_SORT_ORDER = NAME_COLUMN + " ASC";
 
         public static final String[] ALL = {
-                _ID,
-                LOOKUP_KEY,
-                NAME_COLUMN,
-                CONTACT_MODE_COLUMN,
-                CONTACT_DETAIL_COLUMN,
-                GROUP_ID_COLUMN
+          _ID,
+          LOOKUP_KEY,
+          NAME_COLUMN,
+          CONTACT_MODE_COLUMN,
+          CONTACT_DETAIL_COLUMN,
+          GROUP_ID_COLUMN
         };
     }
 
@@ -51,9 +51,8 @@ public final class MemberVersion2 extends PersistableObject {
     private int mContactMode = ConstantsVersion2.NAME_ONLY_CONTACT_MODE;
 
     @DatabaseField(columnName = Columns.GROUP_ID_COLUMN, foreign = true, canBeNull = false,
-            columnDefinition = "integer references groups (_id) on delete cascade")
+      columnDefinition = "integer references groups (_id) on delete cascade")
     private GroupVersion2 mGroup;
-
 
     public String getName() { return mName; }
 
@@ -61,11 +60,15 @@ public final class MemberVersion2 extends PersistableObject {
 
     public String getContactDetail() { return mContactDetail; }
 
-    public void setContactDetail(String _contactDetail) { mContactDetail = _contactDetail; }
+    public void setContactDetail(String _contactDetail) {
+        mContactDetail = _contactDetail;
+    }
 
     public int getContactMode() { return mContactMode; }
 
-    public void setContactMode(int _contactMode) { mContactMode = _contactMode; }
+    public void setContactMode(int _contactMode) {
+        mContactMode = _contactMode;
+    }
 
     public String getLookupKey() { return mLookupKey; }
 
@@ -74,5 +77,4 @@ public final class MemberVersion2 extends PersistableObject {
     public void setGroup(GroupVersion2 group) { mGroup = group; }
 
     public long getGroupId() { return mGroup.getId(); }
-
 }

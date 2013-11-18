@@ -28,7 +28,7 @@ public class DrawResultEntryVersion2 extends PersistableObject implements Compar
         public static final String DEFAULT_SORT_ORDER = MEMBER_NAME_COLUMN + " ASC";
 
         public static String[] ALL = { _ID, DRAW_RESULT_ID_COLUMN, MEMBER_NAME_COLUMN,
-                OTHER_MEMBER_NAME_COLUMN, CONTACT_MODE_COLUMN, CONTACT_DETAIL_COLUMN, VIEWED_DATE_COLUMN, SENT_DATE_COLUMN };
+          OTHER_MEMBER_NAME_COLUMN, CONTACT_MODE_COLUMN, CONTACT_DETAIL_COLUMN, VIEWED_DATE_COLUMN, SENT_DATE_COLUMN };
     }
 
     @DatabaseField(columnName = Columns.MEMBER_NAME_COLUMN, canBeNull = false)
@@ -50,7 +50,7 @@ public class DrawResultEntryVersion2 extends PersistableObject implements Compar
     private long mSentDate = ConstantsVersion2.UNSENT_DATE;
 
     @DatabaseField(columnName = Columns.DRAW_RESULT_ID_COLUMN, foreign = true, canBeNull = false,
-            columnDefinition = "integer references draw_results (_id) on delete cascade")
+      columnDefinition = "integer references draw_results (_id) on delete cascade")
     private DrawResultVersion2 mDrawResult;
 
     public String getGiverName() { return mGiverName;}
@@ -69,7 +69,9 @@ public class DrawResultEntryVersion2 extends PersistableObject implements Compar
 
     public String getContactDetail() { return mContactDetail; }
 
-    public void setContactDetail(String contactDetail) { mContactDetail = contactDetail; }
+    public void setContactDetail(String contactDetail) {
+        mContactDetail = contactDetail;
+    }
 
     public void setViewedDate(long viewedDate) { mViewedDate = viewedDate; }
 
@@ -77,7 +79,9 @@ public class DrawResultEntryVersion2 extends PersistableObject implements Compar
 
     public void setSentDate(long _sentDate) { mSentDate = _sentDate; }
 
-    public void setDrawResult(DrawResultVersion2 drawResult) { mDrawResult = drawResult; }
+    public void setDrawResult(DrawResultVersion2 drawResult) {
+        mDrawResult = drawResult;
+    }
 
     public DrawResultVersion2 getDrawResult() { return mDrawResult;}
 

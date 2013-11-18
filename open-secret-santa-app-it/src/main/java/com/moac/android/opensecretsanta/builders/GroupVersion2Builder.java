@@ -4,9 +4,10 @@ import com.moac.android.opensecretsanta.model.version2.GroupVersion2;
 
 public class GroupVersion2Builder {
 
-    public static String TEST_GROUP_NAME = "groupName";
-    String mName = TEST_GROUP_NAME;
-    boolean mIsReady = true;
+    public final static String TEST_GROUP_NAME = "groupName";
+
+    private String mName = TEST_GROUP_NAME;
+    private boolean mIsReady = true;
 
     public GroupVersion2Builder withName(String name) {
         mName = name;
