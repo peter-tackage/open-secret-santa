@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/dialog_container_layout"
+  android:orientation="vertical"
+  android:layout_height="wrap_content"
+  android:layout_width="match_parent"
+  android:background="@android:color/transparent"
+  android:padding="8dp">
+
+  <LinearLayout
+    android:id="@+id/layout_avatar_container"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true"
+    android:layout_centerHorizontal="true">
+
+    <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:id="@+id/tv_notify_info"
+      android:textColor="@android:color/white"
+      android:background="@android:color/holo_red_light"
+      android:visibility="gone"
+      android:singleLine="true"
+      android:gravity="center_horizontal" />
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      android:id="@+id/layout_notify_email_container"
+      android:visibility="gone">
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="From: " />
+
+      <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/spnr_email_selection"/>
+    </LinearLayout>
+  </LinearLayout>
+
+  <EditText
+    android:id="@+id/tv_notify_msg"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:scrollbars="vertical"
+    android:hint="@string/notify_message_text_hint"
+    android:gravity="top"
+    android:singleLine="false"
+    android:textAppearance="?android:attr/textAppearanceSmall"
+    android:inputType="textMultiLine|textLongMessage|textCapSentences"
+    android:maxLength="500"
+    android:layout_below="@+id/layout_avatar_container" />
+
+  <TextView
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:layout_below="@+id/tv_notify_msg"
+    android:textAppearance="?android:attr/textAppearanceSmall"
+    android:text="@string/message_count_label"
+    android:id="@+id/textView" />
+
+  <TextView
+    android:id="@+id/tv_notify_msg_char_count"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceSmall"
+    android:layout_toRightOf="@+id/textView"
+    android:layout_below="@+id/tv_notify_msg" />
+
+</RelativeLayout>

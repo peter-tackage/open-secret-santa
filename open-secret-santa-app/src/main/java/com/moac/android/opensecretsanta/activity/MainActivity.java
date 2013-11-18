@@ -26,7 +26,7 @@ import com.moac.android.opensecretsanta.fragment.NotifyExecutorFragment;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
-import com.moac.android.opensecretsanta.notify.NotifyExecutor;
+import com.moac.android.opensecretsanta.notify.NotifyAuthorization;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +58,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         // Find or create existing worker fragment
         mNotifyExecutorFragment = (NotifyExecutorFragment) fm.findFragmentByTag(NOTIFY_EXECUTOR_FRAGMENT_TAG);
 
-        if (mNotifyExecutorFragment == null) {
+        if(mNotifyExecutorFragment == null) {
             mNotifyExecutorFragment = NotifyExecutorFragment.create();
             fm.beginTransaction().add(mNotifyExecutorFragment, NOTIFY_EXECUTOR_FRAGMENT_TAG).commit();
         }
@@ -66,18 +66,18 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     }
 
     private void initialiseUI() {
-        setContentView(R.layout.new_draw_activity);
+        setContentView(R.layout.activity_main);
         mDrawerList = (ListView) findViewById(R.id.left_drawer_list);
         mDrawerList.setAdapter(new GroupListAdapter(this));
         mDrawerList.setOnItemClickListener(new GroupListItemClickListener());
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(
-                this,                  /* host Activity */
-                mDrawerLayout,         /* DrawerLayout object */
-                R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
-                R.string.drawer_open_accesshint,  /* "open drawer" description */
-                R.string.drawer_close_accesshint) /* "close drawer" description */ {
+          this,                  /* host Activity */
+          mDrawerLayout,         /* DrawerLayout object */
+          R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
+          R.string.drawer_open_accesshint,  /* "open drawer" description */
+          R.string.drawer_close_accesshint) /* "close drawer" description */ {
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
@@ -122,11 +122,19 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     public boolean onOptionsItemSelected(MenuItem item) {
         // Pass the event to ActionBarDrawerToggle, if it returns
         // true, then it has handled the app icon touch event
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
+        if(mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        // TODO Handle other action bar items...
-        return super.onOptionsItemSelected(item);
+        switch(item.getItemId()) {
+            // TODO Move to overlay menu
+            // TODO Rename group
+          //  case R.id.menu_settings:
+            //    Intent intent = new Intent(MainActivity.this, AllPreferencesActivity.class);
+            //    slideInIntent(intent);
+            //    return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -140,34 +148,32 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         Intent intent = new Intent(MainActivity.this, RestrictionsActivity.class);
         intent.putExtra(Intents.GROUP_ID_INTENT_EXTRA, _groupId);
         intent.putExtra(Intents.MEMBER_ID_INTENT_EXTRA, _memberId);
-        // Activity options is since API 16.
-        // Got this idea from Android Dev Bytes video - https://www.youtube.com/watch?v=Ho8vk61lVIU
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
-        } else {
-            Bundle translateBundle = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_left, R.anim.slide_out_left).toBundle();
-            startActivity(intent, translateBundle);
-        }
+        slideInIntent(intent);
     }
 
     @Override
-    public void onNotifyDraw(Group _group, long[] _memberIds) {
+    public void requestNotifyDraw(Group _group, long[] _memberIds) {
         Log.i(TAG, "onNotifyDraw() - Requesting Notify member set size:" + _memberIds.length);
+        // Check the requirement for the notify
         DialogFragment dialog = NotifyDialogFragment.create(_group.getId(), _memberIds);
         dialog.show(getFragmentManager(), NOTIFY_DIALOG_FRAGMENT_TAG);
     }
 
     @Override
-    public void onNotifyDraw(Group _group) {
+    public void requestNotifyDraw(Group _group) {
         Log.i(TAG, "onNotifyDraw() - Requesting Notify entire Group");
+        // TODO Background
         List<Member> members = mDb.queryAllMembersForGroup(_group.getId());
         List<Long> memberIds = new ArrayList<Long>(members.size());
-        for(Member member: members) {
+        for(Member member : members) {
             memberIds.add(member.getId());
         }
-        DialogFragment dialog = NotifyDialogFragment.create(_group.getId(), Longs.toArray(memberIds));
-        dialog.show(getFragmentManager(), NOTIFY_DIALOG_FRAGMENT_TAG);
+        requestNotifyDraw(_group, Longs.toArray(memberIds));
+    }
+
+    @Override
+    public void executeNotifyDraw(NotifyAuthorization auth, final Group group, final long[] members) {
+        mNotifyExecutorFragment.notifyDraw(auth, group, members);
     }
 
     private void populateGroupRowDetailsList(ListView _groupRowDetailsList) {
@@ -176,7 +182,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
 
         Log.v(TAG, "initialiseUI() - group count: " + groups.size());
         List<GroupRowDetails> groupRowDetails = new ArrayList<GroupRowDetails>();
-        for (Group g : groups) {
+        for(Group g : groups) {
             List<Member> groupMembers = OpenSecretSantaApplication.getInstance().getDatabase().queryAllMembersForGroup(g.getId());
             groupRowDetails.add(new GroupRowDetails(g.getId(), g.getName(), g.getCreatedAt(), groupMembers));
         }
@@ -186,7 +192,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     private void displayInitialGroup() {
         // Fetch the most recently used Group Id from preferences
         long groupId = PreferenceManager.getDefaultSharedPreferences(this).getLong(MOST_RECENT_GROUP_KEY, PersistableObject.UNSET_ID);
-        if (groupId == PersistableObject.UNSET_ID)
+        if(groupId == PersistableObject.UNSET_ID)
             return;
         showGroup(groupId);
     }
@@ -195,11 +201,6 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     public MemberEditor getMemberEditor() {
         // FIXME for now.
         return this;
-    }
-
-    @Override
-    public NotifyExecutor getNotifyExecutor() {
-        return mNotifyExecutorFragment;
     }
 
     private class GroupListItemClickListener implements AdapterView.OnItemClickListener {
@@ -212,6 +213,18 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         }
     }
 
+    private void slideInIntent(Intent intent) {
+        // Activity options is since API 16.
+        // Got this idea from Android Dev Bytes video - https://www.youtube.com/watch?v=Ho8vk61lVIU
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
+        } else {
+            Bundle translateBundle = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_left, R.anim.slide_out_left).toBundle();
+            startActivity(intent, translateBundle);
+        }
+    }
+
     private void showGroup(long _groupId) {
         Log.i(TAG, "showGroup() - start. groupId: " + _groupId);
 
@@ -219,7 +232,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
 
         // Can we find the fragment we're attempting to create?
         MemberListFragment existing = (MemberListFragment) fragmentManager.findFragmentByTag(MEMBERS_LIST_FRAGMENT_TAG);
-        if (existing != null && existing.getGroupId() == _groupId) {
+        if(existing != null && existing.getGroupId() == _groupId) {
             Log.i(TAG, "showGroup() - found matching required fragment");
             mMembersListFragment = existing;
             return;
@@ -228,7 +241,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         // Replace existing fragment
         // Can't call replace, seems to replace ALL fragments in the layout.
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        if (existing != null) {
+        if(existing != null) {
             Log.i(TAG, "showGroup() - removing existing fragment");
             transaction.remove(mMembersListFragment);
         }
@@ -236,11 +249,10 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         Log.i(TAG, "showGroup() - creating new fragment");
         MemberListFragment newFragment = MemberListFragment.create(_groupId);
         transaction.add(R.id.content_frame, newFragment, MEMBERS_LIST_FRAGMENT_TAG)
-                .commit();
+          .commit();
         mMembersListFragment = newFragment;
 
         // Update preferences to save last viewed Group
         PreferenceManager.getDefaultSharedPreferences(this).edit().putLong(MOST_RECENT_GROUP_KEY, _groupId).commit();
     }
-
 }

@@ -1,18 +1,12 @@
 package com.moac.android.opensecretsanta;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.accounts.AccountManagerFuture;
 import android.app.Application;
-import android.preference.PreferenceManager;
-import android.util.Log;
 import com.moac.android.opensecretsanta.database.DatabaseHelper;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.ContactMethod;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.Restriction;
-import com.moac.android.opensecretsanta.notify.mail.GmailOAuth2Sender;
 import com.moac.android.opensecretsanta.util.Utils;
 
 public class OpenSecretSantaApplication extends Application {
@@ -27,6 +21,7 @@ public class OpenSecretSantaApplication extends Application {
         if(sInstance == null)
             sInstance = this; // init self singleton.
     }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -34,7 +29,7 @@ public class OpenSecretSantaApplication extends Application {
         Utils.doOnce(getApplicationContext(), "initTestData", new Runnable() {
             @Override
             public void run() {
-              loadTestData();
+                loadTestData();
             }
         });
     }
@@ -52,54 +47,13 @@ public class OpenSecretSantaApplication extends Application {
         return new DatabaseManager(databaseHelper);
     }
 
-    public Account getAvailableGmailAccount() {
-        Log.i(TAG, "getAvailableGmailAccount() - start");
-        Account result = null;
-        // Use the one in the preferences, otherwise just pick the first one.
-        String emailPrefKey =  getString(R.string.gmail_account_preference);
-        String emailAddress = PreferenceManager.getDefaultSharedPreferences(this).getString(emailPrefKey, null);
-
-        Log.v(TAG, "getAvailableGmailAccount() - current Gmail Account preference: " + emailAddress);
-
-        AccountManagerFuture<Account[]> accountsFuture =
-              AccountManager.get(this).getAccountsByTypeAndFeatures(GmailOAuth2Sender.ACCOUNT_TYPE_GOOGLE, GmailOAuth2Sender.FEATURES_MAIL, null, null);
-            try {
-                Account[] accounts = accountsFuture.getResult();
-                if(accounts != null && accounts.length > 0) {
-                    Log.v(TAG, "getAvailableGmailAccount() - found some Gmail Accounts, size: " + accounts.length);
-                    if (emailAddress == null) {
-                        Log.v(TAG, "getAvailableGmailAccount() - no preference, so use first Gmail account.");
-                        //String token = AccountManager.get(this).peekAuthToken();
-                        // Set into preferences for next time.
-                       PreferenceManager.getDefaultSharedPreferences(this).edit().putString(emailPrefKey, accounts[0].name).commit();
-                       return accounts[0];
-                   } else {
-                        Log.v(TAG, "getAvailableGmailAccount() - found Gmail preference: " + emailAddress);
-                        // Find matching account
-                       for (int i=0; i < accounts.length; i++) {
-                           Account acc = accounts[i];
-                           if (acc.name.equals(emailAddress)){
-                               result = acc;
-                               break;
-                           }
-                       }
-                   }
-                }
-            } catch(Exception e) {
-               Log.e(TAG, "getAvailableGmailAccount() - Error when fetching account", e);
-            }
-        Log.v(TAG, "getAvailableGmailAccount() - returning Gmail Account: " + result);
-
-        return result;
-    }
-
     private void loadTestData() {
         createTestDraw(0);
         createTestDraw(1);
         createTestDraw(2);
         createTestDraw(3);
         createTestDraw(4);
-     }
+    }
 
     private void createTestDraw(int _instance) {
         // Add a Group
@@ -113,9 +67,10 @@ public class OpenSecretSantaApplication extends Application {
         m1.setContactMethod(ContactMethod.REVEAL_ONLY);
 
         Member m2 = new Member();
+
         m2.setName("James");
         m2.setContactMethod(ContactMethod.EMAIL);
-        m2.setContactDetails("me@james.com");
+        m2.setContactDetails("me@somedomaiincalledjames.com");
 
         Member m3 = new Member();
         m3.setName("Mandy");
@@ -141,7 +96,4 @@ public class OpenSecretSantaApplication extends Application {
         r1.setOtherMember(m2);
         mDatabaseManager.create(r1);
     }
-
-
-
 }

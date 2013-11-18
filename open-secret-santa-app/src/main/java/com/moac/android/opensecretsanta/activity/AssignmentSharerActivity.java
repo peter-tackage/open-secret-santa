@@ -78,7 +78,7 @@ public class AssignmentSharerActivity extends Activity {
 //
 //                Context mContext = AssignmentSharerActivity.this;
 //                LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
-//                View layout = inflater.inflate(R.layout.assignment_fragment_dialog,
+//                View layout = inflater.inflate(R.layout.fragment_dialog_assignment,
 //                  (ViewGroup) findViewById(R.id.layout_root));
 //
 //                ImageView image = (ImageView) layout.findViewById(R.id.image);
@@ -629,7 +629,7 @@ public class AssignmentSharerActivity extends Activity {
 //                    LinearLayout dialogContents = new LinearLayout(AssignmentSharerActivity.this);
 //                    String inflator = Context.LAYOUT_INFLATER_SERVICE;
 //                    LayoutInflater vi = (LayoutInflater) AssignmentSharerActivity.this.getSystemService(inflator);
-//                    vi.inflate(R.layout.notify_fragment_dialog, dialogContents, true);
+//                    vi.inflate(R.layout.fragment_dialog_notify, dialogContents, true);
 //                    builder.setView(dialogContents);
 //
 //                    // Add the callback to the field
@@ -681,7 +681,7 @@ public class AssignmentSharerActivity extends Activity {
 //                mAccount = null;
 //                if(authRequired) {
 //                    try {
-//                        mAccount = ((OpenSecretSantaApplication) getApplication()).getAvailableGmailAccount();
+//                        mAccount = ((OpenSecretSantaApplication) getApplication()).getPreferedGmailAccount();
 //                        if(mAccount != null) {// Now let's get the token
 //                            Log.v(TAG, "openShareDialog() - got account: " + mAccount.toString());
 //                            // This might open the auth dialog.

@@ -19,7 +19,6 @@
   <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Meli Melo"
     android:id="@+id/name_textview"
     android:layout_toRightOf="@+id/avatar_imageview"
     android:textAppearance="@android:style/TextAppearance.Medium" />
@@ -27,7 +26,6 @@
   <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="test@example.com"
     android:id="@+id/address_textview"
     android:layout_centerHorizontal="true"
     android:layout_centerVertical="true"
@@ -37,6 +35,5 @@
     android:textSize="12sp"
     android:textAppearance="@android:style/TextAppearance.Small"
     android:layout_below="@+id/name_textview" />
-
 
 </RelativeLayout>

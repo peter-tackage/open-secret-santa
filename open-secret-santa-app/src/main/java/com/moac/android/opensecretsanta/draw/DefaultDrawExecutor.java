@@ -32,14 +32,8 @@ public class DefaultDrawExecutor implements DrawExecutor {
             @Override
             public Subscription onSubscribe(Observer<? super DrawResultEvent> observer) {
                 Log.i(TAG, "requestDraw() - Requesting Draw");
-                try {
-                    Thread.sleep(3000);
-                } catch(InterruptedException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
 
-                // We have a DrawEngine, prepare to draw.
-                // TODO Uncertain whether we should actually do this at all.
+                // Clear in case something failed uncleanly
                 invalidateAssignments(_group);
 
                 try {

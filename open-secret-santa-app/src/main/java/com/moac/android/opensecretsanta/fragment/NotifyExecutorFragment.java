@@ -1,33 +1,36 @@
 package com.moac.android.opensecretsanta.fragment;
 
 import android.app.Fragment;
-import android.content.Context;
-import android.os.AsyncTask;
+import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
+import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.content.BusProvider;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Group;
-import com.moac.android.opensecretsanta.model.Member;
-import com.moac.android.opensecretsanta.notify.EmailNotifier;
-import com.moac.android.opensecretsanta.notify.NotifyExecutor;
+import com.moac.android.opensecretsanta.notify.DefaultNotifyExecutor;
+import com.moac.android.opensecretsanta.notify.DrawNotifier;
+import com.moac.android.opensecretsanta.notify.NotifyAuthorization;
 import com.moac.android.opensecretsanta.notify.NotifyStatusEvent;
-import com.moac.android.opensecretsanta.notify.SmsNotifier;
-import com.moac.android.opensecretsanta.notify.mail.GmailOAuth2Sender;
-import com.moac.android.opensecretsanta.notify.receiver.SmsSendReceiver;
 import com.squareup.otto.Bus;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
+import rx.android.concurrency.AndroidSchedulers;
+import rx.concurrency.Schedulers;
 
-public class NotifyExecutorFragment extends Fragment implements NotifyExecutor {
-
-    // TODO Inject
-    DatabaseManager mDb;
-    Bus mBus;
+public class NotifyExecutorFragment extends Fragment implements DrawNotifier, Observer<NotifyStatusEvent> {
 
     private static final String TAG = NotifyExecutorFragment.class.getSimpleName();
+
+    // TODO Inject
+    // TODO We don't handle multiple requests at once
+    DatabaseManager mDb;
+    Bus mBus;
+    private ProgressDialog mDrawProgressDialog;
+    private Subscription mSubscription;
 
     public static NotifyExecutorFragment create() {
         NotifyExecutorFragment fragment = new NotifyExecutorFragment();
@@ -43,93 +46,63 @@ public class NotifyExecutorFragment extends Fragment implements NotifyExecutor {
     }
 
     @Override
-    public void notifyDraw(Group group, long[] memberIds) {
-        NotifierTask task = new NotifierTask(getActivity(), mBus, mDb, group, memberIds);
-        task.execute();
+    public void notifyDraw(NotifyAuthorization auth, Group group, long[] memberIds) {
+        // Show the progress dialog
+        showDrawProgressDialog();
+        // FIXME Um... what if it exists already
+        Log.i(TAG, "Current thread is: " + Thread.currentThread().toString());
+        mSubscription = createNotifyObservable(auth, group, memberIds)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribeOn(Schedulers.newThread())
+          .subscribe(this);
     }
 
-    public static class NotifierTask extends AsyncTask<Void, Void, Boolean> {
+    private Observable<NotifyStatusEvent> createNotifyObservable(NotifyAuthorization auth, Group group, long[] memberIds) {
+        DefaultNotifyExecutor executor = new DefaultNotifyExecutor(getActivity(), auth, mDb, mBus);
+        return executor.notifyDraw(group, memberIds);
+    }
 
-        private final Bus mBus;
-        private final Context mApplicationContext;
-        private final DatabaseManager mDatabaseManager;
-        private final Group mGroup;
-        private final long[] mMemberIds;
+    @Override
+    public void onCompleted() {
+        Log.i(TAG, "onCompleted");
+        dismissProgressDialog();
+    }
 
-        public NotifierTask(Context _context, Bus _bus, DatabaseManager _db, Group _group, long[] memberIds) {
-            mApplicationContext = _context.getApplicationContext();
-            mBus = _bus;
-            mDatabaseManager = _db;
-            mGroup = _group;
-            mMemberIds = memberIds;
+    @Override
+    public void onError(Throwable t) {
+        Log.e(TAG, "onError() ", t);
+        dismissProgressDialog();
+        Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onNext(NotifyStatusEvent event) {
+        Log.i(TAG, "onNext() - got event: " + event.getAssignment());
+        mBus.post(event);
+    }
+
+    @Override
+    public void onDestroy() {
+        if(mSubscription != null) {
+            mSubscription.unsubscribe();
         }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
+        if(mDrawProgressDialog != null && mDrawProgressDialog.isShowing()) {
+            dismissProgressDialog();
         }
+        super.onDestroy();
+    }
 
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-        }
+    private void showDrawProgressDialog() {
+        Log.v(TAG, "showDrawProgressDialog() - start");
+        if(mDrawProgressDialog != null && mDrawProgressDialog.isShowing())
+            return;
+        mDrawProgressDialog = ProgressDialog.show(getActivity(), "", getString(R.string.notify_in_progress_msg), true);
+    }
 
-        private boolean executeNotify() {
-            Handler handler = new Handler(Looper.getMainLooper());
-            // Iterate through the provided members - get their Assignment.
-            for (long memberId : mMemberIds) {
-                Member member = mDatabaseManager.queryById(memberId, Member.class);
-                Assignment assignment = mDatabaseManager.queryAssignmentForMember(member.getId());
-                if (assignment == null) {
-                    Log.e(TAG, "executeNotify() - No Assignment for Member: " + member.getName());
-                    return false;
-                }
-                Log.i(TAG, "executeNotify() - preparing Assignment: " + assignment);
-
-                Member giftReceiver = mDatabaseManager.queryById(assignment.getReceiverMemberId(), Member.class);
-
-                switch (member.getContactMethod()) {
-                    case SMS:
-                        Log.i(TAG, "executeNotify() - Building SMS Notifier for: " + member.getName());
-                        assignment.setSendStatus(Assignment.Status.Assigned);
-                        postOnHandler(handler, mBus, new NotifyStatusEvent(assignment));
-                        mDatabaseManager.update(assignment);
-                        SmsNotifier smsNotifier = new SmsNotifier(mApplicationContext, new SmsSendReceiver(mBus, mDatabaseManager), true);
-                        smsNotifier.notify(member, giftReceiver.getName(), mGroup.getMessage());
-                        break;
-                    case EMAIL:
-                        Log.i(TAG, "executeNotify() - Building Email Notifier for: " + member.getName());
-                        assignment.setSendStatus(Assignment.Status.Assigned);
-                        postOnHandler(handler, mBus, new NotifyStatusEvent(assignment));
-                        mDatabaseManager.update(assignment);
-                        GmailOAuth2Sender sender = new GmailOAuth2Sender();
-                        // FIXME Use Account details
-                        EmailNotifier emailNotifier = new EmailNotifier(mApplicationContext, mBus, mDatabaseManager,
-                                handler, sender, "senderAddress@somewehre.com", "accountToken");
-                        emailNotifier.notify(member, giftReceiver.getName(), mGroup.getMessage());
-                        break;
-                    case REVEAL_ONLY:
-                        break;
-                    default:
-                        Log.e(TAG, "executeNotify() - Unknown contact mode: " + member.getContactMethod());
-                }
-            }
-            return true;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            return executeNotify();
-        }
-
-        private void postOnHandler(Handler handler, final Bus bus, final NotifyStatusEvent event) {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    bus.post(event);
-                }
-            });
-        }
+    private void dismissProgressDialog() {
+        Log.v(TAG, "dismissProgressDialog() - start");
+        mDrawProgressDialog.dismiss();
+        mDrawProgressDialog = null;
     }
 }
 

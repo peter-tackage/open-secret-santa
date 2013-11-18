@@ -33,7 +33,7 @@
       </intent-filter>
     </activity>
     <activity android:name=".activity.RestrictionsActivity" />
-
+    <activity android:name=".activity.AllPreferencesActivity" />
   </application>
 
 </manifest>
