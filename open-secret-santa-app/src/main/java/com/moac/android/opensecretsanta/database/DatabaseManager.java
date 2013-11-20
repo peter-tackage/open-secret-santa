@@ -155,7 +155,7 @@ public class DatabaseManager {
             return mDbHelper.getDaoEx(Member.class).queryBuilder()
               .where().eq(Member.Columns.GROUP_ID_COLUMN, groupId)
               .and()
-              .eq(Member.Columns.NAME_COLUMN, name)
+              .like(Member.Columns.NAME_COLUMN, name)
               .queryForFirst();
         } catch(java.sql.SQLException e) {
             throw new SQLException(e.getMessage());

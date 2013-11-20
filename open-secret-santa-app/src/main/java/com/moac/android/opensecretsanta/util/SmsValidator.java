@@ -1,6 +1,5 @@
 package com.moac.android.opensecretsanta.util;
 
-
 public class SmsValidator implements Validator{
 
     private final String mPhoneNumber;

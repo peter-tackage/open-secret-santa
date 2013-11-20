@@ -629,4 +629,58 @@ public class DatabaseTests extends AndroidTestCase {
         assertEquals(m2.getId(), a2Query.getGiverMemberId());
         assertEquals(m1.getId(), a2Query.getReceiverMemberId());
     }
+
+    /*
+     * Test the LIKE operator used to find a Group's member when
+     * querying a member by name
+     */
+
+    // Check case insensitivity
+    public void testQueryMemberWithNameCaseInsensitive() {
+        // Add a Group
+        // Add some members
+        // Query and verify
+        Group group1 = new GroupBuilder().build();
+        mDatabaseManager.create(group1);
+
+        // Add some Members
+        Member m1 = new MemberBuilder().withName("m1").build();
+        Member m2 = new MemberBuilder().withName("M2").build();
+        m1.setGroup(group1);
+        m2.setGroup(group1);
+        mDatabaseManager.create(m1);
+        mDatabaseManager.create(m2);
+
+        Member memberQuery1 = mDatabaseManager.queryMemberWithNameForGroup(group1.getId(), "M1");
+        Member memberQuery1_2 = mDatabaseManager.queryMemberWithNameForGroup(group1.getId(), "m1");
+        assertEquals("m1", memberQuery1.getName());
+        assertEquals("m1", memberQuery1_2.getName());
+
+        Member memberQuery2 = mDatabaseManager.queryMemberWithNameForGroup(group1.getId(), "M2");
+        Member memberQuery2_2 = mDatabaseManager.queryMemberWithNameForGroup(group1.getId(), "m2");
+        assertEquals("M2", memberQuery2.getName());
+        assertEquals("M2", memberQuery2_2.getName());
+    }
+
+    // Verify that LIKE operator is only equality, not pattern matching.
+    public void testQueryMemberWithNameCaseEqualityOnly() {
+        // Add a Group
+        // Add some members
+        // Query and verify
+        Group group1 = new GroupBuilder().build();
+        mDatabaseManager.create(group1);
+
+        // Add some Members
+        Member m1 = new MemberBuilder().withName("m1").build();
+        m1.setGroup(group1);
+        mDatabaseManager.create(m1);
+
+        // Various combinations that might pattern match - they shouldn't.
+        Member memberQuery1 = mDatabaseManager.queryMemberWithNameForGroup(group1.getId(), "AAM1AA");
+        Member memberQuery2 = mDatabaseManager.queryMemberWithNameForGroup(group1.getId(), "AA m1 AA");
+        Member memberQuery3 = mDatabaseManager.queryMemberWithNameForGroup(group1.getId(), "AA_m1_AA");
+        assertNull(memberQuery1);
+        assertNull(memberQuery2);
+        assertNull(memberQuery3);
+    }
 }
