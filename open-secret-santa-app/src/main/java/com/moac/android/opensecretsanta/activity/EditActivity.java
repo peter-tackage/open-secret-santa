@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.fragment.MemberEditFragment;
 import com.moac.android.opensecretsanta.model.PersistableObject;
@@ -50,6 +51,8 @@ public class EditActivity extends Activity {
                 ActionBar.DISPLAY_SHOW_TITLE);
             actionBar.setCustomView(customActionBarView);
         }
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     @Override

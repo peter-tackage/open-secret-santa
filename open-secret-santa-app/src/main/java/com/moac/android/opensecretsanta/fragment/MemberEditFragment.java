@@ -51,6 +51,7 @@ public class MemberEditFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_member_editor, container, false);
+
         TextView titleTextView = (TextView) view.findViewById(R.id.content_title_textview);
         titleTextView.setText("Edit Member - " + mMember.getName());
 
@@ -82,14 +83,16 @@ public class MemberEditFragment extends Fragment {
                 switch(selected) {
                     case EMAIL:
                         setContactDetails(selected);
-                        mContactDetailsEditText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                         mContactDetailsEditText.setVisibility(View.VISIBLE);
+                        mContactDetailsEditText.setInputType(InputType.TYPE_CLASS_TEXT
+                          | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+                          | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                         mContactDetailsEditText.setHint("Email Address");
                         break;
                     case SMS:
                         setContactDetails(selected);
-                        mContactDetailsEditText.setInputType(InputType.TYPE_CLASS_PHONE);
                         mContactDetailsEditText.setVisibility(View.VISIBLE);
+                        mContactDetailsEditText.setInputType(InputType.TYPE_CLASS_PHONE);
                         mContactDetailsEditText.setHint("Mobile Number");
                         break;
                     case REVEAL_ONLY:
@@ -111,6 +114,7 @@ public class MemberEditFragment extends Fragment {
         return view;
     }
 
+    // If the user already has a contact method, then set those details
     public void setContactDetails(ContactMethod selected) {
         if(selected == mMember.getContactMethod()) {
             mContactDetailsEditText.setText(mMember.getContactDetails());
@@ -127,8 +131,8 @@ public class MemberEditFragment extends Fragment {
         String contactDetails = contactMethod == ContactMethod.REVEAL_ONLY ? null : mContactDetailsEditText.getText().toString().trim();
 
         boolean isValid =
-          checkField(mMemberNameEditView, new MemberNameValidator(mDb, mMember.getGroupId(), mMember.getId(), name), "")
-            && checkField(mContactDetailsEditText, new ContactDetailsValidator(contactMethod, contactDetails), "");
+          checkField(mMemberNameEditView, new MemberNameValidator(mDb, mMember.getGroupId(), mMember.getId(), name))
+            && checkField(mContactDetailsEditText, new ContactDetailsValidator(contactMethod, contactDetails));
 
         if(!isValid) {
             return false;
@@ -141,10 +145,10 @@ public class MemberEditFragment extends Fragment {
         return true;
     }
 
-    private boolean checkField(final EditText et, Validator _validator, String msg) {
+    private boolean checkField(final EditText et, Validator _validator) {
         boolean isFieldValid = _validator.isValid();
         if(!isFieldValid) {
-            et.setError(msg);
+            et.setError(_validator.getMsg());
         }
         return isFieldValid;
     }

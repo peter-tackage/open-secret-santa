@@ -1,8 +1,7 @@
 package com.moac.android.opensecretsanta.adapter;
 
-import android.net.Uri;
-import android.provider.ContactsContract;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Contacts;

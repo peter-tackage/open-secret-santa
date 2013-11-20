@@ -20,12 +20,7 @@ public class AccountUtils {
 
     private static final String TAG = AccountUtils.class.getSimpleName();
 
-    /*
-      * Returns the authorization for the user's preferred Gmail address,
-      * according to our SharedPreferences otherwise null.
-      *
-      * Must run on new thread
-      */
+    // Must run on new thread
     public static Observable<EmailAuthorization> getPreferedGmailAuth(final Context context, final Activity activity) {
         return Observable.create(new Observable.OnSubscribeFunc<EmailAuthorization>() {
             @Override
@@ -82,6 +77,7 @@ public class AccountUtils {
         return null;
     }
 
+    // Must run on new thread
     public static Observable<Account[]> getAllGmailAccountsObservable(final Context context) {
         return Observable.create(new Observable.OnSubscribeFunc<Account[]>() {
             @Override
@@ -98,7 +94,7 @@ public class AccountUtils {
         });
     }
 
-    // Must be background
+    // Must run on new thread
     public static String getGmailToken(Context context, Activity activity, final Account account) {
         Log.d(TAG, "getGmailToken() - start");
         AccountManagerFuture<Bundle> authTokenBundle = AccountManager.get(context).

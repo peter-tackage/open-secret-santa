@@ -6,6 +6,7 @@ public class ContactDetailsValidator implements Validator {
 
     private final ContactMethod mContactMethod;
     private final String mDetails;
+    private String mMsg;
 
     public ContactDetailsValidator(ContactMethod _method, String _details) {
         mContactMethod = _method;
@@ -14,14 +15,25 @@ public class ContactDetailsValidator implements Validator {
 
     @Override
     public boolean isValid() {
+        Validator val;
         switch(mContactMethod) {
             case EMAIL:
-                return new EmailValidator(mDetails).isValid();
+                val = new EmailValidator(mDetails);
+                break;
             case SMS:
-                return new SmsValidator(mDetails).isValid();
+                val = new SmsValidator(mDetails);
+                break;
             case REVEAL_ONLY:
             default:
                 return true;
         }
+        boolean isValid = val.isValid();
+        mMsg = val.getMsg();
+        return isValid;
+    }
+
+    @Override
+    public String getMsg() {
+        return mMsg;
     }
 }
