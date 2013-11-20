@@ -138,9 +138,10 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     }
 
     @Override
-    public void onEditMember(long _groupId, long _memberId) {
-        // TODO Launch member editor.
-        Log.i(TAG, "onEditMember() -");
+    public void onEditMember(long _memberId) {
+        Intent intent = new Intent(MainActivity.this, EditActivity.class);
+        intent.putExtra(Intents.MEMBER_ID_INTENT_EXTRA, _memberId);
+        slideInIntent(intent);
     }
 
     @Override

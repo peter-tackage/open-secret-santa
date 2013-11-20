@@ -409,7 +409,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     private void doEdit(long _memberId) {
-        getMemberEditor().onEditMember(mGroup.getId(), _memberId);
+        getMemberEditor().onEditMember(_memberId);
     }
 
     private void doRestrictions(long _memberId) {

@@ -7,28 +7,27 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import com.moac.android.opensecretsanta.R;
-import com.moac.android.opensecretsanta.fragment.RestrictionsListFragment;
+import com.moac.android.opensecretsanta.fragment.MemberEditFragment;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 
 /**
  * This activity doesn't do much but supply a custom action bar and host
- * the RestrictionsListFragment.
+ * the MemberEditFragment.
  */
-public class RestrictionsActivity extends Activity {
+public class EditActivity extends Activity {
 
-    protected RestrictionsListFragment mRestrictionsListFragment;
+    protected MemberEditFragment mMemberEditFragment;
 
     @Override
     public void onCreate(Bundle _savedInstance) {
         super.onCreate(_savedInstance);
         setContentView(R.layout.activity_generic_editor);
 
-        // Add the restrictions list fragment
-        final long groupId = getIntent().getLongExtra(Intents.GROUP_ID_INTENT_EXTRA, PersistableObject.UNSET_ID);
+        // Add the editor fragment
         final long memberId = getIntent().getLongExtra(Intents.MEMBER_ID_INTENT_EXTRA, PersistableObject.UNSET_ID);
 
-        mRestrictionsListFragment = RestrictionsListFragment.create(groupId, memberId);
-        getFragmentManager().beginTransaction().add(R.id.content_frame, mRestrictionsListFragment).commit();
+        mMemberEditFragment = MemberEditFragment.create(memberId);
+        getFragmentManager().beginTransaction().add(R.id.content_frame, mMemberEditFragment).commit();
 
         // Action bar should always exist for our API levels.
         ActionBar actionBar = getActionBar();
@@ -41,8 +40,8 @@ public class RestrictionsActivity extends Activity {
             saveMenuItem.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mRestrictionsListFragment.doSaveAction();
-                    finish();
+                    if(mMemberEditFragment.doSaveAction())
+                        finish();
                 }
             });
             // Show the custom action bar but hide the home icon and title
@@ -61,7 +60,7 @@ public class RestrictionsActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        mRestrictionsListFragment.doSaveAction();
-        super.onBackPressed();
+        if(mMemberEditFragment.doSaveAction())
+            super.onBackPressed();
     }
 }
