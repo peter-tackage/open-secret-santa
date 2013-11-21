@@ -72,27 +72,4 @@ public class EmailNotifier implements Notifier {
 
         return sb.toString();
     }
-
-//    public boolean isAuth() {
-//        boolean authRequired = Utils.containsEmailSendableEntry(mDatabase.queryAllDrawResultEntriesForDrawId(mDrawResult.getId()));
-//        // Reset.
-//        mToken = null;
-//        mAccount = null;
-//        if(authRequired) {
-//            try {
-//                mAccount = ((OpenSecretSantaApplication) getApplication()).getPreferedGmailAccount();
-//                if(mAccount != null) {// Now let's get the mToken
-//                    Log.v(TAG, "openShareDialog() - got account: " + mAccount.toString());
-//                    // This might open the auth dialog.
-//                    AccountManagerFuture<Bundle> authTokenBundle = AccountManager.get(AssignmentSharerActivity.this).
-//                      getAuthToken(mAccount, Constants.GMAIL_TOKEN_TYPE , null, AssignmentSharerActivity.this, null, null);
-//                    mToken = authTokenBundle.getResult().getString(AccountManager.KEY_AUTHTOKEN);
-//                    Log.v(TAG, "openShareDialog() - got account mToken: " + mToken);
-//                }
-//            } catch(Exception e) {
-//                Log.e(TAG, "openShareDialog() - Exception when obtaining authToken", e);
-//            }
-//        }
-//        boolean result = !authRequired || mToken != null;
-//    }
 }

@@ -34,6 +34,7 @@ import rx.android.concurrency.AndroidSchedulers;
 import rx.concurrency.Schedulers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MemberListFragment extends ListFragment implements AbsListView.MultiChoiceModeListener {
@@ -320,10 +321,8 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     private void confirmClearAssignments() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        // Add the buttons
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked OK button
                 invalidateAssignments(mGroup);
                 populateMemberList();
             }
@@ -333,9 +332,10 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
                 // User cancelled the dialog
             }
         });
-
-        // Create the AlertDialog
-        AlertDialog dialog = builder.setMessage("Clear assignments?").create();
+        builder.setTitle("Clear assignments");
+        builder.setMessage("You'll lose all the secret santa assignments for this group");
+        builder.setIcon(android.R.drawable.ic_dialog_alert);
+        AlertDialog dialog = builder.create();
         dialog.show();
     }
 
@@ -459,6 +459,8 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
             MemberRowDetails row = new MemberRowDetails(member, assignment);
             rows.add(row);
         }
+        // TODO Sort on insertion
+        Collections.sort(rows);
         return rows;
     }
 

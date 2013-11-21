@@ -8,7 +8,7 @@ import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = Member.TABLE_NAME)
-public final class Member extends PersistableObject  {
+public final class Member extends PersistableObject {
 
     public static final String TABLE_NAME =  "members";
 
@@ -67,44 +67,6 @@ public final class Member extends PersistableObject  {
 
     public long getRestrictionCount() { return mRestrictions == null ? 0 : mRestrictions.size(); }
 
-    public String toDebugString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Id: ");
-        sb.append(getId());
-        sb.append(", Name: ");
-        sb.append(getName());
-        sb.append(", Contact Details: ");
-        sb.append(getContactDetails());
-        sb.append(", Contact Method: ");
-        sb.append(getContactMethod());
-        sb.append(", Lookup Key: ");
-        sb.append(getLookupKey());
-
-        return sb.toString();
-    }
-
-//    @Override
-//    public boolean equals(Object other) {
-//        if(this == other) return true;
-//        if(!(other instanceof Member)) return false;
-//
-//        Member that = (Member) other;
-//        return
-//          (null == this.mContactDetails ? (this.mContactDetails == that.mContactDetails) : this.mContactDetails.equals(that.mContactDetails))
-//            &&
-//            (null == this.mLookupKey ? (this.mLookupKey == that.mLookupKey) : this.mLookupKey.equals(that.mLookupKey))
-//            &&
-//            (null == this.mName ? (this.mName == that.mName) : this.mName.equals(that.mName))
-//            &&
-//            this.mContactMethod == that.mContactMethod;
-//    }
-//
-//
-//    @Override
-//    public int compareTo(Member _that) {
-//        return String.CASE_INSENSITIVE_ORDER.compare(this.mName, _that.mName);
-//    }
-
     public Uri getContactUri(Context _context) {
         if(mContactId == PersistableObject.UNSET_ID && mLookupKey == null)
             return null;
@@ -123,11 +85,26 @@ public final class Member extends PersistableObject  {
 
         Member member = (Member) obj;
         return (mContactId == member.getContactId() &&
-                (mLookupKey == null ? member.getLookupKey() == null : mLookupKey.equals(member.getLookupKey())) &&
-                (mContactDetails == null ?  member.getContactDetails() == null : mContactDetails.equals(member.getContactDetails()) &&
-                mGroup.getId() == member.getGroupId() &&
-                mContactMethod == member.getContactMethod() &&
-                mName.equals(member.getName())));
+          (mLookupKey == null ? member.getLookupKey() == null : mLookupKey.equals(member.getLookupKey())) &&
+          (mContactDetails == null ?  member.getContactDetails() == null : mContactDetails.equals(member.getContactDetails()) &&
+            mGroup.getId() == member.getGroupId() &&
+            mContactMethod == member.getContactMethod() &&
+            mName.equals(member.getName())));
+    }
+
+    @Override
+    public String toString() {
+        return mName;
+    }
+
+    public String toDebugString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Id: ").append(getId());
+        sb.append(", Name: ").append(getName());
+        sb.append(", Contact Details: ").append(getContactDetails());
+        sb.append(", Contact Method: ").append(getContactMethod());
+        sb.append(", Lookup Key: ").append(getLookupKey());
+        return sb.toString();
     }
 
     public static class MemberBuilder {
@@ -174,6 +151,5 @@ public final class Member extends PersistableObject  {
 
         public Member build() { return mMember; }
     }
-
 
 }
