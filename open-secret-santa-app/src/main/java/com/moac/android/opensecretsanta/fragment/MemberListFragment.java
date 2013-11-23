@@ -332,8 +332,8 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
                 // User cancelled the dialog
             }
         });
-        builder.setTitle("Clear assignments");
-        builder.setMessage("You'll lose all the secret santa assignments for this group");
+        builder.setTitle(getString(R.string.clear_assignment_dialog_title));
+        builder.setMessage(getString(R.string.clear_assignments_dialog_msg));
         builder.setIcon(android.R.drawable.ic_dialog_alert);
         AlertDialog dialog = builder.create();
         dialog.show();
