@@ -225,7 +225,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         group.setName(Long.toString(now));
         group.setCreatedAt(now);
         long id = mDb.create(group);
-        group.setName("My Group - " + id);
+        group.setName(getString(R.string.first_group_name) + " - " + id);
         mDb.update(group);
         return id;
     }

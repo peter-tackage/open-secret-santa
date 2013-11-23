@@ -116,6 +116,6 @@
   <!-- Clear Assignments Dialog -->
   <string name="clear_assignment_dialog_title">Clear assignments?</string>
   <string name="clear_assignments_dialog_msg">You\'ll lose all the secret santa assignments for this group</string>
-  <string name="first_group_name">My Party</string>
+  <string name="first_group_name">My Group</string>
 
 </resources>
