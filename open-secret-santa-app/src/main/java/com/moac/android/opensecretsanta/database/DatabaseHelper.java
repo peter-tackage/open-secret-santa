@@ -80,7 +80,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
                         success = upgradeToVersion2(db);
                         break;
                     case 3:
-                       // success = upgradeToVersion3(cs);
+                        success = upgradeToVersion3(connectionSource);
                         break;
                 }
                 if(!success) {
@@ -212,7 +212,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return true;
     }
 
-    private boolean upgradeToVersion3(ConnectionSource cs) {
+    protected boolean upgradeToVersion3(ConnectionSource cs) {
         DatabaseUpgrader databaseUpgrader = new DatabaseUpgrader(this);
         databaseUpgrader.upgradeDatabaseToVersion3(cs);
 

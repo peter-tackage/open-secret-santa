@@ -26,21 +26,26 @@ public class Restriction extends PersistableObject {
 
     public long getOtherMemberId() { return mOtherMember.getId(); }
     public void setOtherMember(Member _otherMember) { mOtherMember = _otherMember; }
+    public void setOtherMemberId(long id) {
+        Member otherMember = new Member();
+        otherMember.setId(id);
+        mOtherMember = otherMember;
+    }
 
     public static class Builder {
         Restriction mRestriction;
         public Builder() {
             mRestriction = new Restriction();
+            // set the required fields. this doesn't really make sense but all we need is a member
+            Member.MemberBuilder memberBuilder = new Member.MemberBuilder();
+            mRestriction.setMember(memberBuilder.build());
+            mRestriction.setOtherMember(memberBuilder.build());
         }
-        public Builder withMemberId(long _id) {
-            Member member = new Member();
-            member.setId(_id);
+        public Builder withMember(Member member) {
             mRestriction.setMember(member);
             return this;
         }
-        public Builder withOtherMemberId(long _id) {
-            Member member = new Member();
-            member.setId(_id);
+        public Builder withOtherMember(Member member) {
             mRestriction.setOtherMember(member);
             return this;
         }
