@@ -88,12 +88,14 @@ public class MemberEditFragment extends Fragment {
                           | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
                           | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                         mContactDetailsEditText.setHint("Email Address");
+                        mContactDetailsEditText.requestFocus();
                         break;
                     case SMS:
                         setContactDetails(selected);
                         mContactDetailsEditText.setVisibility(View.VISIBLE);
                         mContactDetailsEditText.setInputType(InputType.TYPE_CLASS_PHONE);
                         mContactDetailsEditText.setHint("Mobile Number");
+                        mContactDetailsEditText.requestFocus();
                         break;
                     case REVEAL_ONLY:
                         mContactDetailsEditText.setVisibility(View.INVISIBLE);
