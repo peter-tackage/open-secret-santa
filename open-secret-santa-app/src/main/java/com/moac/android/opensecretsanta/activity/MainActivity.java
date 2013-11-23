@@ -41,7 +41,6 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     private static final String MEMBERS_LIST_FRAGMENT_TAG = "MemberListFragment";
     private static final String NOTIFY_DIALOG_FRAGMENT_TAG = "NotifyDialogFragment";
     private static final String NOTIFY_EXECUTOR_FRAGMENT_TAG = "NotifyExecutorFragment";
-    private static final String MOST_RECENT_GROUP_KEY = "most_recent_group_id";
 
     protected DrawerLayout mDrawerLayout;
     protected ActionBarDrawerToggle mDrawerToggle;
@@ -222,8 +221,9 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         Log.i(TAG, "Creating new Group");
         Group group = new Group();
         // A sort of UUID
-        group.setName(Long.toString(System.currentTimeMillis()));
-        group.setCreatedAt(System.currentTimeMillis());
+        long now = System.currentTimeMillis();
+        group.setName(Long.toString(now));
+        group.setCreatedAt(now);
         long id = mDb.create(group);
         group.setName("My Group - " + id);
         mDb.update(group);
@@ -232,7 +232,8 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
 
     private void displayInitialGroup() {
         // Fetch the most recently used Group Id from preferences
-        long groupId = PreferenceManager.getDefaultSharedPreferences(this).getLong(MOST_RECENT_GROUP_KEY, PersistableObject.UNSET_ID);
+        long groupId = PreferenceManager.getDefaultSharedPreferences(this).
+          getLong(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY, PersistableObject.UNSET_ID);
         if(groupId <= PersistableObject.UNSET_ID)
             return;
 
@@ -299,7 +300,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         mMembersListFragment = newFragment;
 
         // Update preferences to save last viewed Group
-        PreferenceManager.getDefaultSharedPreferences(this).edit().putLong(MOST_RECENT_GROUP_KEY, _groupId).commit();
-
+        PreferenceManager.getDefaultSharedPreferences(this).
+          edit().putLong(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY, _groupId).apply();
     }
 }

@@ -1,16 +1,15 @@
 package com.moac.android.opensecretsanta;
 
 import android.app.Application;
+import android.preference.PreferenceManager;
 import com.moac.android.opensecretsanta.database.DatabaseHelper;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.model.ContactMethod;
 import com.moac.android.opensecretsanta.model.Group;
-import com.moac.android.opensecretsanta.model.Member;
-import com.moac.android.opensecretsanta.model.Restriction;
 import com.moac.android.opensecretsanta.util.Utils;
 
 public class OpenSecretSantaApplication extends Application {
 
+    public static final String MOST_RECENT_GROUP_KEY = "most_recent_group_id";
     private static final String TAG = "OpenSecretSantaApp";
 
     private static OpenSecretSantaApplication sInstance;
@@ -55,6 +54,9 @@ public class OpenSecretSantaApplication extends Application {
     private void createFirstDraw() {
         Group group1 = new Group();
         group1.setName(getString(R.string.first_group_name));
-        mDatabaseManager.create(group1);
+        long id = mDatabaseManager.create(group1);
+        // Assign as the current Group
+        PreferenceManager.getDefaultSharedPreferences(this).edit().
+          putLong(MOST_RECENT_GROUP_KEY, id).commit();
     }
 }
