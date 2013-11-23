@@ -135,8 +135,19 @@ public final class Member extends PersistableObject  {
 
         public MemberBuilder() {
             mMember = new Member();
+            // set the required field
+            mMember.setName("defaultRequiredMemberName");
+            mMember.setContactMethod(ContactMethod.REVEAL_ONLY);
+            Group.GroupBuilder groupBuilder = new Group.GroupBuilder();
+            mMember.setGroup(groupBuilder.build());
         }
 
+
+        // be careful this does not set the group id
+        // if you insert a member created with this builder specifyin id x,
+        // this will not necessarily be the member id after the insert...
+        // so this withMemberId should only be used to set a known member id
+        // for instance for setting an Assignment member property
         public MemberBuilder withMemberId(long _id) {
             mMember.setId(_id);
             return this;

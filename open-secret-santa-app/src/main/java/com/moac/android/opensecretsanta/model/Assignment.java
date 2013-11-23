@@ -61,4 +61,24 @@ public class Assignment extends PersistableObject {
                 mReceiver.getId() == assignment.getReceiverMemberId() &&
                 mSendStatus == assignment.getSendStatus());
     }
+
+    public static class Builder {
+        Assignment mAssignemnt;
+        public Builder() {
+            mAssignemnt = new Assignment();
+            // set the required fields. this doesn't really make sense but all we need is a member
+            Member.MemberBuilder memberBuilder = new Member.MemberBuilder();
+            mAssignemnt.setReceiverMember(memberBuilder.build());
+            mAssignemnt.setGiverMember(memberBuilder.build());
+        }
+        public Builder withMemberId(Member member) {
+            mAssignemnt.setReceiverMember(member);
+            return this;
+        }
+        public Builder withOtherMemberId(Member member) {
+            mAssignemnt.setGiverMember(member);
+            return this;
+        }
+        public Assignment build() { return mAssignemnt; }
+    }
 }

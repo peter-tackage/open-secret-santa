@@ -1,6 +1,10 @@
 package com.moac.android.opensecretsanta.database;
 
 import android.test.AndroidTestCase;
+import com.moac.android.opensecretsanta.builders.MemberVersion2Builder;
+import com.moac.android.opensecretsanta.model.ContactMethod;
+import com.moac.android.opensecretsanta.model.Group;
+import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.version2.DrawResultEntryVersion2;
 import com.moac.android.opensecretsanta.model.version2.DrawResultVersion2;
 import com.moac.android.opensecretsanta.model.version2.GroupVersion2;
@@ -71,5 +75,25 @@ public class DatabaseUpgraderVersion2TablesTests extends AndroidTestCase {
 
         List<DrawResultVersion2> testResults = mDatabaseUpgrader.getAllDrawResultsVersion2ForGroup(groupB.getId());
         assertEquals(0, testResults.size());
+    }
+
+    public void testConvertMemberToVersion3() {
+        Group.GroupBuilder groupBuilder = new Group.GroupBuilder();
+        MemberVersion2Builder memberBuilder = new MemberVersion2Builder();
+
+        MemberVersion2 memberNameOnly = memberBuilder.withContactMode(0).build();
+        MemberVersion2 memberSMS = memberBuilder.withContactMode(1).build();
+        MemberVersion2 memberEmail = memberBuilder.withContactMode(2).build();
+
+        Member.MemberBuilder memberVersion3Builder = new Member.MemberBuilder();
+
+        Member expectedMemberNameOnly =  memberVersion3Builder.withContactMethod(ContactMethod.REVEAL_ONLY)
+                .withName(MemberVersion2Builder.TEST_MEMBER_NAME)
+                .withContactDetails(MemberVersion2Builder.TEST_MEMBER_CONTACT_DETAILS)
+                .withLookupKey(MemberVersion2Builder.TEST_MEMBER_LOOKUP_KEY)
+                .withGroup(groupBuilder.withGroupId(memberNameOnly.getGroupId()).build())
+                .build();
+        assertEquals(expectedMemberNameOnly, mDatabaseUpgrader.convertMemberToVersion3(memberNameOnly));
+
     }
 }

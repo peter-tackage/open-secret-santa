@@ -147,10 +147,10 @@ public class RestrictionsListFragment extends ListFragment {
                 if(entry.getValue().equals(Action.Create)) {
                     Log.i(TAG, "doSaveAction() - Adding new Restriction");
                     // Add a new Restriction
-                    Restriction.Builder builder = new Restriction.Builder();
-                    builder.withMemberId(mFromMember.getId());
-                    builder.withOtherMemberId(entry.getKey());
-                    mDb.create(builder.build());
+                    Restriction restriction = new Restriction();
+                    restriction.setMember(mFromMember);
+                    restriction.setOtherMemberId(entry.getKey());
+                    mDb.create(restriction);
                 } else {
                     // Delete restriction
                     Log.i(TAG, "doSaveAction() - Deleting Restriction");

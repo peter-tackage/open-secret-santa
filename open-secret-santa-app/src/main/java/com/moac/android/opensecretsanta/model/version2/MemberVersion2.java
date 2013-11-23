@@ -13,7 +13,8 @@ import com.moac.android.opensecretsanta.model.PersistableObject;
 public final class MemberVersion2 extends PersistableObject {
 
     public static final String TAG = "Member";
-    public static final String TABLE_NAME = "members";
+    public static final String VERSION2_TABLE_NAME = "members";
+    public static final String TABLE_NAME = "members_version2";
 
     public static interface Columns extends BaseColumns {
 

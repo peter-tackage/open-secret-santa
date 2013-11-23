@@ -66,8 +66,16 @@ public class Group extends PersistableObject {
 
         public GroupBuilder() {
             mGroup = new Group();
+            // set the required field
+            mGroup.setName("defaultRequiredGroupName");
         }
 
+
+        // be careful this does not set the group id
+        // if you insert a group created with this builder specifyin id x,
+        // this will not necessarily be the group id after the insert...
+        // so this withGroupId should only be used to set a known group id
+        // for instance for setting a Member group property
         public GroupBuilder withGroupId(long _id) {
             mGroup.setId(_id);
             return this;
