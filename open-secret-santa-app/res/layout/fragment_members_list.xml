@@ -26,7 +26,7 @@
     android:layout_marginRight="8dp"
     android:layout_marginBottom="8dp"
     android:hint="@string/search_hint_label"
-    android:textColorHint="@color/shade_of_grey1"
+    android:textColorHint="@color/shade_of_grey4"
     android:singleLine="true"
     android:background="@drawable/search_bg_shape"/>
 

@@ -18,7 +18,7 @@
   <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:textColor="@color/shade_of_grey1"
+    android:textColor="@color/shade_of_grey4"
     android:textSize="12sp"
     android:id="@+id/group_date_textView"
     android:textAppearance="@android:style/TextAppearance.Small"
