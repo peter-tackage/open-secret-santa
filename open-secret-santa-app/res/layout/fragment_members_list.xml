@@ -30,7 +30,7 @@
     android:singleLine="true"
     android:background="@drawable/search_bg_shape"/>
 
-  <ListView
+  <LinearLayout
     android:id="@id/android:list"
     android:layout_width="match_parent"
     android:layout_height="0dp"
@@ -40,7 +40,6 @@
     android:id="@id/android:empty"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FF0000"
-    android:text="No data" />
+    android:background="@android:color/transparent"/>
 
 </LinearLayout>
