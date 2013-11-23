@@ -6,7 +6,8 @@
   android:layout_height="match_parent"
   android:padding="8dp"
   android:background="@drawable/group_listview_row"
-  android:alpha="0.90">
+  android:alpha="0.90"
+  android:clickable="true">
 
   <TextView
     android:layout_width="match_parent"

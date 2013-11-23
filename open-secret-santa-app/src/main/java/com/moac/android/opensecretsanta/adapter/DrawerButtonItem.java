@@ -12,10 +12,12 @@ public class DrawerButtonItem implements DrawerListAdapter.Item {
 
     private final Drawable mDrawable;
     private final String mText;
+    private final View.OnClickListener mListener;
 
-    public DrawerButtonItem(Drawable drawable, String text) {
+    public DrawerButtonItem(Drawable drawable, String text, View.OnClickListener listener) {
         mDrawable = drawable;
         mText = text;
+        mListener = listener;
     }
 
     @Override
@@ -42,6 +44,7 @@ public class DrawerButtonItem implements DrawerListAdapter.Item {
 
         textView.setText(mText);
         textView.setCompoundDrawablesWithIntrinsicBounds(mDrawable, null, null, null);
+        view.setOnClickListener(mListener);
         return view;
     }
 }

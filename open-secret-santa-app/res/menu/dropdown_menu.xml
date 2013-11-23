@@ -5,10 +5,15 @@
     android:id="@+id/menu_item_clear"
     android:title="@string/menu_clear"
     android:showAsAction="never" />
-
+<!--
   <item
     android:id="@+id/menu_item_rename"
     android:title="@string/menu_rename"
+    android:showAsAction="never" />   -->
+
+  <item
+    android:id="@+id/menu_item_delete_group"
+    android:title="@string/menu_delete_group"
     android:showAsAction="never" />
 
 </menu>

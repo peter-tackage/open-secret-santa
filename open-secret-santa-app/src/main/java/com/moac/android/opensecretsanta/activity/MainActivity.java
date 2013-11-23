@@ -132,7 +132,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         switch(item.getItemId()) {
             // TODO Move to overlay menu
             // TODO Rename group
-          //  case R.id.menu_settings:
+            //  case R.id.menu_settings:
             //    Intent intent = new Intent(MainActivity.this, AllPreferencesActivity.class);
             //    slideInIntent(intent);
             //    return true;
@@ -190,7 +190,15 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
 
         // Add "Add Group" button item
         Drawable addIcon = getResources().getDrawable(R.drawable.ic_content_new);
-        drawerListItems.add(new DrawerButtonItem(addIcon, "Add Group"));
+        drawerListItems.add(new DrawerButtonItem(addIcon, "Add Group", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                long id = createNewGroup();
+                showGroup(id);
+                // TODO Need to highlight the group in draw!
+                mDrawerLayout.closeDrawer(mDrawerList);
+            }
+        }));
 
         // Add each Group item
         List<Group> groups = OpenSecretSantaApplication.getInstance().getDatabase().queryAll(Group.class);
@@ -205,9 +213,21 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
 
         // Add Settings button item
         Drawable settingsIcon = getResources().getDrawable(R.drawable.ic_action_settings);
-        drawerListItems.add(new DrawerButtonItem(settingsIcon, "Settings"));
+        drawerListItems.add(new DrawerButtonItem(settingsIcon, "Settings", null));
 
         drawerListAdapter.addAll(drawerListItems);
+    }
+
+    private long createNewGroup() {
+        Log.i(TAG, "Creating new Group");
+        Group group = new Group();
+        // A sort of UUID
+        group.setName(Long.toString(System.currentTimeMillis()));
+        group.setCreatedAt(System.currentTimeMillis());
+        long id = mDb.create(group);
+        group.setName("My Group - " + id);
+        mDb.update(group);
+        return id;
     }
 
     private void displayInitialGroup() {
@@ -221,7 +241,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
 
     @Override
     public MemberEditor getMemberEditor() {
-        // FIXME for now.
+        // FIXME for now implement as this activity.
         return this;
     }
 
@@ -280,5 +300,6 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
 
         // Update preferences to save last viewed Group
         PreferenceManager.getDefaultSharedPreferences(this).edit().putLong(MOST_RECENT_GROUP_KEY, _groupId).commit();
+
     }
 }

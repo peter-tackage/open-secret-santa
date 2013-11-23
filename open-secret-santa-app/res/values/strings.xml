@@ -85,6 +85,7 @@
   <string name="menu_rename">Rename group</string>
   <string name="menu_clear">Clear assignments</string>
   <string name="menu_settings">Settings</string>
+  <string name="menu_delete_group">Delete Group</string>
 
   <!-- Toast messages -->
   <string name="duplicate_name_msg">%s is already in the draw</string>
@@ -115,5 +116,6 @@
   <!-- Clear Assignments Dialog -->
   <string name="clear_assignment_dialog_title">Clear assignments?</string>
   <string name="clear_assignments_dialog_msg">You\'ll lose all the secret santa assignments for this group</string>
+  <string name="first_group_name">My Party</string>
 
 </resources>
