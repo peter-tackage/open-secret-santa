@@ -54,6 +54,7 @@ public class OpenSecretSantaApplication extends Application {
     private void createFirstDraw() {
         Group group1 = new Group();
         group1.setName(getString(R.string.first_group_name));
+        group1.setCreatedAt(System.currentTimeMillis());
         long id = mDatabaseManager.create(group1);
         // Assign as the current Group
         PreferenceManager.getDefaultSharedPreferences(this).edit().
