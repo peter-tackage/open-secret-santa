@@ -19,10 +19,8 @@ package com.moac.android.opensecretsanta.database;
 import android.database.SQLException;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
-import com.moac.android.opensecretsanta.model.Assignment;
-import com.moac.android.opensecretsanta.model.Member;
-import com.moac.android.opensecretsanta.model.PersistableObject;
-import com.moac.android.opensecretsanta.model.Restriction;
+import com.j256.ormlite.stmt.UpdateBuilder;
+import com.moac.android.opensecretsanta.model.*;
 
 import java.util.List;
 
@@ -195,6 +193,32 @@ public class DatabaseManager {
             DeleteBuilder<Assignment, Long> deleteBuilder = mDbHelper.getDaoEx(Assignment.class).deleteBuilder();
             deleteBuilder.where().in(Assignment.Columns.GIVER_MEMBER_ID_COLUMN, groupMembersQuery);
             return deleteBuilder.delete();
+        } catch(java.sql.SQLException e) {
+            throw new SQLException(e.getMessage());
+        }
+    }
+
+    public boolean queryHasGroup() {
+        try {
+            Group group = mDbHelper.getDaoEx(Group.class).queryBuilder()
+              .queryForFirst();
+            return group != null;
+        } catch(java.sql.SQLException e) {
+            throw new SQLException(e.getMessage());
+        }
+    }
+
+    public void updateAllAssignmentsInGroup(long groupId, Assignment.Status status) {
+        try {
+            QueryBuilder<Member, Long> groupMembersQuery =
+              mDbHelper.getDaoEx(Member.class).queryBuilder();
+            groupMembersQuery.selectColumns(Member.Columns._ID).where().eq(Member.Columns.GROUP_ID_COLUMN, groupId);
+
+            UpdateBuilder<Assignment, Long> updateBuilder =
+              mDbHelper.getDaoEx(Assignment.class).updateBuilder();
+            updateBuilder.updateColumnValue(Assignment.Columns.SEND_STATUS_COLUMN, status).
+              where().in(Assignment.Columns.GIVER_MEMBER_ID_COLUMN, groupMembersQuery);
+            updateBuilder.update();
         } catch(java.sql.SQLException e) {
             throw new SQLException(e.getMessage());
         }

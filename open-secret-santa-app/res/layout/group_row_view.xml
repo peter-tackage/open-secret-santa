@@ -1,34 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical"
+  android:orientation="horizontal"
   android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:padding="8dp"
-  android:background="@drawable/group_listview_row"
-  android:alpha="0.90">
+  android:layout_height="match_parent">
 
-  <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:id="@+id/group_name_textView"
-    android:textAppearance="@android:style/TextAppearance.Medium"
-    android:textColor="@color/dark_grey" />
+  <View
+    android:layout_width="4dp"
+    android:layout_height="match_parent"
+    android:background="@drawable/group_item_check_indicator" />
 
-  <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:textColor="@color/shade_of_grey4"
-    android:textSize="12sp"
-    android:id="@+id/group_date_textView"
-    android:textAppearance="@android:style/TextAppearance.Small"
-    android:layout_centerHorizontal="true"
-    android:layout_centerVertical="true" />
-
-  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+  <LinearLayout
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/group_linearLayout" />
+    android:padding="8dp"
+    android:background="@drawable/group_listview_row"
+    android:alpha="0.90">
 
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:id="@+id/group_name_textView"
+      android:textAppearance="@android:style/TextAppearance.Medium"
+      android:textColor="@color/dark_grey" />
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textColor="@color/shade_of_grey4"
+      android:textSize="12sp"
+      android:id="@+id/group_date_textView"
+      android:textAppearance="@android:style/TextAppearance.Small" />
+
+  </LinearLayout>
 </LinearLayout>

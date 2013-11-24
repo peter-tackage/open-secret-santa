@@ -3,6 +3,7 @@ package com.moac.android.opensecretsanta.notify;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
+import com.google.common.base.Strings;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
@@ -36,26 +37,25 @@ public class EmailNotifier implements Notifier {
     }
 
     @Override
-    public void notify(Member _giver, String _receiverName, String _groupMsg) {
+    public void notify(final Assignment _assignment, Member _giver, String _receiverName, String _groupMsg) {
         String body = buildMsg(mContext.getString(R.string.standard_assignment_msg), _giver.getName(),
           _receiverName, _groupMsg, mContext.getString(R.string.email_footer_msg));
-        final Assignment assignment = mDb.queryAssignmentForMember(_giver.getId());
 
         try {
             mGmailSender.sendMail(mContext.getString(R.string.email_subject_msg), body, mSenderAddress,
               mToken, _giver.getContactDetails());
-            assignment.setSendStatus(Assignment.Status.Sent);
+            _assignment.setSendStatus(Assignment.Status.Sent);
         } catch(MessagingException e) {
             Log.e(TAG, "Exception when sending email to: " + _giver.getContactDetails(), e);
-            assignment.setSendStatus(Assignment.Status.Failed);
+            _assignment.setSendStatus(Assignment.Status.Failed);
         }
         // Persist the result
-        mDb.update(assignment);
+        mDb.update(_assignment);
         // Notify via bus
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                mBus.post(new NotifyStatusEvent(assignment));
+                mBus.post(new NotifyStatusEvent(_assignment));
             }
         });
     }
@@ -66,7 +66,7 @@ public class EmailNotifier implements Notifier {
     private static String buildMsg(String _baseMsg, String _giverName, String _receiverName, String _groupMsg, String _footer) {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format(_baseMsg, _giverName, _receiverName));
-        sb.append(_groupMsg == null ? "" : _groupMsg);
+        sb.append(Strings.isNullOrEmpty(_groupMsg) ? "" : " " +  _groupMsg);
         sb.append(_footer);
         Log.v(TAG, "buildMsg() - result: " + sb.toString());
 

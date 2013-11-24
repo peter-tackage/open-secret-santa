@@ -3,6 +3,7 @@ package com.moac.android.opensecretsanta.activity;
 import android.app.*;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -16,8 +17,10 @@ import android.widget.ListView;
 import com.google.common.primitives.Longs;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
-import com.moac.android.opensecretsanta.adapter.GroupListAdapter;
-import com.moac.android.opensecretsanta.adapter.GroupRowDetails;
+import com.moac.android.opensecretsanta.adapter.DrawerButtonItem;
+import com.moac.android.opensecretsanta.adapter.DrawerListAdapter;
+import com.moac.android.opensecretsanta.adapter.DrawerSectionHeaderItem;
+import com.moac.android.opensecretsanta.adapter.GroupDetailsRow;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.draw.MemberEditor;
 import com.moac.android.opensecretsanta.fragment.MemberListFragment;
@@ -38,7 +41,6 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     private static final String MEMBERS_LIST_FRAGMENT_TAG = "MemberListFragment";
     private static final String NOTIFY_DIALOG_FRAGMENT_TAG = "NotifyDialogFragment";
     private static final String NOTIFY_EXECUTOR_FRAGMENT_TAG = "NotifyExecutorFragment";
-    private static final String MOST_RECENT_GROUP_KEY = "most_recent_group_id";
 
     protected DrawerLayout mDrawerLayout;
     protected ActionBarDrawerToggle mDrawerToggle;
@@ -46,6 +48,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     protected DatabaseManager mDb; // shorthand.
     protected MemberListFragment mMembersListFragment;
     private NotifyExecutorFragment mNotifyExecutorFragment;
+    private DrawerListAdapter mDrawerListAdapter;
 
     @Override
     public void onCreate(Bundle _savedInstanceState) {
@@ -68,8 +71,11 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     private void initialiseUI() {
         setContentView(R.layout.activity_main);
         mDrawerList = (ListView) findViewById(R.id.left_drawer_list);
-        mDrawerList.setAdapter(new GroupListAdapter(this));
-        mDrawerList.setOnItemClickListener(new GroupListItemClickListener());
+
+        mDrawerListAdapter = new DrawerListAdapter(this);
+        mDrawerList.setAdapter(mDrawerListAdapter);
+        populateDrawerListView(mDrawerListAdapter);
+        mDrawerList.setOnItemClickListener(new GroupItemClickListener());
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(
@@ -88,10 +94,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle(getString(R.string.drawer_groups_title));
-                getActionBar().setIcon(R.drawable.people);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-                populateGroupRowDetailsList(mDrawerList);
             }
         };
 
@@ -128,7 +131,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         switch(item.getItemId()) {
             // TODO Move to overlay menu
             // TODO Rename group
-          //  case R.id.menu_settings:
+            //  case R.id.menu_settings:
             //    Intent intent = new Intent(MainActivity.this, AllPreferencesActivity.class);
             //    slideInIntent(intent);
             //    return true;
@@ -177,38 +180,81 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         mNotifyExecutorFragment.notifyDraw(auth, group, members);
     }
 
-    private void populateGroupRowDetailsList(ListView _groupRowDetailsList) {
-        // Retrieve the list of groups from database.
-        List<Group> groups = OpenSecretSantaApplication.getInstance().getDatabase().queryAll(Group.class);
+    private void populateDrawerListView(DrawerListAdapter drawerListAdapter) {
 
+        List<DrawerListAdapter.Item> drawerListItems = new ArrayList<DrawerListAdapter.Item>();
+
+        // Add "My Groups" section header
+        drawerListItems.add(new DrawerSectionHeaderItem(getString(R.string.drawer_groups_header)));
+
+        // Add "Add Group" button item
+        Drawable addIcon = getResources().getDrawable(R.drawable.ic_content_new);
+        drawerListItems.add(new DrawerButtonItem(addIcon, "Add Group", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                long id = createNewGroup();
+                showGroup(id);
+                // TODO Need to highlight the group in draw!
+                mDrawerLayout.closeDrawer(mDrawerList);
+            }
+        }));
+
+        // Add each Group item
+        List<Group> groups = OpenSecretSantaApplication.getInstance().getDatabase().queryAll(Group.class);
         Log.v(TAG, "initialiseUI() - group count: " + groups.size());
-        List<GroupRowDetails> groupRowDetails = new ArrayList<GroupRowDetails>();
         for(Group g : groups) {
             List<Member> groupMembers = OpenSecretSantaApplication.getInstance().getDatabase().queryAllMembersForGroup(g.getId());
-            groupRowDetails.add(new GroupRowDetails(g.getId(), g.getName(), g.getCreatedAt(), groupMembers));
+            drawerListItems.add(new GroupDetailsRow(g.getId(), g.getName(), g.getCreatedAt(), groupMembers));
         }
-        ((GroupListAdapter) _groupRowDetailsList.getAdapter()).update(groupRowDetails);
+
+        // Add "Options" section header
+        drawerListItems.add(new DrawerSectionHeaderItem(getString(R.string.drawer_options_header)));
+
+        // Add Settings button item
+        Drawable settingsIcon = getResources().getDrawable(R.drawable.ic_action_settings);
+        drawerListItems.add(new DrawerButtonItem(settingsIcon, "Settings", null));
+
+        drawerListAdapter.addAll(drawerListItems);
+    }
+
+    private long createNewGroup() {
+        Log.i(TAG, "Creating new Group");
+        Group group = new Group();
+        // A sort of UUID
+        long now = System.currentTimeMillis();
+        group.setName(Long.toString(now));
+        group.setCreatedAt(now);
+        long id = mDb.create(group);
+        group.setName(getString(R.string.first_group_name) + " - " + id);
+        mDb.update(group);
+        return id;
     }
 
     private void displayInitialGroup() {
         // Fetch the most recently used Group Id from preferences
-        long groupId = PreferenceManager.getDefaultSharedPreferences(this).getLong(MOST_RECENT_GROUP_KEY, PersistableObject.UNSET_ID);
-        if(groupId == PersistableObject.UNSET_ID)
+        long groupId = PreferenceManager.getDefaultSharedPreferences(this).
+          getLong(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY, PersistableObject.UNSET_ID);
+        if(groupId <= PersistableObject.UNSET_ID)
             return;
+
         showGroup(groupId);
     }
 
     @Override
     public MemberEditor getMemberEditor() {
-        // FIXME for now.
+        // FIXME for now implement as this activity.
         return this;
     }
 
-    private class GroupListItemClickListener implements AdapterView.OnItemClickListener {
+    private class GroupItemClickListener implements AdapterView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> _parent, View _view, int _position, long _id) {
-            showGroup(_id);
+            Log.d(TAG, "onItemClick() - position: " + _position + " id: " + _id);
+            if(_id <= PersistableObject.UNSET_ID)
+                return;
+
             // Highlight the selected item, update the title, and close the drawer
+            showGroup(_id);
             mDrawerList.setItemChecked(_position, true);
             mDrawerLayout.closeDrawer(mDrawerList);
         }
@@ -231,7 +277,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
 
         FragmentManager fragmentManager = getFragmentManager();
 
-        // Can we find the fragment we're attempting to create?
+        // See if the correct fragment already exists
         MemberListFragment existing = (MemberListFragment) fragmentManager.findFragmentByTag(MEMBERS_LIST_FRAGMENT_TAG);
         if(existing != null && existing.getGroupId() == _groupId) {
             Log.i(TAG, "showGroup() - found matching required fragment");
@@ -240,7 +286,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         }
 
         // Replace existing fragment
-        // Can't call replace, seems to replace ALL fragments in the layout.
+        // Note: Can't call replace, seems to replace ALL fragments in the layout.
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         if(existing != null) {
             Log.i(TAG, "showGroup() - removing existing fragment");
@@ -254,6 +300,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         mMembersListFragment = newFragment;
 
         // Update preferences to save last viewed Group
-        PreferenceManager.getDefaultSharedPreferences(this).edit().putLong(MOST_RECENT_GROUP_KEY, _groupId).commit();
+        PreferenceManager.getDefaultSharedPreferences(this).
+          edit().putLong(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY, _groupId).apply();
     }
 }

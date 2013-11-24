@@ -683,4 +683,107 @@ public class DatabaseTests extends AndroidTestCase {
         assertNull(memberQuery2);
         assertNull(memberQuery3);
     }
+
+    // Verify query to check for the existence of a Group - when a Group exists
+    public void test_hasGroupTrue() {
+        Group group1 = new GroupBuilder().build();
+        mDatabaseManager.create(group1);
+        assertTrue(mDatabaseManager.queryHasGroup());
+    }
+
+    // Verify query to check for the existence of a Group - when a Group does not exist
+    public void test_hasGroupFalse() {
+        assertFalse(mDatabaseManager.queryHasGroup());
+    }
+
+    // Verify that the Assignments in a Group can have their SentStatus bulk updated
+    // Also verify that this does not impact other Group's Assignments
+    public void test_updateAllAssignmentsInGroup() {
+        Group group1 = new GroupBuilder().withName("g1").build();
+        Group group2 = new GroupBuilder().withName("g2").build();
+        mDatabaseManager.create(group1);
+        mDatabaseManager.create(group2);
+
+        // Add some Members
+        Member m1 = new MemberBuilder().withName("m1").build();
+        Member m2 = new MemberBuilder().withName("m2").build();
+        Member m3 = new MemberBuilder().withName("m3").build();
+        m1.setGroup(group1);
+        m2.setGroup(group1);
+        m3.setGroup(group1);
+        mDatabaseManager.create(m1);
+        mDatabaseManager.create(m2);
+        mDatabaseManager.create(m3);
+
+        // Attempt with no Assignments
+        mDatabaseManager.updateAllAssignmentsInGroup(group1.getId(), Assignment.Status.Assigned);
+
+        // Create the assignments
+        Assignment a1 = new Assignment();
+        a1.setGiverMember(m1);
+        a1.setReceiverMember(m2);
+        mDatabaseManager.create(a1);
+
+        Assignment a2 = new Assignment();
+        a2.setGiverMember(m2);
+        a2.setReceiverMember(m3);
+        mDatabaseManager.create(a2);
+
+        Assignment a3 = new Assignment();
+        a3.setGiverMember(m3);
+        a3.setReceiverMember(m1);
+        mDatabaseManager.create(a3);
+
+        /*
+         * Create some Members and Assignments for Group2
+         * These Assignments should not be affected by the update on Group1
+         */
+        Member m1_2 = new MemberBuilder().withName("m1_2").build();
+        Member m2_2 = new MemberBuilder().withName("m2_2").build();
+        Member m3_2 = new MemberBuilder().withName("m3_2").build();
+        m1_2.setGroup(group2);
+        m2_2.setGroup(group2);
+        m3_2.setGroup(group2);
+        mDatabaseManager.create(m1_2);
+        mDatabaseManager.create(m2_2);
+        mDatabaseManager.create(m3_2);
+
+        // Create the assignments
+        Assignment a1_2 = new Assignment();
+        a1_2.setGiverMember(m1_2);
+        a1_2.setReceiverMember(m2_2);
+        mDatabaseManager.create(a1_2);
+
+        Assignment a2_2 = new Assignment();
+        a2_2.setGiverMember(m2_2);
+        a2_2.setReceiverMember(m3_2);
+        mDatabaseManager.create(a2_2);
+
+        Assignment a3_2 = new Assignment();
+        a3_2.setGiverMember(m3_2);
+        a3_2.setReceiverMember(m1_2);
+        mDatabaseManager.create(a3_2);
+
+        // Verify initial Assignment state
+        assertEquals(Assignment.Status.Assigned, a1.getSendStatus());
+        assertEquals(Assignment.Status.Assigned, a2.getSendStatus());
+        assertEquals(Assignment.Status.Assigned, a3.getSendStatus());
+
+        assertEquals(Assignment.Status.Assigned, a1_2.getSendStatus());
+        assertEquals(Assignment.Status.Assigned, a2_2.getSendStatus());
+        assertEquals(Assignment.Status.Assigned, a3_2.getSendStatus());
+
+        // Update all the Assignments for Group1
+        mDatabaseManager.updateAllAssignmentsInGroup(group1.getId(), Assignment.Status.Sent);
+
+        // Verify Assignment state updated for Group1
+        assertEquals(Assignment.Status.Sent, mDatabaseManager.queryById(a1.getId(), Assignment.class).getSendStatus());
+        assertEquals(Assignment.Status.Sent, mDatabaseManager.queryById(a2.getId(), Assignment.class).getSendStatus());
+        assertEquals(Assignment.Status.Sent, mDatabaseManager.queryById(a3.getId(), Assignment.class).getSendStatus());
+
+        // Verify Assignment state NOT updated for Group2
+        assertEquals(Assignment.Status.Assigned, a1_2.getSendStatus());
+        assertEquals(Assignment.Status.Assigned, a2_2.getSendStatus());
+        assertEquals(Assignment.Status.Assigned, a3_2.getSendStatus());
+    }
 }

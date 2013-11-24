@@ -123,7 +123,6 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         Log.i(TAG, "onViewCreated()");
-
         super.onViewCreated(view, savedInstanceState);
 
         // Initially don't perform check selection.
@@ -142,7 +141,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
                 // Trigger CAB
                 getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 
-                // Visual indicator of selection and trigger CAB.
+                // Show visual indicator of selection and trigger CAB.
                 ((ListView) parent).setItemChecked(position, true);
                 return true;
             }
@@ -342,10 +341,10 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         });
 
         // Set the values
-        TextView dialog_text = (TextView) view.findViewById(R.id.clear_assignments_text);
-        dialog_text.setText(R.string.clear_assignments_dialog_msg);
-
+        TextView dialogMsgView = (TextView) view.findViewById(R.id.clear_assignments_text);
+        dialogMsgView.setText(R.string.clear_assignments_dialog_msg);
         builder.setView(view);
+
         AlertDialog dialog = builder.create();
         dialog.show();
     }
