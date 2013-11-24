@@ -5,7 +5,7 @@
   android:orientation="horizontal"
   android:padding="4dp"
   android:background="@drawable/member_listview_row_bg_color"
-  android:alpha="0.95"
+  android:alpha="0.97"
   android:id="@+id/member_relativeLayout">
 
   <!-- android:background sets visual indicator of list item selection -->
@@ -41,7 +41,6 @@
     android:layout_height="wrap_content"
     android:text="Miss User"
     android:id="@+id/member_name_textview"
-    android:layout_toLeftOf="@+id/restriction_count_textview"
     android:layout_toRightOf="@+id/member_imageview"
     android:textAppearance="@android:style/TextAppearance.Large"
     android:textColor="@drawable/member_listview_row_name_color"
@@ -74,12 +73,11 @@
     android:textSize="10sp"
     android:background="@drawable/restriction_bg"
     android:gravity="right"
-    android:layout_alignTop="@+id/member_imageview"
     android:layout_marginLeft="2dp"
     android:layout_marginRight="2dp"
     android:paddingRight="4dp"
-    android:ellipsize="none"
     android:enabled="false"
-    android:paddingLeft="4dp"/>
+    android:paddingLeft="4dp"
+    android:layout_alignTop="@+id/member_name_textview"/>
 
 </RelativeLayout>

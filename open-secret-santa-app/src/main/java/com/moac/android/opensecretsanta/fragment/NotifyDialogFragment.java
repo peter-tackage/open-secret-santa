@@ -87,7 +87,7 @@ public class NotifyDialogFragment extends DialogFragment {
 
         // Take the values and populate the dialog
         builder.setTitle(getString(R.string.notify_dialog_title));
-        builder.setIcon(R.drawable.ic_menu_notify);
+        builder.setIcon(R.drawable.ic_menu_notify_group);
 
         mMsgField = (EditText) view.findViewById(R.id.tv_notify_msg);
         mMsgField.setText(message);

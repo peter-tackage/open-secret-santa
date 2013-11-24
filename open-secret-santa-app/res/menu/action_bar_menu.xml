@@ -3,13 +3,13 @@
   <!-- Non-CAB Action Bar items -->
   <item
     android:id="@+id/menu_item_draw"
-    android:icon="@drawable/ic_menu_draw"
+    android:icon="@drawable/ic_menu_hat"
     android:title="@string/menu_draw"
     android:showAsAction="always|withText" />
 
   <item
     android:id="@+id/menu_item_notify_group"
-    android:icon="@drawable/ic_menu_notify_group"
+    android:icon="@drawable/ic_menu_notify"
     android:title="@string/menu_notify"
     android:showAsAction="always|withText" />
 

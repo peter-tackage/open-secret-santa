@@ -32,6 +32,19 @@
   <string name="notify_send_button_text">Send</string>
   <string name="no_email_warning">WARNING: Emails won\'t be sent. We can\'t find your Gmail account</string>
 
+
+  <!-- Edit screen -->
+  <string name="hint_member_name">Name</string>
+  <string name="hint_member_contact_details">Contact Details</string>
+  <string name="contact_method_label">How to notify of assignment?</string>
+  <string name="contact_details_label">Contact Details</string>
+  <string name="member_name_label">Member Name</string>
+
+  <!-- Clear assignments confirmation dialog button -->
+  <string name="clear_assignments_button">Clear all</string>
+  <string name="clear_assignments_dialog_title">Clear assignments</string>
+  <string name="clear_assignments_dialog_msg">You\'ll lose all the Secret Santa assignments for this group. Are you sure?"</string>
+
   <!-- Preferences - Algorithm -->
   <string name="algorithm_preferences">Algorithm Preferences</string>
   <string name="algorithm_list_preference">Draw Engine</string>
@@ -109,8 +122,6 @@
   <string name="draw_in_progress_msg">Drawing assigments</string>
   <string name="notify_in_progress_msg">Sending assigments</string>
   <string name="notify_dialog_title">Notify Group</string>
-  <string name="hint_member_name">Name</string>
-  <string name="contact_method_label">Contact Method</string>
-  <string name="member_name_label">Member Name</string>
+
 
 </resources>

@@ -1,105 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical"
-  android:layout_width="match_parent"
-  android:layout_height="wrap_content">
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@android:color/white">
 
-  <TextView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/content_title_textview"
-    android:gravity="center_horizontal"
-    android:textColor="@color/white"
-    android:background="@android:color/holo_blue_light"
-    android:singleLine="true" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/content_title_textview"
+        android:gravity="center_horizontal"
+        android:textColor="@color/white"
+        android:background="@android:color/holo_blue_light"
+        android:singleLine="true" />
 
 
-  <LinearLayout
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <ImageView
-      android:layout_width="match_parent"
-      android:layout_height="100dp"
-      android:id="@+id/iv_avatar"
-      android:scaleType="centerCrop" />
-
-    <ScrollView
-      android:orientation="vertical"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent">
-
-      <LinearLayout
+    <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:paddingTop="8dp">
+        android:background="@drawable/white">
 
-        <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="@string/member_name_label"
-          android:textColor="@android:color/holo_blue_light"
-          android:paddingBottom="4dp"
-          android:paddingTop="8dp"
-          android:layout_marginLeft="8dp" />
+        <ImageView
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:id="@+id/iv_avatar"
+            android:scaleType="centerCrop"
+            android:layout_margin="4dp"
+            android:layout_gravity="center|top"
+            android:paddingTop="16dp"/>
 
-        <View
-          android:layout_width="match_parent"
-          android:layout_height="1dp"
-          android:background="@android:color/holo_blue_light" />
+        <ScrollView
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <EditText
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:id="@+id/et_edit_name"
-          android:singleLine="true"
-          android:inputType="textNoSuggestions|textCapWords|textPersonName"
-          android:autoText="false"
-          android:layout_marginStart="-4dp"
-          android:capitalize="words"
-          android:paddingTop="16dp"
-          android:hint="@string/hint_member_name" />
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:paddingTop="8dp">
 
-        <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="@string/contact_method_label"
-          android:textColor="@android:color/holo_blue_light"
-          android:paddingBottom="4dp"
-          android:paddingTop="36dp"
-          android:layout_marginLeft="8dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/member_name_label"
+                    android:textColor="@android:color/holo_blue_light"
+                    android:paddingBottom="4dp"
+                    android:paddingTop="8dp"
+                    android:layout_gravity="center"/>
 
-        <View
-          android:layout_width="match_parent"
-          android:layout_height="1dp"
-          android:background="@android:color/holo_blue_light" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/holo_blue_light" />
 
-        <LinearLayout
-          android:orientation="horizontal"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:paddingTop="8dp"
-          android:gravity="top">
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/et_edit_name"
+                    android:singleLine="true"
+                    android:inputType="textNoSuggestions|textCapWords|textPersonName"
+                    android:autoText="false"
+                    android:layout_marginStart="-4dp"
+                    android:capitalize="words"
+                    android:paddingTop="8dp"
+                    android:hint="@string/hint_member_name"
+                    android:background="@color/light_blue"
+                    android:textColorHint="@color/shade_of_grey4"
+                    android:textColor="@color/dark_grey"
+                    android:layout_gravity="center"
+                    android:gravity="center_vertical|center_horizontal"/>
 
-          <Spinner
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/spnr_contact_method" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/contact_method_label"
+                    android:textColor="@android:color/holo_blue_light"
+                    android:paddingBottom="4dp"
+                    android:paddingTop="32dp"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:layout_gravity="center"/>
 
-          <EditText
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/et_edit_contact_detail"
-            android:layout_weight="1.0"
-            android:singleLine="true"
-            android:layout_marginLeft="-4dp"
-            android:inputType="text" />
-        </LinearLayout>
-      </LinearLayout>
-    </ScrollView>
-  </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/holo_blue_light" />
+
+                <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spnr_contact_method"
+                    android:layout_gravity="center"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:paddingTop="8dp"/>
+
+
+                <!--TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/contact_details_label"
+                    android:textColor="@android:color/holo_blue_light"
+                    android:paddingBottom="4dp"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:layout_gravity="center"
+                    android:visibility="invisible"
+                    android:id="@+id/contact_details_label"/-->
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/holo_blue_light"
+                    android:visibility="invisible"
+                    android:id="@+id/contact_details_separator_line"/>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/et_edit_contact_detail"
+                    android:singleLine="true"
+                    android:inputType="text"
+                    android:layout_below="@+id/spnr_contact_method"
+                    android:textColorHint="@color/shade_of_grey4"
+                    android:textColor="@color/dark_grey"
+                    android:background="@color/light_blue"
+                    android:layout_gravity="center"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:hint="@string/hint_member_contact_details"
+                    android:visibility="invisible"/>
+
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
 </LinearLayout>

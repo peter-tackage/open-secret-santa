@@ -30,10 +30,12 @@
   <color name="shade_of_holo_blue3">#a8dff4</color>
   <color name="shade_of_holo_blue4">#8ad5f0</color>
   <color name="shade_of_holo_blue5">#6dcaed</color>
+  <color name="shade_of_holo_blue6">#50c0e9</color>
 
 
-    <color name="shade_of_holo_orange1">#fff6df</color>
-    <color name="shade_of_holo_orange2">#ffe3a0</color>
+  <color name="shade_of_holo_orange1">#fff6df</color>
+  <color name="shade_of_holo_orange2">#ffe3a0</color>
+  <color name="shade_of_holo_orange5">#ffbd21</color>
 
 
 
