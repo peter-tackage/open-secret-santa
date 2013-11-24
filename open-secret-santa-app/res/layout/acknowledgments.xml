@@ -9,8 +9,7 @@
   <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="We have used and adapted graphics by:"
-    android:textColor="@color/white" />
+    android:text="We have used and adapted graphics by:" />
 
   <!--  App icon and gift -->
   <TextView
@@ -18,7 +17,6 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="5dp"
     android:text="Aha-Soft"
-    android:textColor="@color/white"
     android:textSize="11sp" />
 
   <TextView
@@ -27,24 +25,6 @@
     android:layout_marginTop="2dp"
     android:autoLink="web"
     android:text="www.aha-soft.com"
-    android:textColor="@color/white"
-    android:textSize="11sp" />
-
-  <!--  Refresh icon -->
-  <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="5dp"
-    android:text="Momenticons"
-    android:textColor="@color/white"
-    android:textSize="11sp" />
-
-  <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="2dp"
-    android:autoLink="web"
-    android:text="www.momentumdesignlab.com"
     android:textSize="11sp" />
 
   <!--  Main background -->
@@ -53,7 +33,6 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="5dp"
     android:text="Anca Varsandan"
-    android:textColor="@color/white"
     android:textSize="11sp" />
 
   <TextView
@@ -61,24 +40,7 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="2dp"
     android:autoLink="web"
-    android:text="ancavarsandan.com"
-    android:textSize="11sp" />
-
-  <!--  Phone -->
-  <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="5dp"
-    android:text="19eighty7"
-    android:textColor="@color/white"
-    android:textSize="11sp" />
-
-  <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="2dp"
-    android:autoLink="web"
-    android:text="19eighty7.com"
+    android:text="http://www.portfolios.ro/AncaVarsandan"
     android:textSize="11sp" />
 
   <!--  Groups, Members, Draw and Button icons -->
@@ -87,7 +49,6 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="5dp"
     android:text="Softfacade"
-    android:textColor="@color/white"
     android:textSize="11sp" />
 
   <TextView
