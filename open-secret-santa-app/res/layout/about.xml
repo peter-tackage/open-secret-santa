@@ -75,14 +75,6 @@
       android:textColor="@color/white"
       android:textSize="11sp" />
 
-    <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="5dp"
-      android:autoLink="web"
-      android:text="@string/twitter"
-      android:textColor="@color/white"
-      android:textSize="11sp" />
   </LinearLayout>
 
 </LinearLayout>

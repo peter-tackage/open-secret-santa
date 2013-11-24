@@ -200,7 +200,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle *non-contextual* action bar selection
         switch(item.getItemId()) {
-            case R.id.menu_item_clear:
+            case R.id.menu_item_clear_assignments:
                 confirmClearAssignments();
                 return true;
             case R.id.menu_item_draw:
@@ -321,14 +321,13 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     private void confirmClearAssignments() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        // Get a layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.clear_assignments_dialog, null);
 
         builder.setTitle(R.string.clear_assignments_dialog_title);
         builder.setIcon(R.drawable.ic_menu_delete);
 
-        builder.setPositiveButton(R.string.clear_assignments_button, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 invalidateAssignments(mGroup);
                 populateMemberList();
@@ -340,7 +339,6 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
             }
         });
 
-        // Set the values
         TextView dialogMsgView = (TextView) view.findViewById(R.id.clear_assignments_text);
         dialogMsgView.setText(R.string.clear_assignments_dialog_msg);
         builder.setView(view);
@@ -353,7 +351,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         // Non-CAB buttons only
         mMenu.findItem(R.id.menu_item_draw).setVisible(mMode == Mode.Building);
         mMenu.findItem(R.id.menu_item_notify_group).setVisible(mMode == Mode.Notify);
-        mMenu.findItem(R.id.menu_item_clear).setVisible(mMode == Mode.Notify);
+        mMenu.findItem(R.id.menu_item_clear_assignments).setVisible(mMode == Mode.Notify);
     }
 
     private void invalidateAssignments(Group group) {

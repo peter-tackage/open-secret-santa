@@ -129,12 +129,11 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
             return true;
         }
         switch(item.getItemId()) {
-            // TODO Move to overlay menu
             // TODO Rename group
-            //  case R.id.menu_settings:
-            //    Intent intent = new Intent(MainActivity.this, AllPreferencesActivity.class);
-            //    slideInIntent(intent);
-            //    return true;
+              case R.id.menu_item_settings:
+                Intent intent = new Intent(MainActivity.this, AllPreferencesActivity.class);
+                slideInIntent(intent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -206,14 +205,6 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
             List<Member> groupMembers = OpenSecretSantaApplication.getInstance().getDatabase().queryAllMembersForGroup(g.getId());
             drawerListItems.add(new GroupDetailsRow(g.getId(), g.getName(), g.getCreatedAt(), groupMembers));
         }
-
-        // Add "Options" section header
-        drawerListItems.add(new DrawerSectionHeaderItem(getString(R.string.drawer_options_header)));
-
-        // Add Settings button item
-        Drawable settingsIcon = getResources().getDrawable(R.drawable.ic_action_settings);
-        drawerListItems.add(new DrawerButtonItem(settingsIcon, "Settings", null));
-
         drawerListAdapter.addAll(drawerListItems);
     }
 
