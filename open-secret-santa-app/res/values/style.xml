@@ -46,9 +46,9 @@
 
   <!-- background for the overflow menu -->
   <style parent="@android:style/Widget.Holo.Light.ListPopupWindow" name="PopupMenu.Mymenu">
-    <item name="android:popupBackground">@color/holo_lighter_blue
+    <item name="android:popupBackground">@color/white
     </item>
-    <item name="android:alpha">0.90</item>
+    <item name="android:alpha">0.80</item>
   </style>
 
   <!-- Application theme. -->
@@ -56,8 +56,5 @@
     <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     <item name="android:screenOrientation">portrait</item>
   </style>
-
-  <!-- Welcome theme. -->
-  <style name="WelcomeTheme" parent="AppTheme"></style>
 
 </resources>

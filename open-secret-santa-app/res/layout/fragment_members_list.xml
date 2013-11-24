@@ -11,8 +11,7 @@
     android:id="@+id/content_title_textview"
     android:gravity="center_horizontal"
     android:textColor="@color/white"
-    android:background="@android:color/holo_blue_light"
-    android:inputType="textNoSuggestions" />
+    android:background="@android:color/holo_blue_light" />
 
   <AutoCompleteTextView
     android:layout_width="match_parent"
