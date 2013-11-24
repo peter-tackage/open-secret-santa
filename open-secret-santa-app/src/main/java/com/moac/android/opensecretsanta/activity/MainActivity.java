@@ -14,12 +14,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import com.google.common.primitives.Longs;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.adapter.DrawerButtonItem;
 import com.moac.android.opensecretsanta.adapter.DrawerListAdapter;
-import com.moac.android.opensecretsanta.adapter.DrawerSectionHeaderItem;
 import com.moac.android.opensecretsanta.adapter.GroupDetailsRow;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.draw.MemberEditor;
@@ -71,6 +71,12 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     private void initialiseUI() {
         setContentView(R.layout.activity_main);
         mDrawerList = (ListView) findViewById(R.id.left_drawer_list);
+
+        // Add Groups list header - *before adapter is set*
+        View headerView = getLayoutInflater().inflate(R.layout.drawer_section_header_view, mDrawerList, false);
+        TextView headerLabel = (TextView) headerView.findViewById(R.id.tv_section_header_label);
+        headerLabel.setText(R.string.drawer_groups_header);
+        mDrawerList.addHeaderView(headerView);
 
         mDrawerListAdapter = new DrawerListAdapter(this);
         mDrawerList.setAdapter(mDrawerListAdapter);
@@ -182,9 +188,6 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     private void populateDrawerListView(DrawerListAdapter drawerListAdapter) {
 
         List<DrawerListAdapter.Item> drawerListItems = new ArrayList<DrawerListAdapter.Item>();
-
-        // Add "My Groups" section header
-        drawerListItems.add(new DrawerSectionHeaderItem(getString(R.string.drawer_groups_header)));
 
         // Add "Add Group" button item
         Drawable addIcon = getResources().getDrawable(R.drawable.ic_content_new);
