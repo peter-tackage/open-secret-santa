@@ -147,10 +147,10 @@ public class NotifyDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int which) {
                 final NotifyAuthorization.Builder auth = new NotifyAuthorization.Builder();
 
-                // Set the selected email as the user preference
                 if(mIsEmailAuthRequired) {
                     Account acc = (Account) mSpinner.getSelectedItem();
                     if(acc != null) {
+                        // Set the selected email as the user preference
                         String emailPrefKey = getActivity().getString(R.string.gmail_account_preference);
                         PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putString(emailPrefKey, acc.name).commit();
 
@@ -161,10 +161,12 @@ public class NotifyDialogFragment extends DialogFragment {
                             public void call(EmailAuthorization emailAuth) {
                                 Log.d(TAG, "call() - got EmailAuthorization: " + emailAuth.getEmailAddress() + ":" + emailAuth.getToken());
                                 auth.withAuth(emailAuth);
+                                mGroup.setMessage(mMsgField.getText().toString().trim());
+                                mDb.update(mGroup);
                                 executeNotifyDraw(auth.build(), mGroup, mMemberIds);
                             }
                         });
-                    }
+                    }  // else no email auth available - do nothing.
                 } else {
                     // We have no additional authorization - just send as is
                     // Get the custom message.

@@ -42,10 +42,13 @@ public class DefaultNotifyExecutor implements NotifyExecutor {
 
                 // TODO Think better about how to handle failures - should we reset all first?
                 Handler handler = new Handler(Looper.getMainLooper());
+
                 // Iterate through the provided members - get their Assignment.
                 for(long memberId : memberIds) {
                     Member member = mDb.queryById(memberId, Member.class);
                     Assignment assignment = mDb.queryAssignmentForMember(member.getId());
+
+                    // Fatal error - must be have an assignment
                     if(assignment == null) {
                         Log.e(TAG, "executeNotify() - No Assignment for Member: " + member.getName());
                         observer.onError(new Exception("No Assignment for Member: " + member.getName()));
@@ -68,7 +71,7 @@ public class DefaultNotifyExecutor implements NotifyExecutor {
                             boolean useMultiPartSms = PreferenceManager.getDefaultSharedPreferences(mContext).
                               getBoolean(mContext.getString(R.string.use_multipart_sms), true);
                             SmsNotifier smsNotifier = new SmsNotifier(mContext, useMultiPartSms);
-                            smsNotifier.notify(member, giftReceiver.getName(), group.getMessage());
+                            smsNotifier.notify(assignment, member, giftReceiver.getName(), group.getMessage());
                             break;
                         case EMAIL:
                             Log.i(TAG, "executeNotify() - Building Email Notifier for: " + member.getName());
@@ -93,7 +96,7 @@ public class DefaultNotifyExecutor implements NotifyExecutor {
                             GmailOAuth2Sender sender = new GmailOAuth2Sender();
                             EmailNotifier emailNotifier = new EmailNotifier(mContext, mBus, mDb,
                               handler, sender, senderEmail, token);
-                            emailNotifier.notify(member, giftReceiver.getName(), group.getMessage());
+                            emailNotifier.notify(assignment, member, giftReceiver.getName(), group.getMessage());
                             break;
                         case REVEAL_ONLY:
                             break;

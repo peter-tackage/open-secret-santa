@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.telephony.SmsManager;
 import android.util.Log;
+import com.google.common.base.Strings;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.Intents;
+import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Member;
 
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ public class SmsNotifier implements Notifier {
     }
 
     @Override
-    public void notify(Member _giver, String _receiverName, String _groupMsg) {
+    public void notify(Assignment _assignment, Member _giver, String _receiverName, String _groupMsg) {
         Log.i(TAG, "notify() - SMS. giver:" + _giver + " receiverName:" + _receiverName + "groupMsg: " + _groupMsg);
         String phoneNumber = _giver.getContactDetails();
         String msg = buildMsg(mContext.getString(R.string.standard_assignment_msg), _groupMsg, _giver.getName(), _receiverName);
@@ -38,7 +40,7 @@ public class SmsNotifier implements Notifier {
 
         // Sent SMS receiver is register in manifest
         Intent sentIntent = new Intent(SENT_SMS_ACTION);
-        sentIntent.putExtra(Intents.MEMBER_ID_INTENT_EXTRA, _giver.getId());
+        sentIntent.putExtra(Intents.ASSIGNMENT_ID_INTENT_EXTRA, _assignment.getId());
         PendingIntent sentPI = PendingIntent.getBroadcast(mContext, 0, sentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         if(mIsMultipartSupported) {
@@ -87,8 +89,7 @@ public class SmsNotifier implements Notifier {
     private static String buildMsg(String _baseMsg, String _groupMsg, String _giverName, String _receiverName) {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format(_baseMsg, _giverName, _receiverName));
-        sb.append(_groupMsg.isEmpty() ? "" : " " + _groupMsg);
-
+        sb.append(Strings.isNullOrEmpty(_groupMsg) ? "" : " " + _groupMsg);
         Log.v(TAG, "buildMsg() - result: " + sb.toString());
 
         return sb.toString();

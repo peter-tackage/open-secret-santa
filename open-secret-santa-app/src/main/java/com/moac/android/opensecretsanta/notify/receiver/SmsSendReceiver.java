@@ -45,16 +45,16 @@ public class SmsSendReceiver extends BroadcastReceiver {
          * This callback does happen on the main thread, though.
          */
 
-        long memberId = intent.getLongExtra(Intents.MEMBER_ID_INTENT_EXTRA, PersistableObject.UNSET_ID);
+        long assignmentId = intent.getLongExtra(Intents.ASSIGNMENT_ID_INTENT_EXTRA, PersistableObject.UNSET_ID);
 
-        if(memberId <= PersistableObject.UNSET_ID) {
-            Log.e(TAG, "onReceive() - Member Id extra not set");
+        if(assignmentId <= PersistableObject.UNSET_ID) {
+            Log.e(TAG, "onReceive() - Assignment Id extra not set");
             return;
         }
 
-        Assignment assignment = mDb.queryAssignmentForMember(memberId);
+        Assignment assignment = mDb.queryById(assignmentId, Assignment.class);
         if(assignment == null) {
-            Log.e(TAG, "onReceive() - No Assignment to update for Member Id: " + memberId);
+            Log.e(TAG, "onReceive() - No Assignment found to update, id: " + assignmentId);
             return;
         }
 
