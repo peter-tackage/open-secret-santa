@@ -93,7 +93,11 @@ public class NotifyDialogFragment extends DialogFragment {
         mMsgField.setText(message);
 
         final TextView charCountView = (TextView) view.findViewById(R.id.tv_notify_msg_char_count);
-        charCountView.setText(String.valueOf(MAX_MESSAGE_LENGTH));
+        int remainingChars = MAX_MESSAGE_LENGTH;
+        if(message != null) {
+            remainingChars = message.length() >= MAX_MESSAGE_LENGTH ? 0 : MAX_MESSAGE_LENGTH - message.length();
+        }
+        charCountView.setText(String.valueOf(remainingChars));
 
         // Add the callback to the field
         mMsgField.addTextChangedListener(new TextWatcher() {
@@ -111,7 +115,7 @@ public class NotifyDialogFragment extends DialogFragment {
         });
 
         // Visibility GONE by default
-        mEmailFromContainer = (ViewGroup)view.findViewById(R.id.layout_notify_email_container);
+        mEmailFromContainer = (ViewGroup) view.findViewById(R.id.layout_notify_email_container);
         mSpinner = (Spinner) view.findViewById(R.id.spnr_email_selection);
         mInfoTextView = (TextView) view.findViewById(R.id.tv_notify_info);
 
