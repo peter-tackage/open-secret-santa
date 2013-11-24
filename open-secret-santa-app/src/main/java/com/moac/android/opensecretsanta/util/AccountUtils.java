@@ -87,7 +87,7 @@ public class AccountUtils {
                     observer.onNext(accounts);
                     observer.onCompleted();
                 } else {
-                    observer.onError(new Exception("You can't notify without a Gmail account!"));
+                    observer.onError(new Exception(context.getString(R.string.no_email_warning)));
                 }
                 return Subscriptions.empty();
             }

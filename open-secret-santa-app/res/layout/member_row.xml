@@ -4,8 +4,8 @@
   android:layout_height="wrap_content"
   android:orientation="horizontal"
   android:padding="4dp"
-  android:background="@drawable/member_listview_row"
-  android:alpha="0.95"
+  android:background="@drawable/member_listview_row_bg_color"
+  android:alpha="0.97"
   android:id="@+id/member_relativeLayout">
 
   <!-- android:background sets visual indicator of list item selection -->
@@ -39,12 +39,11 @@
   <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Mr User"
+    android:text="Miss User"
     android:id="@+id/member_name_textview"
-    android:layout_toLeftOf="@+id/restriction_count_textview"
     android:layout_toRightOf="@+id/member_imageview"
     android:textAppearance="@android:style/TextAppearance.Large"
-    android:textColor="@android:color/holo_blue_light"
+    android:textColor="@drawable/member_listview_row_name_color"
     android:layout_alignTop="@+id/member_imageview" />
 
   <TextView
@@ -59,7 +58,8 @@
     android:singleLine="true"
     android:textSize="12sp"
     android:textAppearance="@android:style/TextAppearance.Small"
-    android:layout_alignBottom="@+id/member_imageview"/>
+    android:layout_alignBottom="@+id/member_imageview"
+    android:textColor="@drawable/member_listview_row_contact_method_color"/>
 
   <TextView
     android:id="@+id/restriction_count_textview"
@@ -71,10 +71,13 @@
     android:textColor="@android:color/white"
     android:textAppearance="?android:attr/textAppearanceListItemSmall"
     android:textSize="10sp"
-    android:background="@android:color/holo_purple"
+    android:background="@drawable/restriction_bg"
     android:gravity="right"
-    android:layout_alignTop="@+id/member_imageview"
     android:layout_marginLeft="2dp"
-    android:layout_marginRight="2dp"/>
+    android:layout_marginRight="2dp"
+    android:paddingRight="4dp"
+    android:enabled="false"
+    android:paddingLeft="4dp"
+    android:layout_alignTop="@+id/member_name_textview"/>
 
 </RelativeLayout>

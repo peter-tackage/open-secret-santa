@@ -320,7 +320,15 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     private void confirmClearAssignments() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+
+        // Get a layout inflater
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.clear_assignments_dialog, null);
+
+        builder.setTitle(R.string.clear_assignments_dialog_title);
+        builder.setIcon(R.drawable.ic_menu_delete);
+
+        builder.setPositiveButton(R.string.clear_assignments_button, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 invalidateAssignments(mGroup);
                 populateMemberList();
@@ -331,9 +339,12 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
                 // User cancelled the dialog
             }
         });
-        builder.setTitle(getString(R.string.clear_assignment_dialog_title));
-        builder.setMessage(getString(R.string.clear_assignments_dialog_msg));
-        builder.setIcon(android.R.drawable.ic_dialog_alert);
+
+        // Set the values
+        TextView dialogMsgView = (TextView) view.findViewById(R.id.clear_assignments_text);
+        dialogMsgView.setText(R.string.clear_assignments_dialog_msg);
+        builder.setView(view);
+
         AlertDialog dialog = builder.create();
         dialog.show();
     }

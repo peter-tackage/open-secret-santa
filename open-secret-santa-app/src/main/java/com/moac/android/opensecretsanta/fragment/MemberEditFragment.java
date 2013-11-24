@@ -30,6 +30,8 @@ public class MemberEditFragment extends Fragment {
     private DatabaseManager mDb;
     private Member mMember;
     private EditText mMemberNameEditView;
+    private View mContactDetailsLineSeparator;
+    //private TextView mContactDetailsLabel;
     private EditText mContactDetailsEditText;
     private Spinner mContactMethodSpinner;
 
@@ -56,11 +58,15 @@ public class MemberEditFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_member_editor, container, false);
 
         TextView titleTextView = (TextView) view.findViewById(R.id.content_title_textview);
-        titleTextView.setText("Edit Member - " + mMember.getName());
+        titleTextView.setText("Editing " + mMember.getName());
 
         ImageView avatarImageView = (ImageView) view.findViewById(R.id.iv_avatar);
         mMemberNameEditView = (EditText) view.findViewById(R.id.et_edit_name);
         mContactMethodSpinner = (Spinner) view.findViewById(R.id.spnr_contact_method);
+
+        // contact details area
+        mContactDetailsLineSeparator = (View) view.findViewById(R.id.contact_details_separator_line);
+        //mContactDetailsLabel = (TextView) view.findViewById(R.id.contact_details_label);
         mContactDetailsEditText = (EditText) view.findViewById(R.id.et_edit_contact_detail);
 
         // Assign the view with its content.
@@ -87,6 +93,8 @@ public class MemberEditFragment extends Fragment {
                     case EMAIL:
                         setContactDetails(selected);
                         mContactDetailsEditText.setVisibility(View.VISIBLE);
+                        mContactDetailsLineSeparator.setVisibility(View.VISIBLE);
+                        //mContactDetailsLabel.setVisibility(View.VISIBLE);
                         mContactDetailsEditText.setInputType(InputType.TYPE_CLASS_TEXT
                           | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
                           | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
@@ -96,12 +104,16 @@ public class MemberEditFragment extends Fragment {
                     case SMS:
                         setContactDetails(selected);
                         mContactDetailsEditText.setVisibility(View.VISIBLE);
+                        mContactDetailsLineSeparator.setVisibility(View.VISIBLE);
+                        //mContactDetailsLabel.setVisibility(View.VISIBLE);
                         mContactDetailsEditText.setInputType(InputType.TYPE_CLASS_PHONE);
                         mContactDetailsEditText.setHint("Mobile Number");
                         mContactDetailsEditText.requestFocus();
                         break;
                     case REVEAL_ONLY:
                         mContactDetailsEditText.setVisibility(View.INVISIBLE);
+                        mContactDetailsLineSeparator.setVisibility(View.INVISIBLE);
+                        //mContactDetailsLabel.setVisibility(View.INVISIBLE);
                         mContactDetailsEditText.setText("");
                         break;
                     default:

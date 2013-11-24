@@ -36,8 +36,8 @@ public class AssignmentFragment extends DialogFragment {
         // Get a layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        builder.setTitle("Reveal Secret");
-        builder.setIcon(R.drawable.ic_menu_reveal);
+        builder.setTitle(R.string.reveal_dialog_title);
+        builder.setIcon(R.drawable.ic_menu_draw);
 
         // Pass null as the parent view because its going in the dialog layout
         View view = inflater.inflate(R.layout.fragment_dialog_assignment, null);

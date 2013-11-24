@@ -36,6 +36,7 @@ public class NotifyDialogFragment extends DialogFragment {
 
     private static final String TAG = NotifyDialogFragment.class.getSimpleName();
     private static final String MESSAGE_KEY = "message";
+    private static final int MAX_MESSAGE_LENGTH = 200;
 
     protected EditText mMsgField;
     protected DatabaseManager mDb;
@@ -86,13 +87,13 @@ public class NotifyDialogFragment extends DialogFragment {
 
         // Take the values and populate the dialog
         builder.setTitle(getString(R.string.notify_dialog_title));
-        builder.setIcon(R.drawable.ic_menu_notify);
+        builder.setIcon(R.drawable.ic_menu_notify_group);
 
         mMsgField = (EditText) view.findViewById(R.id.tv_notify_msg);
         mMsgField.setText(message);
 
         final TextView charCountView = (TextView) view.findViewById(R.id.tv_notify_msg_char_count);
-        charCountView.setText(String.valueOf(mMsgField.length()));
+        charCountView.setText(String.valueOf(MAX_MESSAGE_LENGTH));
 
         // Add the callback to the field
         mMsgField.addTextChangedListener(new TextWatcher() {
@@ -105,7 +106,7 @@ public class NotifyDialogFragment extends DialogFragment {
             @Override
             public void afterTextChanged(Editable s) {
                 // Update the reported character length
-                charCountView.setText(String.valueOf(s.length()));
+                charCountView.setText(String.valueOf(MAX_MESSAGE_LENGTH - s.length()));
             }
         });
 
@@ -142,7 +143,7 @@ public class NotifyDialogFragment extends DialogFragment {
 
         builder.setCancelable(true);
         builder.setNegativeButton(android.R.string.cancel, null);
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.notify_send_button_text, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 final NotifyAuthorization.Builder auth = new NotifyAuthorization.Builder();

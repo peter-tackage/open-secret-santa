@@ -11,8 +11,7 @@
     android:id="@+id/content_title_textview"
     android:gravity="center_horizontal"
     android:textColor="@color/white"
-    android:background="@android:color/holo_blue_light"
-    android:inputType="textNoSuggestions" />
+    android:background="@android:color/holo_blue_light" />
 
   <AutoCompleteTextView
     android:layout_width="match_parent"
@@ -26,22 +25,22 @@
     android:layout_marginRight="8dp"
     android:layout_marginBottom="8dp"
     android:hint="@string/search_hint_label"
-    android:textColorHint="@color/shade_of_grey1"
+    android:textColorHint="@color/shade_of_grey4"
     android:singleLine="true"
-    android:background="@drawable/search_bg_shape"/>
+    android:background="@drawable/search_bg_shape" />
 
   <ListView
     android:id="@id/android:list"
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:layout_weight="1"
-    android:divider="@android:color/transparent"
-    android:dividerHeight="1dp" />
+    android:layout_marginRight="8dp"
+    android:layout_marginLeft="8dp" />
 
   <LinearLayout
     android:id="@id/android:empty"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent"/>
+    android:background="@android:color/transparent" />
 
 </LinearLayout>
