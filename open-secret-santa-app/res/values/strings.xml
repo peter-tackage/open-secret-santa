@@ -118,4 +118,6 @@
   <string name="clear_assignments_dialog_msg">You\'ll lose all the secret santa assignments for this group</string>
   <string name="first_group_name">My Group</string>
 
+  <string name="menu_add_ime_label">Add</string>
+
 </resources>

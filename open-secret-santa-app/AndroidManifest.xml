@@ -35,6 +35,12 @@
     <activity android:name=".activity.RestrictionsActivity" />
     <activity android:name=".activity.EditActivity" />
     <activity android:name=".activity.AllPreferencesActivity" />
+
+    <receiver android:name=".notify.receiver.SmsSendReceiver" android:exported="false">
+      <intent-filter>
+        <action android:name="com.moac.android.opensecretsanta.SENT_SMS_ACTION" />
+      </intent-filter>
+    </receiver>
   </application>
 
 </manifest>
