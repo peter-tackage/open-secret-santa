@@ -19,6 +19,7 @@ package com.moac.android.opensecretsanta.database;
 import android.database.SQLException;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.UpdateBuilder;
 import com.moac.android.opensecretsanta.model.*;
 
 import java.util.List;
@@ -202,6 +203,22 @@ public class DatabaseManager {
             Group group = mDbHelper.getDaoEx(Group.class).queryBuilder()
               .queryForFirst();
             return group != null;
+        } catch(java.sql.SQLException e) {
+            throw new SQLException(e.getMessage());
+        }
+    }
+
+    public void updateAllAssignmentsInGroup(long groupId, Assignment.Status status) {
+        try {
+            QueryBuilder<Member, Long> groupMembersQuery =
+              mDbHelper.getDaoEx(Member.class).queryBuilder();
+            groupMembersQuery.selectColumns(Member.Columns._ID).where().eq(Member.Columns.GROUP_ID_COLUMN, groupId);
+
+            UpdateBuilder<Assignment, Long> updateBuilder =
+              mDbHelper.getDaoEx(Assignment.class).updateBuilder();
+            updateBuilder.updateColumnValue(Assignment.Columns.SEND_STATUS_COLUMN, status).
+              where().in(Assignment.Columns.GIVER_MEMBER_ID_COLUMN, groupMembersQuery);
+            updateBuilder.update();
         } catch(java.sql.SQLException e) {
             throw new SQLException(e.getMessage());
         }
