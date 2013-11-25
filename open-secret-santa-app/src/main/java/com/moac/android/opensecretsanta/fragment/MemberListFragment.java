@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+
 public class MemberListFragment extends ListFragment implements AbsListView.MultiChoiceModeListener {
 
     private static final String TAG = MemberListFragment.class.getSimpleName();
@@ -298,11 +300,11 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     private void setHeader() {
         switch(mMode) {
             case Building:
-                mCompleteTextView.setEnabled(true);
+                mCompleteTextView.setVisibility(View.VISIBLE);
                 break;
             case Notify:
+                mCompleteTextView.setVisibility(View.GONE);
                 mCompleteTextView.setText("");
-                mCompleteTextView.setEnabled(false);
                 break;
             default:
                 break;
@@ -477,11 +479,13 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     private void addMember(Member _member, Group _group) {
+        if(isNullOrEmpty(_member.getName()))
+            return;
+
         final String msg;
         _member.setGroup(_group);
 
         // Test to see if we already have this member in the group.
-        // TODO This should test for equality in a case insensitive way
         Member existing = mDb.queryMemberWithNameForGroup(_group.getId(), _member.getName());
 
         if(existing != null) {
