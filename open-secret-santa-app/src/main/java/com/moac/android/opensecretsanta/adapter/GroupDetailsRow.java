@@ -6,11 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.moac.android.opensecretsanta.R;
-import com.moac.android.opensecretsanta.model.Member;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 public class GroupDetailsRow implements DrawerListAdapter.Item {
 
@@ -19,13 +17,11 @@ public class GroupDetailsRow implements DrawerListAdapter.Item {
     protected long mId;
     protected String mName;
     protected long mCreationDate;
-    protected List<Member> mMembers;
 
-    public GroupDetailsRow(long _groupId, String _groupName, long _groupCreationDate, List<Member> _groupMembers) {
+    public GroupDetailsRow(long _groupId, String _groupName, long _groupCreationDate) {
         mId = _groupId;
         mName = _groupName;
         mCreationDate = _groupCreationDate;
-        mMembers = _groupMembers;
     }
 
     @Override
@@ -69,6 +65,4 @@ public class GroupDetailsRow implements DrawerListAdapter.Item {
         Date date = new Date(mCreationDate);
         return format.format(date);
     }
-
-    public List<Member> getMembers() { return mMembers; }
 }

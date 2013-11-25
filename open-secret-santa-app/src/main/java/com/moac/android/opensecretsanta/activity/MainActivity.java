@@ -110,8 +110,37 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
 
-        // Add the Members List for the most recent Group
-        displayInitialGroup();
+        //  Fetch the most recently used Group Id from preferences
+        long groupId = PreferenceManager.getDefaultSharedPreferences(this).
+          getLong(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY, PersistableObject.UNSET_ID);
+
+        // Ensure most recent Group is valid
+        if(groupId > PersistableObject.UNSET_ID) {
+            int adapterPosition = getItemAdapterPosition(mDrawerListAdapter, groupId);
+            if(adapterPosition >= 0) {
+                // Check the valid list item
+                mDrawerList.setItemChecked(toListViewPosition(mDrawerList, adapterPosition), true);
+                showGroup(groupId);
+            } else {
+                Log.i(TAG, "Invalid most recent groupId: " + groupId);
+                PreferenceManager.getDefaultSharedPreferences(this).
+                  edit().remove(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY);
+                // Show the drawer to allow Group creation/selection by user
+                mDrawerLayout.openDrawer(mDrawerList);
+            }
+        } else {
+            // Show the drawer to allow Group creation by user
+            mDrawerLayout.openDrawer(mDrawerList);
+        }
+    }
+
+    private static int getItemAdapterPosition(DrawerListAdapter adapter, long groupId) {
+        for(int i = 0; i < adapter.getCount(); i++) {
+            if(adapter.getItemId(i) == groupId) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override
@@ -135,8 +164,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
             return true;
         }
         switch(item.getItemId()) {
-            // TODO Rename group
-              case R.id.menu_item_settings:
+            case R.id.menu_item_settings:
                 Intent intent = new Intent(MainActivity.this, AllPreferencesActivity.class);
                 slideInIntent(intent);
                 return true;
@@ -194,9 +222,9 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         drawerListItems.add(new DrawerButtonItem(addIcon, "Add Group", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "Clicked Add Group Button");
                 long id = createNewGroup();
                 showGroup(id);
-                // TODO Need to highlight the group in draw!
                 mDrawerLayout.closeDrawer(mDrawerList);
             }
         }));
@@ -205,8 +233,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         List<Group> groups = OpenSecretSantaApplication.getInstance().getDatabase().queryAll(Group.class);
         Log.v(TAG, "initialiseUI() - group count: " + groups.size());
         for(Group g : groups) {
-            List<Member> groupMembers = OpenSecretSantaApplication.getInstance().getDatabase().queryAllMembersForGroup(g.getId());
-            drawerListItems.add(new GroupDetailsRow(g.getId(), g.getName(), g.getCreatedAt(), groupMembers));
+            drawerListItems.add(new GroupDetailsRow(g.getId(), g.getName(), g.getCreatedAt()));
         }
         drawerListAdapter.addAll(drawerListItems);
     }
@@ -219,19 +246,27 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         group.setName(Long.toString(now));
         group.setCreatedAt(now);
         long id = mDb.create(group);
+
         group.setName(getString(R.string.first_group_name) + " - " + id);
         mDb.update(group);
+
+        GroupDetailsRow item = new GroupDetailsRow(group.getId(), group.getName(), group.getCreatedAt());
+        mDrawerListAdapter.add(item);
+
+        int adapterPosition = mDrawerListAdapter.getPosition(item);
+        mDrawerList.setItemChecked(toListViewPosition(mDrawerList, adapterPosition), true);
         return id;
     }
 
-    private void displayInitialGroup() {
-        // Fetch the most recently used Group Id from preferences
-        long groupId = PreferenceManager.getDefaultSharedPreferences(this).
-          getLong(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY, PersistableObject.UNSET_ID);
-        if(groupId <= PersistableObject.UNSET_ID)
-            return;
-
-        showGroup(groupId);
+    /*
+     *
+     * The DrawerList includes the header as a position, so when
+     * we request to check select a position using the indices from the
+     * adapter we need to offset it by +1 to correctly translate into the
+     * ListView index space.
+     */
+    private static int toListViewPosition(ListView list, int adapterPosition) {
+        return adapterPosition + list.getHeaderViewsCount();
     }
 
     @Override

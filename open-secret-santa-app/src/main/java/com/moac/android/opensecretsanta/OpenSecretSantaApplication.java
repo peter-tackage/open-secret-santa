@@ -26,13 +26,12 @@ public class OpenSecretSantaApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mDatabaseManager = initDatabase();
-        Utils.doOnce(getApplicationContext(), "initTestData", new Runnable() {
+        Utils.doOnce(getApplicationContext(), "createDefaultGroup", new Runnable() {
             @Override
             public void run() {
-                // (On upgrade) Don't add another group if there
-                // is at least one already
+                // Don't add another group if there is at least one already
                 if(!mDatabaseManager.queryHasGroup()) {
-                    createFirstDraw();
+                    createDefaultInitialGroup();
                 }
             }
         });
@@ -51,13 +50,13 @@ public class OpenSecretSantaApplication extends Application {
         return new DatabaseManager(databaseHelper);
     }
 
-    private void createFirstDraw() {
+    private void createDefaultInitialGroup() {
         Group group1 = new Group();
         group1.setName(getString(R.string.first_group_name));
         group1.setCreatedAt(System.currentTimeMillis());
         long id = mDatabaseManager.create(group1);
         // Assign as the current Group
         PreferenceManager.getDefaultSharedPreferences(this).edit().
-          putLong(MOST_RECENT_GROUP_KEY, id).commit();
+          putLong(MOST_RECENT_GROUP_KEY, id).apply();
     }
 }

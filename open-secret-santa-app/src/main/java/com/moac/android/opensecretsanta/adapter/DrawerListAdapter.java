@@ -1,16 +1,13 @@
 package com.moac.android.opensecretsanta.adapter;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-import java.util.List;
-
 public class DrawerListAdapter extends ArrayAdapter<DrawerListAdapter.Item> {
 
-    public enum ItemType {SECTION_HEADER, BUTTON, GROUP}
+    public enum ItemType {BUTTON, GROUP}
 
     public static interface Item {
         int getItemType();
@@ -35,6 +32,11 @@ public class DrawerListAdapter extends ArrayAdapter<DrawerListAdapter.Item> {
     @Override
     public long getItemId(int position) {
         return getItem(position).getItemId();
+    }
+
+    @Override
+    public boolean hasStableIds() {
+        return true;
     }
 
     @Override
