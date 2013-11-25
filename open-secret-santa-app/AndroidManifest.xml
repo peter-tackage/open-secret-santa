@@ -26,15 +26,16 @@
     <activity
       android:name=".activity.MainActivity"
       android:launchMode="singleTop"
-      android:windowSoftInputMode="adjustPan">
+      android:windowSoftInputMode="adjustPan"
+      android:screenOrientation="portrait">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
-    <activity android:name=".activity.RestrictionsActivity" />
-    <activity android:name=".activity.EditActivity" />
-    <activity android:name=".activity.AllPreferencesActivity" />
+    <activity android:name=".activity.RestrictionsActivity" android:screenOrientation="portrait"/>
+    <activity android:name=".activity.EditActivity" android:screenOrientation="portrait"/>
+    <activity android:name=".activity.AllPreferencesActivity" android:screenOrientation="portrait"/>
 
     <receiver android:name=".notify.receiver.SmsSendReceiver" android:exported="false">
       <intent-filter>
