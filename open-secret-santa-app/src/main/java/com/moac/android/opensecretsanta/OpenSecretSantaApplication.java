@@ -5,6 +5,7 @@ import android.preference.PreferenceManager;
 import com.moac.android.opensecretsanta.database.DatabaseHelper;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Group;
+import com.moac.android.opensecretsanta.util.GroupUtils;
 import com.moac.android.opensecretsanta.util.Utils;
 
 public class OpenSecretSantaApplication extends Application {
@@ -51,12 +52,10 @@ public class OpenSecretSantaApplication extends Application {
     }
 
     private void createDefaultInitialGroup() {
-        Group group1 = new Group();
-        group1.setName(getString(R.string.first_group_name));
-        group1.setCreatedAt(System.currentTimeMillis());
-        long id = mDatabaseManager.create(group1);
+        String baseName = getString(R.string.base_group_name);
+        Group group1 = GroupUtils.createIncrementingGroup(mDatabaseManager, baseName);
         // Assign as the current Group
         PreferenceManager.getDefaultSharedPreferences(this).edit().
-          putLong(MOST_RECENT_GROUP_KEY, id).apply();
+          putLong(MOST_RECENT_GROUP_KEY, group1.getId()).apply();
     }
 }

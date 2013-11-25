@@ -223,4 +223,14 @@ public class DatabaseManager {
             throw new SQLException(e.getMessage());
         }
     }
+
+    public  <T extends PersistableObject> long queryMaxId(Class<T> objClass) {
+        try {
+            PersistableObject obj = mDbHelper.getDaoEx(objClass).queryBuilder()
+              .orderBy(T.Columns._ID, false).queryForFirst();
+            return obj == null ? 0 : obj.getId();
+        } catch(java.sql.SQLException e) {
+            throw new SQLException(e.getMessage());
+        }
+    }
 }

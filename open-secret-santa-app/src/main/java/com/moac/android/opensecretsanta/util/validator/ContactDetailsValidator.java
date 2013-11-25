@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.util;
+package com.moac.android.opensecretsanta.util.validator;
 
 import com.moac.android.opensecretsanta.model.ContactMethod;
 

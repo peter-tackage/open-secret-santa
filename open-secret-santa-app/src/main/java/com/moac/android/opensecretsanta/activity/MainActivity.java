@@ -30,6 +30,7 @@ import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 import com.moac.android.opensecretsanta.notify.NotifyAuthorization;
+import com.moac.android.opensecretsanta.util.GroupUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -240,22 +241,18 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
 
     private long createNewGroup() {
         Log.i(TAG, "Creating new Group");
-        Group group = new Group();
-        // A sort of UUID
-        long now = System.currentTimeMillis();
-        group.setName(Long.toString(now));
-        group.setCreatedAt(now);
-        long id = mDb.create(group);
+        // Create a new Group with incrementing name
+        Group group = GroupUtils.createIncrementingGroup(mDb, getString(R.string.base_group_name));
 
-        group.setName(getString(R.string.first_group_name) + " - " + id);
-        mDb.update(group);
-
+        // Create corresponding adapter view model entry
         GroupDetailsRow item = new GroupDetailsRow(group.getId(), group.getName(), group.getCreatedAt());
         mDrawerListAdapter.add(item);
 
+        // Select the item in the list view
         int adapterPosition = mDrawerListAdapter.getPosition(item);
         mDrawerList.setItemChecked(toListViewPosition(mDrawerList, adapterPosition), true);
-        return id;
+
+        return group.getId();
     }
 
     /*

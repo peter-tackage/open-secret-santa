@@ -18,9 +18,9 @@ import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.ContactMethod;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
-import com.moac.android.opensecretsanta.util.ContactDetailsValidator;
-import com.moac.android.opensecretsanta.util.MemberNameValidator;
-import com.moac.android.opensecretsanta.util.Validator;
+import com.moac.android.opensecretsanta.util.validator.ContactDetailsValidator;
+import com.moac.android.opensecretsanta.util.validator.MemberNameValidator;
+import com.moac.android.opensecretsanta.util.validator.Validator;
 import com.squareup.picasso.Picasso;
 
 public class MemberEditFragment extends Fragment {

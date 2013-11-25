@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.util;
+package com.moac.android.opensecretsanta.util.validator;
 
 public class SmsValidator implements Validator{
 

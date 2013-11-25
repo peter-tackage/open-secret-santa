@@ -124,7 +124,7 @@
   <string name="drawer_groups_header">My Groups</string>
   <string name="drawer_groups_new">New Group</string>
   <string name="drawer_options_header">Options</string>
-  <string name="first_group_name">My Group</string>
+  <string name="base_group_name">My Group</string>
 
   <string name="menu_add_ime_label">Add</string>
 
