@@ -38,7 +38,7 @@ public class EmailNotifier implements Notifier {
 
     @Override
     public void notify(final Assignment _assignment, Member _giver, String _receiverName, String _groupMsg) {
-        String body = buildMsg(mContext.getString(R.string.standard_assignment_msg), _giver.getName(),
+        String body = buildMsg(mContext.getString(R.string.email_assignment_msg), _giver.getName(),
           _receiverName, _groupMsg, mContext.getString(R.string.email_footer_msg));
 
         try {
