@@ -130,13 +130,6 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         // Initially don't perform check selection.
         getListView().setChoiceMode(ListView.CHOICE_MODE_NONE);
         getListView().setMultiChoiceModeListener(this);
-        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Remove this for now.
-                // TODO View or edit?
-            }
-        });
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -152,6 +145,8 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     @Override
     public void onResume() {
+        // FIXME This whole methods need revising, there's numerous duplicate
+        // calls and even duplicate notes about duplicate calls.
         super.onResume();
         Log.i(TAG, "onResume() - registering event bus");
         // TODO A lot of this is unnecessarily rebuilding things.
@@ -161,6 +156,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         // Populate member list
         mAdapter = new MemberListAdapter(getActivity(), R.layout.member_row, buildMemberRowDetails(mGroup.getId()));
         setListAdapter(mAdapter);
+        setMenuItems();
     }
 
     @Override
@@ -272,7 +268,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
         Log.i(TAG, "onItemCheckedStateChanged()");
         int selectedCount = getListView().getCheckedItemCount();
-        boolean isCheckedSelected = hasCheckedSendable();
+        boolean isCheckedSelected = hasSendableItemChecked(getListView());
 
         mode.setTitle(selectedCount + " selected");
         mode.getMenu().findItem(R.id.menu_item_edit).setVisible(selectedCount == 1);
@@ -351,9 +347,11 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     private void setMenuItems() {
         // Non-CAB buttons only
-        mMenu.findItem(R.id.menu_item_draw).setVisible(mMode == Mode.Building);
-        mMenu.findItem(R.id.menu_item_notify_group).setVisible(mMode == Mode.Notify);
-        mMenu.findItem(R.id.menu_item_clear_assignments).setVisible(mMode == Mode.Notify);
+        if(mMenu != null) {
+            mMenu.findItem(R.id.menu_item_draw).setVisible(mMode == Mode.Building);
+            mMenu.findItem(R.id.menu_item_notify_group).setVisible(mMode == Mode.Notify && hasSendableItem(mAdapter));
+            mMenu.findItem(R.id.menu_item_clear_assignments).setVisible(mMode == Mode.Notify);
+        }
     }
 
     private void invalidateAssignments(Group group) {
@@ -541,13 +539,23 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     // Gah...
-    private boolean hasCheckedSendable() {
-        SparseBooleanArray checkedPositions = getListView().getCheckedItemPositions();
+    private boolean hasSendableItemChecked(ListView list) {
+        SparseBooleanArray checkedPositions = list.getCheckedItemPositions();
         for(int i = 0; i < checkedPositions.size(); i++) {
             int position = checkedPositions.keyAt(i);
             boolean isChecked = checkedPositions.valueAt(i);
-            if(isChecked && ((MemberRowDetails) (getListAdapter().getItem(position))).getMember().getContactMethod().isSendable()) {
-                Log.v(TAG, "hasCheckedSendable() - position checked: " + position);
+            if(isChecked && ((MemberRowDetails) (list.getAdapter().getItem(position))).getMember().getContactMethod().isSendable()) {
+                Log.v(TAG, "hasSendableItemChecked() - position checked: " + position);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean hasSendableItem(MemberListAdapter adapter) {
+        for(int i = 0; i < adapter.getCount(); i++) {
+            MemberRowDetails rowDetails = adapter.getItem(i);
+            if(rowDetails.getMember().getContactMethod().isSendable()) {
                 return true;
             }
         }
