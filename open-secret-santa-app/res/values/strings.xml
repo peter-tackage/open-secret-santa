@@ -37,12 +37,6 @@
   <string name="defaultDrawEngine">com.moac.drawengine.BasicDrawEngine</string>
 
   <!-- Preferences - Email -->
-  <string name="email_preferences">Email Preferences</string>
-  <string name="gmail_account_list_preference">Gmail Account</string>
-  <string name="gmail_summary_list_preference">The Gmail account used to send
-    draw notification emails
-  </string>
-  <string name="gmail_dialog_title_list_preference">Gmail Account</string>
   <string name="gmail_account_preference">gmail_account_preference</string>
 
   <!-- Preferences SMS -->
@@ -92,8 +86,8 @@
   <!-- Assignment Messages -->
   <string name="sms_assignment_msg" formatted="false">Hi %s, you\'re giving a gift to %s. Sent via the Open Secret Santa app.</string>
   <string name="email_assignment_msg" formatted="false">Hi %s, you\'re giving a gift to %s.</string>
-  <string name="email_footer_msg"><![CDATA[<hr><p>Organizing your own Secret Santa? Get our free Android app on <a href="https://play.google.com/store/apps/details?id=com.moac.android.opensecretsanta">Google Play</a>.</p>]]></string>
-  <string name="email_subject_msg">Your Secret Santa assignment from Open Secret Santa</string>
+  <string name="email_footer_msg"><![CDATA[<br><br><hr><p>Organizing your own Secret Santa? Get the free Open Secret Santa Android app on <a href="https://play.google.com/store/apps/details?id=com.moac.android.opensecretsanta">Google Play</a>!</p>]]></string>
+  <string name="email_subject_msg">Your Secret Santa assignment, courtesy of Open Secret Santa</string>
   <string name="reveal_dialog_title">Reveal Secret Santa</string>
 
     <!-- Progress Dialog Messages -->

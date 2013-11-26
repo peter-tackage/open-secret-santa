@@ -13,6 +13,7 @@ import android.widget.*;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.Intents;
+import com.moac.android.opensecretsanta.adapter.ContactMethodAdapter;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.ContactMethod;
@@ -79,8 +80,7 @@ public class MemberEditFragment extends Fragment {
         }
         mMemberNameEditView.setText(mMember.getName());
 
-        ArrayAdapter adapter = new ArrayAdapter<ContactMethod>(getActivity(), android.R.layout.simple_spinner_item, ContactMethod.values());
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ContactMethodAdapter adapter = new ContactMethodAdapter(getActivity(), ContactMethod.values());
         mContactMethodSpinner.setAdapter(adapter);
         mContactMethodSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
