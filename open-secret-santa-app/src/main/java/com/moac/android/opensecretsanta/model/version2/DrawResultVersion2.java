@@ -60,19 +60,4 @@ public class DrawResultVersion2 extends PersistableObject {
 
     public long getGroupId() { return mGroup.getId(); }
 
-    @Override
-    public boolean equals(Object obj) {
-        if(obj == this) {
-            return true;
-        }
-        if(obj == null || obj.getClass() != this.getClass()) {
-            return false;
-        }
-
-        DrawResultVersion2 drawResult = (DrawResultVersion2) obj;
-        return (mDrawDate == (drawResult.getDrawDate()) &&
-          mSendDate == (drawResult.getSendDate()) &&
-          mMessage.equals(drawResult.getMessage()) &&
-          (mGroup.getId() == (drawResult.getGroupId())));
-    }
 }

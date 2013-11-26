@@ -42,26 +42,6 @@ public class Assignment extends PersistableObject {
     public Status getSendStatus() { return mSendStatus; }
     public void setSendStatus(Status _sendStatus) { mSendStatus = _sendStatus; }
 
-    @Override
-    public String toString() {
-        return "Giver: " + getGiverMemberId() + " Receiver: " + getReceiverMemberId() + " Status: " + mSendStatus;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (obj == null || obj.getClass() != this.getClass()) {
-            return false;
-        }
-
-        Assignment assignment = (Assignment) obj;
-        return (mGiver.getId() == assignment.getGiverMemberId() &&
-                mReceiver.getId() == assignment.getReceiverMemberId() &&
-                mSendStatus == assignment.getSendStatus());
-    }
-
     public static class Builder {
         Assignment mAssignemnt;
         public Builder() {

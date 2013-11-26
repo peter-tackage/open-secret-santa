@@ -47,17 +47,4 @@ public class GroupVersion2 extends PersistableObject {
 
     public boolean isReady() { return mReady; }
 
-    @Override
-    public boolean equals(Object obj) {
-        if(obj == this) {
-            return true;
-        }
-        if(obj == null || obj.getClass() != this.getClass()) {
-            return false;
-        }
-
-        GroupVersion2 group = (GroupVersion2) obj;
-        return ((mName.equals(group.getName())) &&
-          mReady == group.isReady());
-    }
 }
