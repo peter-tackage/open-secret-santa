@@ -1,5 +1,6 @@
 package com.moac.android.opensecretsanta.database;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
@@ -35,12 +36,39 @@ public class DatabaseUpgrader {
         this.mDbHelper = mDbHelper;
     }
 
-    public void upgradeDatabaseToVersion3(ConnectionSource cs) {
+    public void upgradeDatabaseSchemaToVersion3(ConnectionSource cs) {
+        //sets up required tables for version 3
         addNewAssignmentTable(cs);
+
         renameMemberVersion2Table(cs);
-        migrateMemberAndRestrictionsTable(cs);
+        createNewMemberVersion3Table(cs);
+
+        renameRestrictionsVersion2Table(cs);
+        createNewRestrictionsVersion3Table(cs);
+
         alterGroupTable();
-        migrateDataToVersion3AssignmentsTable();
+
+        // we can drop old tables if we want... ?
+    }
+
+    public void migrateDataToVersion3(SQLiteDatabase db, ConnectionSource cs) {
+        boolean success = true;
+        // TODO figure out why we can't have two independent transactions.
+        // rolling back this second one in the migration data part seemed to roll back
+        // the schema change too, so disabled it for now. too bad
+        //db.beginTransaction();
+        success = migrateMemberAndRestrictionsTable(cs);
+
+//        if (success) {
+//            db.setTransactionSuccessful();
+//        }
+//
+//        db.endTransaction();
+
+        if (success) {
+            // only makes sense to continue migration of members and restrictions were migrated succesfully
+            migrateDataToVersion3AssignmentsTable(db);
+        }
     }
 
     /***************************************************************
@@ -72,13 +100,39 @@ public class DatabaseUpgrader {
         }
     }
 
-    // we copy all data across to new table
-    protected void migrateMemberAndRestrictionsTable(ConnectionSource cs) {
-        Log.d(TAG, "migrateMemberAndRestrictionsTable");
+    protected void createNewMemberVersion3Table(ConnectionSource cs) {
         try {
             // create new Member table
             TableUtils.createTable(cs, Member.class);
-            Log.d(TAG, "query all members from old table");
+        } catch (SQLException e) {
+            throw new android.database.SQLException(e.getMessage());
+        }
+    }
+
+    private void renameRestrictionsVersion2Table(ConnectionSource cs) {
+        try {
+            // we need to keep two restrictions table to allow for migration without
+            // the tables stepping on each others' feet
+            mDbHelper.getDaoEx(RestrictionVersion2.class).executeRaw("ALTER TABLE '" + RestrictionVersion2.VERSION2_TABLE_NAME + "' RENAME TO " + RestrictionVersion2.TABLE_NAME);
+
+        } catch (SQLException e) {
+            throw new android.database.SQLException(e.getMessage());
+        }
+    }
+
+    protected void createNewRestrictionsVersion3Table(ConnectionSource cs) {
+        try {
+            // create new Restriction table
+            TableUtils.createTable(cs, Restriction.class);
+        } catch (SQLException e) {
+            throw new android.database.SQLException(e.getMessage());
+        }
+    }
+
+    // we copy all data across to new table
+    protected boolean migrateMemberAndRestrictionsTable(ConnectionSource cs) {
+        Log.d(TAG, "migrateMemberAndRestrictionsTable");
+        try {
 
             // we store the all id and the new member. we need the old id so that we can look up which restriction is needed
             Map storedMapping = new HashMap();
@@ -101,14 +155,15 @@ public class DatabaseUpgrader {
             while (it.hasNext()){
                 Map.Entry pairs = (Map.Entry) it.next();
                 long oldMemberId = (Long) pairs.getKey();
-                List<Restriction> restrictions = mDbHelper.getDaoEx(Restriction.class).queryBuilder()
-                        .where().eq(Restriction.Columns.MEMBER_ID_COLUMN, oldMemberId)
+                Log.d(TAG, "---------------- oldMemberId: " + oldMemberId);
+                List<RestrictionVersion2> oldRestrictions = mDbHelper.getDaoEx(RestrictionVersion2.class).queryBuilder()
+                        .where().eq(RestrictionVersion2.Columns.MEMBER_ID_COLUMN, oldMemberId)
                         .query();
 
-                for (Restriction restriction : restrictions) {
-                    Log.d(TAG, "restriction:" + restriction.getMemberId() + " other:" + restriction.getOtherMemberId());
+                for (RestrictionVersion2 oldRestriction : oldRestrictions) {
+                    Log.d(TAG, "old restriction: " + oldRestriction.getId() + " member: "  + oldRestriction.getMemberId() + " other:" + oldRestriction.getOtherMemberId());
                     // with the old restriction member id, we can find out the name
-                    MemberVersion2 memberRequiredForName =  mDbHelper.queryById(restriction.getOtherMemberId(), MemberVersion2.class);
+                    MemberVersion2 memberRequiredForName =  mDbHelper.queryById(oldRestriction.getOtherMemberId(), MemberVersion2.class);
 
                     long groupId = ((Member)pairs.getValue()).getGroupId();
                     Log.d(TAG, "memberRequiredForName name: " + memberRequiredForName.getName() + " group:" + groupId);
@@ -132,23 +187,18 @@ public class DatabaseUpgrader {
                                                                  .build();
                     Log.d(TAG, " New migrated restriction : "  + newMigratedRestriction.getMemberId() + " other: " + newMigratedRestriction.getOtherMemberId());
                     mDbHelper.create(newMigratedRestriction, Restriction.class);
-
-                    // and remove old one!
-                    List<Restriction> oldRestriction = mDbHelper.getDaoEx(Restriction.class).queryBuilder()
-                            .where().eq(Restriction.Columns.MEMBER_ID_COLUMN, restriction.getMemberId()).and()
-                            .eq(Restriction.Columns.OTHER_MEMBER_ID_COLUMN, restriction.getOtherMemberId())
-                            .query();
-
-                    mDbHelper.deleteById(oldRestriction.get(0).getId(), Restriction.class);
                 }
                 it.remove();
+                Log.d(TAG, "---------------------------");
             }
-          // and drop the old table ?
-          //mDbHelper.getDaoEx(Member.class).executeRaw("DROP TABLE " + MEMBER_TRANSITION_TEMP_TABLE);
 
-        } catch (SQLException e) {
-            throw new android.database.SQLException(e.getMessage());
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in migrateMemberAndRestrictionsTable. Migration will abort and rollback. Exception: " + e.getMessage());
+            return false;
         }
+
+        Log.d(TAG, "migrateMemberAndRestrictionsTable returning true");
+        return true;
     }
 
     protected void alterGroupTable() {
@@ -210,61 +260,85 @@ public class DatabaseUpgrader {
     //    - migrate the message from Draw Result to the Group
     //    - migrate the draw date from Draw Result to the Group
     //    - set Group created date = draw date
-    protected void migrateDataToVersion3AssignmentsTable() {
+    protected void migrateDataToVersion3AssignmentsTable(SQLiteDatabase db) {
         Log.d(TAG, "migrateDataToVersion3AssignmentsTable");
         List<GroupVersion2> groupsVersion2 = mDbHelper.queryAll(GroupVersion2.class);
+
         for (GroupVersion2 groupVersion2 : groupsVersion2) {
-            List<DrawResultVersion2> drawResultsVersion2 = getAllDrawResultsVersion2ForGroup(groupVersion2.getId());
 
-            // if the group was not ready, we want to migrate it as is
-            if (!groupVersion2.isReady()) {
-                insertMigratedGroupInfo(groupVersion2);
-            }
+            boolean transactionSuccess = true;
+            // migrate each group in a transaction so that we can rollback on a per group basis in case of errors
+            // and not have an all or nothing migration
+            //db.beginTransaction();
+            try {
+                List<DrawResultVersion2> drawResultsVersion2 = getAllDrawResultsVersion2ForGroup(groupVersion2.getId());
 
-            // we want to also migrate the draw results
-            int drawResult = 1; // keep track of how many draw results
-            for (DrawResultVersion2 drawResultVersion2 : drawResultsVersion2) {
-                long groupId;
-                Log.d(TAG, "group: " + groupVersion2.getName() + " draw: " + drawResult);
-                // with the new schema, we need to convert all draw results into groups
-                // so if there is only one group and one draw result, we just update the group info.
-                // otherwise if the group has more than one draw result or was in the not ready state
-                // (which means that it has currently been migrated in its built, not ready state)
-                // we create a second group for that and so on
-                if (drawResult == 1 && groupVersion2.isReady()) {
-                    groupId = groupVersion2.getId();
-                    //update the group
-                    updateMigratedGroupInfo(drawResultVersion2, groupVersion2.getName(), drawResult);
-                }   else {
-                    // we are up to the second or more draw result or the group was not ready
-                    // we need to add a new group to capture that draw info
-                    groupId = addMigratedGroupInfo(drawResultVersion2, groupVersion2.getName(), drawResult);
+                // if the group was not ready, we want to migrate it as is
+                if (!groupVersion2.isReady()) {
+                    insertMigratedGroupInfo(groupVersion2);
                 }
 
-                drawResult++;
-                // for each Draw Result Entry, build the entry for the new Assignment
-                //    Assignment columns are
-                //    - giver member id and receiver member id
-                //     (you need to get the member id from the given member name in the Member table)
-                //    - send status
-                //     (work it out from the Draw Result Entry sent and/or viewed date, if not set to assigned)
-                //
-
-                try {
-                    // get all the draw result entries corresponding to this draw result entry
-                    List<DrawResultEntryVersion2> drawResultEntriesVersion2 = mDbHelper.getDaoEx(DrawResultEntryVersion2.class).queryBuilder()
-                            .where().eq(DrawResultEntryVersion2.Columns.DRAW_RESULT_ID_COLUMN, drawResultVersion2.getId())
-                            .query();
-
-                    for (DrawResultEntryVersion2 drawResultEntryVersion2 : drawResultEntriesVersion2) {
-                        insertMigratedAssignmentEntryInfo(drawResultEntryVersion2, groupId);
+                // we want to also migrate the draw results
+                int drawResult = 1; // keep track of how many draw results
+                for (DrawResultVersion2 drawResultVersion2 : drawResultsVersion2) {
+                    long groupId;
+                    Log.d(TAG, "group: " + groupVersion2.getName() + " draw: " + drawResult);
+                    // with the new schema, we need to convert all draw results into groups
+                    // so if there is only one group and one draw result, we just update the group info.
+                    // otherwise if the group has more than one draw result or was in the not ready state
+                    // (which means that it has currently been migrated in its built, not ready state)
+                    // we create a second group for that and so on
+                    if (drawResult == 1 && groupVersion2.isReady()) {
+                        groupId = groupVersion2.getId();
+                        //update the group
+                        updateMigratedGroupInfo(drawResultVersion2, groupVersion2.getName(), drawResult);
+                    }   else {
+                        // we are up to the second or more draw result or the group was not ready
+                        // we need to add a new group to capture that draw info
+                        groupId = addMigratedGroupInfo(drawResultVersion2, groupVersion2.getName(), drawResult);
                     }
-                } catch (SQLException e) {
-                    throw new android.database.SQLException(e.getMessage());
+
+                    drawResult++;
+                    // for each Draw Result Entry, build the entry for the new Assignment
+                    //    Assignment columns are
+                    //    - giver member id and receiver member id
+                    //     (you need to get the member id from the given member name in the Member table)
+                    //    - send status
+                    //     (work it out from the Draw Result Entry sent and/or viewed date, if not set to assigned)
+                    //
+
+                    try {
+
+                        // get all the draw result entries corresponding to this draw result entry
+                        List<DrawResultEntryVersion2> drawResultEntriesVersion2 = mDbHelper.getDaoEx(DrawResultEntryVersion2.class).queryBuilder()
+                                .where().eq(DrawResultEntryVersion2.Columns.DRAW_RESULT_ID_COLUMN, drawResultVersion2.getId())
+                                .query();
+
+                        for (DrawResultEntryVersion2 drawResultEntryVersion2 : drawResultEntriesVersion2) {
+                            insertMigratedAssignmentEntryInfo(drawResultEntryVersion2, groupId);
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Exception in migrateDataToVersion3AssignmentsTable going through the DrawResultEntries. Rolling back migration for groupId:" + groupVersion2.getId() + ". Exception: " + e.getMessage());
+                        // set flag to false so that the transaction rollsback
+                        transactionSuccess = false;
+                        break; // out of the draw results loop, no point continuing
+                    }
                 }
+            } catch (Exception e) {
+                Log.e(TAG, "Exception in migrateDataToVersion3AssignmentsTable. Rolling back migration for groupId:" + groupVersion2.getId() + ". Exception: " + e.getMessage());
+                // set flag to false so that the transaction rollsback
+                transactionSuccess = false;
             }
 
+//            if (transactionSuccess) {
+//                //let's commit it
+//                db.setTransactionSuccessful();
+//            }
+//
+//            db.endTransaction();
         }
+
+        Log.d(TAG, "migrateDataToVersion3AssignmentsTable reached end of method");
     }
 
 
@@ -275,7 +349,7 @@ public class DatabaseUpgrader {
         // we set created date = draw date
         Group migratedGroup = groupBuilder
                 .withGroupId(drawResultVersion2.getGroupId())
-                .withName(constructNewMigratedGroupName(version2GroupName + " " + drawResultNumber))
+                .withName(constructNewMigratedGroupName(version2GroupName + " #" + drawResultNumber))
                 .withMessage(drawResultVersion2.getMessage())
                 .withDrawDate(drawResultVersion2.getDrawDate())
                 .withCreatedDate(drawResultVersion2.getDrawDate())
@@ -292,7 +366,7 @@ public class DatabaseUpgrader {
         // we set created date = draw date
         // and add the draw number to the group name
         Group migratedGroup = groupBuilder
-                .withName(constructNewMigratedGroupName(version2GroupName + " " + drawResultNumber))
+                .withName(constructNewMigratedGroupName(version2GroupName + " #" + drawResultNumber))
                 .withMessage(drawResultVersion2.getMessage())
                 .withDrawDate(drawResultVersion2.getDrawDate())
                 .withCreatedDate(drawResultVersion2.getDrawDate())
