@@ -221,7 +221,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
             mDrawSubscription = doDraw();
         } catch(InvalidDrawEngineException e) {
             Log.e(TAG, "Failed to load Draw Engine: " + e.getMessage());
-            Toast.makeText(getActivity(), "Failed to load Draw Engine", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.draw_engine_init_error_msg), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -402,13 +402,13 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
               public void onError(Throwable e) {
                   Log.i(TAG, "onError");
                   mDrawProgressDialog.dismiss();
-                  Toast.makeText(getActivity(), "Draw Failed :(", Toast.LENGTH_SHORT).show();
+                  Toast.makeText(getActivity(), getString(R.string.draw_failed_msg), Toast.LENGTH_SHORT).show();
               }
 
               @Override
               public void onNext(DrawResultEvent args) {
                   Log.i(TAG, "onNext");
-                  Toast.makeText(getActivity(), "Draw Success!", Toast.LENGTH_SHORT).show();
+                  Toast.makeText(getActivity(), getString(R.string.draw_success_msg), Toast.LENGTH_SHORT).show();
               }
           });
     }

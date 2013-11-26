@@ -4,34 +4,16 @@
   <!-- Add member search -->
   <string name="search_label">Search</string>
   <string name="search_hint_label">Add people to the group</string>
-  <string name="search_setting_description">Your contacts</string>
 
-  <!-- New Member -->
-  <string name="newManualEntryLabel">Add name only</string>
-  <string name="newContactLabel">Add a phone contact</string>
-  <string name="noMembersHelp">"Add in the group members and restrictions if
-    required"
-  </string>
-
-  <!-- Preferred Contact Details Selection Popup -->
-  <string name="contactDetailsPopupTitle">Select contact mode for</string>
-
-  <!-- Restrictions Popup -->
-  <string name="restrictionPopupTitle">Restrictions for</string>
-
-   <!-- Member row restrictions label -->
+  <!-- Member row restrictions label -->
   <string name="restrictions_label">restriction</string>
 
   <!-- Notify Dialog -->
-  <string name="draw_failed_message">"Couldn't complete the draw"</string>
-  <string name="draw_success_message">Draw was successful!</string>
   <string name="no_engine_error_message">Error: Could not find Draw Engine</string>
   <string name="notify_message_text_hint">Enter any message you\'d like to send along with the Secret Santa assignments (optional)</string>
-  <string name="message_count_label">chars left: </string>
   <string name="sms_and_data_charges_message">Normal SMS and data charges apply</string>
   <string name="notify_send_button_text">Send</string>
   <string name="no_email_warning">WARNING: Emails won\'t be sent. We can\'t find your Gmail account</string>
-
 
   <!-- Edit screen -->
   <string name="hint_member_name">Name</string>
@@ -77,10 +59,6 @@
   <string name="fb_contact">www.facebook.com/manyobjectandcode</string>
   <string name="app_version_info">Version: 1.4.1</string>
   <string name="app_date_info">Date: 6th June 2013</string>
-  <string name="title_activity_initialise">InitialiseActivity</string>
-  <string name="empty_member_list_label">No members in draw</string>
-  <string name="prev_draw_label">Prev</string>
-  <string name="next_draw_label">Next</string>
 
   <!-- Accessibility hints -->
   <string name="drawer_open_accesshint">open drawer</string>
@@ -106,8 +84,8 @@
   <string name="member_add_msg">%s added</string>
   <string name="failed_add_member_msg">Failed to add %s</string>
   <string name="draw_failed_msg">"Couldn't complete the draw"</string>
-  <string name="draw_success_msg">Draw was successful!</string>
-  <string name="no_engine_error_msg">Error: Could not find Draw Engine</string>
+  <string name="draw_success_msg">Draw was successful</string>
+  <string name="draw_engine_init_error_msg">Could not find Draw Engine</string>
 
   <!-- Assignment Messages -->
   <string name="sms_assignment_msg" formatted="false">Hi %s, you\'re giving a gift to %s. Sent via the Open Secret Santa app.</string>
@@ -126,7 +104,5 @@
   <string name="drawer_groups_new">New Group</string>
   <string name="drawer_options_header">Options</string>
   <string name="base_group_name">My Group</string>
-
-  <string name="menu_add_ime_label">Add</string>
 
 </resources>
