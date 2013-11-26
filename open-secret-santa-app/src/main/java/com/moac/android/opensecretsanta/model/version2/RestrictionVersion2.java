@@ -11,7 +11,8 @@ import com.moac.android.opensecretsanta.model.PersistableObject;
 @DatabaseTable(tableName = RestrictionVersion2.TABLE_NAME)
 public class RestrictionVersion2 extends PersistableObject {
 
-    public static final String TABLE_NAME = "restrictions";
+    public static final String VERSION2_TABLE_NAME = "restrictions";
+    public static final String TABLE_NAME = "restrictions_version2";
 
     public static interface Columns extends PersistableObject.Columns {
         public static final String MEMBER_ID_COLUMN = "MEMBER_ID";

@@ -70,6 +70,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         Log.v(TAG, "onUpgrade() - start);");
 
         if(newVersion > oldVersion) {
+
+            // upgrade part one that would include change in the schema etc
             db.beginTransaction();
 
             boolean success = true;
@@ -80,7 +82,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
                         success = upgradeToVersion2(db);
                         break;
                     case 3:
-                        success = upgradeToVersion3(connectionSource);
+                        success = upgradeSchemaToVersion3(connectionSource);
                         break;
                 }
                 if(!success) {
@@ -91,6 +93,24 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
                 db.setTransactionSuccessful();
             }
             db.endTransaction();
+
+            // upgrade part two that would include migrating the data but only if part one passed
+
+            Log.d(TAG, "Did upgrade schema go ok? Are we going to the next migrating data step? " + success);
+            if (success) {
+                // should this fail, we will roll back all the changes and not migrate anything
+                // as we still have a workable DB with the new schema
+                // we handle these db transaction at a deeper level
+                for(int i = oldVersion; i < newVersion; ++i) {
+                    int nextVersion = i + 1;
+                    switch(nextVersion) {
+                        case 3:
+                            migrateDataToVersion3(db, connectionSource);
+                            break;
+                    }
+                 }
+            }
+
         } else {
             onCreate(db);
         }
@@ -212,11 +232,23 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return true;
     }
 
-    protected boolean upgradeToVersion3(ConnectionSource cs) {
-        DatabaseUpgrader databaseUpgrader = new DatabaseUpgrader(this);
-        databaseUpgrader.upgradeDatabaseToVersion3(cs);
+    protected boolean upgradeSchemaToVersion3(ConnectionSource cs) {
+        try {
+            Log.d(TAG, "upgradeSchemaToVersion3");
+            DatabaseUpgrader databaseUpgrader = new DatabaseUpgrader(this);
+            databaseUpgrader.upgradeDatabaseSchemaToVersion3(cs);
+            Log.d(TAG, "upgradeDatabaseSchemaToVersion3 returned with no exception");
+            // let's not drop any tables
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "upgradeDatabaseSchemaToVersion3 threw exception:" + e.getMessage());
+            return false;
+        }
+    }
 
-        // let's not drop any tables (yet) just in case we need to rollback....
-        return true;
+    protected void migrateDataToVersion3(SQLiteDatabase db, ConnectionSource cs) {
+        Log.d(TAG, "migrateDataToVersion3");
+        DatabaseUpgrader databaseUpgrader = new DatabaseUpgrader(this);
+        databaseUpgrader.migrateDataToVersion3(db, cs);
     }
 }

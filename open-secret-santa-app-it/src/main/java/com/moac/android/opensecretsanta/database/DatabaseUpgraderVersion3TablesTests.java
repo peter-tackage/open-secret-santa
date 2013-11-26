@@ -111,6 +111,8 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
 
 
         // call only the relevant migration methods
+
+        mDatabaseUpgrader.createNewMemberVersion3Table(mTestDbHelper.mConnectionSource);
         mDatabaseUpgrader.migrateMemberAndRestrictionsTable(mTestDbHelper.getConnectionSource());
         mDatabaseUpgrader.alterGroupTable();
 
@@ -534,7 +536,7 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
         mTestDbHelper.create(drawResultEntryA, DrawResultEntryVersion2.class);
         mTestDbHelper.create(drawResultEntryB, DrawResultEntryVersion2.class);
 
-        mDatabaseUpgrader.migrateDataToVersion3AssignmentsTable();
+        mDatabaseUpgrader.migrateDataToVersion3AssignmentsTable(mTestDbHelper.getWritableDatabase());
 
         // query new tables to check results
 
@@ -721,11 +723,12 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
         mTestDbHelper.create(drawResultEntryB, DrawResultEntryVersion2.class);
         mTestDbHelper.create(drawResultEntryC, DrawResultEntryVersion2.class);
 
+        mDatabaseUpgrader.createNewMemberVersion3Table(mTestDbHelper.mConnectionSource);
         mDatabaseUpgrader.migrateMemberAndRestrictionsTable(mTestDbHelper.mConnectionSource);
         mDatabaseUpgrader.alterGroupTable();
 
         // run migration
-        mDatabaseUpgrader.migrateDataToVersion3AssignmentsTable();
+        mDatabaseUpgrader.migrateDataToVersion3AssignmentsTable(mTestDbHelper.getWritableDatabase());
 
         // query new tables to check results
 
