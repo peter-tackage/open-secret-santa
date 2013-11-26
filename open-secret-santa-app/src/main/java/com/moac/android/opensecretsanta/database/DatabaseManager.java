@@ -21,6 +21,7 @@ import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.UpdateBuilder;
 import com.moac.android.opensecretsanta.model.*;
+import com.j256.ormlite.stmt.SelectArg;
 
 import java.util.List;
 
@@ -150,10 +151,14 @@ public class DatabaseManager {
 
     public Member queryMemberWithNameForGroup(long groupId, String name) {
         try {
+            // Use SelectArg to ensure values are properly escaped
+            // Refer - http://ormlite.com/javadoc/ormlite-core/doc-files/ormlite_3.html#index-select-arguments
+            SelectArg selectArg = new SelectArg();
+            selectArg.setValue(name);
             return mDbHelper.getDaoEx(Member.class).queryBuilder()
               .where().eq(Member.Columns.GROUP_ID_COLUMN, groupId)
               .and()
-              .like(Member.Columns.NAME_COLUMN, name)
+              .like(Member.Columns.NAME_COLUMN, selectArg)
               .queryForFirst();
         } catch(java.sql.SQLException e) {
             throw new SQLException(e.getMessage());

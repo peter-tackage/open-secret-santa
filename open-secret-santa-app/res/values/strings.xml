@@ -57,8 +57,9 @@
   <string name="app_name">Open Secret Santa</string>
   <string name="credits">By Peter and Melissa from Many Object and Code</string>
   <string name="fb_contact">www.facebook.com/manyobjectandcode</string>
-  <string name="app_version_info">Version: 1.4.1</string>
-  <string name="app_date_info">Date: 6th June 2013</string>
+  <string name="twitter">twitter.com/manyobjectncode</string>
+  <string name="app_version_info">Version: 1.4.3</string>
+  <string name="app_date_info">Date: 5th November 2013</string>
 
   <!-- Accessibility hints -->
   <string name="drawer_open_accesshint">open drawer</string>
