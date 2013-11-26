@@ -17,10 +17,14 @@ import com.moac.android.opensecretsanta.util.ContactUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.moac.android.opensecretsanta.adapter.Queries.Query;
 
+// FIXME See API Demos, AutoComplete4 for a potentially better approach
 public class SuggestionsAdapter extends BaseAdapter implements Filterable {
 
     private static final String TAG = SuggestionsAdapter.class.getSimpleName();
@@ -28,9 +32,14 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
 
     List<Member> mItems;
     final Context mContext;
+    private Filter mFilter;
+    private Lock mLock;
 
     public SuggestionsAdapter(Context context) {
         mContext = context;
+        mFilter = new SuggestionFilter(context);
+        mItems = Collections.emptyList();
+        mLock = new ReentrantLock();
     }
 
     @Override
@@ -59,7 +68,7 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
             v = LayoutInflater.from(mContext).inflate(R.layout.suggestion_row, parent, false);
             avatarView = (ImageView) v.findViewById(R.id.avatar_imageview);
             nameView = (TextView) v.findViewById(R.id.name_textview);
-            addressView = (TextView)v.findViewById(R.id.address_textview);
+            addressView = (TextView) v.findViewById(R.id.address_textview);
 
             v.setTag(R.id.avatar_imageview, avatarView);
             v.setTag(R.id.name_textview, nameView);
@@ -70,19 +79,30 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
             addressView = (TextView) v.getTag(R.id.address_textview);
         }
 
-        // FIXME Have seen index out of bound exception here.
-        Member item = mItems.get(position);
+        // FIXME Can get index out of bound exception here.
+        // FIXME Terrible, terrible hack here, only gets away with it because
+        // the getView is so fast and you never see it...
+        Member item;
+        mLock.lock();
+        if(position < mItems.size()) {
+            item = mItems.get(position);
+        } else {
+            // FIXME Dummy item
+            item = new Member();
+            item.setName("New Person " + position);
+        }
+        mLock.unlock();
 
-            // This is broken - doesn't immediately update ImageView, needs reload.
+        // This is broken - doesn't immediately update ImageView, needs reload.
 //            Log.i(TAG, "getView() - Getting picasso to load: " + item.mAvatarUrl);
 //        Picasso.with(mContext).load(contactUri)
 //          .placeholder(R.drawable.ic_contact_picture)
 //          .into(avatarView);
         // TODO Move these to a background thread/get Picasso to work.
         Drawable avatar = ContactUtils.getContactPhoto(mContext, item.getContactId(), item.getLookupKey());
-        if (avatar != null) {
+        if(avatar != null) {
             avatarView.setImageDrawable(avatar);
-        } else{
+        } else {
             avatarView.setImageResource(R.drawable.ic_contact_picture);
         }
         nameView.setText(item.getName());
@@ -93,33 +113,10 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
 
     @Override
     public Filter getFilter() {
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults filterResults = new FilterResults();
-                if(constraint != null) {
-                    // Retrieve the autoComplete results.
-                    mItems = autoComplete(constraint.toString());
-
-                    // Assign the data to the FilterResults
-                    filterResults.values = mItems;
-                    filterResults.count = mItems.size();
-                }
-                return filterResults;
-            }
-
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                if(results != null && results.count > 0) {
-                    notifyDataSetChanged();
-                } else {
-                    notifyDataSetInvalidated();
-                }
-            }
-        };
+        return mFilter;
     }
 
-    private List<Member> autoComplete(String _constraint) {
+    private static List<Member> autoComplete(Context _context, String _constraint) {
         List<Member> results = new ArrayList<Member>();
 
         {
@@ -143,10 +140,10 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
         Cursor emailCursor = null;
 
         try {
-            phoneCursor = doQuery(mContext, Queries.PHONE, _constraint);
+            phoneCursor = doQuery(_context, Queries.PHONE, _constraint);
             results.addAll(processResults(phoneCursor, ContactMethod.SMS));
 
-            emailCursor = doQuery(mContext, Queries.EMAIL, _constraint);
+            emailCursor = doQuery(_context, Queries.EMAIL, _constraint);
             results.addAll(processResults(emailCursor, ContactMethod.EMAIL));
         } finally {
             if(phoneCursor != null)
@@ -158,17 +155,16 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
         return results;
     }
 
-    public static Cursor doQuery(Context _context, Query _query, String _constraint) {
+    private static Cursor doQuery(Context _context, Query _query, String _constraint) {
         final Uri.Builder builder = _query.getContentFilterUri().buildUpon()
           .appendPath(_constraint)
           .appendQueryParameter(ContactsContract.LIMIT_PARAM_KEY,
             String.valueOf(QUERY_RESULTS_LIMIT));
-        final Cursor cursor = _context.getContentResolver().query(
+        return _context.getContentResolver().query(
           builder.build(), _query.getProjection(), _query.getSelection(), null, null);
-        return cursor;
     }
 
-    public static List<Member> processResults(Cursor _cursor, ContactMethod _contactMethod) {
+    private static List<Member> processResults(Cursor _cursor, ContactMethod _contactMethod) {
         List<Member> results = new ArrayList<Member>();
         // Iterate through the cursor and build up a suggestions array.
         Log.i(TAG, "autoComplete() - cursor length: " + _cursor.getCount());
@@ -189,6 +185,40 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
             results.add(member);
         }
         return results;
+    }
+
+    private class SuggestionFilter extends Filter {
+
+        Context mFilterContext;
+
+        public SuggestionFilter(Context context) {
+            mFilterContext = context;
+        }
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults filterResults = new FilterResults();
+            if(constraint != null) {
+                // Assign the data to the FilterResults
+                // FIXME This is the cause of the AOOB Exception
+                // This is called on another thread, so it messes with the getView call
+                mLock.lock();
+                mItems = autoComplete(mFilterContext, constraint.toString());
+                filterResults.values = mItems;
+                filterResults.count = mItems.size();
+                mLock.unlock();
+            }
+            return filterResults;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            if(results != null && results.count > 0) {
+                notifyDataSetChanged();
+            } else {
+                notifyDataSetInvalidated();
+            }
+        }
     }
 }
 
