@@ -355,6 +355,8 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     private void invalidateAssignments(Group group) {
+        // FIXME This will clobber the Group's message if they have saved to DB
+        // during notify.
         group.setDrawDate(Group.UNSET_DATE);
         mDb.update(group);
         mDb.deleteAllAssignmentsForGroup(group.getId());
