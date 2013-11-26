@@ -16,11 +16,12 @@
   <string name="no_email_warning">WARNING: Emails won\'t be sent. We can\'t find your Gmail account</string>
 
   <!-- Edit screen -->
-  <string name="hint_member_name">Name</string>
-  <string name="hint_member_contact_details">Contact Details</string>
-  <string name="contact_method_label">How to notify of assignment?</string>
-  <string name="contact_details_label">Contact Details</string>
+  <string name="contact_method_label">How to notify of assignment</string>
   <string name="member_name_label">Member Name</string>
+  <string name="member_name_hint">Name</string>
+  <string name="member_contact_details_hint">Contact Details</string>
+  <string name="edit_email_address_hint">Email Address</string>
+  <string name="edit_sms_number_hint">Mobile Number</string>
 
   <!-- Clear assignments confirmation dialog button -->
   <string name="clear_assignments_dialog_title">Clear assignments?</string>
