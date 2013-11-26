@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Handler;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static com.moac.android.opensecretsanta.adapter.Queries.Query;
 
@@ -33,13 +32,13 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
     List<Member> mItems;
     final Context mContext;
     private Filter mFilter;
-    private Lock mLock;
+    private final Handler mHandler;
 
     public SuggestionsAdapter(Context context) {
         mContext = context;
+        mHandler = new Handler();
         mFilter = new SuggestionFilter(context);
         mItems = Collections.emptyList();
-        mLock = new ReentrantLock();
     }
 
     @Override
@@ -82,16 +81,7 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
         // FIXME Can get index out of bound exception here.
         // FIXME Terrible, terrible hack here, only gets away with it because
         // the getView is so fast and you never see it...
-        Member item;
-        mLock.lock();
-        if(position < mItems.size()) {
-            item = mItems.get(position);
-        } else {
-            // FIXME Dummy item
-            item = new Member();
-            item.setName("New Person " + position);
-        }
-        mLock.unlock();
+        Member item = mItems.get(position);
 
         // This is broken - doesn't immediately update ImageView, needs reload.
 //            Log.i(TAG, "getView() - Getting picasso to load: " + item.mAvatarUrl);
@@ -200,13 +190,19 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
             FilterResults filterResults = new FilterResults();
             if(constraint != null) {
                 // Assign the data to the FilterResults
-                // FIXME This is the cause of the AOOB Exception
+                // FIXME Assigning to mItems here is the cause of the AOOB Exception
                 // This is called on another thread, so it messes with the getView call
-                mLock.lock();
-                mItems = autoComplete(mFilterContext, constraint.toString());
-                filterResults.values = mItems;
-                filterResults.count = mItems.size();
-                mLock.unlock();
+                final List<Member> items = autoComplete(mFilterContext, constraint.toString());
+                filterResults.values = items;
+                filterResults.count = items.size();
+                // Try assigning via this post to main.
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mItems = items;
+                        notifyDataSetChanged();
+                    }
+                });
             }
             return filterResults;
         }
