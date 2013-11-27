@@ -128,17 +128,13 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         super.onViewCreated(view, savedInstanceState);
 
         // Initially don't perform check selection.
-        getListView().setChoiceMode(ListView.CHOICE_MODE_NONE);
+        getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         getListView().setMultiChoiceModeListener(this);
-        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                // Trigger CAB
-                getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Show visual indicator of selection and trigger CAB.
                 ((ListView) parent).setItemChecked(position, true);
-                return true;
             }
         });
     }
@@ -255,6 +251,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     public void onDestroy() {
         if(mDrawSubscription != null) {
             mDrawSubscription.unsubscribe();
+            mDrawSubscription = null;
         }
         super.onDestroy();
     }
