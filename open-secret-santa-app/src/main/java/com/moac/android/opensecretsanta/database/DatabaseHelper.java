@@ -22,12 +22,13 @@ import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import com.google.common.annotations.VisibleForTesting;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
-import com.moac.android.opensecretsanta.types.*;
+import com.moac.android.opensecretsanta.model.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,10 +39,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private static final String TAG = DatabaseHelper.class.getSimpleName();
 
     private static final String DATABASE_NAME = "opensecretsanta.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
-    private static final Class[] PERSISTABLE_OBJECTS =
-      { DrawResult.class, DrawResultEntry.class, Group.class, Member.class, Restriction.class };
+    protected Class[] PERSISTABLE_OBJECTS;
 
     private final Map<Class<? extends PersistableObject>, Dao<? extends PersistableObject, Long>> daos =
       new HashMap<Class<? extends PersistableObject>, Dao<? extends PersistableObject, Long>>();
@@ -51,9 +51,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     public DatabaseHelper(Context ctx) {
         super(ctx, DATABASE_NAME, null, DATABASE_VERSION);
+        PERSISTABLE_OBJECTS = new Class[] {Group.class, Member.class, Restriction.class, Assignment.class};
     }
 
-    // For testing use only
+    @VisibleForTesting
     protected DatabaseHelper(Context context, String databaseName) {
         super(context, databaseName, null, DATABASE_VERSION);
     }
@@ -69,6 +70,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         Log.v(TAG, "onUpgrade() - start);");
 
         if(newVersion > oldVersion) {
+
+            // upgrade part one that would include change in the schema etc
             db.beginTransaction();
 
             boolean success = true;
@@ -77,6 +80,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
                 switch(nextVersion) {
                     case 2:
                         success = upgradeToVersion2(db);
+                        break;
+                    case 3:
+                        success = upgradeSchemaToVersion3(connectionSource);
                         break;
                 }
                 if(!success) {
@@ -87,6 +93,27 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
                 db.setTransactionSuccessful();
             }
             db.endTransaction();
+
+            // upgrade part two that would include migrating the data but only if part one passed
+
+            Log.d(TAG, "Did upgrade schema go ok? Are we going to the next migrating data step? " + success);
+            if (success) {
+                // should this fail, we will roll back all the changes and not migrate anything
+                // as we still have a workable DB with the new schema
+                // we handle these db transaction at a deeper level
+                for(int i = oldVersion; i < newVersion; ++i) {
+                    int nextVersion = i + 1;
+                    switch(nextVersion) {
+                        case 3:
+                            migrateDataToVersion3(db, connectionSource);
+                            break;
+                    }
+                 }
+            }
+
+            // we are up to here, let's delete the old tables then
+            dropOldVersion2Tables(connectionSource);
+
         } else {
             onCreate(db);
         }
@@ -199,12 +226,42 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         Log.i(TAG, "upgradeToVersion2 - start.");
 
         // Something like - update members set contact_detail = null  where contact_detail = '';
-
+        final String CONTACT_DETAIL_COLUMN="CONTACT_DETAIL"; // Hard code old column name.
         ContentValues values = new ContentValues();
-        values.putNull(Member.Columns.CONTACT_DETAIL_COLUMN);
+        values.putNull(CONTACT_DETAIL_COLUMN);
 
-        int updatedRows = db.update(Member.TABLE_NAME, values, Member.Columns.CONTACT_DETAIL_COLUMN + " = ''", null);
+        int updatedRows = db.update(Member.TABLE_NAME, values, CONTACT_DETAIL_COLUMN + " = ''", null);
         Log.i(TAG, "upgradeToVersion2 - updatedRows: " + updatedRows);
         return true;
+    }
+
+    protected boolean upgradeSchemaToVersion3(ConnectionSource cs) {
+        try {
+            Log.d(TAG, "upgradeSchemaToVersion3");
+            DatabaseUpgrader databaseUpgrader = new DatabaseUpgrader(this);
+            databaseUpgrader.upgradeDatabaseSchemaToVersion3(cs);
+            Log.d(TAG, "upgradeDatabaseSchemaToVersion3 returned with no exception");
+            // let's not drop any tables
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "upgradeDatabaseSchemaToVersion3 threw exception:" + e.getMessage());
+            return false;
+        }
+    }
+
+    protected void migrateDataToVersion3(SQLiteDatabase db, ConnectionSource cs) {
+        Log.d(TAG, "migrateDataToVersion3");
+        DatabaseUpgrader databaseUpgrader = new DatabaseUpgrader(this);
+        databaseUpgrader.migrateDataToVersion3(db, cs);
+    }
+
+    private void dropOldVersion2Tables(ConnectionSource cs) {
+        try {
+            Log.d(TAG, "dropOldVersion2Tables");
+            DatabaseUpgrader databaseUpgrader = new DatabaseUpgrader(this);
+            databaseUpgrader.dropOldVersion2Tables(cs);
+        } catch (Exception e) {
+            Log.e(TAG, "dropOldVersion2Tables threw exception:" + e.getMessage());
+        }
     }
 }

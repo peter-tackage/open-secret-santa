@@ -18,8 +18,10 @@ package com.moac.android.opensecretsanta.database;
 
 import android.database.SQLException;
 import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.UpdateBuilder;
+import com.moac.android.opensecretsanta.model.*;
 import com.j256.ormlite.stmt.SelectArg;
-import com.moac.android.opensecretsanta.types.*;
 
 import java.util.List;
 
@@ -39,6 +41,7 @@ public class DatabaseManager {
         return mDbHelper.queryById(id, objClass);
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends PersistableObject> T queryById(T obj) {
         return (T) mDbHelper.queryById(obj.getId(), obj.getClass());
     }
@@ -63,17 +66,6 @@ public class DatabaseManager {
      * Bespoke queries
      */
 
-    public DrawResult queryLatestDrawResultForGroup(long groupId) {
-        try {
-            return mDbHelper.getDaoEx(DrawResult.class).queryBuilder()
-              .orderBy(DrawResult.Columns.DRAW_DATE_COLUMN, false)
-              .where().eq(DrawResult.Columns.GROUP_ID_COLUMN, groupId)
-              .queryForFirst();
-        } catch(java.sql.SQLException e) {
-            throw new SQLException(e.getMessage());
-        }
-    }
-
     public List<Restriction> queryAllRestrictionsForMemberId(long memberId) {
         try {
             return mDbHelper.getDaoEx(Restriction.class).queryBuilder()
@@ -84,21 +76,53 @@ public class DatabaseManager {
         }
     }
 
-    public List<DrawResultEntry> queryAllDrawResultEntriesForDrawId(long drawResultId) {
+    public boolean queryIsRestricted(long fromMemberId, long toMemberId) {
         try {
-            return mDbHelper.getDaoEx(DrawResultEntry.class).queryBuilder()
-              .where().eq(DrawResultEntry.Columns.DRAW_RESULT_ID_COLUMN, drawResultId)
+            Restriction restriction = mDbHelper.getDaoEx(Restriction.class).queryBuilder()
+              .where().eq(Restriction.Columns.MEMBER_ID_COLUMN, fromMemberId)
+              .and().eq(Restriction.Columns.OTHER_MEMBER_ID_COLUMN, toMemberId)
+              .queryForFirst();
+            return restriction != null;
+        } catch(java.sql.SQLException e) {
+            throw new SQLException(e.getMessage());
+        }
+    }
+
+    public List<Assignment> queryAllAssignmentsForGroup(long groupId) {
+        try {
+            QueryBuilder<Member, Long> groupMembersQuery =
+              mDbHelper.getDaoEx(Member.class).queryBuilder();
+            groupMembersQuery.selectColumns(Member.Columns._ID).where().eq(Member.Columns.GROUP_ID_COLUMN, groupId);
+
+            return mDbHelper.getDaoEx(Assignment.class).queryBuilder()
+              .where().in(Assignment.Columns.GIVER_MEMBER_ID_COLUMN, groupMembersQuery)
               .query();
         } catch(java.sql.SQLException e) {
             throw new SQLException(e.getMessage());
         }
     }
 
-    public List<DrawResult> queryAllDrawResultsForGroup(long groupId) {
+    public boolean queryHasAssignmentsForGroup(long groupId) {
         try {
-            return mDbHelper.getDaoEx(DrawResult.class).queryBuilder()
-              .where().eq(DrawResult.Columns.GROUP_ID_COLUMN, groupId)
-              .query();
+            QueryBuilder<Member, Long> groupMembersQuery =
+              mDbHelper.getDaoEx(Member.class).queryBuilder();
+            groupMembersQuery.selectColumns(Member.Columns._ID).where().eq(Member.Columns.GROUP_ID_COLUMN, groupId);
+
+            return mDbHelper.getDaoEx(Assignment.class).queryBuilder()
+              .where().in(Assignment.Columns.GIVER_MEMBER_ID_COLUMN, groupMembersQuery)
+              .queryForFirst() != null;
+        } catch(java.sql.SQLException e) {
+            throw new SQLException(e.getMessage());
+        }
+    }
+
+    public Assignment queryAssignmentForMember(long _memberId) {
+        try {
+            QueryBuilder<Assignment, Long> assignmentQuery =
+              mDbHelper.getDaoEx(Assignment.class).queryBuilder();
+
+            assignmentQuery.where().eq(Assignment.Columns.GIVER_MEMBER_ID_COLUMN, _memberId);
+            return assignmentQuery.queryForFirst();
         } catch(java.sql.SQLException e) {
             throw new SQLException(e.getMessage());
         }
@@ -134,18 +158,82 @@ public class DatabaseManager {
             return mDbHelper.getDaoEx(Member.class).queryBuilder()
               .where().eq(Member.Columns.GROUP_ID_COLUMN, groupId)
               .and()
-              .eq(Member.Columns.NAME_COLUMN, selectArg)
+              .like(Member.Columns.NAME_COLUMN, selectArg)
               .queryForFirst();
         } catch(java.sql.SQLException e) {
             throw new SQLException(e.getMessage());
         }
     }
 
-    public void deleteAllRestrictionsForMember(long memberId) {
+    public long deleteAllRestrictionsForMember(long memberId) {
         try {
             DeleteBuilder<Restriction, Long> deleteBuilder = mDbHelper.getDaoEx(Restriction.class).deleteBuilder();
             deleteBuilder.where().eq(Restriction.Columns.MEMBER_ID_COLUMN, memberId);
-            deleteBuilder.delete();
+            return deleteBuilder.delete();
+        } catch(java.sql.SQLException e) {
+            throw new SQLException(e.getMessage());
+        }
+    }
+
+    public long deleteRestrictionBetweenMembers(long fromMember, long otherMember) {
+        try {
+            DeleteBuilder<Restriction, Long> deleteBuilder =
+              mDbHelper.getDaoEx(Restriction.class).deleteBuilder();
+            deleteBuilder.where()
+              .eq(Restriction.Columns.MEMBER_ID_COLUMN, fromMember).
+              and().
+              eq(Restriction.Columns.OTHER_MEMBER_ID_COLUMN, otherMember);
+            return deleteBuilder.delete();
+        } catch(java.sql.SQLException e) {
+            throw new SQLException(e.getMessage());
+        }
+    }
+
+    public long deleteAllAssignmentsForGroup(long groupId) {
+        try {
+            QueryBuilder<Member, Long> groupMembersQuery =
+              mDbHelper.getDaoEx(Member.class).queryBuilder();
+            groupMembersQuery.selectColumns(Member.Columns._ID).where().eq(Member.Columns.GROUP_ID_COLUMN, groupId);
+
+            DeleteBuilder<Assignment, Long> deleteBuilder = mDbHelper.getDaoEx(Assignment.class).deleteBuilder();
+            deleteBuilder.where().in(Assignment.Columns.GIVER_MEMBER_ID_COLUMN, groupMembersQuery);
+            return deleteBuilder.delete();
+        } catch(java.sql.SQLException e) {
+            throw new SQLException(e.getMessage());
+        }
+    }
+
+    public boolean queryHasGroup() {
+        try {
+            Group group = mDbHelper.getDaoEx(Group.class).queryBuilder()
+              .queryForFirst();
+            return group != null;
+        } catch(java.sql.SQLException e) {
+            throw new SQLException(e.getMessage());
+        }
+    }
+
+    public void updateAllAssignmentsInGroup(long groupId, Assignment.Status status) {
+        try {
+            QueryBuilder<Member, Long> groupMembersQuery =
+              mDbHelper.getDaoEx(Member.class).queryBuilder();
+            groupMembersQuery.selectColumns(Member.Columns._ID).where().eq(Member.Columns.GROUP_ID_COLUMN, groupId);
+
+            UpdateBuilder<Assignment, Long> updateBuilder =
+              mDbHelper.getDaoEx(Assignment.class).updateBuilder();
+            updateBuilder.updateColumnValue(Assignment.Columns.SEND_STATUS_COLUMN, status).
+              where().in(Assignment.Columns.GIVER_MEMBER_ID_COLUMN, groupMembersQuery);
+            updateBuilder.update();
+        } catch(java.sql.SQLException e) {
+            throw new SQLException(e.getMessage());
+        }
+    }
+
+    public  <T extends PersistableObject> long queryMaxId(Class<T> objClass) {
+        try {
+            PersistableObject obj = mDbHelper.getDaoEx(objClass).queryBuilder()
+              .orderBy(T.Columns._ID, false).queryForFirst();
+            return obj == null ? 0 : obj.getId();
         } catch(java.sql.SQLException e) {
             throw new SQLException(e.getMessage());
         }

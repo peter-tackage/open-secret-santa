@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-  <string name="includeMeHelp">Enter your name to include yourself in the draw
-  </string>
-  <string name="notIncludeMeHelp">You will not be a participant in the draw
-  </string>
-  <string name="createdNewDrawHelp">Created new draw</string>
-</resources>

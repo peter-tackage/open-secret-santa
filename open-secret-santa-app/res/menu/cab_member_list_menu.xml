@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- CAB Menu items -->
+  <item
+    android:id="@+id/menu_item_delete"
+    android:icon="@drawable/ic_menu_delete"
+    android:title="@string/menu_delete"
+    android:showAsAction="always" />
+    <item
+      android:id="@+id/menu_item_edit"
+      android:icon="@drawable/ic_menu_edit"
+      android:title="@string/menu_edit"
+      android:showAsAction="always" />
+    <item
+      android:id="@+id/menu_item_restrict"
+      android:icon="@drawable/ic_menu_restrictions"
+      android:title="@string/menu_restrictions"
+      android:showAsAction="always" />
+    <item
+      android:id="@+id/menu_item_notify_selection"
+      android:icon="@drawable/ic_menu_notify"
+      android:title="@string/menu_notify_selected"
+      android:showAsAction="always" />
+    <item
+      android:id="@+id/menu_item_reveal"
+      android:icon="@drawable/ic_menu_reveal"
+      android:title="@string/menu_reveal"
+      android:showAsAction="always" />
+</menu>

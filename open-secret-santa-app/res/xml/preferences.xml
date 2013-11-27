@@ -2,36 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
   android:title="Open Secret Santa Preferences">
 
-  <PreferenceCategory android:title="@string/algorithm_preferences">
-    <ListPreference
-      android:defaultValue="@string/defaultDrawEngine"
-      android:dialogTitle="@string/dialog_title_list_preference"
-      android:entries="@array/engine_names"
-      android:entryValues="@array/engine_classes"
-      android:key="engine_preference"
-      android:summary="@string/summary_list_preference"
-      android:title="@string/algorithm_list_preference" />
-  </PreferenceCategory>
-
-  <PreferenceCategory android:title="@string/email_preferences">
-    <ListPreference
-      android:dialogTitle="@string/gmail_dialog_title_list_preference"
-      android:key="@string/gmail_account_preference"
-      android:summary="@string/gmail_summary_list_preference"
-      android:title="@string/gmail_account_list_preference" />
-  </PreferenceCategory>
-
-  <PreferenceCategory android:title="@string/sms_preferences">
-
-    <CheckBoxPreference
-      android:defaultValue="true"
-      android:key="use_multipart_sms"
-      android:summary="@string/use_multipart_sms_desc"
-      android:title="@string/use_multipart_sms" />
-  </PreferenceCategory>
-
   <PreferenceCategory android:title="About">
-
     <PreferenceScreen
       android:key="aboutOpenSecretSanta"
       android:summary="Version information and credits"
@@ -51,6 +22,26 @@
         android:layout="@layout/acknowledgments"
         android:selectable="false" />
     </PreferenceScreen>
+  </PreferenceCategory>
+
+  <PreferenceCategory android:title="@string/algorithm_preferences">
+    <ListPreference
+      android:defaultValue="@string/defaultDrawEngine"
+      android:dialogTitle="@string/dialog_title_list_preference"
+      android:entries="@array/engine_names"
+      android:entryValues="@array/engine_classes"
+      android:key="engine_preference"
+      android:summary="@string/summary_list_preference"
+      android:title="@string/algorithm_list_preference" />
+  </PreferenceCategory>
+
+  <PreferenceCategory android:title="@string/sms_preferences">
+
+    <CheckBoxPreference
+      android:defaultValue="true"
+      android:key="use_multipart_sms"
+      android:summary="@string/use_multipart_sms_desc"
+      android:title="@string/use_multipart_sms" />
   </PreferenceCategory>
 
 </PreferenceScreen>

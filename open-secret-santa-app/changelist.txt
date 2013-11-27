@@ -1,3 +1,7 @@
+Version - 2.0.0
+---------------
+New design and many new features, particularly for resending assignments.
+
 Version - 1.4.3
 ---------------
 Version bump

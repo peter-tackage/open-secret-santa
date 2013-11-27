@@ -1,30 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+
   <!--
    Base application theme, dependent on API level. This theme is replaced
    by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
 -->
-  <style name="AppBaseTheme">
+
+  <style name="AppBaseTheme" parent="android:Theme.Holo.Light">
+
     <!--
         Theme customizations available in newer API levels can go in
         res/values-vXX/styles.xml, while customizations related to
         backward-compatibility can go here.
     -->
+    <!-- if we want to have a custom select color. currently the default is the holo blue
+      item name="android:actionBarItemBackground">
+      @drawable/selectable_background_mymenu
+    </item-->
+    <item name="android:popupMenuStyle">@style/PopupMenu.Mymenu</item>
+    <item name="android:actionBarStyle">@style/ActionBar.Transparent.Mymenu
+    </item>
+    <item name="android:actionMenuTextColor">@android:color/holo_blue_light
+    </item>
+    <item name="android:actionModeCloseDrawable">
+      @drawable/ic_navigation_accept
+    </item>
+  </style>
+
+
+  <!-- Action bar background -->
+  <style parent="@android:style/Widget.Holo.Light.ActionBar" name="ActionBar.Transparent.Mymenu">
+    <item name="android:background">@android:color/white</item>
+    <!-- if we want the action bar to have the blue shadow or not ... drawable/ab_transparent_mymenu</item-->
+    <item name="android:titleTextStyle">
+      @style/MyTheme.ActionBar.TitleTextStyle
+    </item>
+  </style>
+
+  <!-- Action bar text color -->
+  <style name="MyTheme.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+    <item name="android:textColor">@android:color/holo_blue_light</item>
+      <item name="android:textSize">15sp</item>
+  </style>
+
+  <!-- background for the overflow menu -->
+  <style parent="@android:style/Widget.Holo.Light.ListPopupWindow" name="PopupMenu.Mymenu">
+    <item name="android:popupBackground">@color/white
+    </item>
+    <item name="android:alpha">0.80</item>
   </style>
 
   <!-- Application theme. -->
   <style name="AppTheme" parent="AppBaseTheme">
     <!-- All customizations that are NOT specific to a particular API-level can go here. -->
-    <item name="android:windowNoTitle">true</item>
     <item name="android:screenOrientation">portrait</item>
-    <item name="android:windowBackground">@drawable/background</item>
-    <item name="android:windowContentOverlay">@null</item>
-  </style>
-
-  <!-- Welcome theme. -->
-  <style name="WelcomeTheme" parent="AppTheme">
-    <item name="android:windowNoTitle">true</item>
   </style>
 
 </resources>

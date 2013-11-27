@@ -1,30 +1,48 @@
 package com.moac.android.opensecretsanta;
 
-import android.accounts.*;
 import android.app.Application;
-import android.content.SharedPreferences;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
-import android.util.Log;
-import com.moac.android.opensecretsanta.activity.Constants;
 import com.moac.android.opensecretsanta.database.DatabaseHelper;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-
-import java.io.IOException;
+import com.moac.android.opensecretsanta.model.Group;
+import com.moac.android.opensecretsanta.util.GroupUtils;
+import com.moac.android.opensecretsanta.util.Utils;
 
 public class OpenSecretSantaApplication extends Application {
 
+    public static final String MOST_RECENT_GROUP_KEY = "most_recent_group_id";
     private static final String TAG = "OpenSecretSantaApp";
 
-    private static DatabaseManager mDatabaseManager = null;
+    private static OpenSecretSantaApplication sInstance;
+    private DatabaseManager mDatabaseManager;
+
+    public OpenSecretSantaApplication() {
+        super();
+        if(sInstance == null) {
+            sInstance = this; // init self singleton.
+        }
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
         mDatabaseManager = initDatabase();
+        Utils.doOnce(getApplicationContext(), "createDefaultGroup", new Runnable() {
+            @Override
+            public void run() {
+                // Don't add another group if there is at least one already
+                if(!mDatabaseManager.queryHasGroup()) {
+                    createDefaultInitialGroup();
+                }
+            }
+        });
     }
 
-    public static DatabaseManager getDatabase() {
+    public static OpenSecretSantaApplication getInstance() {
+        return sInstance;
+    }
+
+    public DatabaseManager getDatabase() {
         return mDatabaseManager;
     }
 
@@ -33,45 +51,11 @@ public class OpenSecretSantaApplication extends Application {
         return new DatabaseManager(databaseHelper);
     }
 
-    public Account getAvailableGmailAccount() {
-        Log.i(TAG, "getAvailableGmailAccount() - start");
-        Account result = null;
-        // Use the one in the preferences, otherwise just pick the first one.
-        String emailPrefKey =  getString(R.string.gmail_account_preference);
-        String emailAddress = PreferenceManager.getDefaultSharedPreferences(this).getString(emailPrefKey, null);
-
-        Log.v(TAG, "getAvailableGmailAccount() - current Gmail Account preference: " + emailAddress);
-
-        AccountManagerFuture<Account[]> accountsFuture =
-              AccountManager.get(this).getAccountsByTypeAndFeatures(Constants.ACCOUNT_TYPE_GOOGLE, Constants.FEATURES_MAIL, null, null);
-            try {
-                Account[] accounts = accountsFuture.getResult();
-                if(accounts != null && accounts.length > 0) {
-                    Log.v(TAG, "getAvailableGmailAccount() - found some Gmail Accounts, size: " + accounts.length);
-                    if (emailAddress == null) {
-                        Log.v(TAG, "getAvailableGmailAccount() - no preference, so use first Gmail account.");
-                        //String token = AccountManager.get(this).peekAuthToken();
-                        // Set into preferences for next time.
-                       PreferenceManager.getDefaultSharedPreferences(this).edit().putString(emailPrefKey, accounts[0].name).commit();
-                       return accounts[0];
-                   } else {
-                        Log.v(TAG, "getAvailableGmailAccount() - found Gmail preference: " + emailAddress);
-                        // Find matching account
-                       for (int i=0; i < accounts.length; i++) {
-                           Account acc = accounts[i];
-                           if (acc.name.equals(emailAddress)){
-                               result = acc;
-                               break;
-                           }
-                       }
-                   }
-                }
-            } catch(Exception e) {
-               Log.e(TAG, "getAvailableGmailAccount() - Error when fetching account", e);
-            }
-        Log.v(TAG, "getAvailableGmailAccount() - returning Gmail Account: " + result);
-
-        return result;
+    private void createDefaultInitialGroup() {
+        String baseName = getString(R.string.base_group_name);
+        Group group1 = GroupUtils.createIncrementingGroup(mDatabaseManager, baseName);
+        // Assign as the current Group
+        PreferenceManager.getDefaultSharedPreferences(this).edit().
+          putLong(MOST_RECENT_GROUP_KEY, group1.getId()).apply();
     }
-
 }

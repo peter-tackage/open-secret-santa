@@ -6,21 +6,23 @@
 
   <groupId>com.moac.android.opensecretsanta</groupId>
   <artifactId>open-secret-santa-app-parent</artifactId>
-  <version>1.4.3</version>
+  <version>2.0.0</version>
   <packaging>pom</packaging>
   <name>open-secret-santa-app - Parent</name>
 
   <properties>
-    <platform.version>2.2.1</platform.version>
-  <!--  <android.sdk.path>/usr/share/android/android-sdk-linux_x86/</android.sdk.path>  -->
+    <!-- Target Android version - version in android-maven-plugin matches -->
+    <platform.version>4.3_r2</platform.version>
+    <support-library.version>r18</support-library.version>
     <junit4.version>4.10</junit4.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
 
+      <!-- Reference maven android sdk deployer versions -->
       <dependency>
-        <groupId>com.google.android</groupId>
+        <groupId>android</groupId>
         <artifactId>android</artifactId>
         <version>${platform.version}</version>
         <scope>provided</scope>
@@ -28,16 +30,15 @@
 
       <dependency>
         <groupId>com.google.android</groupId>
-        <artifactId>android-test</artifactId>
-        <version>${platform.version}</version>
-        <scope>provided</scope>
+        <artifactId>support-v13</artifactId>
+        <version>${support-library.version}</version>
       </dependency>
 
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${junit4.version}</version>
-        <scope>provided</scope>
+        <scope>test</scope>
       </dependency>
 
     </dependencies>
@@ -52,7 +53,7 @@
           <version>3.6.0</version>
           <configuration>
             <sdk>
-              <platform>8</platform>
+              <platform>18</platform>
             </sdk>
             <zipalign>
               <skip>false</skip>
