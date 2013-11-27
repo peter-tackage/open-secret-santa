@@ -19,6 +19,39 @@ public class DatabaseUpgraderVersion2TablesTests extends AndroidTestCase {
     TestDatabaseHelper mTestDbHelper;
     DatabaseUpgrader mDatabaseUpgrader;
 
+    private boolean isMemberEqual(Member a, Member b) {
+        if(a == null || b == null) {
+            return false;
+        }
+
+        return (a.getContactId() == b.getContactId() &&
+                (a.getLookupKey() == null? b.getLookupKey() == null : a.getLookupKey().compareTo(b.getLookupKey()) == 0)  &&
+                (a.getContactDetails() == null ?  b.getContactDetails() == null : a.getContactDetails().compareTo(b.getContactDetails()) == 0) &&
+                a.getGroupId() == b.getGroupId() &&
+                a.getContactMethod() == b.getContactMethod() &&
+                (a.getName().compareTo(b.getName()) == 0));
+    }
+
+    private boolean isDrawResultVersion2Equal(DrawResultVersion2 a, DrawResultVersion2 b) {
+        if(a == null || b == null) {
+            return false;
+        }
+        return (a.getDrawDate() == (b.getDrawDate()) &&
+                a.getSendDate() == (b.getSendDate()) &&
+                (a.getMessage().compareTo(b.getMessage()) == 0)) &&
+                (a.getGroupId() == (b.getGroupId()));
+    }
+
+    private boolean isDrawResultVersion2InsideList(DrawResultVersion2 a, List<DrawResultVersion2> drawList) {
+        for (int i=0; i<drawList.size(); i++) {
+            if (isDrawResultVersion2Equal(a, drawList.get(i))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -61,8 +94,8 @@ public class DatabaseUpgraderVersion2TablesTests extends AndroidTestCase {
         List<DrawResultVersion2> testResults = mDatabaseUpgrader.getAllDrawResultsVersion2ForGroup(groupA.getId());
 
         assertEquals(2, testResults.size());
-        assertTrue(testResults.contains(drawResultOne));
-        assertTrue(testResults.contains(drawResultTwo));
+        assertTrue(isDrawResultVersion2InsideList(drawResultOne, testResults));
+        assertTrue(isDrawResultVersion2InsideList(drawResultTwo, testResults));
     }
 
     public void testGetAllDrawResultsVersion2ForGroupWithNoDrawResult() {
@@ -93,7 +126,7 @@ public class DatabaseUpgraderVersion2TablesTests extends AndroidTestCase {
                 .withLookupKey(MemberVersion2Builder.TEST_MEMBER_LOOKUP_KEY)
                 .withGroup(groupBuilder.withGroupId(memberNameOnly.getGroupId()).build())
                 .build();
-        assertEquals(expectedMemberNameOnly, mDatabaseUpgrader.convertMemberToVersion3(memberNameOnly));
+        assertTrue(isMemberEqual(expectedMemberNameOnly, mDatabaseUpgrader.convertMemberToVersion3(memberNameOnly)));
 
     }
 }

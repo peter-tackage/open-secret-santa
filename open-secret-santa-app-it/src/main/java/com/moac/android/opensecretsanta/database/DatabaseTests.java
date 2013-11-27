@@ -429,6 +429,15 @@ public class DatabaseTests extends AndroidTestCase {
         }
     }
 
+    // TODO why does this pass
+    public void testCreateMemberNameApostropheOk() {
+        // Verify that our queries are safe for names with apostrophes
+        Member m1 = new MemberBuilder().withName("B can't give Member One and Meli").build();
+        mDatabaseManager.create(m1);
+
+        assertEquals(m1.getName(), mDatabaseManager.queryById(m1.getId(), Member.class).getName());
+    }
+
     public void testCreateGroupNameApostropheOk() {
         // Verify that our queries are safe for names with apostrophes
         Group g1 = new GroupBuilder().withName("Test O'Name").build();

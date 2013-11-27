@@ -2,6 +2,7 @@ package com.moac.android.opensecretsanta.database;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import com.j256.ormlite.stmt.SelectArg;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import com.moac.android.opensecretsanta.model.*;
@@ -47,8 +48,6 @@ public class DatabaseUpgrader {
         createNewRestrictionsVersion3Table(cs);
 
         alterGroupTable();
-
-        // we can drop old tables if we want... ?
     }
 
     public void migrateDataToVersion3(SQLiteDatabase db, ConnectionSource cs) {
@@ -109,7 +108,7 @@ public class DatabaseUpgrader {
         }
     }
 
-    private void renameRestrictionsVersion2Table(ConnectionSource cs) {
+    protected void renameRestrictionsVersion2Table(ConnectionSource cs) {
         try {
             // we need to keep two restrictions table to allow for migration without
             // the tables stepping on each others' feet
@@ -167,9 +166,12 @@ public class DatabaseUpgrader {
 
                     long groupId = ((Member)pairs.getValue()).getGroupId();
                     Log.d(TAG, "memberRequiredForName name: " + memberRequiredForName.getName() + " group:" + groupId);
+
+                    SelectArg selectArg = new SelectArg();
+                    selectArg.setValue( memberRequiredForName.getName());
                     // with the name and the new group id, we can find the new Member
                     List<Member> tmpMembersList = mDbHelper.getDaoEx(Member.class).queryBuilder()
-                            .where().eq(Member.Columns.NAME_COLUMN, memberRequiredForName.getName()).and()
+                            .where().eq(Member.Columns.NAME_COLUMN, selectArg).and()
                             .eq(Member.Columns.GROUP_ID_COLUMN, groupId)
                             .query();
 
@@ -211,6 +213,29 @@ public class DatabaseUpgrader {
             mDbHelper.getDaoEx(Group.class).executeRaw("ALTER TABLE '" + GroupVersion2.TABLE_NAME + "' ADD COLUMN " + Group.Columns.DRAW_DATE_COLUMN + " INTEGER;");
         } catch (SQLException e) {
             throw new android.database.SQLException(e.getMessage());
+        }
+    }
+
+    public void dropOldVersion2Tables(ConnectionSource cs) {
+        try {
+            Log.d(TAG, "dropOldVersion2Tables");
+
+            // we can ignore errors, since we can't handle the exception anyway
+
+            // from the old schema, we copied the Members table, Restrictions table for
+            // migration purposes and now we can drop those temporary tables
+            TableUtils.dropTable(cs, MemberVersion2.class, true);
+            TableUtils.dropTable(cs, RestrictionVersion2.class, true);
+
+            // we don't need DrawResults and DrawResultEntry anymore, so we can drop them
+            TableUtils.dropTable(cs, DrawResultVersion2.class, true);
+            TableUtils.dropTable(cs, DrawResultEntryVersion2.class, true);
+
+            // we don't touch the Group table as we are still using it and updated it
+            // during the migration
+
+        } catch (Exception e) {
+
         }
     }
 
@@ -469,14 +494,16 @@ public class DatabaseUpgrader {
     // if the member doesn't exist, it creates an entry
     protected long getMemberIdFromMemberName(String memberName, long groupId) {
         try {
+            SelectArg selectArg = new SelectArg();
+            selectArg.setValue(memberName);
+
             Member member = mDbHelper.getDaoEx(Member.class).queryBuilder()
-                                       .where().eq(Member.Columns.NAME_COLUMN, memberName).and()
+                                       .where().eq(Member.Columns.NAME_COLUMN, selectArg).and()
                                                .eq(Member.Columns.GROUP_ID_COLUMN, groupId)
                                        .queryForFirst();
             if (member != null) {
                 return member.getId();
-            }
-            else {
+            } else {
                 return createMemberEntry(memberName, groupId);
             }
         } catch (SQLException e) {
