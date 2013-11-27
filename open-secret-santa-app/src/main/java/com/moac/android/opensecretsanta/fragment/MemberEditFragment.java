@@ -13,6 +13,7 @@ import android.widget.*;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.Intents;
+import com.moac.android.opensecretsanta.adapter.ContactMethodAdapter;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.ContactMethod;
@@ -31,7 +32,6 @@ public class MemberEditFragment extends Fragment {
     private Member mMember;
     private EditText mMemberNameEditView;
     private View mContactDetailsLineSeparator;
-    //private TextView mContactDetailsLabel;
     private EditText mContactDetailsEditText;
     private Spinner mContactMethodSpinner;
 
@@ -64,9 +64,8 @@ public class MemberEditFragment extends Fragment {
         mMemberNameEditView = (EditText) view.findViewById(R.id.et_edit_name);
         mContactMethodSpinner = (Spinner) view.findViewById(R.id.spnr_contact_method);
 
-        // contact details area
-        mContactDetailsLineSeparator = (View) view.findViewById(R.id.contact_details_separator_line);
-        //mContactDetailsLabel = (TextView) view.findViewById(R.id.contact_details_label);
+        // Contact details area
+        mContactDetailsLineSeparator = view.findViewById(R.id.contact_details_separator_line);
         mContactDetailsEditText = (EditText) view.findViewById(R.id.et_edit_contact_detail);
 
         // Assign the view with its content.
@@ -81,8 +80,7 @@ public class MemberEditFragment extends Fragment {
         }
         mMemberNameEditView.setText(mMember.getName());
 
-        ArrayAdapter adapter = new ArrayAdapter<ContactMethod>(getActivity(), android.R.layout.simple_spinner_item, ContactMethod.values());
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ContactMethodAdapter adapter = new ContactMethodAdapter(getActivity(), ContactMethod.values());
         mContactMethodSpinner.setAdapter(adapter);
         mContactMethodSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -94,31 +92,27 @@ public class MemberEditFragment extends Fragment {
                         setContactDetails(selected);
                         mContactDetailsEditText.setVisibility(View.VISIBLE);
                         mContactDetailsLineSeparator.setVisibility(View.VISIBLE);
-                        //mContactDetailsLabel.setVisibility(View.VISIBLE);
                         mContactDetailsEditText.setInputType(InputType.TYPE_CLASS_TEXT
                           | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
                           | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                        mContactDetailsEditText.setHint("Email Address");
+                        mContactDetailsEditText.setHint(getString(R.string.edit_email_address_hint));
                         mContactDetailsEditText.requestFocus();
                         break;
                     case SMS:
                         setContactDetails(selected);
                         mContactDetailsEditText.setVisibility(View.VISIBLE);
                         mContactDetailsLineSeparator.setVisibility(View.VISIBLE);
-                        //mContactDetailsLabel.setVisibility(View.VISIBLE);
                         mContactDetailsEditText.setInputType(InputType.TYPE_CLASS_PHONE);
-                        mContactDetailsEditText.setHint("Mobile Number");
+                        mContactDetailsEditText.setHint(getString(R.string.edit_sms_number_hint));
                         mContactDetailsEditText.requestFocus();
                         break;
                     case REVEAL_ONLY:
                         mContactDetailsEditText.setVisibility(View.INVISIBLE);
                         mContactDetailsLineSeparator.setVisibility(View.INVISIBLE);
-                        //mContactDetailsLabel.setVisibility(View.INVISIBLE);
                         mContactDetailsEditText.setText("");
                         break;
                     default:
-                        // TODO Throw
-
+                        throw new IllegalArgumentException("Unsupported Contact Method: " + selected);
                 }
             }
 
@@ -156,7 +150,6 @@ public class MemberEditFragment extends Fragment {
         if(!isValid) {
             return false;
         }
-        Log.d(TAG, "doSaveAction() - content is valid");
 
         /*
          * Important, handle the following scenarios -
@@ -169,6 +162,7 @@ public class MemberEditFragment extends Fragment {
          *
          * The most critical thing to note here is that we - KEEP ANY ASSIGNMENTS AND ONLY CHANGE THEIR SEND STATUS
          */
+        Log.d(TAG, "doSaveAction() - content is valid");
         Assignment assignment = mDb.queryAssignmentForMember(mMember.getId());
         boolean hasAssignment = assignment != null;
 
@@ -179,7 +173,7 @@ public class MemberEditFragment extends Fragment {
                 mDb.updateAllAssignmentsInGroup(mMember.getGroupId(), Assignment.Status.Assigned);
             } else if(!mMember.getContactMethod().equals(contactMethod)
               || (contactDetails != null && !contactDetails.equals(mMember.getContactDetails()))
-              || (contactDetails == null && mMember.getContactDetails() != null)){
+              || (contactDetails == null && mMember.getContactDetails() != null)) {
                 Log.d(TAG, "doSaveAction() - contact method or details have changed");
                 assignment.setSendStatus(Assignment.Status.Assigned);
                 mDb.update(assignment);

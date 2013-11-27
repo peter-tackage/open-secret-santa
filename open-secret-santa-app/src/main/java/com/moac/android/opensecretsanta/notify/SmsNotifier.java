@@ -77,7 +77,7 @@ public class SmsNotifier implements Notifier {
          */
         Log.v(TAG, "notify() - backing off");
         try {
-            Thread.sleep(500);
+            Thread.sleep(750);
         } catch(InterruptedException e) {
         }
         Log.v(TAG, "notify() - end");

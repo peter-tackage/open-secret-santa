@@ -8,7 +8,7 @@
 
   <item
     android:id="@+id/menu_item_notify_group"
-    android:title="@string/menu_notify"
+    android:title="@string/menu_notify_group"
     android:showAsAction="withText" />
 
 </menu>

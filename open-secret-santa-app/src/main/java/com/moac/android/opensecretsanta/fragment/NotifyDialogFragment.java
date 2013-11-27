@@ -36,7 +36,6 @@ public class NotifyDialogFragment extends DialogFragment {
 
     private static final String TAG = NotifyDialogFragment.class.getSimpleName();
     private static final String MESSAGE_KEY = "message";
-    private static final int MAX_MESSAGE_LENGTH = 200;
 
     protected EditText mMsgField;
     protected DatabaseManager mDb;
@@ -50,6 +49,7 @@ public class NotifyDialogFragment extends DialogFragment {
     private TextView mInfoTextView;
     private boolean mIsEmailAuthRequired;
     private ViewGroup mEmailFromContainer;
+    private int mMaxMsgLength;
 
     /**
      * Factory method for this fragment class
@@ -75,7 +75,7 @@ public class NotifyDialogFragment extends DialogFragment {
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         mMemberIds = getArguments().getLongArray(Intents.MEMBER_ID_ARRAY_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
-
+        mMaxMsgLength = getResources().getInteger(R.integer.max_notify_msg_length);
         String message = mSavedMsg == null ? mGroup.getMessage() :
           savedInstanceState.getString(MESSAGE_KEY);
 
@@ -93,9 +93,9 @@ public class NotifyDialogFragment extends DialogFragment {
         mMsgField.setText(message);
 
         final TextView charCountView = (TextView) view.findViewById(R.id.tv_notify_msg_char_count);
-        int remainingChars = MAX_MESSAGE_LENGTH;
+        int remainingChars = mMaxMsgLength;
         if(message != null) {
-            remainingChars = message.length() >= MAX_MESSAGE_LENGTH ? 0 : MAX_MESSAGE_LENGTH - message.length();
+            remainingChars = message.length() >= mMaxMsgLength ? 0 : mMaxMsgLength - message.length();
         }
         charCountView.setText(String.valueOf(remainingChars));
 
@@ -110,7 +110,7 @@ public class NotifyDialogFragment extends DialogFragment {
             @Override
             public void afterTextChanged(Editable s) {
                 // Update the reported character length
-                charCountView.setText(String.valueOf(MAX_MESSAGE_LENGTH - s.length()));
+                charCountView.setText(String.valueOf(mMaxMsgLength - s.length()));
             }
         });
 

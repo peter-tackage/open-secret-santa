@@ -111,6 +111,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
                  }
             }
 
+            // we are up to here, let's delete the old tables then
+            dropOldVersion2Tables(connectionSource);
+
         } else {
             onCreate(db);
         }
@@ -250,5 +253,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         Log.d(TAG, "migrateDataToVersion3");
         DatabaseUpgrader databaseUpgrader = new DatabaseUpgrader(this);
         databaseUpgrader.migrateDataToVersion3(db, cs);
+    }
+
+    private void dropOldVersion2Tables(ConnectionSource cs) {
+        try {
+            Log.d(TAG, "dropOldVersion2Tables");
+            DatabaseUpgrader databaseUpgrader = new DatabaseUpgrader(this);
+            databaseUpgrader.dropOldVersion2Tables(cs);
+        } catch (Exception e) {
+            Log.e(TAG, "dropOldVersion2Tables threw exception:" + e.getMessage());
+        }
     }
 }
