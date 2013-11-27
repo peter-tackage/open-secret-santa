@@ -8,89 +8,78 @@
   android:background="@color/shade_of_grey1">
 
   <LinearLayout
-    android:id="@+id/layout_avatar_container"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_alignParentTop="true"
-    android:layout_centerHorizontal="true">
+    android:orientation="horizontal"
+    android:id="@+id/layout_notify_email_container"
+    android:visibility="gone">
 
-      <LinearLayout
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/notify_email_from_label"
+      android:textColor="@android:color/holo_blue_dark" />
+
+    <Spinner
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:orientation="horizontal"
-      android:id="@+id/layout_notify_email_container"
-      android:visibility="gone">
-
-      <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="From: "
-        android:textColor="@android:color/holo_blue_dark"/>
-
-      <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/spnr_email_selection"/>
-    </LinearLayout>
+      android:id="@+id/spnr_email_selection" />
   </LinearLayout>
 
   <EditText
     android:id="@+id/tv_notify_msg"
     android:layout_width="match_parent"
+    android:layout_height="150dp"
     android:scrollbars="vertical"
     android:hint="@string/notify_message_text_hint"
     android:gravity="top"
     android:singleLine="false"
     android:textAppearance="?android:attr/textAppearanceSmall"
     android:inputType="textShortMessage|textMultiLine|textCapSentences"
-    android:maxLength="200"
-    android:layout_below="@+id/layout_avatar_container"
+    android:maxLength="@integer/max_notify_msg_length"
     android:textColor="@color/dark_grey"
-    android:layout_height="150dp"
     android:background="@color/light_blue"
-    android:layout_alignParentRight="true"
     android:textColorHint="@color/shade_of_grey4"
-    android:layout_marginTop="8dp"
-    android:layout_marginBottom="8dp"
-    android:padding="8dp"/>
+    android:layout_marginBottom="4dp"
+    android:padding="8dp"
+    android:layout_below="@+id/layout_notify_email_container" />
 
-
-
-    <TextView
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:id="@+id/tv_notify_info"
-      android:textColor="#ff0000"
-      android:visibility="gone"
-      android:singleLine="false"
-      android:layout_alignParentBottom="false"
-      android:gravity="center_horizontal"
-      android:layout_below="@+id/data_sms_charges"
-      android:layout_marginTop="10dp"/>
-
-
-    <TextView
-    android:id="@+id/tv_notify_msg_char_count"
-    android:layout_width="wrap_content"
+  <LinearLayout
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textAppearance="?android:attr/textAppearanceSmall"
+    android:orientation="horizontal"
     android:layout_below="@+id/tv_notify_msg"
-    android:textColor="@android:color/holo_blue_light"
-    android:singleLine="true"
-    android:layout_alignParentRight="true"
-    android:layout_marginBottom="10dp"/>
+    android:id="@+id/footer_container">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/sms_and_data_charges_message"
-        android:id="@+id/data_sms_charges"
-        android:textColor="@color/dark_grey"
-        android:textSize="10dp"
-        android:textIsSelectable="true"
-        android:layout_alignParentTop="false"
-        android:layout_marginBottom="10dp"
-        android:layout_below="@+id/tv_notify_msg"/>
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/sms_and_data_charges_message"
+      android:id="@+id/data_sms_charges"
+      android:textColor="@color/dark_grey"
+      android:textSize="10dp"
+      android:textIsSelectable="true"
+      android:gravity="top" />
+
+    <TextView
+      android:id="@+id/tv_notify_msg_char_count"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:textAppearance="?android:attr/textAppearanceSmall"
+      android:textColor="@android:color/holo_blue_light"
+      android:layout_weight="1"
+      android:gravity="right|top" />
+  </LinearLayout>
+
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/tv_notify_info"
+    android:textColor="@android:color/holo_red_dark"
+    android:layout_alignParentBottom="false"
+    android:gravity="center_horizontal"
+    android:layout_marginTop="8dp"
+    android:visibility="gone"
+    android:layout_below="@+id/footer_container" />
 
 </RelativeLayout>
