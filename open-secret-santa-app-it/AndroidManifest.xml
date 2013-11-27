@@ -3,6 +3,7 @@
   package="com.moac.android.opensecretsanta.test"
   android:versionCode="1"
   android:versionName="1.0-SNAPSHOT">
+  <uses-sdk android:minSdkVersion="8" />
 
   <application
     android:icon="@drawable/icon"
@@ -13,7 +14,6 @@
   <instrumentation
     android:targetPackage="com.moac.android.opensecretsanta"
     android:name="android.test.InstrumentationTestRunner" />
-  <uses-sdk android:minSdkVersion="8" />
 
 </manifest>
 
