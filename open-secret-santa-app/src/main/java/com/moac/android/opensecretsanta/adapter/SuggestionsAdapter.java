@@ -78,9 +78,6 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
             addressView = (TextView) v.getTag(R.id.address_textview);
         }
 
-        // FIXME Can get index out of bound exception here.
-        // FIXME Terrible, terrible hack here, only gets away with it because
-        // the getView is so fast and you never see it...
         Member item = mItems.get(position);
 
         // This is broken - doesn't immediately update ImageView, needs reload.
@@ -190,8 +187,6 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
             FilterResults filterResults = new FilterResults();
             if(constraint != null) {
                 // Assign the data to the FilterResults
-                // FIXME Assigning to mItems here is the cause of the AOOB Exception
-                // This is called on another thread, so it messes with the getView call
                 final List<Member> items = autoComplete(mFilterContext, constraint.toString());
                 filterResults.values = items;
                 filterResults.count = items.size();
