@@ -1,3 +1,7 @@
+Version - 2.0.1
+---------------
+Bug fix for unselected Member List items
+
 Version - 2.0.0
 ---------------
 New design and many new features, particularly for resending assignments.

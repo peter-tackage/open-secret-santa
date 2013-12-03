@@ -51,6 +51,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     private Group mGroup;
     private MemberListAdapter mAdapter;
 
+    // FIXME Perhaps hold this in a separate model with listeners/observers
     private Mode mMode = Mode.Building;
     private AutoCompleteTextView mCompleteTextView;
     private Menu mMenu; // non CAB items
@@ -119,6 +120,9 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         TextView titleText = (TextView) view.findViewById(R.id.content_title_textview);
         titleText.setText(mGroup.getName());
 
+        mAdapter = new MemberListAdapter(getActivity(), R.layout.member_row);
+        setListAdapter(mAdapter);
+
         return view;
     }
 
@@ -141,18 +145,18 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     @Override
     public void onResume() {
-        // FIXME This whole methods need revising, there's numerous duplicate
-        // calls and even duplicate notes about duplicate calls.
         super.onResume();
         Log.i(TAG, "onResume() - registering event bus");
-        // TODO A lot of this is unnecessarily rebuilding things.
         BusProvider.getInstance().register(this);
+        populateUI();
+    }
+
+    private void populateUI() {
         mMode = evaluateMode();
-        setHeader();
+        setHeader(); // depends on mode
         // Populate member list
-        mAdapter = new MemberListAdapter(getActivity(), R.layout.member_row, buildMemberRowDetails(mGroup.getId()));
-        setListAdapter(mAdapter);
-        setMenuItems();
+        populateMemberList();
+        setMenuItems(); // depends on adapter contents
     }
 
     @Override
@@ -306,9 +310,14 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     // TODO Do in background
     private void doDelete(long[] _ids) {
+        if(_ids == null || _ids.length == 0)
+            return;
+
         for(long id : _ids) {
             mDb.delete(id, Member.class);
         }
+        // FIXME This is seems to be required to delete the last one.
+        getListView().clearChoices();
         invalidateAssignments(mGroup);
         populateMemberList();
     }
@@ -352,8 +361,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     private void invalidateAssignments(Group group) {
-        // FIXME This will clobber the Group's message if they have saved to DB
-        // during notify.
+        // FIXME This will clobber the Group's message if they have saved to DB during notify.
         group.setDrawDate(Group.UNSET_DATE);
         mDb.update(group);
         mDb.deleteAllAssignmentsForGroup(group.getId());
@@ -362,9 +370,9 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     private void doNotify(long[] _memberIds) {
-        if(_memberIds != null) {
-            requestNotifyDraw(mGroup, _memberIds);
-        }
+        if(_memberIds == null || _memberIds.length == 0)
+            return;
+        requestNotifyDraw(mGroup, _memberIds);
     }
 
     private void doNotifyAll() {
@@ -452,7 +460,8 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     // TODO Make calls do this asynchronously
     private void populateMemberList() {
-        getListView().clearChoices();
+       // getListView().clearChoices();
+        mAdapter.setNotifyOnChange(false);
         mAdapter.clear();
         mAdapter.addAll(buildMemberRowDetails(mGroup.getId()));
         mAdapter.notifyDataSetChanged();
