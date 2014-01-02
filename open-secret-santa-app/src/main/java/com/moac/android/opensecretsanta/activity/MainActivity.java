@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.google.common.primitives.Longs;
+import com.moac.android.inject.dagger.InjectingActivity;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.adapter.DrawerButtonItem;
@@ -35,7 +36,9 @@ import com.moac.android.opensecretsanta.util.GroupUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity implements MemberListFragment.FragmentContainer, NotifyDialogFragment.FragmentContainer, MemberEditor {
+import javax.inject.Inject;
+
+public class MainActivity extends InjectingActivity implements MemberListFragment.FragmentContainer, NotifyDialogFragment.FragmentContainer, MemberEditor {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -43,10 +46,12 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     private static final String NOTIFY_DIALOG_FRAGMENT_TAG = "NotifyDialogFragment";
     private static final String NOTIFY_EXECUTOR_FRAGMENT_TAG = "NotifyExecutorFragment";
 
+    @Inject
+    DatabaseManager mDb; // shorthand.
+
     protected DrawerLayout mDrawerLayout;
     protected ActionBarDrawerToggle mDrawerToggle;
     protected ListView mDrawerList;
-    protected DatabaseManager mDb; // shorthand.
     protected MemberListFragment mMembersListFragment;
     private NotifyExecutorFragment mNotifyExecutorFragment;
     private DrawerListAdapter mDrawerListAdapter;
@@ -54,7 +59,6 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
     @Override
     public void onCreate(Bundle _savedInstanceState) {
         super.onCreate(_savedInstanceState);
-        mDb = OpenSecretSantaApplication.getInstance().getDatabase();
 
         // Find or create existing worker fragment
         FragmentManager fm = getFragmentManager();
@@ -231,7 +235,7 @@ public class MainActivity extends Activity implements MemberListFragment.Fragmen
         }));
 
         // Add each Group item
-        List<Group> groups = OpenSecretSantaApplication.getInstance().getDatabase().queryAll(Group.class);
+        List<Group> groups = mDb.queryAll(Group.class);
         Log.v(TAG, "initialiseUI() - group count: " + groups.size());
         for(Group g : groups) {
             drawerListItems.add(new GroupDetailsRow(g.getId(), g.getName(), g.getCreatedAt()));

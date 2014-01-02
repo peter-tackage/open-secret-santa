@@ -1,6 +1,5 @@
 package com.moac.android.opensecretsanta.fragment;
 
-import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -10,7 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
+
+import com.moac.android.inject.dagger.InjectingFragment;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.adapter.ContactMethodAdapter;
@@ -24,11 +24,15 @@ import com.moac.android.opensecretsanta.util.validator.MemberNameValidator;
 import com.moac.android.opensecretsanta.util.validator.Validator;
 import com.squareup.picasso.Picasso;
 
-public class MemberEditFragment extends Fragment {
+import javax.inject.Inject;
+
+public class MemberEditFragment extends InjectingFragment {
 
     private static final String TAG = MemberEditFragment.class.toString();
 
-    private DatabaseManager mDb;
+    @Inject
+    DatabaseManager mDb;
+
     private Member mMember;
     private EditText mMemberNameEditView;
     private View mContactDetailsLineSeparator;
@@ -46,7 +50,6 @@ public class MemberEditFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDb = OpenSecretSantaApplication.getInstance().getDatabase();
         long memberId = getArguments().getLong(Intents.MEMBER_ID_INTENT_EXTRA);
         mMember = mDb.queryById(memberId, Member.class);
     }
@@ -69,14 +72,14 @@ public class MemberEditFragment extends Fragment {
         mContactDetailsEditText = (EditText) view.findViewById(R.id.et_edit_contact_detail);
 
         // Assign the view with its content.
-        if(mMember.getContactId() == PersistableObject.UNSET_ID || mMember.getLookupKey() == null) {
+        if (mMember.getContactId() == PersistableObject.UNSET_ID || mMember.getLookupKey() == null) {
             Picasso.with(getActivity()).load(R.drawable.ic_contact_picture).into(avatarImageView);
         } else {
             Uri lookupUri = ContactsContract.Contacts.getLookupUri(mMember.getContactId(), mMember.getLookupKey());
             Uri contactUri = ContactsContract.Contacts.lookupContact(getActivity().getContentResolver(), lookupUri);
             Picasso.with(getActivity()).load(contactUri)
-              .placeholder(R.drawable.ic_contact_picture).error(R.drawable.ic_contact_picture)
-              .into(avatarImageView);
+                    .placeholder(R.drawable.ic_contact_picture).error(R.drawable.ic_contact_picture)
+                    .into(avatarImageView);
         }
         mMemberNameEditView.setText(mMember.getName());
 
@@ -87,14 +90,14 @@ public class MemberEditFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 ContactMethod selected = (ContactMethod) mContactMethodSpinner.getItemAtPosition(position);
-                switch(selected) {
+                switch (selected) {
                     case EMAIL:
                         setContactDetails(selected);
                         mContactDetailsEditText.setVisibility(View.VISIBLE);
                         mContactDetailsLineSeparator.setVisibility(View.VISIBLE);
                         mContactDetailsEditText.setInputType(InputType.TYPE_CLASS_TEXT
-                          | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-                          | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                                | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+                                | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                         mContactDetailsEditText.setHint(getString(R.string.edit_email_address_hint));
                         mContactDetailsEditText.requestFocus();
                         break;
@@ -127,7 +130,7 @@ public class MemberEditFragment extends Fragment {
 
     // If the user already has a contact method, then set those details
     public void setContactDetails(ContactMethod selected) {
-        if(selected == mMember.getContactMethod()) {
+        if (selected == mMember.getContactMethod()) {
             mContactDetailsEditText.setText(mMember.getContactDetails());
         } else {
             mContactDetailsEditText.setText("");
@@ -144,10 +147,10 @@ public class MemberEditFragment extends Fragment {
         Log.d(TAG, "doSaveAction() - name: " + name + " contactMethod: " + contactMethod + " contactDetails: " + contactDetails);
 
         boolean isValid =
-          checkField(mMemberNameEditView, new MemberNameValidator(mDb, mMember.getGroupId(), mMember.getId(), name))
-            && checkField(mContactDetailsEditText, new ContactDetailsValidator(contactMethod, contactDetails));
+                checkField(mMemberNameEditView, new MemberNameValidator(mDb, mMember.getGroupId(), mMember.getId(), name))
+                        && checkField(mContactDetailsEditText, new ContactDetailsValidator(contactMethod, contactDetails));
 
-        if(!isValid) {
+        if (!isValid) {
             return false;
         }
 
@@ -167,13 +170,13 @@ public class MemberEditFragment extends Fragment {
         boolean hasAssignment = assignment != null;
 
         // Apply rules as above
-        if(hasAssignment) {
-            if(!name.equals(mMember.getName())) {
+        if (hasAssignment) {
+            if (!name.equals(mMember.getName())) {
                 Log.d(TAG, "doSaveAction() - name has changed");
                 mDb.updateAllAssignmentsInGroup(mMember.getGroupId(), Assignment.Status.Assigned);
-            } else if(!mMember.getContactMethod().equals(contactMethod)
-              || (contactDetails != null && !contactDetails.equals(mMember.getContactDetails()))
-              || (contactDetails == null && mMember.getContactDetails() != null)) {
+            } else if (!mMember.getContactMethod().equals(contactMethod)
+                    || (contactDetails != null && !contactDetails.equals(mMember.getContactDetails()))
+                    || (contactDetails == null && mMember.getContactDetails() != null)) {
                 Log.d(TAG, "doSaveAction() - contact method or details have changed");
                 assignment.setSendStatus(Assignment.Status.Assigned);
                 mDb.update(assignment);
@@ -190,7 +193,7 @@ public class MemberEditFragment extends Fragment {
 
     private boolean checkField(final EditText et, Validator _validator) {
         boolean isFieldValid = _validator.isValid();
-        if(!isFieldValid) {
+        if (!isFieldValid) {
             et.setError(_validator.getMsg());
         }
         return isFieldValid;

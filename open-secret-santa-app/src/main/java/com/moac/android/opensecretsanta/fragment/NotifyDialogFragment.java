@@ -4,7 +4,6 @@ import android.accounts.Account;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -17,7 +16,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
+
+import com.moac.android.inject.dagger.InjectingDialogFragment;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.adapter.AccountAdapter;
@@ -27,29 +27,35 @@ import com.moac.android.opensecretsanta.notify.EmailAuthorization;
 import com.moac.android.opensecretsanta.notify.NotifyAuthorization;
 import com.moac.android.opensecretsanta.util.AccountUtils;
 import com.moac.android.opensecretsanta.util.NotifyUtils;
+
+import javax.inject.Inject;
+
 import rx.Observable;
 import rx.android.concurrency.AndroidSchedulers;
 import rx.concurrency.Schedulers;
 import rx.util.functions.Action1;
 
-public class NotifyDialogFragment extends DialogFragment {
+public class NotifyDialogFragment extends InjectingDialogFragment {
 
     private static final String TAG = NotifyDialogFragment.class.getSimpleName();
     private static final String MESSAGE_KEY = "message";
 
+    @Inject
+    DatabaseManager mDb;
+
     protected EditText mMsgField;
-    protected DatabaseManager mDb;
     protected Group mGroup;
     protected long[] mMemberIds;
 
-    // Apparently this is how you retain EditText fields - http://code.google.com/p/android/issues/detail?id=18719
-    private String mSavedMsg;
     private FragmentContainer mFragmentContainer;
     private Spinner mSpinner;
     private TextView mInfoTextView;
     private boolean mIsEmailAuthRequired;
     private ViewGroup mEmailFromContainer;
     private int mMaxMsgLength;
+
+    // Apparently this is how you retain EditText fields - http://code.google.com/p/android/issues/detail?id=18719
+    private String mSavedMsg;
 
     /**
      * Factory method for this fragment class
@@ -71,7 +77,6 @@ public class NotifyDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Log.i(TAG, "onCreateDialog() - start: " + this);
-        mDb = OpenSecretSantaApplication.getInstance().getDatabase();
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         mMemberIds = getArguments().getLongArray(Intents.MEMBER_ID_ARRAY_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);

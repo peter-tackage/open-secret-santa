@@ -6,6 +6,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+
+import com.moac.android.inject.dagger.InjectingActivity;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.fragment.RestrictionsListFragment;
 import com.moac.android.opensecretsanta.model.PersistableObject;
@@ -14,7 +16,7 @@ import com.moac.android.opensecretsanta.model.PersistableObject;
  * This activity doesn't do much but supply a custom action bar and host
  * the RestrictionsListFragment.
  */
-public class RestrictionsActivity extends Activity {
+public class RestrictionsActivity extends InjectingActivity {
 
     protected RestrictionsListFragment mRestrictionsListFragment;
 

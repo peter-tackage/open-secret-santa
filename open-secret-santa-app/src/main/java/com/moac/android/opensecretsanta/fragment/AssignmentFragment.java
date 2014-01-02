@@ -2,16 +2,17 @@ package com.moac.android.opensecretsanta.fragment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.moac.android.inject.dagger.InjectingDialogFragment;
 import com.moac.android.opensecretsanta.R;
 import com.squareup.picasso.Picasso;
 
-public class AssignmentFragment extends DialogFragment {
+public class AssignmentFragment extends InjectingDialogFragment {
 
     private static final String TAG = AssignmentFragment.class.getSimpleName();
 
