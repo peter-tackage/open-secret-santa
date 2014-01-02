@@ -1,7 +1,6 @@
 package com.moac.android.opensecretsanta.content;
 
 import android.app.SearchManager;
-import android.app.SearchableInfo;
 import android.content.*;
 import android.database.Cursor;
 import android.database.MatrixCursor;
@@ -11,7 +10,6 @@ import android.provider.ContactsContract;
 import android.util.Log;
 
 import java.util.Arrays;
-import java.util.List;
 
 /*
  * Calls through to the Contacts Suggestion endpoint.

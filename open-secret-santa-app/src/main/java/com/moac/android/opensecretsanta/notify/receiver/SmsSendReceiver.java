@@ -1,48 +1,46 @@
 package com.moac.android.opensecretsanta.notify.receiver;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
+
+import com.moac.android.inject.dagger.InjectingBroadcastReceiver;
 import com.moac.android.opensecretsanta.activity.Intents;
-import com.moac.android.opensecretsanta.content.BusProvider;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 import com.moac.android.opensecretsanta.notify.NotifyStatusEvent;
 import com.squareup.otto.Bus;
 
+import javax.inject.Inject;
+
 /**
  * A Receiver will get all events that match the IntentFilter, so we can't
  * initialise it with an Assignment and assume that the onReceive callback is
- * for that Assignment. receipt. Instead we use the Extra in the Intent
+ * for that Assignment receipt. Instead we use the Extra in the Intent
  * to determine which Assignment is being processed.
  */
-public class SmsSendReceiver extends BroadcastReceiver {
+public class SmsSendReceiver extends InjectingBroadcastReceiver {
 
     private static final String TAG = SmsSendReceiver.class.getSimpleName();
 
-    // TODO Inject these
-    private final DatabaseManager mDb;
-    private final Bus mBus;
+    @Inject
+    DatabaseManager mDb;
 
-    // Registering in the manifest requires a default constructor
-    public SmsSendReceiver() {
-        mBus = BusProvider.getInstance();
-        mDb = OpenSecretSantaApplication.getInstance().getDatabase();
-    }
+    @Inject
+    Bus mBus;
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
 
         /**
          * Due to the asynchronous nature of this callback, we need to be defensive.
          * The entities that were initiated the events may have changed or
          * even have been removed.
          *
-         * This callback does happen on the main thread, though.
+         * Note: This callback happens on the main thread
          */
 
         long assignmentId = intent.getLongExtra(Intents.ASSIGNMENT_ID_INTENT_EXTRA, PersistableObject.UNSET_ID);

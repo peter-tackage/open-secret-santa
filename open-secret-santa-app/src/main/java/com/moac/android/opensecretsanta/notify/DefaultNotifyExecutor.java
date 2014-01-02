@@ -19,11 +19,10 @@ import rx.subscriptions.Subscriptions;
 
 public class DefaultNotifyExecutor implements NotifyExecutor {
 
-    // TODO Inject
     private final Context mContext;
     private final NotifyAuthorization mAuth;
-    DatabaseManager mDb;
-    Bus mBus;
+    private final DatabaseManager mDb;
+    private final Bus mBus;
 
     private static final String TAG = DefaultNotifyExecutor.class.getSimpleName();
 

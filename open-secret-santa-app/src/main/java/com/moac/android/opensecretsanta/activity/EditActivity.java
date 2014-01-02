@@ -1,12 +1,13 @@
 package com.moac.android.opensecretsanta.activity;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+
+import com.moac.android.inject.dagger.InjectingActivity;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.fragment.MemberEditFragment;
 import com.moac.android.opensecretsanta.model.PersistableObject;
@@ -15,7 +16,7 @@ import com.moac.android.opensecretsanta.model.PersistableObject;
  * This activity doesn't do much but supply a custom action bar and host
  * the MemberEditFragment.
  */
-public class EditActivity extends Activity {
+public class EditActivity extends InjectingActivity {
 
     protected MemberEditFragment mMemberEditFragment;
 

@@ -1,6 +1,5 @@
 package com.moac.android.opensecretsanta.fragment;
 
-import android.app.ListFragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,7 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.TextView;
-import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
+
+import com.moac.android.inject.dagger.InjectingListFragment;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.adapter.RestrictionListAdapter;
@@ -20,13 +20,17 @@ import com.moac.android.opensecretsanta.model.Restriction;
 
 import java.util.*;
 
-public class RestrictionsListFragment extends ListFragment {
+import javax.inject.Inject;
+
+public class RestrictionsListFragment extends InjectingListFragment {
 
     private static final String TAG = RestrictionsListFragment.class.getSimpleName();
 
     private enum Action {Create, Delete}
 
-    private DatabaseManager mDb;
+    @Inject
+    DatabaseManager mDb;
+
     private Member mFromMember;
     private Group mGroup;
     private ListAdapter mAdapter;
@@ -54,7 +58,6 @@ public class RestrictionsListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
-        mDb = OpenSecretSantaApplication.getInstance().getDatabase();
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         long memberId = getArguments().getLong(Intents.MEMBER_ID_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);

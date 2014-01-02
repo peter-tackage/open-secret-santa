@@ -11,13 +11,13 @@ import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.*;
 import android.widget.*;
-import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
+
+import com.moac.android.inject.dagger.InjectingListFragment;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.adapter.MemberListAdapter;
 import com.moac.android.opensecretsanta.adapter.MemberRowDetails;
 import com.moac.android.opensecretsanta.adapter.SuggestionsAdapter;
-import com.moac.android.opensecretsanta.content.BusProvider;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.draw.*;
 import com.moac.android.opensecretsanta.model.Assignment;
@@ -26,6 +26,7 @@ import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 import com.moac.android.opensecretsanta.notify.NotifyStatusEvent;
 import com.moac.drawengine.DrawEngine;
+import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import rx.Observable;
 import rx.Observer;
@@ -37,9 +38,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import static com.google.common.base.Strings.isNullOrEmpty;
 
-public class MemberListFragment extends ListFragment implements AbsListView.MultiChoiceModeListener {
+public class MemberListFragment extends InjectingListFragment implements AbsListView.MultiChoiceModeListener {
 
     private static final String TAG = MemberListFragment.class.getSimpleName();
     private static final String DRAW_IN_PROGRESS_KEY = "drawInProgress";
@@ -47,12 +50,17 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     private enum Mode {Building, Notify}
 
-    private DatabaseManager mDb;
-    private Group mGroup;
-    private MemberListAdapter mAdapter;
+    @Inject
+    DatabaseManager mDb;
+
+    @Inject
+    Bus mBus;
 
     // FIXME Perhaps hold this in a separate model with listeners/observers
     private Mode mMode = Mode.Building;
+    private Group mGroup;
+
+    private MemberListAdapter mAdapter;
     private AutoCompleteTextView mCompleteTextView;
     private Menu mMenu; // non CAB items
 
@@ -90,7 +98,6 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         setRetainInstance(true);
         setHasOptionsMenu(true);
 
-        mDb = OpenSecretSantaApplication.getInstance().getDatabase();
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
     }
@@ -147,7 +154,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     public void onResume() {
         super.onResume();
         Log.i(TAG, "onResume() - registering event bus");
-        BusProvider.getInstance().register(this);
+        mBus.register(this);
         populateUI();
     }
 
@@ -163,7 +170,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     public void onPause() {
         super.onPause();
         Log.i(TAG, "onPause() - deregistering event bus");
-        BusProvider.getInstance().unregister(this);
+        mBus.unregister(this);
     }
 
     @Override

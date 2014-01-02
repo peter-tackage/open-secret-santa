@@ -1,13 +1,11 @@
 package com.moac.android.opensecretsanta.fragment;
 
-import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
-import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
+
+import com.moac.android.inject.dagger.InjectingFragment;
 import com.moac.android.opensecretsanta.R;
-import com.moac.android.opensecretsanta.content.BusProvider;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.notify.DefaultNotifyExecutor;
@@ -15,20 +13,24 @@ import com.moac.android.opensecretsanta.notify.DrawNotifier;
 import com.moac.android.opensecretsanta.notify.NotifyAuthorization;
 import com.moac.android.opensecretsanta.notify.NotifyStatusEvent;
 import com.squareup.otto.Bus;
+
+import javax.inject.Inject;
+
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.concurrency.AndroidSchedulers;
 import rx.concurrency.Schedulers;
 
-public class NotifyExecutorFragment extends Fragment implements DrawNotifier, Observer<NotifyStatusEvent> {
+public class NotifyExecutorFragment extends InjectingFragment implements DrawNotifier, Observer<NotifyStatusEvent> {
 
     private static final String TAG = NotifyExecutorFragment.class.getSimpleName();
 
-    // TODO Inject
-    // TODO We don't handle multiple requests at once
+    @Inject
     DatabaseManager mDb;
+    @Inject
     Bus mBus;
+
     private ProgressDialog mDrawProgressDialog;
     private Subscription mSubscription;
 
@@ -36,13 +38,6 @@ public class NotifyExecutorFragment extends Fragment implements DrawNotifier, Ob
         NotifyExecutorFragment fragment = new NotifyExecutorFragment();
         fragment.setRetainInstance(true);
         return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mDb = OpenSecretSantaApplication.getInstance().getDatabase();
-        mBus = BusProvider.getInstance();
     }
 
     @Override
