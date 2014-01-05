@@ -24,15 +24,6 @@ public class OpenSecretSantaApplication extends InjectingApplication {
     @Inject
     DatabaseManager mDatabaseManager;
 
-    public OpenSecretSantaApplication() {
-        super();
-        Log.d(TAG, "onCreate() - start");
-    }
-
-    public static OpenSecretSantaApplication from(Activity activity) {
-        return (OpenSecretSantaApplication) activity.getApplication();
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -51,10 +42,10 @@ public class OpenSecretSantaApplication extends InjectingApplication {
 
     private void createDefaultInitialGroup() {
         String baseName = getString(R.string.base_group_name);
-        Group group1 = GroupUtils.createIncrementingGroup(mDatabaseManager, baseName);
+        Group myFirstGroup = GroupUtils.createIncrementingGroup(mDatabaseManager, baseName);
         // Assign as the current Group
         PreferenceManager.getDefaultSharedPreferences(this).edit().
-          putLong(MOST_RECENT_GROUP_KEY, group1.getId()).apply();
+          putLong(MOST_RECENT_GROUP_KEY, myFirstGroup.getId()).apply();
     }
 
     @Override
