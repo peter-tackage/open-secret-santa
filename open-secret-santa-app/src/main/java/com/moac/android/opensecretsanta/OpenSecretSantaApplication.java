@@ -1,8 +1,6 @@
 package com.moac.android.opensecretsanta;
 
-import android.app.Activity;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.moac.android.inject.dagger.InjectingApplication;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
@@ -19,7 +17,7 @@ public class OpenSecretSantaApplication extends InjectingApplication {
     public static final String MOST_RECENT_GROUP_KEY = "most_recent_group_id";
 
     private static final String CREATE_DEFAULT_GROUP = "createDefaultGroup";
-    private static final String TAG = "OpenSecretSantaApp";
+    private static final String TAG = "OpenSecretSantaApplication";
 
     @Inject
     DatabaseManager mDatabaseManager;
