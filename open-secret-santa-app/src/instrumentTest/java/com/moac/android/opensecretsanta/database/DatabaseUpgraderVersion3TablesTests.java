@@ -1,6 +1,7 @@
 package com.moac.android.opensecretsanta.database;
 
 import android.test.AndroidTestCase;
+
 import com.moac.android.opensecretsanta.builders.DrawResultEntryVersion2Builder;
 import com.moac.android.opensecretsanta.builders.DrawResultVersion2Builder;
 import com.moac.android.opensecretsanta.builders.GroupVersion2Builder;
@@ -13,7 +14,6 @@ import com.moac.android.opensecretsanta.model.version2.MemberVersion2;
 
 import java.util.List;
 
-
 // NOTE that id returned by create to old tables should not be used to query the new tables!
 // That would not make sense, although one exception is the Restriction table which hasn't changed
 public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
@@ -23,11 +23,9 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
     TestDatabaseHelper mTestDbHelper;
     DatabaseUpgrader mDatabaseUpgrader;
 
-
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-
         getContext().deleteDatabase("/data/data/com.moac.android.opensecretsanta/databases/" + TEST_DATABASE_NAME);
     }
 
@@ -43,7 +41,7 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
 
     // put some helper equality method here to be used in tests
     private boolean isGroupVersion2Equal(GroupVersion2 a, GroupVersion2 b) {
-        if(a == null || b == null) {
+        if (a == null || b == null) {
             return false;
         }
         return ((a.getName().compareTo(b.getName()) == 0) &&
@@ -51,7 +49,7 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
     }
 
     private boolean isDrawResultVersion2Equal(DrawResultVersion2 a, DrawResultVersion2 b) {
-        if(a == null || b == null) {
+        if (a == null || b == null) {
             return false;
         }
         return (a.getDrawDate() == (b.getDrawDate()) &&
@@ -61,7 +59,7 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
     }
 
     private boolean isAssignmentEqual(Assignment a, Assignment b) {
-        if(a == null || b == null) {
+        if (a == null || b == null) {
             return false;
         }
         return (a.getGiverMemberId() == (b.getGiverMemberId()) &&
@@ -70,7 +68,7 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
     }
 
     private boolean isGroupEqual(Group a, Group b) {
-        if(a == null || b == null) {
+        if (a == null || b == null) {
             return false;
         }
         // no need to check created at date as that's automatic on object creation which will differ
@@ -80,42 +78,39 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
     }
 
     private boolean isMemberEqual(Member a, Member b) {
-        if(a == null || b == null) {
+        if (a == null || b == null) {
             return false;
         }
 
         return (a.getContactId() == b.getContactId() &&
-                (a.getLookupKey() == null? b.getLookupKey() == null : a.getLookupKey().compareTo(b.getLookupKey()) == 0)  &&
-                (a.getContactDetails() == null ?  b.getContactDetails() == null : a.getContactDetails().compareTo(b.getContactDetails()) == 0) &&
+                (a.getLookupKey() == null ? b.getLookupKey() == null : a.getLookupKey().compareTo(b.getLookupKey()) == 0) &&
+                (a.getContactDetails() == null ? b.getContactDetails() == null : a.getContactDetails().compareTo(b.getContactDetails()) == 0) &&
                 a.getGroupId() == b.getGroupId() &&
                 a.getContactMethod() == b.getContactMethod() &&
                 (a.getName().compareTo(b.getName()) == 0));
     }
 
     private boolean isMemberInsideList(Member a, List<Member> memberList) {
-        for (int i=0; i<memberList.size(); i++) {
-            if (isMemberEqual(a, memberList.get(i))) {
+        for (Member aMemberList : memberList) {
+            if (isMemberEqual(a, aMemberList)) {
                 return true;
             }
         }
-
         return false;
     }
 
     private boolean isAssignmentInsideList(Assignment a, List<Assignment> assignmentList) {
-        for (int i=0; i<assignmentList.size(); i++) {
-            if (isAssignmentEqual(a, assignmentList.get(i))) {
+        for (Assignment anAssignmentList : assignmentList) {
+            if (isAssignmentEqual(a, anAssignmentList)) {
                 return true;
             }
         }
-
         return false;
     }
 
-
     private void getVersion3Tables() {
         Class[] PERSISTABLE_OBJECTS = new Class[]
-                { Member.class, Group.class };
+                {Member.class, Group.class};
 
         mTestDbHelper = new TestDatabaseHelper(getContext(), TEST_DATABASE_NAME, PERSISTABLE_OBJECTS);
         mTestDbHelper.getWritableDatabase().beginTransaction();
@@ -125,7 +120,7 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
 
     private void getVersion2Tables() {
         Class[] PERSISTABLE_OBJECTS = new Class[]
-                { Member.class, GroupVersion2.class, MemberVersion2.class, DrawResultVersion2.class, DrawResultEntryVersion2.class, Restriction.class};
+                {Member.class, GroupVersion2.class, MemberVersion2.class, DrawResultVersion2.class, DrawResultEntryVersion2.class, Restriction.class};
 
         mTestDbHelper = new TestDatabaseHelper(getContext(), TEST_DATABASE_NAME, PERSISTABLE_OBJECTS);
         mTestDbHelper.getWritableDatabase().beginTransaction();
@@ -140,7 +135,7 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
     // so that we can test migration of assignment
     private void getVersion2TablesAndAssignment() {
         Class[] PERSISTABLE_OBJECTS = new Class[]
-                { Member.class, Assignment.class, GroupVersion2.class, MemberVersion2.class, DrawResultVersion2.class, DrawResultEntryVersion2.class};
+                {Member.class, Assignment.class, GroupVersion2.class, MemberVersion2.class, DrawResultVersion2.class, DrawResultEntryVersion2.class};
 
         mTestDbHelper = new TestDatabaseHelper(getContext(), TEST_DATABASE_NAME, PERSISTABLE_OBJECTS);
         mTestDbHelper.getWritableDatabase().beginTransaction();
@@ -153,7 +148,7 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
     public void testMigrateMemberTable() {
 
         Class[] PERSISTABLE_OBJECTS = new Class[]
-                { Restriction.class, MemberVersion2.class, GroupVersion2.class };
+                {Restriction.class, MemberVersion2.class, GroupVersion2.class};
 
         mTestDbHelper = new TestDatabaseHelper(getContext(), TEST_DATABASE_NAME, PERSISTABLE_OBJECTS);
         mTestDbHelper.getWritableDatabase().beginTransaction();
@@ -167,7 +162,7 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
         // contact mode : reveal
         MemberVersion2Builder memberVersion2Builder = new MemberVersion2Builder();
         MemberVersion2 memberVersion2One = memberVersion2Builder.withName("test")
-        .withContactMode(0).withGroup(groupVersion2).build();
+                .withContactMode(0).withGroup(groupVersion2).build();
         mTestDbHelper.create(memberVersion2One, MemberVersion2.class);
 
         // sms
@@ -219,7 +214,7 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
         assertTrue(isMemberEqual(expectedMigratedMemberThree, migratedMembers.get(2)));
     }
 
-    public void testInsertMigratedAssignmentEntryInfoAssigned () {
+    public void testInsertMigratedAssignmentEntryInfoAssigned() {
         // check this test
         getVersion2TablesAndAssignment();
 
@@ -266,7 +261,7 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
         assertEquals(Assignment.Status.Assigned, assignmentTestResultAB.getSendStatus());
     }
 
-    public void testInsertMigratedAssignmentEntryInfoRevealed () {
+    public void testInsertMigratedAssignmentEntryInfoRevealed() {
 
         getVersion2TablesAndAssignment();
         String expectedGiverName = "giver";
@@ -316,7 +311,7 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
         assertEquals(Assignment.Status.Revealed, assignmentTestResult.getSendStatus());
     }
 
-    public void testInsertMigratedAssignmentEntryInfoSent () {
+    public void testInsertMigratedAssignmentEntryInfoSent() {
 
         getVersion2TablesAndAssignment();
         String expectedGiverName = "giver";
@@ -409,7 +404,7 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
         String groupName = "groupName";
         Group group = new Group();
         group.setName(groupName);
-        long groupId =  mTestDbHelper.create(group, Group.class);
+        long groupId = mTestDbHelper.create(group, Group.class);
 
         String testMemberName = "memberName";
         Member expectedMember = new Member();
@@ -428,13 +423,13 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
         assertTrue(isMemberEqual(expectedMember, membersTestResult.get(0)));
     }
 
-     public void testGetMemberIdFromMemberNameInexistentMember() {
+    public void testGetMemberIdFromMemberNameInexistentMember() {
         getVersion3Tables();
         // we need to have a group created as there is a constraint between the group and the member
         String groupName = "groupName";
         Group group = new Group();
         group.setName(groupName);
-        long groupId =  mTestDbHelper.create(group, Group.class);
+        long groupId = mTestDbHelper.create(group, Group.class);
 
         String newMemberName = "newMemberName";
 
@@ -448,7 +443,7 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
         List<Member> membersTestResult = mTestDbHelper.queryAll(Member.class);
         assertEquals(1, membersTestResult.size());
         // we can assume that the entries will be in the same order i.e giver Member is first element
-         assertTrue(isMemberEqual(expectedMember, membersTestResult.get(0)));
+        assertTrue(isMemberEqual(expectedMember, membersTestResult.get(0)));
     }
 
     public void testDuplicateAllMembers() {
@@ -514,12 +509,14 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
         assertTrue(isMemberEqual(expectedMemberC, duplicatedMembers.get(2)));
     }
 
-    /**********************************************************************************************
-     *
+    /**
+     * *******************************************************************************************
+     * <p/>
      * there are some enforced constraints in the builders but we are responsible to ensure
      * the integrity of the test db we are manually creating for things like no two same member
      * name within the same group for instance.
-     * ********************************************************************************************/
+     * *******************************************************************************************
+     */
 
     // no restrictions
     // one simple draw result with two members one group
@@ -535,7 +532,7 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
         long DRAW_DATE = 12345;
         GroupVersion2Builder groupV2Builder = new GroupVersion2Builder();
         GroupVersion2 group = groupV2Builder.withName(GROUPNAME)
-                                            .build();
+                .build();
         long groupId = mTestDbHelper.create(group, GroupVersion2.class);
 
         // has a constraint on group, so need to set it, also on contact_mode
@@ -551,20 +548,20 @@ public class DatabaseUpgraderVersion3TablesTests extends AndroidTestCase {
 
         DrawResultVersion2Builder drawResultV2Builder = new DrawResultVersion2Builder();
         DrawResultVersion2 drawResult = drawResultV2Builder.withGroup(group)
-                                                            .withDrawDate(DRAW_DATE)
-                                                            .withMessage(MESSAGE)
-                                                            .build();
+                .withDrawDate(DRAW_DATE)
+                .withMessage(MESSAGE)
+                .build();
 
         // we can use the same builder here where we override all the fields
         DrawResultEntryVersion2Builder drawResultEntryV2Builder = new DrawResultEntryVersion2Builder();
         DrawResultEntryVersion2 drawResultEntryA = drawResultEntryV2Builder.withGiverName(MEMBER_B_NAME)
-                                                                      .withReceiverName(MEMBER_A_NAME)
-                                                                      .withDrawResult(drawResult)
-                                                                        .build();
+                .withReceiverName(MEMBER_A_NAME)
+                .withDrawResult(drawResult)
+                .build();
         DrawResultEntryVersion2 drawResultEntryB = drawResultEntryV2Builder.withGiverName(MEMBER_A_NAME)
-                                                                      .withReceiverName(MEMBER_B_NAME)
-                                                                      .withDrawResult(drawResult)
-                                                                        .build();
+                .withReceiverName(MEMBER_B_NAME)
+                .withDrawResult(drawResult)
+                .build();
 
         long memberAId = mTestDbHelper.create(memberA, MemberVersion2.class);
         long memberBId = mTestDbHelper.create(memberB, MemberVersion2.class);

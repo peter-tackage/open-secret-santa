@@ -47,7 +47,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
     private static final String NOTIFY_EXECUTOR_FRAGMENT_TAG = "NotifyExecutorFragment";
 
     @Inject
-    DatabaseManager mDb; // shorthand.
+    DatabaseManager mDb;
 
     protected DrawerLayout mDrawerLayout;
     protected ActionBarDrawerToggle mDrawerToggle;
