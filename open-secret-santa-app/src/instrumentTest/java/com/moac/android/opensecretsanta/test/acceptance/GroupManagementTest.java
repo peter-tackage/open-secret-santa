@@ -5,7 +5,6 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 import android.widget.ListView;
 
-import com.jayway.android.robotium.solo.Condition;
 import com.jayway.android.robotium.solo.Solo;
 import com.moac.android.opensecretsanta.test.DateTestUtils;
 
@@ -20,6 +19,8 @@ public class GroupManagementTest extends ActivityInstrumentationTestCase2<Activi
 
     private static final String LAUNCHER_ACTIVITY_FULL_CLASSNAME =
             "com.moac.android.opensecretsanta.activity.MainActivity";
+    public static final String GROUPS_HEADER = "My Groups";
+    public static final String ADD_GROUP = "Add Group";
 
     private static Class launcherActivityClass;
 
@@ -32,15 +33,16 @@ public class GroupManagementTest extends ActivityInstrumentationTestCase2<Activi
         }
     }
 
+    private Solo solo;
+
     @SuppressWarnings("unchecked")
     public GroupManagementTest() throws ClassNotFoundException {
         super(launcherActivityClass);
     }
 
-    private Solo solo;
-
     @Override
     public void setUp() throws Exception {
+        getInstrumentation().getTargetContext().deleteDatabase("opensecretsanta.db");
         solo = new Solo(getInstrumentation(), getActivity());
     }
 
@@ -81,10 +83,10 @@ public class GroupManagementTest extends ActivityInstrumentationTestCase2<Activi
         solo.clickOnView(home);
 
         // Wait for the Drawer to open and the header text to be visible
-        assertTrue(solo.waitForText("My Groups"));
+        assertTrue(solo.waitForText(GROUPS_HEADER));
 
         // Verify we have an Add Group "button"
-        assertTrue(solo.searchText("Add Group", true));
+        assertTrue(solo.searchText(ADD_GROUP, true));
 
         // Verify we have a header, but no footer item.
         assertEquals(1, groupListView.getHeaderViewsCount());
@@ -105,21 +107,43 @@ public class GroupManagementTest extends ActivityInstrumentationTestCase2<Activi
          */
 
         // Ensure the "Add Group" button is available
-        assertTrue(solo.waitForText("Add Group"));
+        assertTrue(solo.waitForText(ADD_GROUP));
 
         // Click on the "Add Group" button (the whole row acts a button)
         solo.clickInList(2, 0);
+
+        // Verify new item added to the Group List
+        assertEquals(4, groupListView.getCount());
+
+        // Verify the new item is checked
+        assertEquals(3, groupListView.getCheckedItemPosition());
 
         // Verify that the Draw is closed
         long group2Time = System.currentTimeMillis();
         String group2Label = getGroupLabel(DateTestUtils.getDate("yyyy", group2Time), 2);
         assertTrue(solo.waitForText(String.format(group2Label)));
-        assertFalse(solo.searchText("My Groups", true));
+        assertFalse(solo.searchText(GROUPS_HEADER, true));
 
         // Get the Members List
-        // Get the DrawerLayout list (it's the second list)
         assertEquals(0, memberListView.getCount());
 
+        /**
+         * Verify that we can swap between groups
+         */
+        // Open the Drawer again
+        solo.clickOnView(home);
+
+        // Wait for the Drawer to open and the header text to be visible
+        assertTrue(solo.waitForText(GROUPS_HEADER));
+
+        // Click on Group #1 item in Group List
+        solo.clickInList(3, 0);
+
+        // Verify the Group #1 item is checked
+        assertEquals(2, groupListView.getCheckedItemPosition());
+
+        // Verify is shown as Member List
+        assertTrue(solo.waitForText(group1Label));
     }
 
 }
