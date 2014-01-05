@@ -42,7 +42,6 @@ public class GroupManagementTest extends ActivityInstrumentationTestCase2<Activi
 
     @Override
     public void setUp() throws Exception {
-        getInstrumentation().getTargetContext().deleteDatabase("opensecretsanta.db");
         solo = new Solo(getInstrumentation(), getActivity());
     }
 
@@ -130,7 +129,8 @@ public class GroupManagementTest extends ActivityInstrumentationTestCase2<Activi
         /**
          * Verify that we can swap between groups
          */
-        // Open the Drawer again
+
+        // Open the Drawer
         solo.clickOnView(home);
 
         // Wait for the Drawer to open and the header text to be visible
@@ -142,7 +142,54 @@ public class GroupManagementTest extends ActivityInstrumentationTestCase2<Activi
         // Verify the Group #1 item is checked
         assertEquals(2, groupListView.getCheckedItemPosition());
 
+        // Verify Drawer is closed
+        assertFalse(solo.searchText(GROUPS_HEADER, true));
+
         // Verify is shown as Member List
+        assertTrue(solo.waitForText(group1Label));
+
+        /**
+         * Verify toggling does not change current Group
+         */
+
+        // Open the Drawer again
+        solo.clickOnView(home);
+
+        // Wait for the Drawer to open and the header text to be visible
+        assertTrue(solo.waitForText(GROUPS_HEADER));
+
+        // Close the Drawer
+        solo.clickOnView(home);
+
+        // Verify Drawer is closed
+        assertFalse(solo.searchText(GROUPS_HEADER, true));
+
+        // Verify the Group #1 item is still checked
+        assertEquals(2, groupListView.getCheckedItemPosition());
+
+        // Verify is still shown as Member List
+        assertTrue(solo.waitForText(group1Label));
+
+        /**
+         * Verify reselecting same Group shows correct Group
+         */
+
+        // Open the Drawer again
+        solo.clickOnView(home);
+
+        // Wait for the Drawer to open and the header text to be visible
+        assertTrue(solo.waitForText(GROUPS_HEADER));
+
+        // Click on Group #1 item in Group List
+        solo.clickInList(3, 0);
+
+        // Verify Drawer is closed
+        assertFalse(solo.searchText(GROUPS_HEADER, true));
+
+        // Verify the Group #1 item is still checked
+        assertEquals(2, groupListView.getCheckedItemPosition());
+
+        // Verify is still shown as Member List
         assertTrue(solo.waitForText(group1Label));
     }
 
