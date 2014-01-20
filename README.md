@@ -1,11 +1,16 @@
+Open Secret Santa
+=================
 Open Secret Santa is an Android app to help you manage "Secret Santa" or "Kris Kringle" style gift exchanges.
 
-It is built using Gradle with a few dependencies that can't be accessed from Maven Central.
+<a href="https://play.google.com/store/apps/details?id=com.moac.android.opensecretsanta">
+  <img alt="Get it on Google Play"
+       src="https://developer.android.com/images/brand/en_generic_rgb_wo_45.png" />
+</a>
 
-Follow these steps to get hold of them -
+You can download it on Google Play! 
 
-Draw Engine
------------
+But if you really want to build it from the source, you will need Gradle with a few dependencies that aren't in Maven Central.
+### Draw Engine
 
 https://github.com/peter-tackage/draw-engine
 
@@ -17,8 +22,7 @@ Install the Draw Engine artifacts:
 
 TODO I should make this a submodule or host them as a repo.
 
-JavaMail for Android
---------------------
+### JavaMail for Android
 
 http://code.google.com/p/javamail-android/
 
