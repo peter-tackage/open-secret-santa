@@ -9,15 +9,16 @@ buildscript {
 apply plugin: 'android'
 
 repositories {
-    mavenLocal()
     mavenCentral()
+    maven {
+        url "https://raw.github.com/peter-tackage/maven-repo/master/releases/"
+    }
+    maven {
+        url "https://raw.github.com/peter-tackage/maven-repo/master/snapshots/"
+    }
 }
 
 dependencies {
-
-    // We currently don't support these tests
-    // testCompile 'junit:junit:4.10'
-    //  testCompile 'org.robolectric:robolectric:2.3-SNAPSHOT'
 
     compile project(':libraries:dagger-injections')
 
