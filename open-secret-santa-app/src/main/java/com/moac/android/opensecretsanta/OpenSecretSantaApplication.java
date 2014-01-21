@@ -1,8 +1,6 @@
 package com.moac.android.opensecretsanta;
 
-import android.app.Activity;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.moac.android.inject.dagger.InjectingApplication;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
@@ -19,19 +17,10 @@ public class OpenSecretSantaApplication extends InjectingApplication {
     public static final String MOST_RECENT_GROUP_KEY = "most_recent_group_id";
 
     private static final String CREATE_DEFAULT_GROUP = "createDefaultGroup";
-    private static final String TAG = "OpenSecretSantaApp";
+    private static final String TAG = "OpenSecretSantaApplication";
 
     @Inject
     DatabaseManager mDatabaseManager;
-
-    public OpenSecretSantaApplication() {
-        super();
-        Log.d(TAG, "onCreate() - start");
-    }
-
-    public static OpenSecretSantaApplication from(Activity activity) {
-        return (OpenSecretSantaApplication) activity.getApplication();
-    }
 
     @Override
     public void onCreate() {
@@ -51,10 +40,10 @@ public class OpenSecretSantaApplication extends InjectingApplication {
 
     private void createDefaultInitialGroup() {
         String baseName = getString(R.string.base_group_name);
-        Group group1 = GroupUtils.createIncrementingGroup(mDatabaseManager, baseName);
+        Group myFirstGroup = GroupUtils.createIncrementingGroup(mDatabaseManager, baseName);
         // Assign as the current Group
         PreferenceManager.getDefaultSharedPreferences(this).edit().
-          putLong(MOST_RECENT_GROUP_KEY, group1.getId()).apply();
+          putLong(MOST_RECENT_GROUP_KEY, myFirstGroup.getId()).apply();
     }
 
     @Override

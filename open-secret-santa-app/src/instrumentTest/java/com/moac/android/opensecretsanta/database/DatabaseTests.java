@@ -8,6 +8,10 @@ import com.moac.android.opensecretsanta.model.*;
 
 import java.util.List;
 
+/**
+ * Tests aspects of the database structure and business rules
+ * along with the use of ORMLite to handle model objects
+ */
 public class DatabaseTests extends AndroidTestCase {
 
     private static final String TEST_DATABASE_NAME = "testopensecretsanta.db";

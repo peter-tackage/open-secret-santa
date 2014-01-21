@@ -4,13 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import com.j256.ormlite.support.ConnectionSource;
 
-/**
- * Created with IntelliJ IDEA.
- * User: amelysh
- * Date: 16.11.13
- * Time: 00:59
- * To change this template use File | Settings | File Templates.
- */
 public class TestDatabaseHelper extends DatabaseHelper {
 
     ConnectionSource mConnectionSource;
