@@ -11,3 +11,5 @@ You can download it on Google Play!
 
 If you want to build from source, you're in luck! All dependencies are now in the Android SDK, Maven Central or in my Github hosted Maven repository.
 
+[![Build Status](https://travis-ci.org/peter-tackage/open-secret-santa.png?branch=integration)](https://travis-ci.org/peter-tackage/open-secret-santa)
+
