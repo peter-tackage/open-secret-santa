@@ -1,22 +1,21 @@
 buildscript {
     repositories {
-        // See https://github.com/JakeWharton/gradle-android-test-plugin/pull/26
-        maven {
-            url 'https://oss.sonatype.org/content/repositories/snapshots/'
-        }
         mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:0.7.+'
-        classpath 'com.squareup.gradle:gradle-android-test-plugin:0.9.1-SNAPSHOT'
     }
 }
 apply plugin: 'android'
-apply plugin: 'android-test'
 
 repositories {
-    mavenLocal()
     mavenCentral()
+    maven {
+        url "https://raw.github.com/peter-tackage/maven-repo/master/releases/"
+    }
+    maven {
+        url "https://raw.github.com/peter-tackage/maven-repo/master/snapshots/"
+    }
 }
 
 dependencies {
@@ -40,9 +39,6 @@ dependencies {
     compile 'javamail-android:mail:1.0.0'
     compile 'javamail-android:additionnal:1.0.0'
     compile 'javamail-android:activation:1.0.0'
-
-    testCompile 'junit:junit:4.10'
-    testCompile 'org.robolectric:robolectric:2.3-SNAPSHOT'
 }
 
 android {
