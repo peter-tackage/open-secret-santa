@@ -14,12 +14,12 @@ repositories {
 }
 
 dependencies {
-    compile 'com.squareup.dagger:dagger:1.1.0'
-    compile 'com.squareup.dagger:dagger-compiler:1.1.0'
+    compile 'com.squareup.dagger:dagger:1.2.0'
+    compile 'com.squareup.dagger:dagger-compiler:1.2.0'
 }
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "18.1"
+    buildToolsVersion "19.0.1"
 }
 
