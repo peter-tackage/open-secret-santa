@@ -40,3 +40,6 @@ before_script:
 
 script:
   - gradle connectedCheck
+
+after_script:
+  - echo ${TRAVIS_TEST_RESULT}
