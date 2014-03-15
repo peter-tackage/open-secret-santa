@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.7.+'
+        classpath 'com.android.tools.build:gradle:0.9.+'
     }
 }
 apply plugin: 'android'
@@ -40,7 +40,7 @@ dependencies {
     compile 'javamail-android:additionnal:1.0.0'
     compile 'javamail-android:activation:1.0.0'
 
-    instrumentTestCompile 'com.jayway.android.robotium:robotium-solo:4.3.1'
+    androidTestCompile 'com.jayway.android.robotium:robotium-solo:4.3.1'
 }
 
 android {
