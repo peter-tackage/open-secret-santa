@@ -94,11 +94,16 @@ public class MemberListFragment extends InjectingListFragment implements AbsList
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        Log.i(TAG, "onActivityCreated()");
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
 
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
+
+        // Initialise content dependent on injection
+        TextView titleText = (TextView) getView().findViewById(R.id.content_title_textview);
+        titleText.setText(mGroup.getName());
     }
 
     @Override
@@ -122,9 +127,6 @@ public class MemberListFragment extends InjectingListFragment implements AbsList
                 mCompleteTextView.requestFocus(); // Keep focus for more entries
             }
         });
-
-        TextView titleText = (TextView) view.findViewById(R.id.content_title_textview);
-        titleText.setText(mGroup.getName());
 
         mAdapter = new MemberListAdapter(getActivity(), R.layout.member_row);
         setListAdapter(mAdapter);
@@ -484,10 +486,6 @@ public class MemberListFragment extends InjectingListFragment implements AbsList
         // TODO Sort on insertion
         Collections.sort(rows);
         return rows;
-    }
-
-    public long getGroupId() {
-        return mGroup.getId();
     }
 
     private void addMember(Member _member, Group _group) {

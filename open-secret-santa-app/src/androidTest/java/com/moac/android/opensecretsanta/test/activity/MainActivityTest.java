@@ -28,7 +28,6 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
      */
     public void test_activityRecreatedOk() throws Throwable {
         // Activity is already created in setUp()
-        Log.i("open", Thread.currentThread().toString());
 
         runTestOnUiThread(new Runnable() {
             @Override

@@ -52,9 +52,9 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
     protected DrawerLayout mDrawerLayout;
     protected ActionBarDrawerToggle mDrawerToggle;
     protected ListView mDrawerList;
-    protected MemberListFragment mMembersListFragment;
     private NotifyExecutorFragment mNotifyExecutorFragment;
     private DrawerListAdapter mDrawerListAdapter;
+    private long mCurrentGroupId = Group.UNSET_ID;
 
     @Override
     public void onCreate(Bundle _savedInstanceState) {
@@ -305,29 +305,26 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
     private void showGroup(long _groupId) {
         Log.i(TAG, "showGroup() - start. groupId: " + _groupId);
 
+        //  If the correct fragment already exists
+        if(_groupId == mCurrentGroupId) return;
+
+        mCurrentGroupId = _groupId;
+
         FragmentManager fragmentManager = getFragmentManager();
-
-        // See if the correct fragment already exists
         MemberListFragment existing = (MemberListFragment) fragmentManager.findFragmentByTag(MEMBERS_LIST_FRAGMENT_TAG);
-        if(existing != null && existing.getGroupId() == _groupId) {
-            Log.i(TAG, "showGroup() - found matching required fragment");
-            mMembersListFragment = existing;
-            return;
-        }
 
-        // Replace existing fragment
+        // Replace existing MemberListFragment
         // Note: Can't call replace, seems to replace ALL fragments in the layout.
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         if(existing != null) {
             Log.i(TAG, "showGroup() - removing existing fragment");
-            transaction.remove(mMembersListFragment);
+            transaction.remove(existing);
         }
 
         Log.i(TAG, "showGroup() - creating new fragment");
         MemberListFragment newFragment = MemberListFragment.create(_groupId);
         transaction.add(R.id.content_frame, newFragment, MEMBERS_LIST_FRAGMENT_TAG)
           .commit();
-        mMembersListFragment = newFragment;
 
         // Update preferences to save last viewed Group
         PreferenceManager.getDefaultSharedPreferences(this).
