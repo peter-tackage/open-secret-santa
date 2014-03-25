@@ -64,7 +64,8 @@ public class EditActivity extends InjectingActivity {
 
     @Override
     public void onBackPressed() {
-        if(mMemberEditFragment.doSaveAction())
+        if(mMemberEditFragment.doSaveAction()) {
             super.onBackPressed();
+        }
     }
 }

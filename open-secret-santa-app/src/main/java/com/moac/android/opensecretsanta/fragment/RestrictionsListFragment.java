@@ -36,13 +36,6 @@ public class RestrictionsListFragment extends InjectingListFragment {
     private ListAdapter mAdapter;
     private Map<Long, Action> mChanges;
 
-    /**
-     * Factory method for this fragment class
-     *
-     * We do this because according to the Fragment docs -
-     *
-     * "It is strongly recommended that subclasses do not have other constructors with parameters"
-     */
     public static RestrictionsListFragment create(long _groupId, long _fromMemberId) {
         Log.i(TAG, "RestrictionsListFragment() - factory creating for groupId: " + _groupId + " fromMemberId: " + _fromMemberId);
         RestrictionsListFragment fragment = new RestrictionsListFragment();
@@ -55,11 +48,16 @@ public class RestrictionsListFragment extends InjectingListFragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         long memberId = getArguments().getLong(Intents.MEMBER_ID_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
         mFromMember = mDb.queryById(memberId, Member.class);
         mChanges = new HashMap<Long, Action>();
+
+        TextView titleTextView = (TextView) getView().findViewById(R.id.content_title_textview);
+        titleTextView.setText(String.format(getString(R.string.restriction_list_title), mFromMember.getName()));
 
         // TODO Make this load asynchronously
         long fromMemberId = mFromMember.getId();
@@ -74,19 +72,14 @@ public class RestrictionsListFragment extends InjectingListFragment {
                 handleRestrictionToggle(details);
             }
         });
+        setListAdapter(mAdapter);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_restrictions_list, container, false);
-        TextView titleTextView = (TextView) view.findViewById(R.id.content_title_textview);
-        titleTextView.setText("Restrictions for " + mFromMember.getName());
-
-        setListAdapter(mAdapter);
-
-        return view;
+        return inflater.inflate(R.layout.fragment_restrictions_list, container, false);
     }
 
     /**

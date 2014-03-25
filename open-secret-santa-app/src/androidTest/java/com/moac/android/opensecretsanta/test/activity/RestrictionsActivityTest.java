@@ -29,21 +29,15 @@ public class RestrictionsActivityTest extends ActivityInstrumentationTestCase2<R
     /*
      * Verifies that no exception is thrown when the RestrictionsActivity is recreated
      */
-    public void test_activityRecreatedOk() {
+    public void test_activityRecreatedOk() throws Throwable {
         // Activity is already created in setUp()
 
-        // End the activity
-        mActivity.finish();
-
-        // Recreate this activity
-        mActivity = this.getActivity();
+        runTestOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mActivity.recreate();
+            }
+        });
+        getInstrumentation().waitForIdleSync();
     }
-
-    public class TestModule extends AppModule {
-
-        public TestModule(OpenSecretSantaApplication application) {
-            super(application);
-        }
-    }
-
 }

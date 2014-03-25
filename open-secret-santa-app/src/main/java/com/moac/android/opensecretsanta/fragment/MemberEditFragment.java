@@ -53,26 +53,12 @@ public class MemberEditFragment extends InjectingFragment {
         long memberId = getArguments().getLong(Intents.MEMBER_ID_INTENT_EXTRA);
         // The database is injected in the parent class onActivityCreated
         mMember = mDb.queryById(memberId, Member.class);
-    }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_member_editor, container, false);
+        // Populate the views with content
+        TextView titleTextView = (TextView) getView().findViewById(R.id.content_title_textview);
+        titleTextView.setText(String.format(getString(R.string.edit_member_title),mMember.getName()));
 
-        TextView titleTextView = (TextView) view.findViewById(R.id.content_title_textview);
-        titleTextView.setText("Editing " + mMember.getName());
-
-        ImageView avatarImageView = (ImageView) view.findViewById(R.id.iv_avatar);
-        mMemberNameEditView = (EditText) view.findViewById(R.id.et_edit_name);
-        mContactMethodSpinner = (Spinner) view.findViewById(R.id.spnr_contact_method);
-
-        // Contact details area
-        mContactDetailsLineSeparator = view.findViewById(R.id.contact_details_separator_line);
-        mContactDetailsEditText = (EditText) view.findViewById(R.id.et_edit_contact_detail);
-
-        // Assign the view with its content.
+        ImageView avatarImageView = (ImageView) getView().findViewById(R.id.iv_avatar);
         if (mMember.getContactId() == PersistableObject.UNSET_ID || mMember.getLookupKey() == null) {
             Picasso.with(getActivity()).load(R.drawable.ic_contact_picture).into(avatarImageView);
         } else {
@@ -126,6 +112,21 @@ public class MemberEditFragment extends InjectingFragment {
         });
         mContactMethodSpinner.setSelection(mMember.getContactMethod().ordinal());
         mContactDetailsEditText.setText(mMember.getContactDetails());
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_member_editor, container, false);
+
+        mMemberNameEditView = (EditText) view.findViewById(R.id.et_edit_name);
+        mContactMethodSpinner = (Spinner) view.findViewById(R.id.spnr_contact_method);
+
+        // Contact details area
+        mContactDetailsLineSeparator = view.findViewById(R.id.contact_details_separator_line);
+        mContactDetailsEditText = (EditText) view.findViewById(R.id.et_edit_contact_detail);
+
         return view;
     }
 

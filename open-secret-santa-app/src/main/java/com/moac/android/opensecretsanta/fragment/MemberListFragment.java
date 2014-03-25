@@ -94,7 +94,6 @@ public class MemberListFragment extends InjectingListFragment implements AbsList
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        Log.i(TAG, "onActivityCreated()");
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
 

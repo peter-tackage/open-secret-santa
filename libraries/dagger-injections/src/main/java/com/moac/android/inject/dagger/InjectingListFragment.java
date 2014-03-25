@@ -88,7 +88,6 @@ public class InjectingListFragment extends ListFragment implements Injector {
      */
     @Override
     public void inject(Object target) {
-      //  checkState(mObjectGraph != null, "object graph must be assigned prior to calling inject");
         mObjectGraph.inject(target);
     }
 

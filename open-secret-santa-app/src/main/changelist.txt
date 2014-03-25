@@ -27,12 +27,3 @@ Changes to DrawEngineProvider and sender - this need further work.
 Added checks for PackageManager.FEATURE_TELEPHONE to prevent people adding phone numbers when they don't have telephony.
 
 Changed Database from standalone singleton to one fetched from the Application instance subclass.
-============
-Ideas 
-============
-
-- Better notification that the group will be redrawn
-	- Group history / revert etc?. Give people the option to bail out if they didn't intend.
-- Resend all past draws	
-- Use Gmail to send emails.
-- Multiple selection for Contacts: http://stackoverflow.com/questions/10449416/android-multiple-contacts-chooser-with-option-of-choosing-which-phone-number

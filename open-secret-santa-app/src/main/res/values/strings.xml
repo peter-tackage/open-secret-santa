@@ -16,6 +16,7 @@
   <string name="notify_dialog_title">Notify</string>
 
   <!-- Edit screen -->
+  <string name="edit_member_title">Editing %s</string>
   <string name="contact_method_label">How to notify of assignment</string>
   <string name="member_name_label">Member Name</string>
   <string name="member_name_hint">Name</string>
@@ -91,13 +92,16 @@
   <string name="reveal_dialog_title">Reveal Secret Santa</string>
 
     <!-- Progress Dialog Messages -->
-  <string name="draw_in_progress_msg">Drawing assigments</string>
-  <string name="notify_in_progress_msg">Sending assigments</string>
+  <string name="draw_in_progress_msg">Drawing assignments</string>
+  <string name="notify_in_progress_msg">Sending assignments</string>
 
   <!-- Drawer List -->
   <string name="drawer_groups_header">My Groups</string>
   <string name="drawer_groups_new">New Group</string>
   <string name="drawer_options_header">Options</string>
   <string name="base_group_name">My Group</string>
+
+  <!-- Restrictions list -->
+  <string name="restriction_list_title">Restrictions for %s</string>
 
 </resources>

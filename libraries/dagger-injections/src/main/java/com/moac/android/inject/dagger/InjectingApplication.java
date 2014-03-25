@@ -74,7 +74,6 @@ public class InjectingApplication extends Application implements Injector {
 
     @Override
     public void inject(Object target) {
-    //    checkState(mObjectGraph == null, "Bah");
         mObjectGraph.inject(target);
     }
 
