@@ -54,15 +54,11 @@ public class RestrictionsListFragment extends InjectingListFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-
+    public void onActivityCreated(Bundle savedInstanceState) {
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         long memberId = getArguments().getLong(Intents.MEMBER_ID_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
         mFromMember = mDb.queryById(memberId, Member.class);
-
         mChanges = new HashMap<Long, Action>();
 
         // TODO Make this load asynchronously

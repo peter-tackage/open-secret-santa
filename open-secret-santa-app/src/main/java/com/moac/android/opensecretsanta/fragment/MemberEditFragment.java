@@ -48,9 +48,10 @@ public class MemberEditFragment extends InjectingFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         long memberId = getArguments().getLong(Intents.MEMBER_ID_INTENT_EXTRA);
+        // The database is injected in the parent class onActivityCreated
         mMember = mDb.queryById(memberId, Member.class);
     }
 

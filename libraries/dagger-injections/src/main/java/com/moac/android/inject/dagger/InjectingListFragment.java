@@ -27,8 +27,8 @@
 */
 package com.moac.android.inject.dagger;
 
-import android.app.Activity;
 import android.app.ListFragment;
+import android.os.Bundle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +39,8 @@ import dagger.ObjectGraph;
  * Manages an ObjectGraph on behalf of an ListFragment. This graph is created by extending the hosting Activity's graph
  * with Fragment-specific module(s).
  */
-public class InjectingListFragment
-        extends ListFragment
-        implements Injector {
+public class InjectingListFragment extends ListFragment implements Injector {
+
     private ObjectGraph mObjectGraph;
 
     /**
@@ -50,13 +49,14 @@ public class InjectingListFragment
      * <p/>
      * Injects this ListFragment using the created graph.
      */
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         // make sure it's the first time through
         if (mObjectGraph == null) {
             // expand the activity graph with the fragment-specific module(s)
-            ObjectGraph appGraph = ((Injector) activity).getObjectGraph();
+            ObjectGraph appGraph = ((Injector) getActivity()).getObjectGraph();
             List<Object> fragmentModules = getModules();
             mObjectGraph = appGraph.plus(fragmentModules.toArray());
 
@@ -64,11 +64,11 @@ public class InjectingListFragment
             inject(this);
         }
     }
-    @Override public void onDestroy() {
+    @Override
+    public void onDestroy() {
         // Eagerly clear the reference to the fragment graph to allow it to be garbage collected as
         // soon as possible.
         mObjectGraph = null;
-
         super.onDestroy();
     }
 

@@ -93,9 +93,8 @@ public class MemberListFragment extends InjectingListFragment implements AbsList
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
 
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);

@@ -27,8 +27,8 @@
 */
 package com.moac.android.inject.dagger;
 
-import android.app.Activity;
 import android.app.Fragment;
+import android.os.Bundle;
 
 import dagger.ObjectGraph;
 
@@ -48,13 +48,14 @@ public class InjectingFragment extends Fragment implements Injector {
      * <p/>
      * Injects this Fragment using the created graph.
      */
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         // make sure it's the first time through
         if (mObjectGraph == null) {
             // expand the activity graph with the fragment-specific module(s)
-            ObjectGraph appGraph = ((Injector) activity).getObjectGraph();
+            ObjectGraph appGraph = ((Injector) getActivity()).getObjectGraph();
             List<Object> fragmentModules = getModules();
             mObjectGraph = appGraph.plus(fragmentModules.toArray());
 
@@ -68,7 +69,6 @@ public class InjectingFragment extends Fragment implements Injector {
         // Eagerly clear the reference to the object graph to allow it to be garbage collected as
         // soon as possible.
         mObjectGraph = null;
-
         super.onDestroy();
     }
 
