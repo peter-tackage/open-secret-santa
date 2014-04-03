@@ -22,7 +22,7 @@ import java.util.*;
 
 import javax.inject.Inject;
 
-public class RestrictionsListFragment extends InjectingListFragment {
+public class RestrictionsListFragment extends InjectingListFragment implements Saveable {
 
     private static final String TAG = RestrictionsListFragment.class.getSimpleName();
 
@@ -33,7 +33,6 @@ public class RestrictionsListFragment extends InjectingListFragment {
 
     private Member mFromMember;
     private Group mGroup;
-    private ListAdapter mAdapter;
     private Map<Long, Action> mChanges;
 
     public static RestrictionsListFragment create(long _groupId, long _fromMemberId) {
@@ -65,20 +64,19 @@ public class RestrictionsListFragment extends InjectingListFragment {
         List<Restriction> restrictionsForMember = mDb.queryAllRestrictionsForMemberId(fromMemberId);
         Set<Long> restrictions = buildRestrictedMembers(restrictionsForMember);
         List<RestrictionRowDetails> rows = buildRowData(fromMemberId, otherMembers, restrictions);
-        mAdapter = new RestrictionListAdapter(getActivity(), rows, new View.OnClickListener() {
+        ListAdapter adapter = new RestrictionListAdapter(getActivity(), rows, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 RestrictionRowDetails details = (RestrictionRowDetails) v.getTag();
                 handleRestrictionToggle(details);
             }
         });
-        setListAdapter(mAdapter);
+        setListAdapter(adapter);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_restrictions_list, container, false);
     }
 
@@ -124,7 +122,7 @@ public class RestrictionsListFragment extends InjectingListFragment {
         return result;
     }
 
-    public boolean doSaveAction() {
+    public boolean save() {
         boolean isDirty = mChanges.size() > 0;
         Log.i(TAG, "doSaveAction() - isDirty: " + isDirty);
 

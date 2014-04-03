@@ -26,7 +26,7 @@ import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
 
-public class MemberEditFragment extends InjectingFragment {
+public class MemberEditFragment extends InjectingFragment implements Saveable {
 
     private static final String TAG = MemberEditFragment.class.toString();
 
@@ -139,7 +139,8 @@ public class MemberEditFragment extends InjectingFragment {
         }
     }
 
-    public boolean doSaveAction() {
+    @Override
+    public boolean save() {
         Log.d(TAG, "doSaveAction() - start");
 
         String name = mMemberNameEditView.getText().toString().trim();
@@ -152,9 +153,7 @@ public class MemberEditFragment extends InjectingFragment {
                 checkField(mMemberNameEditView, new MemberNameValidator(mDb, mMember.getGroupId(), mMember.getId(), name))
                         && checkField(mContactDetailsEditText, new ContactDetailsValidator(contactMethod, contactDetails));
 
-        if (!isValid) {
-            return false;
-        }
+        if (!isValid) return false;
 
         /*
          * Important, handle the following scenarios -
