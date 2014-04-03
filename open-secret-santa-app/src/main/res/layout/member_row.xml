@@ -44,7 +44,8 @@
     android:layout_toRightOf="@+id/member_imageview"
     android:textAppearance="@android:style/TextAppearance.Large"
     android:textColor="@drawable/member_listview_row_name_color"
-    android:layout_alignTop="@+id/member_imageview" />
+    android:layout_alignTop="@+id/member_imageview"
+    android:singleLine="true"/>
 
   <TextView
     android:layout_width="wrap_content"
