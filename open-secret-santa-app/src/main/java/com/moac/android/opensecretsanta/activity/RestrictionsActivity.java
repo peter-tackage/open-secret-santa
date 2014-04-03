@@ -1,7 +1,7 @@
 package com.moac.android.opensecretsanta.activity;
 
 import android.app.ActionBar;
-import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,15 +10,15 @@ import android.view.View;
 import com.moac.android.inject.dagger.InjectingActivity;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.fragment.RestrictionsListFragment;
+import com.moac.android.opensecretsanta.fragment.Saveable;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 
 /**
- * This activity doesn't do much but supply a custom action bar and host
- * the RestrictionsListFragment.
+ * This activity doesn't do much but supply a custom action bar and host a RestrictionsListFragment.
  */
 public class RestrictionsActivity extends InjectingActivity {
 
-    protected RestrictionsListFragment mRestrictionsListFragment;
+    private Saveable mSaveableFragment;
 
     @Override
     public void onCreate(Bundle _savedInstance) {
@@ -29,8 +29,9 @@ public class RestrictionsActivity extends InjectingActivity {
         final long groupId = getIntent().getLongExtra(Intents.GROUP_ID_INTENT_EXTRA, PersistableObject.UNSET_ID);
         final long memberId = getIntent().getLongExtra(Intents.MEMBER_ID_INTENT_EXTRA, PersistableObject.UNSET_ID);
 
-        mRestrictionsListFragment = RestrictionsListFragment.create(groupId, memberId);
-        getFragmentManager().beginTransaction().add(R.id.content_frame, mRestrictionsListFragment).commit();
+        Fragment restrictionsListFragment = RestrictionsListFragment.create(groupId, memberId);
+        getFragmentManager().beginTransaction().add(R.id.content_frame, restrictionsListFragment).commit();
+        mSaveableFragment = (Saveable)restrictionsListFragment;
 
         // Action bar should always exist for our API levels.
         ActionBar actionBar = getActionBar();
@@ -43,7 +44,7 @@ public class RestrictionsActivity extends InjectingActivity {
             saveMenuItem.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mRestrictionsListFragment.doSaveAction();
+                    mSaveableFragment.save();
                     finish();
                 }
             });
@@ -63,7 +64,7 @@ public class RestrictionsActivity extends InjectingActivity {
 
     @Override
     public void onBackPressed() {
-        mRestrictionsListFragment.doSaveAction();
+        mSaveableFragment.save();
         super.onBackPressed();
     }
 }
