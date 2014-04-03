@@ -56,6 +56,7 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
 
     // Apparently this is how you retain EditText fields - http://code.google.com/p/android/issues/detail?id=18719
     private String mSavedMsg;
+    private TextView mCharCountView;
 
     /**
      * Factory method for this fragment class
@@ -77,12 +78,8 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Log.i(TAG, "onCreateDialog() - start: " + this);
-        long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         mMemberIds = getArguments().getLongArray(Intents.MEMBER_ID_ARRAY_INTENT_EXTRA);
-        mGroup = mDb.queryById(groupId, Group.class);
         mMaxMsgLength = getResources().getInteger(R.integer.max_notify_msg_length);
-        String message = mSavedMsg == null ? mGroup.getMessage() :
-          savedInstanceState.getString(MESSAGE_KEY);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -95,14 +92,7 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
         builder.setIcon(R.drawable.ic_menu_notify_group);
 
         mMsgField = (EditText) view.findViewById(R.id.tv_notify_msg);
-        mMsgField.setText(message);
-
-        final TextView charCountView = (TextView) view.findViewById(R.id.tv_notify_msg_char_count);
-        int remainingChars = mMaxMsgLength;
-        if(message != null) {
-            remainingChars = message.length() >= mMaxMsgLength ? 0 : mMaxMsgLength - message.length();
-        }
-        charCountView.setText(String.valueOf(remainingChars));
+        mCharCountView = (TextView) view.findViewById(R.id.tv_notify_msg_char_count);
 
         // Add the callback to the field
         mMsgField.addTextChangedListener(new TextWatcher() {
@@ -115,7 +105,7 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
             @Override
             public void afterTextChanged(Editable s) {
                 // Update the reported character length
-                charCountView.setText(String.valueOf(mMaxMsgLength - s.length()));
+                mCharCountView.setText(String.valueOf(mMaxMsgLength - s.length()));
             }
         });
 
@@ -123,32 +113,6 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
         mEmailFromContainer = (ViewGroup) view.findViewById(R.id.layout_notify_email_container);
         mSpinner = (Spinner) view.findViewById(R.id.spnr_email_selection);
         mInfoTextView = (TextView) view.findViewById(R.id.tv_notify_info);
-
-        mIsEmailAuthRequired = NotifyUtils.containsEmailSendableEntry(mDb, mMemberIds);
-        if(mIsEmailAuthRequired) {
-            // Add all Gmail accounts to list
-            final Observable<Account[]> accountsObservable = AccountUtils.getAllGmailAccountsObservable(getActivity());
-            accountsObservable.
-              subscribeOn(Schedulers.newThread()).
-              observeOn(AndroidSchedulers.mainThread()).
-              subscribe(new Action1<Account[]>() {
-                            @Override
-                            public void call(Account[] accounts) {
-                                AccountAdapter aa = new AccountAdapter(getActivity(), accounts);
-                                mSpinner.setAdapter(aa);
-                                mEmailFromContainer.setVisibility(View.VISIBLE);
-                                // TODO Set to preference
-                            }
-                        },
-                new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mInfoTextView.setText(throwable.getMessage());
-                        mInfoTextView.setVisibility(View.VISIBLE);
-                    }
-                }
-              );
-        }
 
         builder.setCancelable(true);
         builder.setNegativeButton(android.R.string.cancel, null);
@@ -189,6 +153,50 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
 
         builder.setView(view);
         return builder.create();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        // Populate those field that require injected dependencies
+        long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
+        mGroup = mDb.queryById(groupId, Group.class);
+        String message = mSavedMsg == null ? mGroup.getMessage() :
+                savedInstanceState.getString(MESSAGE_KEY);
+
+        mMsgField.setText(message);
+        int remainingChars = mMaxMsgLength;
+        if(message != null) {
+            remainingChars = message.length() >= mMaxMsgLength ? 0 : mMaxMsgLength - message.length();
+        }
+        mCharCountView.setText(String.valueOf(remainingChars));
+
+        mIsEmailAuthRequired = NotifyUtils.containsEmailSendableEntry(mDb, mMemberIds);
+        if(mIsEmailAuthRequired) {
+            // Add all Gmail accounts to list
+            final Observable<Account[]> accountsObservable = AccountUtils.getAllGmailAccountsObservable(getActivity());
+            accountsObservable.
+                    subscribeOn(Schedulers.newThread()).
+                    observeOn(AndroidSchedulers.mainThread()).
+                    subscribe(new Action1<Account[]>() {
+                                  @Override
+                                  public void call(Account[] accounts) {
+                                      AccountAdapter aa = new AccountAdapter(getActivity(), accounts);
+                                      mSpinner.setAdapter(aa);
+                                      mEmailFromContainer.setVisibility(View.VISIBLE);
+                                      // TODO Set to preference
+                                  }
+                              },
+                            new Action1<Throwable>() {
+                                @Override
+                                public void call(Throwable throwable) {
+                                    mInfoTextView.setText(throwable.getMessage());
+                                    mInfoTextView.setVisibility(View.VISIBLE);
+                                }
+                            }
+                    );
+        }
     }
 
     @Override
