@@ -3,8 +3,10 @@
   <!--  TODO Would be nice if could contain more info -->
   <string-array name="engine_names">
     <item>Basic Engine</item>
+    <item>Recursive Engine</item>
   </string-array>
   <string-array name="engine_classes">
     <item>com.moac.drawengine.BasicDrawEngine</item>
+    <item>com.moac.drawengine.RecursiveDrawEngine</item>
   </string-array>
 </resources>
