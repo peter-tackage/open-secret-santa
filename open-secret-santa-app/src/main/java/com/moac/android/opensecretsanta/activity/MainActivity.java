@@ -112,8 +112,10 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+        if(getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setHomeButtonEnabled(true);
+        }
 
         //  Fetch the most recently used Group Id from preferences
         long groupId = PreferenceManager.getDefaultSharedPreferences(this).
