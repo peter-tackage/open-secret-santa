@@ -42,7 +42,7 @@ import javax.inject.Inject;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
-public class MemberListFragment extends InjectingListFragment implements AbsListView.MultiChoiceModeListener {
+public class MemberListFragment extends InjectingListFragment {
 
     private static final String TAG = MemberListFragment.class.getSimpleName();
     private static final String DRAW_IN_PROGRESS_KEY = "drawInProgress";
@@ -140,11 +140,77 @@ public class MemberListFragment extends InjectingListFragment implements AbsList
 
         // Initially don't perform check selection.
         getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-        getListView().setMultiChoiceModeListener(this);
+        getListView().setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                // Inflate a menu resource providing context menu items
+                MenuInflater inflater = mode.getMenuInflater();
+                inflater.inflate(R.menu.cab_member_list_menu, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                // Handle contextual action bar selection
+                // Some actions will end the current action mode on completion, others not.
+                switch(item.getItemId()) {
+                    case R.id.menu_item_edit:
+                        doEdit(getListView().getCheckedItemIds()[0]);
+                        mode.finish();
+                        return true;
+                    case R.id.menu_item_restrict:
+                        doRestrictions(getListView().getCheckedItemIds()[0]);
+                        mode.finish();
+                        return true;
+                    case R.id.menu_item_delete:
+                        doDelete(getListView().getCheckedItemIds());
+                        mode.finish();
+                        return true;
+                    case R.id.menu_item_notify_selection:
+                        doNotify(getListView().getCheckedItemIds());
+                        mode.finish();
+                        return true;
+                    case R.id.menu_item_reveal:
+                        doReveal(getListView().getCheckedItemIds()[0]);
+                        mode.finish();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                Log.i(TAG, "onDestroyActionMode()");
+                mode.getMenu().clear();
+            }
+
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+                Log.i(TAG, "onItemCheckedStateChanged()");
+                int checkedItemCount = getListView().getCheckedItemCount();
+                boolean isSingleItemChecked =  checkedItemCount == 1;
+                boolean hasSendableItemChecked = hasSendableItemChecked(getListView());
+
+                mode.setTitle(String.format(getString(R.string.list_selection_count_title), checkedItemCount));
+                mode.getMenu().findItem(R.id.menu_item_edit).setVisible(isSingleItemChecked);
+                mode.getMenu().findItem(R.id.menu_item_delete).setVisible(mMode == Mode.Building);
+                mode.getMenu().findItem(R.id.menu_item_notify_selection).setVisible(mMode == Mode.Notify && hasSendableItemChecked);
+                mode.getMenu().findItem(R.id.menu_item_restrict).setVisible(mMode == Mode.Building && isSingleItemChecked);
+                mode.getMenu().findItem(R.id.menu_item_reveal).setVisible(mMode == Mode.Notify && isSingleItemChecked);
+            }
+        });
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Show visual indicator of selection and trigger CAB.
+                Log.i(TAG, "onItemClick() - position: " + position);
                 ((ListView) parent).setItemChecked(position, true);
             }
         });
@@ -189,19 +255,6 @@ public class MemberListFragment extends InjectingListFragment implements AbsList
     }
 
     @Override
-    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-        // Inflate a menu resource providing context menu items
-        MenuInflater inflater = mode.getMenuInflater();
-        inflater.inflate(R.menu.cab_member_list_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        return false;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle *non-contextual* action bar selection
         switch(item.getItemId()) {
@@ -229,61 +282,12 @@ public class MemberListFragment extends InjectingListFragment implements AbsList
     }
 
     @Override
-    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-        // Handle contextual action bar selection
-        // Some actions will end the current action mode on completion, others not.
-        switch(item.getItemId()) {
-            case R.id.menu_item_edit:
-                doEdit(getListView().getCheckedItemIds()[0]);
-                mode.finish();
-                return true;
-            case R.id.menu_item_restrict:
-                doRestrictions(getListView().getCheckedItemIds()[0]);
-                mode.finish();
-                return true;
-            case R.id.menu_item_delete:
-                doDelete(getListView().getCheckedItemIds());
-                mode.finish();
-                return true;
-            case R.id.menu_item_notify_selection:
-                doNotify(getListView().getCheckedItemIds());
-                mode.finish();
-                return true;
-            case R.id.menu_item_reveal:
-                doReveal(getListView().getCheckedItemIds()[0]);
-                mode.finish();
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    @Override
     public void onDestroy() {
         if(mDrawSubscription != null) {
             mDrawSubscription.unsubscribe();
             mDrawSubscription = null;
         }
         super.onDestroy();
-    }
-
-    @Override
-    public void onDestroyActionMode(ActionMode mode) {
-        Log.i(TAG, "onDestroyActionMode()");
-    }
-
-    @Override
-    public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-        Log.i(TAG, "onItemCheckedStateChanged()");
-        int selectedCount = getListView().getCheckedItemCount();
-        boolean isCheckedSelected = hasSendableItemChecked(getListView());
-
-        mode.setTitle(selectedCount + " selected");
-        mode.getMenu().findItem(R.id.menu_item_edit).setVisible(selectedCount == 1);
-        mode.getMenu().findItem(R.id.menu_item_delete).setVisible(mMode == Mode.Building);
-        mode.getMenu().findItem(R.id.menu_item_notify_selection).setVisible(mMode == Mode.Notify && isCheckedSelected);
-        mode.getMenu().findItem(R.id.menu_item_restrict).setVisible(mMode == Mode.Building && selectedCount == 1);
-        mode.getMenu().findItem(R.id.menu_item_reveal).setVisible(mMode == Mode.Notify && selectedCount == 1);
     }
 
     /*

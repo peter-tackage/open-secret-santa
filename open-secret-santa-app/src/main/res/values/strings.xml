@@ -103,5 +103,6 @@
 
   <!-- Restrictions list -->
   <string name="restriction_list_title">Restrictions for %s</string>
+  <string name="list_selection_count_title">%d selected</string>
 
 </resources>
