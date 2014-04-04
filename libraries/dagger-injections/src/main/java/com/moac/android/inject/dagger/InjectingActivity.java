@@ -55,7 +55,6 @@ public class InjectingActivity extends Activity implements Injector {
      */
     @Override
     public void inject(Object target) {
-       // checkState(mObjectGraph != null, "object graph must be assigned prior to calling inject");
         mObjectGraph.inject(target);
     }
 

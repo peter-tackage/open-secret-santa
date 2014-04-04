@@ -27,17 +27,15 @@
 */
 package com.moac.android.inject.dagger;
 
-import android.app.Activity;
 import android.app.DialogFragment;
+import android.os.Bundle;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import dagger.ObjectGraph;
 
-public class InjectingDialogFragment
-        extends DialogFragment
-        implements Injector {
+public class InjectingDialogFragment extends DialogFragment implements Injector {
     private ObjectGraph mObjectGraph;
 
     /**
@@ -46,13 +44,14 @@ public class InjectingDialogFragment
      * <p/>
      * Injects this DialogFragment using the created graph.
      */
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         // make sure it's the first time through
         if (mObjectGraph == null) {
             // expand the activity graph with the fragment-specific module(s)
-            ObjectGraph appGraph = ((Injector) activity).getObjectGraph();
+            ObjectGraph appGraph = ((Injector) getActivity()).getObjectGraph();
             List<Object> fragmentModules = getModules();
             mObjectGraph = appGraph.plus(fragmentModules.toArray());
 

@@ -1,6 +1,7 @@
 package com.moac.android.opensecretsanta.activity;
 
 import android.app.ActionBar;
+import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.view.WindowManager;
 import com.moac.android.inject.dagger.InjectingActivity;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.fragment.MemberEditFragment;
+import com.moac.android.opensecretsanta.fragment.Saveable;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 
 /**
@@ -18,7 +20,7 @@ import com.moac.android.opensecretsanta.model.PersistableObject;
  */
 public class EditActivity extends InjectingActivity {
 
-    protected MemberEditFragment mMemberEditFragment;
+    private Saveable mSaveableFragment;
 
     @Override
     public void onCreate(Bundle _savedInstance) {
@@ -28,8 +30,9 @@ public class EditActivity extends InjectingActivity {
         // Add the editor fragment
         final long memberId = getIntent().getLongExtra(Intents.MEMBER_ID_INTENT_EXTRA, PersistableObject.UNSET_ID);
 
-        mMemberEditFragment = MemberEditFragment.create(memberId);
-        getFragmentManager().beginTransaction().add(R.id.content_frame, mMemberEditFragment).commit();
+        Fragment memberEditFragment = MemberEditFragment.create(memberId);
+        getFragmentManager().beginTransaction().add(R.id.content_frame, memberEditFragment).commit();
+        mSaveableFragment = (Saveable)memberEditFragment;
 
         // Action bar should always exist for our API levels.
         ActionBar actionBar = getActionBar();
@@ -42,7 +45,7 @@ public class EditActivity extends InjectingActivity {
             saveMenuItem.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(mMemberEditFragment.doSaveAction())
+                    if(mSaveableFragment.save())
                         finish();
                 }
             });
@@ -64,7 +67,8 @@ public class EditActivity extends InjectingActivity {
 
     @Override
     public void onBackPressed() {
-        if(mMemberEditFragment.doSaveAction())
+        if(mSaveableFragment.save()) {
             super.onBackPressed();
+        }
     }
 }

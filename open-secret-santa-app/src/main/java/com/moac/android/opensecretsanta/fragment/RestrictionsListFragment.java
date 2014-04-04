@@ -22,7 +22,7 @@ import java.util.*;
 
 import javax.inject.Inject;
 
-public class RestrictionsListFragment extends InjectingListFragment {
+public class RestrictionsListFragment extends InjectingListFragment implements Saveable {
 
     private static final String TAG = RestrictionsListFragment.class.getSimpleName();
 
@@ -33,16 +33,8 @@ public class RestrictionsListFragment extends InjectingListFragment {
 
     private Member mFromMember;
     private Group mGroup;
-    private ListAdapter mAdapter;
     private Map<Long, Action> mChanges;
 
-    /**
-     * Factory method for this fragment class
-     *
-     * We do this because according to the Fragment docs -
-     *
-     * "It is strongly recommended that subclasses do not have other constructors with parameters"
-     */
     public static RestrictionsListFragment create(long _groupId, long _fromMemberId) {
         Log.i(TAG, "RestrictionsListFragment() - factory creating for groupId: " + _groupId + " fromMemberId: " + _fromMemberId);
         RestrictionsListFragment fragment = new RestrictionsListFragment();
@@ -54,16 +46,17 @@ public class RestrictionsListFragment extends InjectingListFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         long memberId = getArguments().getLong(Intents.MEMBER_ID_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
         mFromMember = mDb.queryById(memberId, Member.class);
-
         mChanges = new HashMap<Long, Action>();
+
+        TextView titleTextView = (TextView) getView().findViewById(R.id.content_title_textview);
+        titleTextView.setText(String.format(getString(R.string.restriction_list_title), mFromMember.getName()));
 
         // TODO Make this load asynchronously
         long fromMemberId = mFromMember.getId();
@@ -71,26 +64,20 @@ public class RestrictionsListFragment extends InjectingListFragment {
         List<Restriction> restrictionsForMember = mDb.queryAllRestrictionsForMemberId(fromMemberId);
         Set<Long> restrictions = buildRestrictedMembers(restrictionsForMember);
         List<RestrictionRowDetails> rows = buildRowData(fromMemberId, otherMembers, restrictions);
-        mAdapter = new RestrictionListAdapter(getActivity(), rows, new View.OnClickListener() {
+        ListAdapter adapter = new RestrictionListAdapter(getActivity(), rows, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 RestrictionRowDetails details = (RestrictionRowDetails) v.getTag();
                 handleRestrictionToggle(details);
             }
         });
+        setListAdapter(adapter);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_restrictions_list, container, false);
-        TextView titleTextView = (TextView) view.findViewById(R.id.content_title_textview);
-        titleTextView.setText("Restrictions for " + mFromMember.getName());
-
-        setListAdapter(mAdapter);
-
-        return view;
+        return inflater.inflate(R.layout.fragment_restrictions_list, container, false);
     }
 
     /**
@@ -135,7 +122,7 @@ public class RestrictionsListFragment extends InjectingListFragment {
         return result;
     }
 
-    public boolean doSaveAction() {
+    public boolean save() {
         boolean isDirty = mChanges.size() > 0;
         Log.i(TAG, "doSaveAction() - isDirty: " + isDirty);
 
