@@ -1,5 +1,7 @@
 package com.moac.android.opensecretsanta.util.validator;
 
+import android.util.Patterns;
+
 public class EmailValidator implements Validator {
 
     private final String mEmail;
@@ -11,9 +13,8 @@ public class EmailValidator implements Validator {
 
     @Override
     public boolean isValid() {
-        // TODO Better/regex email validation
-        if(mEmail == null || mEmail.isEmpty() || !mEmail.contains("@")) {
-          mMsg = "Something doesn't seem right!";
+        if(!Patterns.EMAIL_ADDRESS.matcher(mEmail).matches()) {
+          mMsg = "Email isn't valid";
         }
         return mMsg == null;
     }
