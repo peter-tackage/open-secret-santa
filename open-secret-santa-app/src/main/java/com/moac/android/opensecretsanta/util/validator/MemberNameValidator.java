@@ -21,7 +21,7 @@ public class MemberNameValidator implements Validator {
     public boolean isValid() {
         // Avoid hitting the database if possible.
         if(mName == null || mName.isEmpty()) {
-            mMsg = "Name can't be empty!";
+            mMsg = "Name can't be empty";
             return false;
         }
         Member existing = mDb.queryMemberWithNameForGroup(mGroupId, mName);

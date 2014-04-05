@@ -14,7 +14,7 @@ public class EmailValidator implements Validator {
     @Override
     public boolean isValid() {
         if(!Patterns.EMAIL_ADDRESS.matcher(mEmail).matches()) {
-          mMsg = "Email isn't valid";
+          mMsg = "Email address isn't valid";
         }
         return mMsg == null;
     }
