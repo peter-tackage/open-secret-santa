@@ -8,7 +8,7 @@ import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Member;
-import com.moac.android.opensecretsanta.notify.mail.GmailOAuth2Sender;
+import com.moac.android.opensecretsanta.notify.mail.GmailSender;
 import com.squareup.otto.Bus;
 
 import javax.mail.MessagingException;
@@ -20,13 +20,13 @@ public class EmailNotifier implements Notifier {
     private final Context mContext;
     private final Bus mBus;
     private final DatabaseManager mDb;
-    private final GmailOAuth2Sender mGmailSender;
+    private final GmailSender mGmailSender;
     private final String mSenderAddress; // The device owner's address!
     private final String mToken;
     private final Handler mHandler;
 
     public EmailNotifier(Context context, Bus bus, DatabaseManager db, Handler handler,
-                         GmailOAuth2Sender sender, String senderAddress, String token) {
+                         GmailSender sender, String senderAddress, String token) {
         mContext = context;
         mBus = bus;
         mDb = db;

@@ -4,13 +4,14 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.telephony.SmsManager;
 import android.util.Log;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
-import com.moac.android.opensecretsanta.notify.mail.GmailOAuth2Sender;
+import com.moac.android.opensecretsanta.notify.mail.GmailSender;
 import com.squareup.otto.Bus;
 import rx.Observable;
 import rx.Observer;
@@ -25,12 +26,16 @@ public class DefaultNotifyExecutor implements NotifyExecutor {
     private final Bus mBus;
 
     private static final String TAG = DefaultNotifyExecutor.class.getSimpleName();
+    private final SmsManager mSmsManager;
+    private final GmailSender mGmailSender;
 
-    public DefaultNotifyExecutor(Context context, NotifyAuthorization auth, DatabaseManager db, Bus bus) {
+    public DefaultNotifyExecutor(Context context, NotifyAuthorization auth, DatabaseManager db, Bus bus, SmsManager smsManager, GmailSender gmailSender) {
         mContext = context;
         mAuth = auth;
         mDb = db;
         mBus = bus;
+        mSmsManager = smsManager;
+        mGmailSender = gmailSender;
     }
 
     @Override
@@ -69,7 +74,7 @@ public class DefaultNotifyExecutor implements NotifyExecutor {
                             // Build the notifier and execute
                             boolean useMultiPartSms = PreferenceManager.getDefaultSharedPreferences(mContext).
                               getBoolean(mContext.getString(R.string.use_multipart_sms), true);
-                            SmsNotifier smsNotifier = new SmsNotifier(mContext, useMultiPartSms);
+                            SmsNotifier smsNotifier = new SmsNotifier(mContext, mSmsManager, useMultiPartSms);
                             smsNotifier.notify(assignment, member, giftReceiver.getName(), group.getMessage());
                             break;
                         case EMAIL:
@@ -92,9 +97,8 @@ public class DefaultNotifyExecutor implements NotifyExecutor {
                             // Build the notifier with auth and execute
                             String senderEmail = mAuth.getEmailAuth().getEmailAddress();
                             String token = mAuth.getEmailAuth().getToken();
-                            GmailOAuth2Sender sender = new GmailOAuth2Sender();
                             EmailNotifier emailNotifier = new EmailNotifier(mContext, mBus, mDb,
-                              handler, sender, senderEmail, token);
+                              handler, mGmailSender, senderEmail, token);
                             emailNotifier.notify(assignment, member, giftReceiver.getName(), group.getMessage());
                             break;
                         case REVEAL_ONLY:

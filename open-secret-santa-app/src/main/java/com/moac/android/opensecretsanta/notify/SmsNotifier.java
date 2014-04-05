@@ -19,10 +19,12 @@ public class SmsNotifier implements Notifier {
     private static final String SENT_SMS_ACTION = "com.moac.android.opensecretsanta.SENT_SMS_ACTION";
 
     private final Context mContext;
+    private final SmsManager mSmsManager;
     private final boolean mIsMultipartSupported;
 
-    public SmsNotifier(Context _context, boolean _isMultipartSupported) {
+    public SmsNotifier(Context _context, SmsManager _smsManager, boolean _isMultipartSupported) {
         mContext = _context.getApplicationContext();
+        mSmsManager = _smsManager;
         mIsMultipartSupported = _isMultipartSupported;
     }
 
@@ -32,10 +34,8 @@ public class SmsNotifier implements Notifier {
         String phoneNumber = _giver.getContactDetails();
         String msg = buildMsg(mContext.getString(R.string.sms_assignment_msg), _groupMsg, _giver.getName(), _receiverName);
 
-        SmsManager smsManager = SmsManager.getDefault();
-
         // Split long messages
-        ArrayList<String> messages = smsManager.divideMessage(msg);
+        ArrayList<String> messages = mSmsManager.divideMessage(msg);
         Log.v(TAG, "notify() - divided into: " + messages.size());
 
         // Sent SMS receiver is register in manifest
@@ -50,12 +50,12 @@ public class SmsNotifier implements Notifier {
             for(String part : messages) {
                 sentIntents.add(sentPI); // one per part
             }
-            smsManager.sendMultipartTextMessage(phoneNumber, null, messages, sentIntents, null);
+            mSmsManager.sendMultipartTextMessage(phoneNumber, null, messages, sentIntents, null);
         } else {
             Log.v(TAG, "notify() - sending multiple single messages: " + messages.size());
             // Just iterate manually.
             for(String partialMsg : messages) {
-                smsManager.sendTextMessage(phoneNumber, null, partialMsg, sentPI, null);
+                mSmsManager.sendTextMessage(phoneNumber, null, partialMsg, sentPI, null);
             }
         }
 

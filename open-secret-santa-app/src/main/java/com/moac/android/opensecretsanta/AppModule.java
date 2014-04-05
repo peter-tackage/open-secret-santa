@@ -1,5 +1,7 @@
 package com.moac.android.opensecretsanta;
 
+import android.telephony.SmsManager;
+
 import com.moac.android.opensecretsanta.activity.EditActivity;
 import com.moac.android.opensecretsanta.activity.MainActivity;
 import com.moac.android.opensecretsanta.activity.RestrictionsActivity;
@@ -11,6 +13,7 @@ import com.moac.android.opensecretsanta.fragment.MemberListFragment;
 import com.moac.android.opensecretsanta.fragment.NotifyDialogFragment;
 import com.moac.android.opensecretsanta.fragment.NotifyExecutorFragment;
 import com.moac.android.opensecretsanta.fragment.RestrictionsListFragment;
+import com.moac.android.opensecretsanta.notify.mail.GmailSender;
 import com.moac.android.opensecretsanta.notify.receiver.SmsSendReceiver;
 import com.squareup.otto.Bus;
 
@@ -44,6 +47,18 @@ public class AppModule {
     @Singleton
     Bus provideBus() {
         return new Bus();
+    }
+
+    @Provides
+    @Singleton
+    SmsManager provideSmsManager() {
+        return SmsManager.getDefault();
+    }
+
+    @Provides
+    @Singleton
+    GmailSender provideGmailSender() {
+        return new GmailSender();
     }
 
 }
