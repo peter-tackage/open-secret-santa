@@ -6,9 +6,8 @@
   android:layout_height="match_parent">
 
   <!-- The main content view -->
-  <LinearLayout
+  <FrameLayout
     android:id="@+id/content_frame"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/dashboard"/>

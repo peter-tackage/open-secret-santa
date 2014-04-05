@@ -48,6 +48,7 @@ public class MemberListFragment extends InjectingListFragment {
     private static final String DRAW_IN_PROGRESS_KEY = "drawInProgress";
     public static final String ASSIGNMENT_FRAGMENT_KEY = "AssignmentFragment";
 
+    private ActionMode mActionMode;
     private enum Mode {Building, Notify}
 
     @Inject
@@ -147,6 +148,7 @@ public class MemberListFragment extends InjectingListFragment {
                 // Inflate a menu resource providing context menu items
                 MenuInflater inflater = mode.getMenuInflater();
                 inflater.inflate(R.menu.cab_member_list_menu, menu);
+                mActionMode = mode;
                 return true;
             }
 
@@ -159,7 +161,7 @@ public class MemberListFragment extends InjectingListFragment {
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 // Handle contextual action bar selection
                 // Some actions will end the current action mode on completion, others not.
-                switch(item.getItemId()) {
+                switch (item.getItemId()) {
                     case R.id.menu_item_edit:
                         doEdit(getListView().getCheckedItemIds()[0]);
                         mode.finish();
@@ -189,13 +191,14 @@ public class MemberListFragment extends InjectingListFragment {
             public void onDestroyActionMode(ActionMode mode) {
                 Log.i(TAG, "onDestroyActionMode()");
                 mode.getMenu().clear();
+                mActionMode = null;
             }
 
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
                 Log.i(TAG, "onItemCheckedStateChanged()");
                 int checkedItemCount = getListView().getCheckedItemCount();
-                boolean isSingleItemChecked =  checkedItemCount == 1;
+                boolean isSingleItemChecked = checkedItemCount == 1;
                 boolean hasSendableItemChecked = hasSendableItemChecked(getListView());
 
                 mode.setTitle(String.format(getString(R.string.list_selection_count_title), checkedItemCount));
@@ -279,6 +282,12 @@ public class MemberListFragment extends InjectingListFragment {
             Log.e(TAG, "Failed to load Draw Engine: " + e.getMessage());
             Toast.makeText(getActivity(), getString(R.string.draw_engine_init_error_msg), Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        if(mActionMode != null) mActionMode.finish();
+        super.onDestroyView();
     }
 
     @Override
