@@ -3,8 +3,9 @@ package com.moac.android.opensecretsanta.util;
 import android.accounts.*;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.notify.EmailAuthorization;
@@ -22,24 +23,24 @@ public class AccountUtils {
     private static final String TAG = AccountUtils.class.getSimpleName();
 
     // Must run on new thread
-    public static Observable<EmailAuthorization> getPreferedGmailAuth(final Context context, final Activity activity) {
+    public static Observable<EmailAuthorization> getPreferedGmailAuth(final Context context, final AccountManager accountManager, final SharedPreferences prefs, final Activity activity) {
         return Observable.create(new Observable.OnSubscribeFunc<EmailAuthorization>() {
             @Override
             public Subscription onSubscribe(final Observer<? super EmailAuthorization> observer) {
                 Log.i(TAG, "getPreferedGmailAuth() - start");
                 // Retrieve the preferred email address
                 String emailPrefKey = context.getString(R.string.gmail_account_preference);
-                final String emailAddress = PreferenceManager.getDefaultSharedPreferences(context).getString(emailPrefKey, null);
+                final String emailAddress = prefs.getString(emailPrefKey, "");
                 Log.v(TAG, "getPreferedGmailAuth() - current Gmail Account preference: " + emailAddress);
 
                 // No preference.
-                if(emailAddress == null || emailAddress.isEmpty()) {
+                if(TextUtils.isEmpty(emailAddress)) {
                     observer.onError(new Exception("No preferred Gmail account found"));
                     return Subscriptions.empty();
                 }
 
                 // Retrieve all Gmail accounts (must be background)
-                Account[] accounts = getAllGmailAccounts(context);
+                Account[] accounts = getAllGmailAccounts(accountManager);
                 if(accounts != null && accounts.length > 0) {
                     Log.v(TAG, "getPreferedGmailAuth() - found some Gmail Accounts, size: " + accounts.length);
                     // Find the Account that matches the preference
@@ -47,7 +48,7 @@ public class AccountUtils {
                         if(acc.name.equals(emailAddress)) {
                             Log.d(TAG, "getPreferedGmailAuth() - found matching Account - will retrieve token");
                             // Get the token - this might open the framework's auth dialog to confirm permissions.
-                            String token = getGmailToken(context, activity, acc);
+                            String token = getGmailToken(accountManager, activity, acc);
                             Log.d(TAG, "getPreferedGmailAuth() - got token: " + token);
                             observer.onNext(new EmailAuthorization(emailAddress, token));
                             observer.onCompleted();
@@ -62,10 +63,10 @@ public class AccountUtils {
     }
 
     // Must run on new thread
-    public static Account[] getAllGmailAccounts(Context context) {
+    public static Account[] getAllGmailAccounts(AccountManager accountManager) {
         AccountManagerFuture<Account[]> accountsFuture =
-          AccountManager.get(context).getAccountsByTypeAndFeatures(GmailSender.ACCOUNT_TYPE_GOOGLE,
-            GmailSender.FEATURES_MAIL, null, null);
+          accountManager.getAccountsByTypeAndFeatures(GmailSender.ACCOUNT_TYPE_GOOGLE,
+                  GmailSender.FEATURES_MAIL, null, null);
         try {
             return accountsFuture.getResult();
         } catch(OperationCanceledException e) {
@@ -79,11 +80,11 @@ public class AccountUtils {
     }
 
     // Must run on new thread
-    public static Observable<Account[]> getAllGmailAccountsObservable(final Context context) {
+    public static Observable<Account[]> getAllGmailAccountsObservable(final Context context, final AccountManager accountManager) {
         return Observable.create(new Observable.OnSubscribeFunc<Account[]>() {
             @Override
             public Subscription onSubscribe(Observer<? super Account[]> observer) {
-                Account[] accounts = getAllGmailAccounts(context);
+                Account[] accounts = getAllGmailAccounts(accountManager);
                 if(accounts != null && accounts.length > 0) {
                     observer.onNext(accounts);
                     observer.onCompleted();
@@ -96,9 +97,9 @@ public class AccountUtils {
     }
 
     // Must run on new thread
-    public static String getGmailToken(Context context, Activity activity, final Account account) {
+    public static String getGmailToken(AccountManager accountManager, Activity activity, final Account account) {
         Log.d(TAG, "getGmailToken() - start");
-        AccountManagerFuture<Bundle> authTokenBundle = AccountManager.get(context).
+        AccountManagerFuture<Bundle> authTokenBundle = accountManager.
           getAuthToken(account, GmailSender.GMAIL_TOKEN_TYPE, null, activity, null, null);
         try {
             return authTokenBundle.getResult().getString(AccountManager.KEY_AUTHTOKEN);

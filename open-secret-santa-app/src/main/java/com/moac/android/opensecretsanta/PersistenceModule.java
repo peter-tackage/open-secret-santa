@@ -1,6 +1,7 @@
 package com.moac.android.opensecretsanta;
 
-import android.telephony.SmsManager;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.moac.android.opensecretsanta.activity.EditActivity;
 import com.moac.android.opensecretsanta.activity.MainActivity;
@@ -13,9 +14,7 @@ import com.moac.android.opensecretsanta.fragment.MemberListFragment;
 import com.moac.android.opensecretsanta.fragment.NotifyDialogFragment;
 import com.moac.android.opensecretsanta.fragment.NotifyExecutorFragment;
 import com.moac.android.opensecretsanta.fragment.RestrictionsListFragment;
-import com.moac.android.opensecretsanta.notify.mail.GmailSender;
 import com.moac.android.opensecretsanta.notify.receiver.SmsSendReceiver;
-import com.squareup.otto.Bus;
 
 import javax.inject.Singleton;
 
@@ -26,20 +25,27 @@ import dagger.Provides;
         AssignmentFragment.class, MemberEditFragment.class, MemberListFragment.class, NotifyDialogFragment.class,
         RestrictionsListFragment.class, NotifyExecutorFragment.class,
         SmsSendReceiver.class}, complete = false)
-public class AppModule {
+public class PersistenceModule {
 
-    private static final String TAG = AppModule.class.getSimpleName();
+    private static final String TAG = PersistenceModule.class.getSimpleName();
 
     private final OpenSecretSantaApplication mApplication;
 
-    public AppModule(OpenSecretSantaApplication application) {
+    public PersistenceModule(OpenSecretSantaApplication application) {
         mApplication = application;
     }
 
     @Provides
     @Singleton
-    Bus provideBus() {
-        return new Bus();
+    DatabaseManager provideDatabase() {
+        DatabaseHelper databaseHelper = new DatabaseHelper(mApplication);
+        return new DatabaseManager(databaseHelper);
+    }
+
+    @Provides
+    @Singleton
+    SharedPreferences provideDefaultSharedPreferences() {
+        return  PreferenceManager.getDefaultSharedPreferences(mApplication);
     }
 
 }

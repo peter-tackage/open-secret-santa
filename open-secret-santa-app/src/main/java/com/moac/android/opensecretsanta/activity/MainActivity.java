@@ -2,11 +2,11 @@ package com.moac.android.opensecretsanta.activity;
 
 import android.app.*;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -48,6 +48,9 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
 
     @Inject
     DatabaseManager mDb;
+
+    @Inject
+    SharedPreferences mSharedPreferences;
 
     protected DrawerLayout mDrawerLayout;
     protected ActionBarDrawerToggle mDrawerToggle;
@@ -118,7 +121,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         }
 
         //  Fetch the most recently used Group Id from preferences
-        long groupId = PreferenceManager.getDefaultSharedPreferences(this).
+        long groupId = mSharedPreferences.
           getLong(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY, PersistableObject.UNSET_ID);
 
         // Ensure most recent Group is valid
@@ -130,7 +133,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
                 showGroup(groupId);
             } else {
                 Log.i(TAG, "Invalid most recent groupId: " + groupId);
-                PreferenceManager.getDefaultSharedPreferences(this).
+                mSharedPreferences.
                   edit().remove(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY);
                 // Show the drawer to allow Group creation/selection by user
                 mDrawerLayout.openDrawer(mDrawerList);
@@ -329,7 +332,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
           .commit();
 
         // Update preferences to save last viewed Group
-        PreferenceManager.getDefaultSharedPreferences(this).
+        mSharedPreferences.
           edit().putLong(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY, _groupId).apply();
     }
 }

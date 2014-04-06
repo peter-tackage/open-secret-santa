@@ -1,9 +1,9 @@
 package com.moac.android.opensecretsanta.notify;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
 import android.util.Log;
 import com.moac.android.opensecretsanta.R;
@@ -28,11 +28,13 @@ public class DefaultNotifyExecutor implements NotifyExecutor {
     private static final String TAG = DefaultNotifyExecutor.class.getSimpleName();
     private final SmsManager mSmsManager;
     private final GmailSender mGmailSender;
+    private final SharedPreferences mSharedPreferences;
 
-    public DefaultNotifyExecutor(Context context, NotifyAuthorization auth, DatabaseManager db, Bus bus, SmsManager smsManager, GmailSender gmailSender) {
+    public DefaultNotifyExecutor(Context context, NotifyAuthorization auth, DatabaseManager db, SharedPreferences sharedPreferences, Bus bus, SmsManager smsManager, GmailSender gmailSender) {
         mContext = context;
         mAuth = auth;
         mDb = db;
+        mSharedPreferences = sharedPreferences;
         mBus = bus;
         mSmsManager = smsManager;
         mGmailSender = gmailSender;
@@ -72,7 +74,7 @@ public class DefaultNotifyExecutor implements NotifyExecutor {
                             mDb.update(assignment);
 
                             // Build the notifier and execute
-                            boolean useMultiPartSms = PreferenceManager.getDefaultSharedPreferences(mContext).
+                            boolean useMultiPartSms = mSharedPreferences.
                               getBoolean(mContext.getString(R.string.use_multipart_sms), true);
                             SmsNotifier smsNotifier = new SmsNotifier(mContext, mSmsManager, useMultiPartSms);
                             smsNotifier.notify(assignment, member, giftReceiver.getName(), group.getMessage());

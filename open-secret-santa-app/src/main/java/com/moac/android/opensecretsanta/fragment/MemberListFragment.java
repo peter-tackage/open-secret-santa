@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -53,6 +52,9 @@ public class MemberListFragment extends InjectingListFragment {
 
     @Inject
     DatabaseManager mDb;
+
+    @Inject
+    SharedPreferences mSharedPreferences;
 
     @Inject
     Bus mBus;
@@ -534,9 +536,8 @@ public class MemberListFragment extends InjectingListFragment {
     // Returns an instance of the currently preferred DrawEngine
     private DrawEngine getCurrentDrawEngine() throws InvalidDrawEngineException {
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String defaultName = getActivity().getString(R.string.defaultDrawEngine);
-        String classname = prefs.getString("engine_preference",
+        String classname = mSharedPreferences.getString("engine_preference",
           defaultName);
 
         Log.i(TAG, "getCurrentDrawEngine() - setting draw engine to: " + classname);
@@ -551,7 +552,7 @@ public class MemberListFragment extends InjectingListFragment {
                     // Try to set the default then.
                     DrawEngine engine = DrawEngineFactory.createDrawEngine(defaultName);
                     // Success - update preference to use the default.
-                    prefs.edit().putString("engine_preference", defaultName).commit();
+                    mSharedPreferences.edit().putString("engine_preference", defaultName).commit();
                     return engine;
                 } catch(InvalidDrawEngineException ideexp2) {
                     Log.e(TAG, "Unable to initialise default draw engine class: " + classname, ideexp2);

@@ -10,9 +10,8 @@ public class Utils {
 
     private static final String DO_ONCE_TAG = "do_once";
 
-    public static boolean doOnce(Context _context, String _taskTag, Runnable _task) {
+    public static boolean doOnce(SharedPreferences prefs, String _taskTag, Runnable _task) {
         final String prefTag = DO_ONCE_TAG + _taskTag;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(_context);
         boolean isDone = prefs.getBoolean(prefTag, false);
         if(!isDone) {
             _task.run();

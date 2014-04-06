@@ -1,5 +1,6 @@
 package com.moac.android.opensecretsanta;
 
+import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.moac.android.inject.dagger.InjectingApplication;
@@ -22,11 +23,14 @@ public class OpenSecretSantaApplication extends InjectingApplication {
     @Inject
     DatabaseManager mDatabaseManager;
 
+    @Inject
+    SharedPreferences mSharedPreferences;
+
     @Override
     public void onCreate() {
         super.onCreate();
 
-        Utils.doOnce(getApplicationContext(),
+        Utils.doOnce(mSharedPreferences,
                 CREATE_DEFAULT_GROUP, new Runnable() {
             @Override
             public void run() {
@@ -42,7 +46,7 @@ public class OpenSecretSantaApplication extends InjectingApplication {
         String baseName = getString(R.string.base_group_name);
         Group myFirstGroup = GroupUtils.createIncrementingGroup(mDatabaseManager, baseName);
         // Assign as the current Group
-        PreferenceManager.getDefaultSharedPreferences(this).edit().
+        mSharedPreferences.edit().
           putLong(MOST_RECENT_GROUP_KEY, myFirstGroup.getId()).apply();
     }
 
@@ -50,6 +54,8 @@ public class OpenSecretSantaApplication extends InjectingApplication {
     public List<Object> getModules() {
         List<Object> modules = super.getModules();
         modules.add(new AppModule(this));
+        modules.add(new PersistenceModule(this));
+        modules.add(new NotifyModule(this));
         return modules;
     }
 

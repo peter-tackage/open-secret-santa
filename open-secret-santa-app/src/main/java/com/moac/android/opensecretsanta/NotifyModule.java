@@ -1,5 +1,7 @@
 package com.moac.android.opensecretsanta;
 
+import android.accounts.AccountManager;
+import android.content.Context;
 import android.telephony.SmsManager;
 
 import com.moac.android.opensecretsanta.activity.EditActivity;
@@ -21,25 +23,32 @@ import javax.inject.Singleton;
 
 import dagger.Provides;
 
-@dagger.Module(injects = {OpenSecretSantaApplication.class,
-        MainActivity.class, RestrictionsActivity.class, EditActivity.class,
-        AssignmentFragment.class, MemberEditFragment.class, MemberListFragment.class, NotifyDialogFragment.class,
-        RestrictionsListFragment.class, NotifyExecutorFragment.class,
-        SmsSendReceiver.class}, complete = false)
-public class AppModule {
+@dagger.Module(complete= false, injects = {NotifyExecutorFragment.class, NotifyDialogFragment.class})
+public class NotifyModule {
 
-    private static final String TAG = AppModule.class.getSimpleName();
+    private static final String TAG = NotifyModule.class.getSimpleName();
+    private final Context mContext;
 
-    private final OpenSecretSantaApplication mApplication;
-
-    public AppModule(OpenSecretSantaApplication application) {
-        mApplication = application;
+    public NotifyModule(Context context) {
+        mContext = context;
     }
 
     @Provides
     @Singleton
-    Bus provideBus() {
-        return new Bus();
+    SmsManager provideSmsManager() {
+        return SmsManager.getDefault();
+    }
+
+    @Provides
+    @Singleton
+    GmailSender provideGmailSender() {
+        return new GmailSender();
+    }
+
+    @Provides
+    @Singleton
+    AccountManager provideAccountManager() {
+        return AccountManager.get(mContext);
     }
 
 }
