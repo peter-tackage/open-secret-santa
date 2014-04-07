@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:orientation="vertical"
-  android:layout_width="wrap_content"
+  android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:background="@color/light_blue"
   android:padding="16dp">
@@ -28,10 +28,6 @@
         android:id="@+id/receiver_name_textview"
         android:layout_width="144dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignBottom="@+id/receiver_avatar_imageview"
-        android:layout_alignLeft="@+id/receiver_avatar_imageview"
-        android:layout_alignRight="@+id/receiver_avatar_imageview"
         android:textColor="@android:color/white"
         android:background="@android:color/holo_green_light"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
@@ -39,6 +35,5 @@
         android:gravity="center"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="16dp"/>
-
 
 </LinearLayout>

@@ -159,7 +159,9 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
         });
 
         builder.setView(view);
-        return builder.create();
+        Dialog dialog = builder.create();
+        dialog.getWindow().setWindowAnimations(R.style.dialog_animate_overshoot);
+        return dialog;
     }
 
     @Override

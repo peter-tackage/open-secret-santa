@@ -503,15 +503,13 @@ public class MemberListFragment extends InjectingListFragment {
     }
 
     private void addMember(Member _member, Group _group) {
-        if(isNullOrEmpty(_member.getName()))
-            return;
+        if(isNullOrEmpty(_member.getName())) return;
 
         final String msg;
         _member.setGroup(_group);
 
         // Test to see if we already have this member in the group.
         Member existing = mDb.queryMemberWithNameForGroup(_group.getId(), _member.getName());
-
         if(existing != null) {
             msg = String.format(getString(R.string.duplicate_name_msg), _member.getName());
         } else {

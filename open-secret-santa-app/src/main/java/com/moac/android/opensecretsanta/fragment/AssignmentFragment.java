@@ -37,9 +37,6 @@ public class AssignmentFragment extends DialogFragment {
         // Get a layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        builder.setTitle(R.string.reveal_dialog_title);
-        builder.setIcon(R.drawable.ic_menu_draw);
-
         // Pass null as the parent view because its going in the dialog layout
         View view = inflater.inflate(R.layout.fragment_dialog_assignment, null);
 
@@ -62,6 +59,8 @@ public class AssignmentFragment extends DialogFragment {
         }
 
         builder.setView(view);
-        return builder.create();
+        Dialog dialog = builder.create();
+        dialog.getWindow().setWindowAnimations(R.style.dialog_animate_overshoot);
+        return dialog;
     }
 }
