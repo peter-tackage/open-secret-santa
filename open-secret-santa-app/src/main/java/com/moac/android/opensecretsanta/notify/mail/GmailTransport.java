@@ -24,7 +24,7 @@ public class GmailTransport implements EmailTransporter {
     public static final String GMAIL_TOKEN_TYPE = "oauth2:https://mail.google.com/";
 
     @Override
-    public synchronized void send(String subject, String body, String user,
+    public synchronized void send(String subject, String body, String senderAddress,
                                   String oauthToken, String recipients) throws NotificationFailureException {
 
         Properties props = new Properties();
@@ -39,11 +39,11 @@ public class GmailTransport implements EmailTransporter {
         try {
             smtpTransport = connectToSmtp(session, "smtp.gmail.com",
           587,
-          user,
+          senderAddress,
           oauthToken);
 
         MimeMessage message = new MimeMessage(session);
-        message.setSender(new InternetAddress(user));
+        message.setSender(new InternetAddress(senderAddress));
         message.setSubject(subject);
         message.setContent(body, "text/html; charset=utf-8");
 
@@ -53,14 +53,14 @@ public class GmailTransport implements EmailTransporter {
                 message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipients));
             smtpTransport.sendMessage(message, message.getAllRecipients());
         } catch (MessagingException mex) {
-            throw new NotificationFailureException("Failed to send Gmail email from: " + user, mex);
+            throw new NotificationFailureException("Failed to send Gmail email from: " + senderAddress, mex);
         }
         finally {
             if(smtpTransport !=null){
                 try {
                     smtpTransport.close();
                 } catch (MessagingException e) {
-                    throw new NotificationFailureException("Failed to send Gmail email from: " + user, e);
+                    throw new NotificationFailureException("Failed to send Gmail email from: " + senderAddress, e);
                 }
             }
         }

@@ -19,11 +19,11 @@ public final class DebugNotifyModule {
 
     @Provides
     public EmailTransporter provideMockEmailTransporter() {
-        return new MockEmailTransport(false, 3, TimeUnit.SECONDS);
+        return new MockEmailTransport(3, TimeUnit.SECONDS);
     }
 
     @Provides
     public SmsTransporter provideMockSmsTransporter(DatabaseManager db, Bus bus) {
-        return new MockSmsTransport(db, bus, false, 5, TimeUnit.SECONDS);
+        return new MockSmsTransport(db, bus, 5, TimeUnit.SECONDS);
     }
 }

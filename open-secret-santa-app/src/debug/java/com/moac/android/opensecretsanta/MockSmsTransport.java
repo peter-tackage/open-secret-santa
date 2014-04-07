@@ -18,36 +18,29 @@ public class MockSmsTransport implements SmsTransporter {
 
     private DatabaseManager mDb;
     private final Bus mBus;
-    private final boolean mDoSucceed;
     private final long mDelay;
     private final TimeUnit mUnits;
 
-    public MockSmsTransport(DatabaseManager db, Bus bus, boolean doSucceed, long delay, TimeUnit units) {
+    public MockSmsTransport(DatabaseManager db, Bus bus, long delay, TimeUnit units) {
         mDb = db;
         mBus = bus;
-        mDoSucceed = doSucceed;
         mDelay = delay;
         mUnits = units;
     }
 
     @Override
-    public void send(final Assignment _assignment, Member _giver, String _receiverName, String _groupMsg) {
-
-        try {
-            Thread.sleep(TimeUnit.MILLISECONDS.convert(mDelay, mUnits));
-        } catch (InterruptedException e) {
-            // Ignore
-        }
-
-        // Update Assignment with Sent Status
-        _assignment.setSendStatus(mDoSucceed ? Assignment.Status.Sent : Assignment.Status.Failed);
-
-        mDb.update(_assignment);
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
+    public void send(final Assignment _assignment, final Member _giver, String _receiverName, String _groupMsg) {
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
+                // Update Assignment with Sent Status
+                _assignment.setSendStatus(isFailure(_giver.getName()) ? Assignment.Status.Failed : Assignment.Status.Sent);
+                mDb.update(_assignment);
                 mBus.post(new NotifyStatusEvent(_assignment));
             }
-        });
+        }, TimeUnit.MILLISECONDS.convert(mDelay, mUnits));
+    }
+    private static boolean isFailure(String giverName) {
+        return giverName.toUpperCase().startsWith("FAIL");
     }
 }

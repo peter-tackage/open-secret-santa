@@ -9,22 +9,24 @@ public class MockEmailTransport implements EmailTransporter {
 
     private static final String TAG = MockEmailTransport.class.getSimpleName();
 
-    private final boolean mDoSucceed;
     private final long mDelay;
     private final TimeUnit mUnits;
 
-    public MockEmailTransport(boolean doSucceed, long delay, TimeUnit units) {
-        mDoSucceed = doSucceed;
+    public MockEmailTransport(long delay, TimeUnit units) {
         mDelay = delay;
         mUnits = units;
     }
     @Override
-    public void send(String subject, String body, String user, String oauthToken, String recipients) throws NotificationFailureException {
+    public void send(String subject, String body, String senderAddress, String oauthToken, String recipients) throws NotificationFailureException {
         try {
             Thread.sleep(TimeUnit.MILLISECONDS.convert(mDelay, mUnits));
         } catch (InterruptedException e) {
             // Ignore
         }
-        if(!mDoSucceed) throw new  NotificationFailureException("Mock Failure");
+        if(isFailure(recipients)) throw new NotificationFailureException("Mock Failure");
+    }
+
+    private static boolean isFailure(String giverName) {
+        return giverName.toUpperCase().startsWith("FAIL");
     }
 }
