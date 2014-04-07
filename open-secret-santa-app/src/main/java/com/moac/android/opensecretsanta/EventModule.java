@@ -2,7 +2,7 @@ package com.moac.android.opensecretsanta;
 
 import com.moac.android.opensecretsanta.fragment.MemberListFragment;
 import com.moac.android.opensecretsanta.fragment.NotifyExecutorFragment;
-import com.moac.android.opensecretsanta.notify.sms.receiver.SmsManagerSendReceiver;
+import com.moac.android.opensecretsanta.notify.sms.SmsManagerSendReceiver;
 import com.squareup.otto.Bus;
 
 import javax.inject.Singleton;

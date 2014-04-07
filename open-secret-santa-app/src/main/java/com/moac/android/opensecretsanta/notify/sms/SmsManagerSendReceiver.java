@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.notify.sms.receiver;
+package com.moac.android.opensecretsanta.notify.sms;
 
 import android.app.Activity;
 import android.content.Context;

@@ -13,7 +13,7 @@ import com.moac.android.opensecretsanta.fragment.MemberEditFragment;
 import com.moac.android.opensecretsanta.fragment.MemberListFragment;
 import com.moac.android.opensecretsanta.fragment.NotifyExecutorFragment;
 import com.moac.android.opensecretsanta.fragment.RestrictionsListFragment;
-import com.moac.android.opensecretsanta.notify.sms.receiver.SmsManagerSendReceiver;
+import com.moac.android.opensecretsanta.notify.sms.SmsManagerSendReceiver;
 
 import javax.inject.Singleton;
 

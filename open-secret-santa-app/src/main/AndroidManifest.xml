@@ -28,7 +28,7 @@
         <activity android:name=".activity.AllPreferencesActivity"
             android:screenOrientation="portrait" />
 
-        <receiver android:exported="false" android:name=".notify.sms.receiver.SmsManagerSendReceiver">
+        <receiver android:exported="false" android:name=".notify.sms.SmsManagerSendReceiver">
             <intent-filter>
                 <action android:name="com.moac.android.opensecretsanta.SENT_SMS_ACTION" />
             </intent-filter>
