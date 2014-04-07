@@ -8,11 +8,10 @@ import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Member;
+import com.moac.android.opensecretsanta.notify.NotificationFailureException;
 import com.moac.android.opensecretsanta.notify.Notifier;
 import com.moac.android.opensecretsanta.notify.NotifyStatusEvent;
 import com.squareup.otto.Bus;
-
-import javax.mail.MessagingException;
 
 public class EmailNotifier implements Notifier {
 
@@ -41,12 +40,11 @@ public class EmailNotifier implements Notifier {
     public void notify(final Assignment _assignment, Member _giver, String _receiverName, String _groupMsg) {
         String body = buildEmailMsg(mContext.getString(R.string.email_assignment_msg), _giver.getName(),
                 _receiverName, _groupMsg, mContext.getString(R.string.email_footer_msg));
-
         try {
             mEmailTransporter.send(mContext.getString(R.string.email_subject_msg), body, mSenderAddress,
                     mToken, _giver.getContactDetails());
             _assignment.setSendStatus(Assignment.Status.Sent);
-        } catch(MessagingException e) {
+        } catch(NotificationFailureException e) {
             Log.e(TAG, "Exception when sending email to: " + _giver.getContactDetails(), e);
             _assignment.setSendStatus(Assignment.Status.Failed);
         }
