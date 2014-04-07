@@ -39,8 +39,8 @@ public class EmailNotifier implements Notifier {
 
     @Override
     public void notify(final Assignment _assignment, Member _giver, String _receiverName, String _groupMsg) {
-        String body = buildMsg(mContext.getString(R.string.email_assignment_msg), _giver.getName(),
-          _receiverName, _groupMsg, mContext.getString(R.string.email_footer_msg));
+        String body = buildEmailMsg(mContext.getString(R.string.email_assignment_msg), _giver.getName(),
+                _receiverName, _groupMsg, mContext.getString(R.string.email_footer_msg));
 
         try {
             mEmailTransporter.send(mContext.getString(R.string.email_subject_msg), body, mSenderAddress,
@@ -64,12 +64,12 @@ public class EmailNotifier implements Notifier {
     /**
      * Generate a verbose notification message to send via Email
      */
-    private static String buildMsg(String _baseMsg, String _giverName, String _receiverName, String _groupMsg, String _footer) {
+    private static String buildEmailMsg(String _baseMsg, String _giverName, String _receiverName, String _groupMsg, String _footer) {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format(_baseMsg, _giverName, _receiverName));
         sb.append(Strings.isNullOrEmpty(_groupMsg) ? "" : " " +  _groupMsg);
         sb.append(_footer);
-        Log.v(TAG, "buildMsg() - result: " + sb.toString());
+        Log.v(TAG, "buildEmailMsg() - result: " + sb.toString());
 
         return sb.toString();
     }

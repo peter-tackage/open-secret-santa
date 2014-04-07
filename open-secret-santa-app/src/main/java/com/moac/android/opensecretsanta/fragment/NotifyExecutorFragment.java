@@ -87,6 +87,7 @@ public class NotifyExecutorFragment extends InjectingFragment implements DrawNot
     public void onDestroy() {
         if(mSubscription != null) {
             mSubscription.unsubscribe();
+            mSubscription = null;
         }
         if(mDrawProgressDialog != null && mDrawProgressDialog.isShowing()) {
             dismissProgressDialog();

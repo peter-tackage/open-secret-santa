@@ -32,33 +32,33 @@ public class SmsManagerTransport implements SmsTransporter {
 
     @Override
     public void send(Assignment _assignment, Member _giver, String _receiverName, String _msg) {
-            Log.i(TAG, "send() - SMS. giver:" + _giver + " receiverName:" + _receiverName + "msg: " + _msg);
-            String phoneNumber = _giver.getContactDetails();
+        Log.i(TAG, "send() - SMS. giver:" + _giver + " receiverName:" + _receiverName + "msg: " + _msg);
+        String phoneNumber = _giver.getContactDetails();
 
-            // Split long messages
-            ArrayList<String> messages = mSmsManager.divideMessage(_msg);
-            Log.v(TAG, "send() - divided into: " + messages.size());
+        // Split long messages
+        ArrayList<String> messages = mSmsManager.divideMessage(_msg);
+        Log.v(TAG, "send() - divided into: " + messages.size());
 
-            // Sent SMS receiver is register in manifest
-            Intent sentIntent = new Intent(SENT_SMS_ACTION);
-            sentIntent.putExtra(Intents.ASSIGNMENT_ID_INTENT_EXTRA, _assignment.getId());
-            PendingIntent sentPI = PendingIntent.getBroadcast(mContext, 0, sentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        // Sent SMS receiver is register in manifest
+        Intent sentIntent = new Intent(SENT_SMS_ACTION);
+        sentIntent.putExtra(Intents.ASSIGNMENT_ID_INTENT_EXTRA, _assignment.getId());
+        PendingIntent sentPI = PendingIntent.getBroadcast(mContext, 0, sentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            if(mIsMultipartSupported) {
-                Log.v(TAG, "send() - sending multipart message: " + messages.size());
-                // Build the multipart SMS before sending.
-                ArrayList<PendingIntent> sentIntents = new ArrayList<PendingIntent>();
-                for(String part : messages) {
-                    sentIntents.add(sentPI); // one per part
-                }
-                mSmsManager.sendMultipartTextMessage(phoneNumber, null, messages, sentIntents, null);
-            } else {
-                Log.v(TAG, "send() - sending multiple single messages: " + messages.size());
-                // Just iterate manually.
-                for(String partialMsg : messages) {
-                    mSmsManager.sendTextMessage(phoneNumber, null, partialMsg, sentPI, null);
-                }
+        if (mIsMultipartSupported) {
+            Log.v(TAG, "send() - sending multipart message: " + messages.size());
+            // Build the multipart SMS before sending.
+            ArrayList<PendingIntent> sentIntents = new ArrayList<PendingIntent>();
+            for (String part : messages) {
+                sentIntents.add(sentPI); // one per part
             }
+            mSmsManager.sendMultipartTextMessage(phoneNumber, null, messages, sentIntents, null);
+        } else {
+            Log.v(TAG, "send() - sending multiple single messages: " + messages.size());
+            // Just iterate manually.
+            for (String partialMsg : messages) {
+                mSmsManager.sendTextMessage(phoneNumber, null, partialMsg, sentPI, null);
+            }
+        }
 
         /*
          * This is a hack to lower the occurrences of the SmsManager reporting RESULT_ERROR_LIMIT_EXCEEDED
@@ -76,14 +76,14 @@ public class SmsManagerTransport implements SmsTransporter {
          * than it should to run.
          *
          */
-            Log.v(TAG, "send() - backing off");
-            try {
-                Thread.sleep(750);
-            } catch(InterruptedException e) {
-                // Deliberately ignore
-            }
-            Log.v(TAG, "send() - end");
+        Log.v(TAG, "send() - backing off");
+        try {
+            Thread.sleep(750);
+        } catch (InterruptedException e) {
+            // Deliberately ignore
         }
-
+        Log.v(TAG, "send() - end");
     }
+
+}
 

@@ -20,7 +20,8 @@ import dagger.Provides;
         injects = {
                 NotifyExecutorFragment.class,
                 NotifyDialogFragment.class},
-        complete = false)
+        complete = false,
+        library = true)
 public final class NotifyModule {
 
     private static final String TAG = NotifyModule.class.getSimpleName();
