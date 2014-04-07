@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.notify;
+package com.moac.android.opensecretsanta.notify.mail;
 
 import android.content.Context;
 import android.os.Handler;
@@ -8,7 +8,8 @@ import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Member;
-import com.moac.android.opensecretsanta.notify.mail.GmailSender;
+import com.moac.android.opensecretsanta.notify.Notifier;
+import com.moac.android.opensecretsanta.notify.NotifyStatusEvent;
 import com.squareup.otto.Bus;
 
 import javax.mail.MessagingException;
@@ -20,18 +21,18 @@ public class EmailNotifier implements Notifier {
     private final Context mContext;
     private final Bus mBus;
     private final DatabaseManager mDb;
-    private final GmailSender mGmailSender;
+    private final EmailTransporter mEmailTransporter;
     private final String mSenderAddress; // The device owner's address!
     private final String mToken;
     private final Handler mHandler;
 
     public EmailNotifier(Context context, Bus bus, DatabaseManager db, Handler handler,
-                         GmailSender sender, String senderAddress, String token) {
+                         EmailTransporter sender, String senderAddress, String token) {
         mContext = context;
         mBus = bus;
         mDb = db;
         mHandler = handler;
-        mGmailSender = sender;
+        mEmailTransporter = sender;
         mSenderAddress = senderAddress;
         mToken = token;
     }
@@ -42,8 +43,8 @@ public class EmailNotifier implements Notifier {
           _receiverName, _groupMsg, mContext.getString(R.string.email_footer_msg));
 
         try {
-            mGmailSender.sendMail(mContext.getString(R.string.email_subject_msg), body, mSenderAddress,
-              mToken, _giver.getContactDetails());
+            mEmailTransporter.send(mContext.getString(R.string.email_subject_msg), body, mSenderAddress,
+                    mToken, _giver.getContactDetails());
             _assignment.setSendStatus(Assignment.Status.Sent);
         } catch(MessagingException e) {
             Log.e(TAG, "Exception when sending email to: " + _giver.getContactDetails(), e);

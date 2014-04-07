@@ -14,9 +14,9 @@ import java.util.Properties;
 /**
  * From http://stackoverflow.com/questions/12503303/javamail-api-in-android-using-xoauth
  */
-public class GmailSender {
+public class GmailTransport implements EmailTransporter {
 
-    private static final String TAG = GmailSender.class.getSimpleName();
+    private static final String TAG = GmailTransport.class.getSimpleName();
 
     public static final String ACCOUNT_TYPE_GOOGLE = "com.google";
     public static final String[] FEATURES_MAIL = { "service_mail" };
@@ -24,8 +24,9 @@ public class GmailSender {
 
     private Session session;
 
-    public synchronized void sendMail(String subject, String body, String user,
-                                      String oauthToken, String recipients) throws MessagingException {
+    @Override
+    public synchronized void send(String subject, String body, String user,
+                                  String oauthToken, String recipients) throws MessagingException {
 
         SMTPTransport smtpTransport = connectToSmtp("smtp.gmail.com",
           587,

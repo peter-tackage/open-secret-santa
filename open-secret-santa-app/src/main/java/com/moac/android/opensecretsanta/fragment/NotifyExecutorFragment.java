@@ -1,8 +1,6 @@
 package com.moac.android.opensecretsanta.fragment;
 
 import android.app.ProgressDialog;
-import android.content.SharedPreferences;
-import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -14,7 +12,8 @@ import com.moac.android.opensecretsanta.notify.DefaultNotifyExecutor;
 import com.moac.android.opensecretsanta.notify.DrawNotifier;
 import com.moac.android.opensecretsanta.notify.NotifyAuthorization;
 import com.moac.android.opensecretsanta.notify.NotifyStatusEvent;
-import com.moac.android.opensecretsanta.notify.mail.GmailSender;
+import com.moac.android.opensecretsanta.notify.mail.EmailTransporter;
+import com.moac.android.opensecretsanta.notify.sms.SmsTransporter;
 import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
@@ -34,11 +33,9 @@ public class NotifyExecutorFragment extends InjectingFragment implements DrawNot
     @Inject
     Bus mBus;
     @Inject
-    SmsManager mSmsManager;
+    SmsTransporter mSmsTransporter;
     @Inject
-    GmailSender mGmailSender;
-    @Inject
-    SharedPreferences mSharedPreferences;
+    EmailTransporter mEmailTransporter;
 
     private ProgressDialog mDrawProgressDialog;
     private Subscription mSubscription;
@@ -62,7 +59,8 @@ public class NotifyExecutorFragment extends InjectingFragment implements DrawNot
     }
 
     private Observable<NotifyStatusEvent> createNotifyObservable(NotifyAuthorization auth, Group group, long[] memberIds) {
-        DefaultNotifyExecutor executor = new DefaultNotifyExecutor(getActivity(), auth, mDb, mSharedPreferences, mBus, mSmsManager, mGmailSender);
+        DefaultNotifyExecutor executor = new DefaultNotifyExecutor(getActivity(), auth,
+                mDb, mBus, mSmsTransporter, mEmailTransporter);
         return executor.notifyDraw(group, memberIds);
     }
 

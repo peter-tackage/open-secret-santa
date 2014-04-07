@@ -1,17 +1,17 @@
 package com.moac.android.opensecretsanta.notify;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
-import android.telephony.SmsManager;
 import android.util.Log;
-import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
-import com.moac.android.opensecretsanta.notify.mail.GmailSender;
+import com.moac.android.opensecretsanta.notify.mail.EmailNotifier;
+import com.moac.android.opensecretsanta.notify.mail.EmailTransporter;
+import com.moac.android.opensecretsanta.notify.sms.SmsNotifier;
+import com.moac.android.opensecretsanta.notify.sms.SmsTransporter;
 import com.squareup.otto.Bus;
 import rx.Observable;
 import rx.Observer;
@@ -26,18 +26,17 @@ public class DefaultNotifyExecutor implements NotifyExecutor {
     private final Bus mBus;
 
     private static final String TAG = DefaultNotifyExecutor.class.getSimpleName();
-    private final SmsManager mSmsManager;
-    private final GmailSender mGmailSender;
-    private final SharedPreferences mSharedPreferences;
+    private final SmsTransporter mSmsTransporter;
+    private final EmailTransporter mEmailTransporter;
 
-    public DefaultNotifyExecutor(Context context, NotifyAuthorization auth, DatabaseManager db, SharedPreferences sharedPreferences, Bus bus, SmsManager smsManager, GmailSender gmailSender) {
+    public DefaultNotifyExecutor(Context context, NotifyAuthorization auth, DatabaseManager db, Bus bus,
+                                 SmsTransporter smsTransporter, EmailTransporter emailTransporter) {
         mContext = context;
         mAuth = auth;
         mDb = db;
-        mSharedPreferences = sharedPreferences;
         mBus = bus;
-        mSmsManager = smsManager;
-        mGmailSender = gmailSender;
+        mSmsTransporter = smsTransporter;
+        mEmailTransporter = emailTransporter;
     }
 
     @Override
@@ -74,9 +73,7 @@ public class DefaultNotifyExecutor implements NotifyExecutor {
                             mDb.update(assignment);
 
                             // Build the notifier and execute
-                            boolean useMultiPartSms = mSharedPreferences.
-                              getBoolean(mContext.getString(R.string.use_multipart_sms), true);
-                            SmsNotifier smsNotifier = new SmsNotifier(mContext, mSmsManager, useMultiPartSms);
+                            SmsNotifier smsNotifier = new SmsNotifier(mContext, mSmsTransporter);
                             smsNotifier.notify(assignment, member, giftReceiver.getName(), group.getMessage());
                             break;
                         case EMAIL:
@@ -92,7 +89,7 @@ public class DefaultNotifyExecutor implements NotifyExecutor {
                                 assignment.setSendStatus(Assignment.Status.Failed);
                                 mDb.update(assignment);
                                 observer.onNext(new NotifyStatusEvent(assignment));
-                                observer.onError(new Exception("Error - can't connect your Gmail account"));
+                                observer.onError(new Exception("Error - Not authorized to use your email account"));
                                 return Subscriptions.empty();
                             }
 
@@ -100,7 +97,7 @@ public class DefaultNotifyExecutor implements NotifyExecutor {
                             String senderEmail = mAuth.getEmailAuth().getEmailAddress();
                             String token = mAuth.getEmailAuth().getToken();
                             EmailNotifier emailNotifier = new EmailNotifier(mContext, mBus, mDb,
-                              handler, mGmailSender, senderEmail, token);
+                              handler, mEmailTransporter, senderEmail, token);
                             emailNotifier.notify(assignment, member, giftReceiver.getName(), group.getMessage());
                             break;
                         case REVEAL_ONLY:

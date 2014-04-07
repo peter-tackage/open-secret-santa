@@ -24,7 +24,7 @@ import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.adapter.AccountAdapter;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Group;
-import com.moac.android.opensecretsanta.notify.EmailAuthorization;
+import com.moac.android.opensecretsanta.notify.mail.EmailAuthorization;
 import com.moac.android.opensecretsanta.notify.NotifyAuthorization;
 import com.moac.android.opensecretsanta.util.AccountUtils;
 import com.moac.android.opensecretsanta.util.NotifyUtils;

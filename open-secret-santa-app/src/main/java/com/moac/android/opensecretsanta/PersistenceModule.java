@@ -1,5 +1,6 @@
 package com.moac.android.opensecretsanta;
 
+import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
@@ -8,13 +9,11 @@ import com.moac.android.opensecretsanta.activity.MainActivity;
 import com.moac.android.opensecretsanta.activity.RestrictionsActivity;
 import com.moac.android.opensecretsanta.database.DatabaseHelper;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.fragment.AssignmentFragment;
 import com.moac.android.opensecretsanta.fragment.MemberEditFragment;
 import com.moac.android.opensecretsanta.fragment.MemberListFragment;
-import com.moac.android.opensecretsanta.fragment.NotifyDialogFragment;
 import com.moac.android.opensecretsanta.fragment.NotifyExecutorFragment;
 import com.moac.android.opensecretsanta.fragment.RestrictionsListFragment;
-import com.moac.android.opensecretsanta.notify.receiver.SmsSendReceiver;
+import com.moac.android.opensecretsanta.notify.sms.receiver.SmsManagerSendReceiver;
 
 import javax.inject.Singleton;
 
@@ -30,28 +29,23 @@ import dagger.Provides;
                 MemberListFragment.class,
                 NotifyExecutorFragment.class,
                 RestrictionsListFragment.class,
-                SmsSendReceiver.class}, complete = false)
-public class PersistenceModule {
+                SmsManagerSendReceiver.class},
+        complete = false)
+public final class PersistenceModule {
 
     private static final String TAG = PersistenceModule.class.getSimpleName();
 
-    private final OpenSecretSantaApplication mApplication;
-
-    public PersistenceModule(OpenSecretSantaApplication application) {
-        mApplication = application;
-    }
-
     @Provides
     @Singleton
-    DatabaseManager provideDatabase() {
-        DatabaseHelper databaseHelper = new DatabaseHelper(mApplication);
+    DatabaseManager provideDatabase(Application app) {
+        DatabaseHelper databaseHelper = new DatabaseHelper(app);
         return new DatabaseManager(databaseHelper);
     }
 
     @Provides
     @Singleton
-    SharedPreferences provideDefaultSharedPreferences() {
-        return  PreferenceManager.getDefaultSharedPreferences(mApplication);
+    SharedPreferences provideDefaultSharedPreferences(Application app) {
+        return  PreferenceManager.getDefaultSharedPreferences(app);
     }
 
 }

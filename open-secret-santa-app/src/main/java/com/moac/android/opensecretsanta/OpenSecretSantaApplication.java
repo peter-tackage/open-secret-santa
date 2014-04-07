@@ -1,7 +1,6 @@
 package com.moac.android.opensecretsanta;
 
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import com.moac.android.inject.dagger.InjectingApplication;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
@@ -9,6 +8,7 @@ import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.util.GroupUtils;
 import com.moac.android.opensecretsanta.util.Utils;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -53,9 +53,7 @@ public class OpenSecretSantaApplication extends InjectingApplication {
     @Override
     public List<Object> getModules() {
         List<Object> modules = super.getModules();
-        modules.add(new AppModule(this));
-        modules.add(new PersistenceModule(this));
-        modules.add(new NotifyModule(this));
+        modules.addAll(Arrays.asList(Modules.list(this)));
         return modules;
     }
 

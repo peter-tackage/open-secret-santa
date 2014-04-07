@@ -1,12 +1,10 @@
 package com.moac.android.opensecretsanta.notify;
 
+import com.moac.android.opensecretsanta.notify.mail.EmailAuthorization;
+
 public class NotifyAuthorization {
 
     private EmailAuthorization mEmailAuth;
-
-    void setEmailAuthorization(EmailAuthorization emailAuth) {
-        mEmailAuth = emailAuth;
-    }
 
     EmailAuthorization getEmailAuth() {
         return mEmailAuth;

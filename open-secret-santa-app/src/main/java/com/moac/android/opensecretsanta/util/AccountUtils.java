@@ -8,8 +8,8 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import com.moac.android.opensecretsanta.R;
-import com.moac.android.opensecretsanta.notify.EmailAuthorization;
-import com.moac.android.opensecretsanta.notify.mail.GmailSender;
+import com.moac.android.opensecretsanta.notify.mail.EmailAuthorization;
+import com.moac.android.opensecretsanta.notify.mail.GmailTransport;
 
 import rx.Observable;
 import rx.Observer;
@@ -65,8 +65,8 @@ public class AccountUtils {
     // Must run on new thread
     public static Account[] getAllGmailAccounts(AccountManager accountManager) {
         AccountManagerFuture<Account[]> accountsFuture =
-          accountManager.getAccountsByTypeAndFeatures(GmailSender.ACCOUNT_TYPE_GOOGLE,
-                  GmailSender.FEATURES_MAIL, null, null);
+          accountManager.getAccountsByTypeAndFeatures(GmailTransport.ACCOUNT_TYPE_GOOGLE,
+                  GmailTransport.FEATURES_MAIL, null, null);
         try {
             return accountsFuture.getResult();
         } catch(OperationCanceledException e) {
@@ -100,7 +100,7 @@ public class AccountUtils {
     public static String getGmailToken(AccountManager accountManager, Activity activity, final Account account) {
         Log.d(TAG, "getGmailToken() - start");
         AccountManagerFuture<Bundle> authTokenBundle = accountManager.
-          getAuthToken(account, GmailSender.GMAIL_TOKEN_TYPE, null, activity, null, null);
+          getAuthToken(account, GmailTransport.GMAIL_TOKEN_TYPE, null, activity, null, null);
         try {
             return authTokenBundle.getResult().getString(AccountManager.KEY_AUTHTOKEN);
         } catch(OperationCanceledException e) {
