@@ -4,20 +4,9 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.telephony.SmsManager;
 
-import com.moac.android.opensecretsanta.activity.EditActivity;
-import com.moac.android.opensecretsanta.activity.MainActivity;
-import com.moac.android.opensecretsanta.activity.RestrictionsActivity;
-import com.moac.android.opensecretsanta.database.DatabaseHelper;
-import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.fragment.AssignmentFragment;
-import com.moac.android.opensecretsanta.fragment.MemberEditFragment;
-import com.moac.android.opensecretsanta.fragment.MemberListFragment;
 import com.moac.android.opensecretsanta.fragment.NotifyDialogFragment;
 import com.moac.android.opensecretsanta.fragment.NotifyExecutorFragment;
-import com.moac.android.opensecretsanta.fragment.RestrictionsListFragment;
 import com.moac.android.opensecretsanta.notify.mail.GmailSender;
-import com.moac.android.opensecretsanta.notify.receiver.SmsSendReceiver;
-import com.squareup.otto.Bus;
 
 import javax.inject.Singleton;
 
