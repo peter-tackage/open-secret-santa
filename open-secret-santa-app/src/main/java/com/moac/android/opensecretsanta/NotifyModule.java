@@ -23,7 +23,11 @@ import javax.inject.Singleton;
 
 import dagger.Provides;
 
-@dagger.Module(complete= false, injects = {NotifyExecutorFragment.class, NotifyDialogFragment.class})
+@dagger.Module(
+        injects = {
+                NotifyExecutorFragment.class,
+                NotifyDialogFragment.class},
+        complete = false)
 public class NotifyModule {
 
     private static final String TAG = NotifyModule.class.getSimpleName();
@@ -34,13 +38,11 @@ public class NotifyModule {
     }
 
     @Provides
-    @Singleton
     SmsManager provideSmsManager() {
         return SmsManager.getDefault();
     }
 
     @Provides
-    @Singleton
     GmailSender provideGmailSender() {
         return new GmailSender();
     }

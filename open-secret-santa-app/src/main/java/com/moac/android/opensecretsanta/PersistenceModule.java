@@ -20,11 +20,17 @@ import javax.inject.Singleton;
 
 import dagger.Provides;
 
-@dagger.Module(injects = {OpenSecretSantaApplication.class,
-        MainActivity.class, RestrictionsActivity.class, EditActivity.class,
-        AssignmentFragment.class, MemberEditFragment.class, MemberListFragment.class, NotifyDialogFragment.class,
-        RestrictionsListFragment.class, NotifyExecutorFragment.class,
-        SmsSendReceiver.class}, complete = false)
+@dagger.Module(
+        injects = {
+                OpenSecretSantaApplication.class,
+                MainActivity.class,
+                EditActivity.class,
+                RestrictionsActivity.class,
+                MemberEditFragment.class,
+                MemberListFragment.class,
+                NotifyExecutorFragment.class,
+                RestrictionsListFragment.class,
+                SmsSendReceiver.class}, complete = false)
 public class PersistenceModule {
 
     private static final String TAG = PersistenceModule.class.getSimpleName();
