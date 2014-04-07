@@ -1,6 +1,9 @@
 package com.moac.android.opensecretsanta;
 
+import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.notify.mail.EmailTransporter;
+import com.moac.android.opensecretsanta.notify.sms.SmsTransporter;
+import com.squareup.otto.Bus;
 
 import java.util.concurrent.TimeUnit;
 
@@ -17,5 +20,10 @@ public final class DebugNotifyModule {
     @Provides
     public EmailTransporter provideMockEmailTransporter() {
         return new MockEmailTransport(false, 3, TimeUnit.SECONDS);
+    }
+
+    @Provides
+    public SmsTransporter provideMockSmsTransporter(DatabaseManager db, Bus bus) {
+        return new MockSmsTransport(db, bus, false, 5, TimeUnit.SECONDS);
     }
 }
