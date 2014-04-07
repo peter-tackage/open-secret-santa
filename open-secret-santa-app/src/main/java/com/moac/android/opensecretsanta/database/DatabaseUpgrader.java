@@ -14,13 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created with IntelliJ IDEA.
- * User: amelysh
- * Date: 15.11.13
- * Time: 22:06
- * To change this template use File | Settings | File Templates.
- */
 public class DatabaseUpgrader {
 
     private static final String TAG = DatabaseUpgrader.class.getSimpleName();
