@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -113,6 +114,11 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
             public void afterTextChanged(Editable s) {
                 // Update the reported character length
                 mCharCountView.setText(String.valueOf(mMaxMsgLength - s.length()));
+                if(mMsgField.length() == mMaxMsgLength) {
+                    mCharCountView.setTextColor(Color.RED);
+                } else {
+                    mCharCountView.setTextColor(getResources().getColor(R.color.dark_grey));
+                }
             }
         });
 

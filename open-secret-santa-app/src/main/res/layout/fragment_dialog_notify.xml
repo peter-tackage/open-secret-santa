@@ -1,85 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  android:id="@+id/dialog_container_layout"
-  android:orientation="vertical"
-  android:layout_height="wrap_content"
-  android:layout_width="match_parent"
-  android:padding="8dp"
-  android:background="@color/shade_of_grey1">
-
-  <LinearLayout
+    android:id="@+id/dialog_container_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:id="@+id/layout_notify_email_container"
-    android:visibility="gone">
+    android:background="@color/shade_of_grey1"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <LinearLayout
+        android:id="@+id/layout_notify_email_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/notify_email_from_label"
+            android:textColor="@android:color/holo_blue_dark" />
+
+        <Spinner
+            android:id="@+id/spnr_email_selection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/tv_notify_msg"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_below="@+id/layout_notify_email_container"
+        android:layout_marginBottom="4dp"
+        android:background="@color/light_blue"
+        android:gravity="top"
+        android:hint="@string/notify_message_text_hint"
+        android:inputType="textShortMessage|textMultiLine|textCapSentences"
+        android:maxLength="@integer/max_notify_msg_length"
+        android:padding="8dp"
+        android:scrollbars="vertical"
+        android:singleLine="false"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/dark_grey"
+        android:textColorHint="@color/shade_of_grey4" />
+
+    <LinearLayout
+        android:id="@+id/footer_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_notify_msg"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_msg_chars_remaining"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/characters_remaining_message"
+            android:textColor="@color/dark_grey"
+            android:textAlignment="textEnd"
+            android:paddingEnd="2dp" />
+
+        <TextView
+            android:id="@+id/tv_notify_msg_char_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@android:color/holo_blue_light"
+            android:gravity="left" />
+    </LinearLayout>
 
     <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/notify_email_from_label"
-      android:textColor="@android:color/holo_blue_dark" />
-
-    <Spinner
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:id="@+id/spnr_email_selection" />
-  </LinearLayout>
-
-  <EditText
-    android:id="@+id/tv_notify_msg"
-    android:layout_width="match_parent"
-    android:layout_height="150dp"
-    android:scrollbars="vertical"
-    android:hint="@string/notify_message_text_hint"
-    android:gravity="top"
-    android:singleLine="false"
-    android:textAppearance="?android:attr/textAppearanceSmall"
-    android:inputType="textShortMessage|textMultiLine|textCapSentences"
-    android:maxLength="@integer/max_notify_msg_length"
-    android:textColor="@color/dark_grey"
-    android:background="@color/light_blue"
-    android:textColorHint="@color/shade_of_grey4"
-    android:layout_marginBottom="4dp"
-    android:padding="8dp"
-    android:layout_below="@+id/layout_notify_email_container" />
-
-  <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:layout_below="@+id/tv_notify_msg"
-    android:id="@+id/footer_container">
-
-    <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="@string/sms_and_data_charges_message"
-      android:id="@+id/data_sms_charges"
-      android:textColor="@color/dark_grey"
-      android:textSize="10dp"
-      android:textIsSelectable="true"
-      android:gravity="top" />
-
-    <TextView
-      android:id="@+id/tv_notify_msg_char_count"
-      android:layout_width="0dp"
-      android:layout_height="wrap_content"
-      android:textAppearance="?android:attr/textAppearanceSmall"
-      android:textColor="@android:color/holo_blue_light"
-      android:layout_weight="1"
-      android:gravity="right|top" />
-  </LinearLayout>
-
-  <TextView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/tv_notify_info"
-    android:textColor="@android:color/holo_red_dark"
-    android:layout_alignParentBottom="false"
-    android:gravity="center_horizontal"
-    android:layout_marginTop="8dp"
-    android:visibility="gone"
-    android:layout_below="@+id/footer_container" />
+        android:id="@+id/tv_notify_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="false"
+        android:layout_below="@+id/footer_container"
+        android:layout_marginTop="8dp"
+        android:gravity="center_horizontal"
+        android:textColor="@android:color/holo_red_dark"
+        android:visibility="gone" />
 
 </RelativeLayout>
