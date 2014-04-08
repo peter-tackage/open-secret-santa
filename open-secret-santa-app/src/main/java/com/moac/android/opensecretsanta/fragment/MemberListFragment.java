@@ -369,7 +369,8 @@ public class MemberListFragment extends InjectingListFragment {
         dialogMsgView.setText(R.string.clear_assignments_dialog_msg);
         builder.setView(view);
 
-        AlertDialog dialog = builder.create();
+        Dialog dialog = builder.create();
+        dialog.getWindow().setWindowAnimations(R.style.dialog_animate_overshoot);
         dialog.show();
     }
 
