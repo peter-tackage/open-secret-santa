@@ -174,12 +174,13 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
         String message = mSavedMsg == null ? mGroup.getMessage() :
                 savedInstanceState.getString(MESSAGE_KEY);
 
-        mMsgField.setText(message);
+        mMsgField.append(message);
         int remainingChars = mMaxMsgLength;
         if(message != null) {
             remainingChars = message.length() >= mMaxMsgLength ? 0 : mMaxMsgLength - message.length();
         }
         mCharCountView.setText(String.valueOf(remainingChars));
+
 
         mIsEmailAuthRequired = NotifyUtils.containsEmailSendableEntry(mDb, mMemberIds);
         if(mIsEmailAuthRequired) {
