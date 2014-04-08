@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-  <!--  TODO Would be nice if could contain more info -->
   <string-array name="engine_names">
     <item>Basic Engine</item>
     <item>Recursive Engine</item>
