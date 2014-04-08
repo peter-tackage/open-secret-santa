@@ -57,16 +57,13 @@
             android:layout_height="wrap_content"
             android:text="@string/characters_remaining_message"
             android:textColor="@color/dark_grey"
-            android:textAlignment="textEnd"
             android:paddingEnd="2dp" />
 
         <TextView
             android:id="@+id/tv_notify_msg_char_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@android:color/holo_blue_light"
-            android:gravity="left" />
+            android:textColor="@color/dark_grey"/>
     </LinearLayout>
 
     <TextView
