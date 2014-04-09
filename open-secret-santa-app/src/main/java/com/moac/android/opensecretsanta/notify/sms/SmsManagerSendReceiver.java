@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.notify.receiver;
+package com.moac.android.opensecretsanta.notify.sms;
 
 import android.app.Activity;
 import android.content.Context;
@@ -21,9 +21,9 @@ import javax.inject.Inject;
  * for that Assignment receipt. Instead we use the Extra in the Intent
  * to determine which Assignment is being processed.
  */
-public class SmsSendReceiver extends InjectingBroadcastReceiver {
+public class SmsManagerSendReceiver extends InjectingBroadcastReceiver {
 
-    private static final String TAG = SmsSendReceiver.class.getSimpleName();
+    private static final String TAG = SmsManagerSendReceiver.class.getSimpleName();
 
     @Inject
     DatabaseManager mDb;

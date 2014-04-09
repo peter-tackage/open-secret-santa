@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -48,10 +47,14 @@ public class MemberListFragment extends InjectingListFragment {
     private static final String DRAW_IN_PROGRESS_KEY = "drawInProgress";
     public static final String ASSIGNMENT_FRAGMENT_KEY = "AssignmentFragment";
 
+    private ActionMode mActionMode;
     private enum Mode {Building, Notify}
 
     @Inject
     DatabaseManager mDb;
+
+    @Inject
+    SharedPreferences mSharedPreferences;
 
     @Inject
     Bus mBus;
@@ -147,6 +150,7 @@ public class MemberListFragment extends InjectingListFragment {
                 // Inflate a menu resource providing context menu items
                 MenuInflater inflater = mode.getMenuInflater();
                 inflater.inflate(R.menu.cab_member_list_menu, menu);
+                mActionMode = mode;
                 return true;
             }
 
@@ -159,7 +163,7 @@ public class MemberListFragment extends InjectingListFragment {
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 // Handle contextual action bar selection
                 // Some actions will end the current action mode on completion, others not.
-                switch(item.getItemId()) {
+                switch (item.getItemId()) {
                     case R.id.menu_item_edit:
                         doEdit(getListView().getCheckedItemIds()[0]);
                         mode.finish();
@@ -189,13 +193,14 @@ public class MemberListFragment extends InjectingListFragment {
             public void onDestroyActionMode(ActionMode mode) {
                 Log.i(TAG, "onDestroyActionMode()");
                 mode.getMenu().clear();
+                mActionMode = null;
             }
 
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
                 Log.i(TAG, "onItemCheckedStateChanged()");
                 int checkedItemCount = getListView().getCheckedItemCount();
-                boolean isSingleItemChecked =  checkedItemCount == 1;
+                boolean isSingleItemChecked = checkedItemCount == 1;
                 boolean hasSendableItemChecked = hasSendableItemChecked(getListView());
 
                 mode.setTitle(String.format(getString(R.string.list_selection_count_title), checkedItemCount));
@@ -282,6 +287,12 @@ public class MemberListFragment extends InjectingListFragment {
     }
 
     @Override
+    public void onDestroyView() {
+        if(mActionMode != null) mActionMode.finish();
+        super.onDestroyView();
+    }
+
+    @Override
     public void onDestroy() {
         if(mDrawSubscription != null) {
             mDrawSubscription.unsubscribe();
@@ -358,7 +369,8 @@ public class MemberListFragment extends InjectingListFragment {
         dialogMsgView.setText(R.string.clear_assignments_dialog_msg);
         builder.setView(view);
 
-        AlertDialog dialog = builder.create();
+        Dialog dialog = builder.create();
+        dialog.getWindow().setWindowAnimations(R.style.dialog_animate_overshoot);
         dialog.show();
     }
 
@@ -381,9 +393,9 @@ public class MemberListFragment extends InjectingListFragment {
     }
 
     private void doNotify(long[] _memberIds) {
-        if(_memberIds == null || _memberIds.length == 0)
-            return;
-        requestNotifyDraw(mGroup, _memberIds);
+        if(_memberIds != null && _memberIds.length != 0) {
+            requestNotifyDraw(mGroup, _memberIds);
+        }
     }
 
     private void doNotifyAll() {
@@ -492,15 +504,13 @@ public class MemberListFragment extends InjectingListFragment {
     }
 
     private void addMember(Member _member, Group _group) {
-        if(isNullOrEmpty(_member.getName()))
-            return;
+        if(isNullOrEmpty(_member.getName())) return;
 
         final String msg;
         _member.setGroup(_group);
 
         // Test to see if we already have this member in the group.
         Member existing = mDb.queryMemberWithNameForGroup(_group.getId(), _member.getName());
-
         if(existing != null) {
             msg = String.format(getString(R.string.duplicate_name_msg), _member.getName());
         } else {
@@ -525,9 +535,8 @@ public class MemberListFragment extends InjectingListFragment {
     // Returns an instance of the currently preferred DrawEngine
     private DrawEngine getCurrentDrawEngine() throws InvalidDrawEngineException {
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String defaultName = getActivity().getString(R.string.defaultDrawEngine);
-        String classname = prefs.getString("engine_preference",
+        String classname = mSharedPreferences.getString("engine_preference",
           defaultName);
 
         Log.i(TAG, "getCurrentDrawEngine() - setting draw engine to: " + classname);
@@ -542,7 +551,7 @@ public class MemberListFragment extends InjectingListFragment {
                     // Try to set the default then.
                     DrawEngine engine = DrawEngineFactory.createDrawEngine(defaultName);
                     // Success - update preference to use the default.
-                    prefs.edit().putString("engine_preference", defaultName).commit();
+                    mSharedPreferences.edit().putString("engine_preference", defaultName).commit();
                     return engine;
                 } catch(InvalidDrawEngineException ideexp2) {
                     Log.e(TAG, "Unable to initialise default draw engine class: " + classname, ideexp2);

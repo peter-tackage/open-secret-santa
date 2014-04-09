@@ -2,17 +2,17 @@ package com.moac.android.opensecretsanta.fragment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.moac.android.inject.dagger.InjectingDialogFragment;
 import com.moac.android.opensecretsanta.R;
 import com.squareup.picasso.Picasso;
 
-public class AssignmentFragment extends InjectingDialogFragment {
+public class AssignmentFragment extends DialogFragment {
 
     private static final String TAG = AssignmentFragment.class.getSimpleName();
 
@@ -37,9 +37,6 @@ public class AssignmentFragment extends InjectingDialogFragment {
         // Get a layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        builder.setTitle(R.string.reveal_dialog_title);
-        builder.setIcon(R.drawable.ic_menu_draw);
-
         // Pass null as the parent view because its going in the dialog layout
         View view = inflater.inflate(R.layout.fragment_dialog_assignment, null);
 
@@ -62,6 +59,8 @@ public class AssignmentFragment extends InjectingDialogFragment {
         }
 
         builder.setView(view);
-        return builder.create();
+        Dialog dialog = builder.create();
+        dialog.getWindow().setWindowAnimations(R.style.dialog_animate_overshoot);
+        return dialog;
     }
 }

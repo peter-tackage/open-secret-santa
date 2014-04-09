@@ -35,13 +35,4 @@
       android:title="@string/algorithm_list_preference" />
   </PreferenceCategory>
 
-  <PreferenceCategory android:title="@string/sms_preferences">
-
-    <CheckBoxPreference
-      android:defaultValue="true"
-      android:key="use_multipart_sms"
-      android:summary="@string/use_multipart_sms_desc"
-      android:title="@string/use_multipart_sms" />
-  </PreferenceCategory>
-
 </PreferenceScreen>

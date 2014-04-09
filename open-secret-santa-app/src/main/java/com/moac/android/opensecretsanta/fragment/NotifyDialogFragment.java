@@ -1,12 +1,14 @@
 package com.moac.android.opensecretsanta.fragment;
 
 import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -23,7 +25,7 @@ import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.adapter.AccountAdapter;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Group;
-import com.moac.android.opensecretsanta.notify.EmailAuthorization;
+import com.moac.android.opensecretsanta.notify.mail.EmailAuthorization;
 import com.moac.android.opensecretsanta.notify.NotifyAuthorization;
 import com.moac.android.opensecretsanta.util.AccountUtils;
 import com.moac.android.opensecretsanta.util.NotifyUtils;
@@ -43,17 +45,23 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
     @Inject
     DatabaseManager mDb;
 
+    @Inject
+    SharedPreferences mSharedPreferences;
+
+    @Inject
+    AccountManager mAccountManager;
+
     protected EditText mMsgField;
     protected Group mGroup;
-    protected long[] mMemberIds;
 
+    protected long[] mMemberIds;
     private FragmentContainer mFragmentContainer;
     private Spinner mSpinner;
     private TextView mInfoTextView;
     private boolean mIsEmailAuthRequired;
     private ViewGroup mEmailFromContainer;
-    private int mMaxMsgLength;
 
+    private int mMaxMsgLength;
     // Apparently this is how you retain EditText fields - http://code.google.com/p/android/issues/detail?id=18719
     private String mSavedMsg;
     private TextView mCharCountView;
@@ -106,6 +114,11 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
             public void afterTextChanged(Editable s) {
                 // Update the reported character length
                 mCharCountView.setText(String.valueOf(mMaxMsgLength - s.length()));
+                if(mMsgField.length() == mMaxMsgLength) {
+                    mCharCountView.setTextColor(Color.RED);
+                } else {
+                    mCharCountView.setTextColor(getResources().getColor(R.color.dark_grey));
+                }
             }
         });
 
@@ -126,9 +139,9 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
                     if(acc != null) {
                         // Set the selected email as the user preference
                         String emailPrefKey = getActivity().getString(R.string.gmail_account_preference);
-                        PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putString(emailPrefKey, acc.name).commit();
+                        mSharedPreferences.edit().putString(emailPrefKey, acc.name).commit();
 
-                        AccountUtils.getPreferedGmailAuth(getActivity().getApplicationContext(), getActivity()).
+                        AccountUtils.getPreferedGmailAuth(getActivity(), mAccountManager, mSharedPreferences, getActivity()).
                           subscribeOn(Schedulers.newThread()).
                           observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<EmailAuthorization>() {
                             @Override
@@ -152,7 +165,9 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
         });
 
         builder.setView(view);
-        return builder.create();
+        Dialog dialog = builder.create();
+        dialog.getWindow().setWindowAnimations(R.style.dialog_animate_overshoot);
+        return dialog;
     }
 
     @Override
@@ -165,17 +180,18 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
         String message = mSavedMsg == null ? mGroup.getMessage() :
                 savedInstanceState.getString(MESSAGE_KEY);
 
-        mMsgField.setText(message);
+        mMsgField.append(message);
         int remainingChars = mMaxMsgLength;
         if(message != null) {
             remainingChars = message.length() >= mMaxMsgLength ? 0 : mMaxMsgLength - message.length();
         }
         mCharCountView.setText(String.valueOf(remainingChars));
 
+
         mIsEmailAuthRequired = NotifyUtils.containsEmailSendableEntry(mDb, mMemberIds);
         if(mIsEmailAuthRequired) {
             // Add all Gmail accounts to list
-            final Observable<Account[]> accountsObservable = AccountUtils.getAllGmailAccountsObservable(getActivity());
+            final Observable<Account[]> accountsObservable = AccountUtils.getAllGmailAccountsObservable(getActivity(), mAccountManager);
             accountsObservable.
                     subscribeOn(Schedulers.newThread()).
                     observeOn(AndroidSchedulers.mainThread()).

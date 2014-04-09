@@ -8,8 +8,8 @@
   <string name="restrictions_label">restriction</string>
 
   <!-- Notify Dialog -->
-  <string name="notify_message_text_hint">Enter any message you\'d like to send along with the Secret Santa assignments (optional)</string>
-  <string name="sms_and_data_charges_message">Normal SMS and data charges apply</string>
+  <string name="notify_message_text_hint">Enter an additional message you\'d like to send with the Secret Santa assignments</string>
+  <string name="characters_remaining_message">Characters remaining:</string>
   <string name="notify_send_button_text">Send</string>
   <string name="no_email_warning">WARNING: Assignments won\'t be sent. We can\'t find your Gmail account</string>
   <string name="notify_email_from_label">From:</string>
@@ -17,7 +17,7 @@
 
   <!-- Edit screen -->
   <string name="edit_member_title">Editing %s</string>
-  <string name="contact_method_label">How to notify of assignment</string>
+  <string name="contact_method_label">Notify via</string>
   <string name="member_name_label">Member Name</string>
   <string name="member_name_hint">Name</string>
   <string name="member_contact_details_hint">Contact Details</string>
@@ -31,22 +31,15 @@
   <!-- Preferences - Algorithm -->
   <string name="algorithm_preferences">Algorithm Preferences</string>
   <string name="algorithm_list_preference">Draw Engine</string>
-  <string name="summary_list_preference">The algorithm that is used to calculate
-    your draws
-  </string>
+  <string name="summary_list_preference">The algorithm that is used to calculate your draws</string>
   <string name="dialog_title_list_preference">Draw Engine</string>
   <string name="defaultDrawEngine">com.moac.drawengine.BasicDrawEngine</string>
 
   <!-- Preferences - Email -->
   <string name="gmail_account_preference">gmail_account_preference</string>
 
-  <!-- Preferences SMS -->
-  <string name="sms_preferences">SMS Preferences</string>
+  <!-- LEGACY - Preferences SMS -->
   <string name="use_multipart_sms">Use Multipart SMS</string>
-  <string name="use_multipart_sms_desc">Send long messages as multipart SMS
-    rather than individual messages (most carriers support this)
-  </string>
-  <bool name="defaultUseMultipartSms">true</bool>
 
   <!-- App Info -->
   <string name="about_title">About Open Secret Santa</string>

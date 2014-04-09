@@ -1,4 +1,4 @@
-package com.moac.android.opensecretsanta.notify;
+package com.moac.android.opensecretsanta.notify.mail;
 
 public class EmailAuthorization {
 

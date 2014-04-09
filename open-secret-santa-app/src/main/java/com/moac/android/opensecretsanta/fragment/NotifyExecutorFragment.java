@@ -12,6 +12,8 @@ import com.moac.android.opensecretsanta.notify.DefaultNotifyExecutor;
 import com.moac.android.opensecretsanta.notify.DrawNotifier;
 import com.moac.android.opensecretsanta.notify.NotifyAuthorization;
 import com.moac.android.opensecretsanta.notify.NotifyStatusEvent;
+import com.moac.android.opensecretsanta.notify.mail.EmailTransporter;
+import com.moac.android.opensecretsanta.notify.sms.SmsTransporter;
 import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
@@ -30,6 +32,10 @@ public class NotifyExecutorFragment extends InjectingFragment implements DrawNot
     DatabaseManager mDb;
     @Inject
     Bus mBus;
+    @Inject
+    SmsTransporter mSmsTransporter;
+    @Inject
+    EmailTransporter mEmailTransporter;
 
     private ProgressDialog mDrawProgressDialog;
     private Subscription mSubscription;
@@ -53,7 +59,8 @@ public class NotifyExecutorFragment extends InjectingFragment implements DrawNot
     }
 
     private Observable<NotifyStatusEvent> createNotifyObservable(NotifyAuthorization auth, Group group, long[] memberIds) {
-        DefaultNotifyExecutor executor = new DefaultNotifyExecutor(getActivity(), auth, mDb, mBus);
+        DefaultNotifyExecutor executor = new DefaultNotifyExecutor(getActivity(), auth,
+                mDb, mBus, mSmsTransporter, mEmailTransporter);
         return executor.notifyDraw(group, memberIds);
     }
 
@@ -80,6 +87,7 @@ public class NotifyExecutorFragment extends InjectingFragment implements DrawNot
     public void onDestroy() {
         if(mSubscription != null) {
             mSubscription.unsubscribe();
+            mSubscription = null;
         }
         if(mDrawProgressDialog != null && mDrawProgressDialog.isShowing()) {
             dismissProgressDialog();
