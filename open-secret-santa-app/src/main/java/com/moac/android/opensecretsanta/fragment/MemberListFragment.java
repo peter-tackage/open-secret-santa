@@ -393,9 +393,9 @@ public class MemberListFragment extends InjectingListFragment {
     }
 
     private void doNotify(long[] _memberIds) {
-        if(_memberIds == null || _memberIds.length == 0)
-            return;
-        requestNotifyDraw(mGroup, _memberIds);
+        if(_memberIds != null && _memberIds.length != 0) {
+            requestNotifyDraw(mGroup, _memberIds);
+        }
     }
 
     private void doNotifyAll() {
