@@ -1,17 +1,4 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.9.+'
-    }
-}
-apply plugin: 'android-library'
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
+apply plugin: 'com.android.library'
 
 dependencies {
     compile 'com.squareup.dagger:dagger:1.2.0'
@@ -19,7 +6,7 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "19.0.3"
+    compileSdkVersion 20
+    buildToolsVersion "20.0.0"
 }
 

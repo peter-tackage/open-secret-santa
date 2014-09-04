@@ -9,3 +9,6 @@ signing.properties
 build/
 .gradle/
 
+# Generated
+local.properties
+
