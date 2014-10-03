@@ -58,7 +58,7 @@ public class MemberEditFragment extends InjectingFragment implements Saveable {
         TextView titleTextView = (TextView) getView().findViewById(R.id.content_title_textview);
         titleTextView.setText(String.format(getString(R.string.edit_member_title),mMember.getName()));
 
-        ImageView avatarImageView = (ImageView) getView().findViewById(R.id.iv_avatar);
+        ImageView avatarImageView = (ImageView) getView().findViewById(R.id.imageView_avatar);
         if (mMember.getContactId() == PersistableObject.UNSET_ID || mMember.getLookupKey() == null) {
             Picasso.with(getActivity()).load(R.drawable.ic_contact_picture).into(avatarImageView);
         } else {
