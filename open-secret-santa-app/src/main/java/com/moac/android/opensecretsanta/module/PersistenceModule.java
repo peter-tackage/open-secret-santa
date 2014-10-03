@@ -1,9 +1,11 @@
-package com.moac.android.opensecretsanta;
+package com.moac.android.opensecretsanta.module;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.activity.EditActivity;
 import com.moac.android.opensecretsanta.activity.MainActivity;
 import com.moac.android.opensecretsanta.activity.RestrictionsActivity;
@@ -13,6 +15,7 @@ import com.moac.android.opensecretsanta.fragment.MemberEditFragment;
 import com.moac.android.opensecretsanta.fragment.MemberListFragment;
 import com.moac.android.opensecretsanta.fragment.NotifyExecutorFragment;
 import com.moac.android.opensecretsanta.fragment.RestrictionsListFragment;
+import com.moac.android.opensecretsanta.inject.ForApplication;
 import com.moac.android.opensecretsanta.notify.sms.SmsManagerSendReceiver;
 
 import javax.inject.Singleton;
@@ -37,15 +40,15 @@ public final class PersistenceModule {
 
     @Provides
     @Singleton
-    DatabaseManager provideDatabase(Application app) {
-        DatabaseHelper databaseHelper = new DatabaseHelper(app);
+    DatabaseManager provideDatabase(@ForApplication Context context) {
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
         return new DatabaseManager(databaseHelper);
     }
 
     @Provides
     @Singleton
-    SharedPreferences provideDefaultSharedPreferences(Application app) {
-        return  PreferenceManager.getDefaultSharedPreferences(app);
+    SharedPreferences provideDefaultSharedPreferences(@ForApplication Context context) {
+        return  PreferenceManager.getDefaultSharedPreferences(context);
     }
 
 }

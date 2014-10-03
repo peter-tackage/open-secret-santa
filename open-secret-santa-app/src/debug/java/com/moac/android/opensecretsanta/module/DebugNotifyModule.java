@@ -1,5 +1,9 @@
-package com.moac.android.opensecretsanta;
+package com.moac.android.opensecretsanta.module;
 
+import android.telephony.SmsManager;
+
+import com.moac.android.opensecretsanta.MockEmailTransport;
+import com.moac.android.opensecretsanta.MockSmsTransport;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.notify.mail.EmailTransporter;
 import com.moac.android.opensecretsanta.notify.sms.SmsTransporter;
@@ -9,13 +13,13 @@ import java.util.concurrent.TimeUnit;
 
 import dagger.Provides;
 
-@dagger.Module(addsTo = NotifyModule.class,
+@dagger.Module(
+        addsTo = NotifyModule.class,
         overrides = true,
-        complete = false,
-        library = true)
+        complete = false)
 public final class DebugNotifyModule {
 
-    private static final String TAG = NotifyModule.class.getSimpleName();
+    private static final String TAG = DebugNotifyModule.class.getSimpleName();
 
     @Provides
     public EmailTransporter provideMockEmailTransporter() {
