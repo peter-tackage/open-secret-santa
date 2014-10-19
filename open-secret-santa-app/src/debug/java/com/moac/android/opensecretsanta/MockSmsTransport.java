@@ -5,7 +5,6 @@ import android.os.Looper;
 
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
-import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.notify.NotifyStatusEvent;
 import com.moac.android.opensecretsanta.notify.sms.SmsTransporter;
 import com.squareup.otto.Bus;
@@ -29,18 +28,19 @@ public class MockSmsTransport implements SmsTransporter {
     }
 
     @Override
-    public void send(final Assignment _assignment, final Member _giver, String _receiverName, String _groupMsg) {
+    public void send(final Assignment assignment, final String phoneNumber, String msg) {
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
                 // Update Assignment with Sent Status
-                _assignment.setSendStatus(isFailure(_giver.getName()) ? Assignment.Status.Failed : Assignment.Status.Sent);
-                mDb.update(_assignment);
-                mBus.post(new NotifyStatusEvent(_assignment));
+                assignment.setSendStatus(isFailure(phoneNumber) ? Assignment.Status.Failed : Assignment.Status.Sent);
+                mDb.update(assignment);
+                mBus.post(new NotifyStatusEvent(assignment));
             }
         }, TimeUnit.MILLISECONDS.convert(mDelay, mUnits));
     }
-    private static boolean isFailure(String giverName) {
-        return giverName.toUpperCase().startsWith("FAIL");
+
+    private static boolean isFailure(String phoneNumber) {
+        return phoneNumber.toUpperCase().startsWith("1");
     }
 }

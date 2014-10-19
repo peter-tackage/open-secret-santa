@@ -23,7 +23,7 @@ public class SmsNotifier implements Notifier {
     @Override
     public void notify(Assignment _assignment, Member _giver, String _receiverName, String _groupMsg) {
         String msg = buildSmsMsg(mContext.getString(R.string.sms_assignment_msg_unformatted), _groupMsg, _giver.getName(), _receiverName);
-        mSmsTransporter.send(_assignment, _giver, _receiverName, msg);
+        mSmsTransporter.send(_assignment, _giver.getContactDetails(), msg);
     }
 
     /**

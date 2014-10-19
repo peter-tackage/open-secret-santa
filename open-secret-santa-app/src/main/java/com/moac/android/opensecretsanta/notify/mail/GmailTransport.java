@@ -25,7 +25,7 @@ public class GmailTransport implements EmailTransporter {
 
     @Override
     public synchronized void send(String subject, String body, String senderAddress,
-                                  String oauthToken, String recipients) throws NotificationFailureException {
+                                  String oauthToken, String toAddress) throws NotificationFailureException {
 
         Properties props = new Properties();
         props.put("mail.smtp.starttls.enable", "true");
@@ -47,10 +47,10 @@ public class GmailTransport implements EmailTransporter {
         message.setSubject(subject);
         message.setContent(body, "text/html; charset=utf-8");
 
-            if(recipients.indexOf(',') > 0)
-                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipients));
+            if(toAddress.indexOf(',') > 0)
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toAddress));
             else
-                message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipients));
+                message.setRecipient(Message.RecipientType.TO, new InternetAddress(toAddress));
             smtpTransport.sendMessage(message, message.getAllRecipients());
         } catch (MessagingException mex) {
             throw new NotificationFailureException("Failed to send Gmail email from: " + senderAddress, mex);
