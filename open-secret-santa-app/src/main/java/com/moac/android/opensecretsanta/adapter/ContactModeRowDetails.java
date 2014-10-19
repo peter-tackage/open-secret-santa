@@ -21,7 +21,7 @@ public class ContactModeRowDetails {
         ContactModeRowDetails that = (ContactModeRowDetails) other;
 
         return this.mContactMode == that.mContactMode
-          && (null == this.mContactDetail ? (this.mContactDetail == that.mContactDetail) : this.mContactDetail.equals(that.mContactDetail));
+          && (null == this.mContactDetail ? that.mContactDetail == null : this.mContactDetail.equals(that.mContactDetail));
     }
 
     @Override

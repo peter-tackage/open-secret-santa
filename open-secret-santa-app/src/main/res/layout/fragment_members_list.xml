@@ -1,48 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent">
-
-  <TextView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/content_title_textview"
-    android:gravity="center_horizontal"
-    android:textColor="@color/white"
-    android:background="@android:color/holo_blue_light"
-    android:layout_marginBottom="8dp"/>
-
-  <AutoCompleteTextView
-    android:layout_width="match_parent"
-    android:layout_height="48dp"
-    android:id="@+id/add_autoCompleteTextView"
-    android:layout_gravity="center"
-    android:padding="8dp"
-    android:layout_marginLeft="8dp"
-    android:layout_marginRight="8dp"
-    android:layout_marginBottom="8dp"
-    android:hint="@string/search_hint_label"
-    android:textColorHint="@color/shade_of_grey4"
-    android:singleLine="true"
-    android:background="@drawable/search_bg_shape"
-    android:capitalize="words"
-    android:inputType="textCapWords|textPersonName"
-    android:imeOptions="actionDone" />
-
-  <ListView
-    android:id="@id/android:list"
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="1"
-    android:layout_marginRight="8dp"
-    android:layout_marginLeft="8dp" />
-
-  <LinearLayout
-    android:id="@id/android:empty"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent" />
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textView_groupName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:gravity="center_horizontal"
+        android:padding="4dp"
+        android:textColor="@android:color/holo_blue_light"
+        android:textStyle="bold"
+        tools:text="Some Group Name" />
+
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteTextView_addMember"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/shape_search_background"
+        android:hint="@string/search_hint_label"
+        android:imeOptions="actionDone"
+        android:inputType="textCapWords|textPersonName"
+        android:singleLine="true"
+        android:textColorHint="@color/shade_of_grey2" />
+
+    <ListView
+        android:id="@id/android:list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:divider="@null"
+        android:dividerHeight="2dp" />
+
+    <!-- TODO(PT) Replace this with a better empty list fragment -->
+    <LinearLayout
+        android:id="@id/android:empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:orientation="vertical" />
 
 </LinearLayout>

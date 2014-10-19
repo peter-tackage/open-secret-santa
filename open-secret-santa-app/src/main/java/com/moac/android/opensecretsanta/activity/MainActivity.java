@@ -1,6 +1,9 @@
 package com.moac.android.opensecretsanta.activity;
 
-import android.app.*;
+import android.app.ActivityOptions;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -15,6 +18,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import com.google.common.primitives.Longs;
 import com.moac.android.inject.dagger.InjectingActivity;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
@@ -38,6 +42,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+// FIXME(PT) This class is too big
 public class MainActivity extends InjectingActivity implements MemberListFragment.FragmentContainer, NotifyDialogFragment.FragmentContainer, MemberEditor {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -69,12 +74,13 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         // Find or create existing worker fragment
         mNotifyExecutorFragment = (NotifyExecutorFragment) fm.findFragmentByTag(NOTIFY_EXECUTOR_FRAGMENT_TAG);
 
-        if(mNotifyExecutorFragment == null) {
+        if (mNotifyExecutorFragment == null) {
             mNotifyExecutorFragment = NotifyExecutorFragment.create();
             fm.beginTransaction().add(mNotifyExecutorFragment, NOTIFY_EXECUTOR_FRAGMENT_TAG).commit();
         }
         initialiseUI();
     }
+
 
     private void initialiseUI() {
         setContentView(R.layout.activity_main);
@@ -82,8 +88,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
 
         // Add Groups list header - *before adapter is set*
         View headerView = getLayoutInflater().inflate(R.layout.drawer_section_header_view, mDrawerList, false);
-        TextView headerLabel = (TextView) headerView.findViewById(R.id.tv_section_header_label);
-        headerLabel.setText(R.string.drawer_groups_header);
+        TextView headerLabel = (TextView) headerView.findViewById(R.id.textView_groupListLabel);
         mDrawerList.addHeaderView(headerView);
 
         mDrawerListAdapter = new DrawerListAdapter(this);
@@ -93,11 +98,11 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(
-          this,                  /* host Activity */
-          mDrawerLayout,         /* DrawerLayout object */
-          R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
-          R.string.drawer_open_accesshint,  /* "open drawer" description */
-          R.string.drawer_close_accesshint) /* "close drawer" description */ {
+                this,                  /* host Activity */
+                mDrawerLayout,         /* DrawerLayout object */
+                R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
+                R.string.drawer_open_accesshint,  /* "open drawer" description */
+                R.string.drawer_close_accesshint) /* "close drawer" description */ {
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
@@ -115,26 +120,26 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        if(getActionBar() != null) {
+        if (getActionBar() != null) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
             getActionBar().setHomeButtonEnabled(true);
         }
 
         //  Fetch the most recently used Group Id from preferences
         long groupId = mSharedPreferences.
-          getLong(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY, PersistableObject.UNSET_ID);
+                getLong(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY, PersistableObject.UNSET_ID);
 
         // Ensure most recent Group is valid
-        if(groupId > PersistableObject.UNSET_ID) {
+        if (groupId > PersistableObject.UNSET_ID) {
             int adapterPosition = getItemAdapterPosition(mDrawerListAdapter, groupId);
-            if(adapterPosition >= 0) {
+            if (adapterPosition >= 0) {
                 // Check the valid list item
                 mDrawerList.setItemChecked(toListViewPosition(mDrawerList, adapterPosition), true);
-                showGroup(groupId);
+                showGroup(groupId, false);
             } else {
-                Log.i(TAG, "Invalid most recent groupId: " + groupId);
+                Log.i(TAG, "Most recent groupId was invalid: " + groupId);
                 mSharedPreferences.
-                  edit().remove(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY);
+                        edit().remove(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY).apply();
                 // Show the drawer to allow Group creation/selection by user
                 mDrawerLayout.openDrawer(mDrawerList);
             }
@@ -145,8 +150,8 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
     }
 
     private static int getItemAdapterPosition(DrawerListAdapter adapter, long groupId) {
-        for(int i = 0; i < adapter.getCount(); i++) {
-            if(adapter.getItemId(i) == groupId) {
+        for (int i = 0; i < adapter.getCount(); i++) {
+            if (adapter.getItemId(i) == groupId) {
                 return i;
             }
         }
@@ -170,10 +175,10 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
     public boolean onOptionsItemSelected(MenuItem item) {
         // Pass the event to ActionBarDrawerToggle, if it returns
         // true, then it has handled the app icon touch event
-        if(mDrawerToggle.onOptionsItemSelected(item)) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.menu_item_settings:
                 Intent intent = new Intent(MainActivity.this, AllPreferencesActivity.class);
                 slideInIntent(intent);
@@ -212,7 +217,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         // TODO Background
         List<Member> members = mDb.queryAllMembersForGroup(_group.getId());
         List<Long> memberIds = new ArrayList<Long>(members.size());
-        for(Member member : members) {
+        for (Member member : members) {
             memberIds.add(member.getId());
         }
         requestNotifyDraw(_group, Longs.toArray(memberIds));
@@ -223,18 +228,45 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         mNotifyExecutorFragment.notifyDraw(auth, group, members);
     }
 
+    @Override
+    public void deleteGroup(long groupId) {
+        mDb.delete(groupId, Group.class);
+        populateDrawerListView(mDrawerListAdapter);
+
+        // Show the first group, or create another if we have none
+        long nextGroupId;
+        Group group = mDb.queryForFirstGroup();
+        if (group == null) {
+            nextGroupId = createNewGroup();
+        } else {
+            nextGroupId = group.getId();
+            int adapterPosition = getItemAdapterPosition(mDrawerListAdapter, nextGroupId);
+            mDrawerList.setItemChecked(toListViewPosition(mDrawerList, adapterPosition), true);
+
+        }
+        showGroup(nextGroupId, false);
+    }
+
+    @Override
+    public void renameGroup(long groupId, String newGroupName) {
+        mDb.updateGroupName(groupId, newGroupName);
+        // Refresh display
+        populateDrawerListView(mDrawerListAdapter);
+        showGroup(mCurrentGroupId, true);
+    }
+
     private void populateDrawerListView(DrawerListAdapter drawerListAdapter) {
 
         List<DrawerListAdapter.Item> drawerListItems = new ArrayList<DrawerListAdapter.Item>();
 
         // Add "Add Group" button item
         Drawable addIcon = getResources().getDrawable(R.drawable.ic_content_new);
-        drawerListItems.add(new DrawerButtonItem(addIcon, "Add Group", new View.OnClickListener() {
+        drawerListItems.add(new DrawerButtonItem(addIcon, getString(R.string.add_group), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "Clicked Add Group Button");
                 long id = createNewGroup();
-                showGroup(id);
+                showGroup(id, false);
                 mDrawerLayout.closeDrawer(mDrawerList);
             }
         }));
@@ -242,9 +274,10 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         // Add each Group item
         List<Group> groups = mDb.queryAll(Group.class);
         Log.v(TAG, "initialiseUI() - group count: " + groups.size());
-        for(Group g : groups) {
+        for (Group g : groups) {
             drawerListItems.add(new GroupDetailsRow(g.getId(), g.getName(), g.getCreatedAt()));
         }
+        drawerListAdapter.clear();
         drawerListAdapter.addAll(drawerListItems);
     }
 
@@ -285,11 +318,11 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         @Override
         public void onItemClick(AdapterView<?> _parent, View _view, int _position, long _id) {
             Log.d(TAG, "onItemClick() - position: " + _position + " id: " + _id);
-            if(_id <= PersistableObject.UNSET_ID)
+            if (_id <= PersistableObject.UNSET_ID)
                 return;
 
             // Highlight the selected item, update the title, and close the drawer
-            showGroup(_id);
+            showGroup(_id, false);
             mDrawerList.setItemChecked(_position, true);
             mDrawerLayout.closeDrawer(mDrawerList);
         }
@@ -298,7 +331,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
     private void slideInIntent(Intent intent) {
         // Activity options is since API 16.
         // Got this idea from Android Dev Bytes video - https://www.youtube.com/watch?v=Ho8vk61lVIU
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         } else {
@@ -307,11 +340,11 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         }
     }
 
-    private void showGroup(long _groupId) {
+    private void showGroup(long _groupId, boolean forceUpdate) {
         Log.i(TAG, "showGroup() - start. groupId: " + _groupId);
 
         //  If the correct fragment already exists
-        if(_groupId == mCurrentGroupId) return;
+        if (_groupId == mCurrentGroupId && !forceUpdate) return;
 
         mCurrentGroupId = _groupId;
 
@@ -321,18 +354,18 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         // Replace existing MemberListFragment
         // Note: Can't call replace, seems to replace ALL fragments in the layout.
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        if(existing != null) {
+        if (existing != null) {
             Log.i(TAG, "showGroup() - removing existing fragment");
             transaction.remove(existing);
         }
 
         Log.i(TAG, "showGroup() - creating new fragment");
         MemberListFragment newFragment = MemberListFragment.create(_groupId);
-        transaction.add(R.id.content_frame, newFragment, MEMBERS_LIST_FRAGMENT_TAG)
-          .commit();
+        transaction.add(R.id.container_content, newFragment, MEMBERS_LIST_FRAGMENT_TAG)
+                .commit();
 
         // Update preferences to save last viewed Group
         mSharedPreferences.
-          edit().putLong(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY, _groupId).apply();
+                edit().putLong(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY, _groupId).apply();
     }
 }

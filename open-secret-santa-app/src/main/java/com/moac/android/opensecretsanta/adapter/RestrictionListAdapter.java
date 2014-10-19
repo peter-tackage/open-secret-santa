@@ -3,7 +3,6 @@ package com.moac.android.opensecretsanta.adapter;
 import android.content.Context;
 import android.net.Uri;
 import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -54,20 +53,20 @@ public class RestrictionListAdapter extends BaseAdapter {
         CheckBox checkBoxView;
 
         if(v == null) {
-            v = LayoutInflater.from(mContext).inflate(R.layout.restriction_row, _parent, false);
+            v = LayoutInflater.from(mContext).inflate(R.layout.list_item_restriction, _parent, false);
 
-            memberImageView = (ImageView) v.findViewById(R.id.member_imageview);
-            memberNameView = (TextView) v.findViewById(R.id.member_name_textview);
-            checkBoxView = (CheckBox) v.findViewById(R.id.restrict_checkbox);
+            memberImageView = (ImageView) v.findViewById(R.id.imageView_avatar);
+            memberNameView = (TextView) v.findViewById(R.id.textView_member_name);
+            checkBoxView = (CheckBox) v.findViewById(R.id.checkBox_restriction);
 
-            v.setTag(R.id.member_imageview, memberImageView);
-            v.setTag(R.id.member_name_textview, memberNameView);
-            v.setTag(R.id.restrict_checkbox, checkBoxView);
+            v.setTag(R.id.imageView_avatar, memberImageView);
+            v.setTag(R.id.textView_member_name, memberNameView);
+            v.setTag(R.id.checkBox_restriction, checkBoxView);
 
         } else {
-            memberImageView = (ImageView)v.getTag(R.id.member_imageview);
-            memberNameView = (TextView)v.getTag(R.id.member_name_textview);
-            checkBoxView = (CheckBox)v.getTag(R.id.restrict_checkbox);
+            memberImageView = (ImageView)v.getTag(R.id.imageView_avatar);
+            memberNameView = (TextView)v.getTag(R.id.textView_member_name);
+            checkBoxView = (CheckBox)v.getTag(R.id.checkBox_restriction);
         }
 
         RestrictionRowDetails item = getItem(_position);

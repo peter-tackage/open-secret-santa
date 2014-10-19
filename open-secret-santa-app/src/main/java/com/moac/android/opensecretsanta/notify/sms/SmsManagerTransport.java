@@ -31,17 +31,16 @@ public class SmsManagerTransport implements SmsTransporter {
     }
 
     @Override
-    public void send(Assignment _assignment, Member _giver, String _receiverName, String _msg) {
-        Log.i(TAG, "send() - SMS. giver:" + _giver + " receiverName:" + _receiverName + "msg: " + _msg);
-        String phoneNumber = _giver.getContactDetails();
+    public void send(Assignment assignment, String phoneNumber, String msg) {
+        Log.i(TAG, "send() - SMS. msgReceiverPhoneNumber:" + phoneNumber +  "msg: " + msg);
 
         // Split long messages
-        ArrayList<String> messages = mSmsManager.divideMessage(_msg);
+        ArrayList<String> messages = mSmsManager.divideMessage(msg);
         Log.v(TAG, "send() - divided into: " + messages.size());
 
         // Sent SMS receiver is register in manifest
         Intent sentIntent = new Intent(SENT_SMS_ACTION);
-        sentIntent.putExtra(Intents.ASSIGNMENT_ID_INTENT_EXTRA, _assignment.getId());
+        sentIntent.putExtra(Intents.ASSIGNMENT_ID_INTENT_EXTRA, assignment.getId());
         PendingIntent sentPI = PendingIntent.getBroadcast(mContext, 0, sentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         if (mIsMultipartSupported) {

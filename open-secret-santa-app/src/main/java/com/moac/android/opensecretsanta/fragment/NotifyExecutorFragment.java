@@ -97,8 +97,7 @@ public class NotifyExecutorFragment extends InjectingFragment implements DrawNot
 
     private void showDrawProgressDialog() {
         Log.v(TAG, "showDrawProgressDialog() - start");
-        if(mDrawProgressDialog != null && mDrawProgressDialog.isShowing())
-            return;
+        if(mDrawProgressDialog != null && mDrawProgressDialog.isShowing()) return;
         mDrawProgressDialog = ProgressDialog.show(getActivity(), "", getString(R.string.notify_in_progress_msg), true);
     }
 

@@ -25,10 +25,12 @@ import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.adapter.AccountAdapter;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Group;
-import com.moac.android.opensecretsanta.notify.mail.EmailAuthorization;
 import com.moac.android.opensecretsanta.notify.NotifyAuthorization;
+import com.moac.android.opensecretsanta.notify.mail.EmailAuthorization;
 import com.moac.android.opensecretsanta.util.AccountUtils;
 import com.moac.android.opensecretsanta.util.NotifyUtils;
+
+import java.util.Arrays;
 
 import javax.inject.Inject;
 
@@ -62,19 +64,12 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
     private ViewGroup mEmailFromContainer;
 
     private int mMaxMsgLength;
-    // Apparently this is how you retain EditText fields - http://code.google.com/p/android/issues/detail?id=18719
+    // Apparently this is how you retain EditText fields in Dialogs - http://code.google.com/p/android/issues/detail?id=18719
     private String mSavedMsg;
     private TextView mCharCountView;
 
-    /**
-     * Factory method for this fragment class
-     *
-     * We do this because according to the Fragment docs -
-     *
-     * "It is strongly recommended that subclasses do not have other constructors with parameters"
-     */
     public static NotifyDialogFragment create(long _groupId, long[] _memberIds) {
-        Log.i(TAG, "NotifyDialogFragment() - factory creating for groupId: " + _groupId + " memberIds: " + _memberIds);
+        Log.i(TAG, "NotifyDialogFragment() - factory creating for groupId: " + _groupId + " memberIds: " + Arrays.toString(_memberIds));
         NotifyDialogFragment fragment = new NotifyDialogFragment();
         Bundle args = new Bundle();
         args.putLong(Intents.GROUP_ID_INTENT_EXTRA, _groupId);
@@ -89,32 +84,30 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
         mMemberIds = getArguments().getLongArray(Intents.MEMBER_ID_ARRAY_INTENT_EXTRA);
         mMaxMsgLength = getResources().getInteger(R.integer.max_notify_msg_length);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         // Inflate layout
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.fragment_dialog_notify, null);
 
-        // Take the values and populate the dialog
-        builder.setTitle(getString(R.string.notify_dialog_title));
-        builder.setIcon(R.drawable.ic_menu_notify_group);
-
+        // Configure the views
         mMsgField = (EditText) view.findViewById(R.id.tv_notify_msg);
         mCharCountView = (TextView) view.findViewById(R.id.tv_notify_msg_char_count);
 
         // Add the callback to the field
         mMsgField.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
                 // Update the reported character length
                 mCharCountView.setText(String.valueOf(mMaxMsgLength - s.length()));
-                if(mMsgField.length() == mMaxMsgLength) {
+                if (mMsgField.length() == mMaxMsgLength) {
                     mCharCountView.setTextColor(Color.RED);
                 } else {
                     mCharCountView.setTextColor(getResources().getColor(R.color.dark_grey));
@@ -127,44 +120,50 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
         mSpinner = (Spinner) view.findViewById(R.id.spnr_email_selection);
         mInfoTextView = (TextView) view.findViewById(R.id.tv_notify_info);
 
-        builder.setCancelable(true);
-        builder.setNegativeButton(android.R.string.cancel, null);
-        builder.setPositiveButton(R.string.notify_send_button_text, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                final NotifyAuthorization.Builder auth = new NotifyAuthorization.Builder();
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                .setView(view)
+                .setTitle(getString(R.string.notify_dialog_title))
+                .setIcon(R.drawable.ic_menu_notify_group)
+                .setCancelable(true)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.notify_send_button_text, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
-                if(mIsEmailAuthRequired) {
-                    Account acc = (Account) mSpinner.getSelectedItem();
-                    if(acc != null) {
-                        // Set the selected email as the user preference
-                        String emailPrefKey = getActivity().getString(R.string.gmail_account_preference);
-                        mSharedPreferences.edit().putString(emailPrefKey, acc.name).commit();
+                        final NotifyAuthorization.Builder auth = new NotifyAuthorization.Builder();
 
-                        AccountUtils.getPreferedGmailAuth(getActivity(), mAccountManager, mSharedPreferences, getActivity()).
-                          subscribeOn(Schedulers.newThread()).
-                          observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<EmailAuthorization>() {
-                            @Override
-                            public void call(EmailAuthorization emailAuth) {
-                                Log.d(TAG, "call() - got EmailAuthorization: " + emailAuth.getEmailAddress() + ":" + emailAuth.getToken());
-                                auth.withAuth(emailAuth);
-                                mGroup.setMessage(mMsgField.getText().toString().trim());
-                                mDb.update(mGroup);
-                                executeNotifyDraw(auth.build(), mGroup, mMemberIds);
-                            }
-                        });
-                    }  // else no email auth available - do nothing.
-                } else {
-                    // We have no additional authorization - just send as is
-                    // Get the custom message.
-                    mGroup.setMessage(mMsgField.getText().toString().trim());
-                    mDb.update(mGroup);
-                    executeNotifyDraw(auth.build(), mGroup, mMemberIds);
-                }
-            }
-        });
+                        if (mIsEmailAuthRequired) {
+                            Account acc = (Account) mSpinner.getSelectedItem();
+                            if (acc != null) {
+                                // Set the selected email as the user preference
+                                String emailPrefKey = getActivity().getString(R.string.gmail_account_preference);
+                                mSharedPreferences.edit().putString(emailPrefKey, acc.name).apply();
 
-        builder.setView(view);
+                                AccountUtils.getPreferedGmailAuth(getActivity(), mAccountManager, mSharedPreferences, getActivity()).
+                                        subscribeOn(Schedulers.newThread()).
+                                        observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<EmailAuthorization>() {
+                                    @Override
+                                    public void call(EmailAuthorization emailAuth) {
+                                        Log.d(TAG, "call() - got EmailAuthorization: " + emailAuth.getEmailAddress() + ":" + emailAuth.getToken());
+                                        auth.withAuth(emailAuth);
+                                        mGroup.setMessage(mMsgField.getText().toString().trim());
+                                        mDb.update(mGroup);
+                                        executeNotifyDraw(auth.build(), mGroup, mMemberIds);
+                                    }
+                                });
+                            }  // else no email auth available - do nothing.
+                        } else {
+                            // We have no additional authorization - just send as is
+                            // Get the custom message.
+                            mGroup.setMessage(mMsgField.getText().toString().trim());
+                            mDb.update(mGroup);
+                            executeNotifyDraw(auth.build(), mGroup, mMemberIds);
+                        }
+
+                    }
+
+                });
+
         Dialog dialog = builder.create();
         dialog.getWindow().setWindowAnimations(R.style.dialog_animate_overshoot);
         return dialog;
@@ -182,14 +181,14 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
 
         mMsgField.append(message);
         int remainingChars = mMaxMsgLength;
-        if(message != null) {
+        if (message != null) {
             remainingChars = message.length() >= mMaxMsgLength ? 0 : mMaxMsgLength - message.length();
         }
         mCharCountView.setText(String.valueOf(remainingChars));
 
 
         mIsEmailAuthRequired = NotifyUtils.containsEmailSendableEntry(mDb, mMemberIds);
-        if(mIsEmailAuthRequired) {
+        if (mIsEmailAuthRequired) {
             // Add all Gmail accounts to list
             final Observable<Account[]> accountsObservable = AccountUtils.getAllGmailAccountsObservable(getActivity(), mAccountManager);
             accountsObservable.
@@ -227,7 +226,7 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
     @Override
     public void onDestroyView() {
         // Refer to - http://code.google.com/p/android/issues/detail?id=17423
-        if(getDialog() != null && getRetainInstance())
+        if (getDialog() != null && getRetainInstance())
             getDialog().setDismissMessage(null);
         super.onDestroyView();
     }
@@ -237,7 +236,7 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
         super.onAttach(activity);
         try {
             mFragmentContainer = (FragmentContainer) activity;
-        } catch(ClassCastException e) {
+        } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement FragmentContainer");
         }
     }

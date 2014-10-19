@@ -64,18 +64,18 @@ public class SuggestionsAdapter extends BaseAdapter implements Filterable {
         TextView addressView;
 
         if(v == null) {
-            v = LayoutInflater.from(mContext).inflate(R.layout.suggestion_row, parent, false);
-            avatarView = (ImageView) v.findViewById(R.id.avatar_imageview);
-            nameView = (TextView) v.findViewById(R.id.name_textview);
-            addressView = (TextView) v.findViewById(R.id.address_textview);
+            v = LayoutInflater.from(mContext).inflate(R.layout.list_item_suggestion, parent, false);
+            avatarView = (ImageView) v.findViewById(R.id.imageView_avatar);
+            nameView = (TextView) v.findViewById(R.id.textView_name);
+            addressView = (TextView) v.findViewById(R.id.textView_address);
 
-            v.setTag(R.id.avatar_imageview, avatarView);
-            v.setTag(R.id.name_textview, nameView);
-            v.setTag(R.id.address_textview, addressView);
+            v.setTag(R.id.imageView_avatar, avatarView);
+            v.setTag(R.id.textView_name, nameView);
+            v.setTag(R.id.textView_address, addressView);
         } else {
-            avatarView = (ImageView) v.getTag(R.id.avatar_imageview);
-            nameView = (TextView) v.getTag(R.id.name_textview);
-            addressView = (TextView) v.getTag(R.id.address_textview);
+            avatarView = (ImageView) v.getTag(R.id.imageView_avatar);
+            nameView = (TextView) v.getTag(R.id.textView_name);
+            addressView = (TextView) v.getTag(R.id.textView_address);
         }
 
         Member item = mItems.get(position);

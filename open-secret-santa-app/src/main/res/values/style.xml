@@ -1,66 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="AppBaseTheme" parent="android:Theme.Holo.Light">
+        <item name="android:popupMenuStyle">@style/MyTheme.PopupMenu.Style</item>
+        <item name="android:actionBarStyle">@style/MyTheme.ActionBar.Style</item>
+        <item name="android:actionMenuTextColor">@android:color/holo_blue_light</item>
+    </style>
 
-  <!--
-   Base application theme, dependent on API level. This theme is replaced
-   by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
--->
+    <!-- Action bar background -->
+    <style name="MyTheme.ActionBar.Style" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:background">@android:color/holo_blue_light</item>
+        <!-- if we want the action bar to have the blue shadow or not ... drawable/ab_transparent_mymenu</item-->
+        <item name="android:titleTextStyle">@style/MyTheme.ActionBar.TitleTextStyle</item>
+    </style>
 
-  <style name="AppBaseTheme" parent="android:Theme.Holo.Light">
+    <!-- Action bar text style -->
+    <style name="MyTheme.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 
-    <!--
-        Theme customizations available in newer API levels can go in
-        res/values-vXX/styles.xml, while customizations related to
-        backward-compatibility can go here.
-    -->
-    <!-- if we want to have a custom select color. currently the default is the holo blue
-      item name="android:actionBarItemBackground">
-      @drawable/selectable_background_mymenu
-    </item-->
-    <item name="android:popupMenuStyle">@style/PopupMenu.Mymenu</item>
-    <item name="android:actionBarStyle">@style/ActionBar.Transparent.Mymenu
-    </item>
-    <item name="android:actionMenuTextColor">@android:color/holo_blue_light
-    </item>
-    <item name="android:actionModeCloseDrawable">
-      @drawable/ic_navigation_accept
-    </item>
-  </style>
+    <!-- Background for the overflow menu -->
+    <style name="MyTheme.PopupMenu.Style" parent="@android:style/Widget.Holo.Light.ListPopupWindow">
+        <item name="android:popupBackground">@color/white</item>
+        <item name="android:alpha">0.80</item>
+    </style>
 
+    <!-- Dialog window animations style -->
+    <style name="dialog_animate_overshoot">
+        <item name="android:windowEnterAnimation">@anim/anim_overshoot_in</item>
+        <item name="android:windowExitAnimation">@anim/anim_overshoot_out</item>
+    </style>
 
-  <!-- Action bar background -->
-  <style parent="@android:style/Widget.Holo.Light.ActionBar" name="ActionBar.Transparent.Mymenu">
-    <item name="android:background">@android:color/white</item>
-    <!-- if we want the action bar to have the blue shadow or not ... drawable/ab_transparent_mymenu</item-->
-    <item name="android:titleTextStyle">
-      @style/MyTheme.ActionBar.TitleTextStyle
-    </item>
-  </style>
-
-  <!-- Action bar text color -->
-  <style name="MyTheme.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
-    <item name="android:textColor">@android:color/holo_blue_light</item>
-    <item name="android:textSize">15sp</item>
-  </style>
-
-  <!-- background for the overflow menu -->
-  <style parent="@android:style/Widget.Holo.Light.ListPopupWindow" name="PopupMenu.Mymenu">
-    <item name="android:popupBackground">@color/white
-    </item>
-    <item name="android:alpha">0.80</item>
-  </style>
-
-  <!-- Dialog window animations style -->
-  <style name="dialog_animate_overshoot">
-     <item name="android:windowEnterAnimation">@anim/anim_overshoot_in</item>
-     <item name="android:windowExitAnimation">@anim/anim_overshoot_out</item>
-  </style>
-
-    <!-- Application theme. -->
-  <style name="AppTheme" parent="AppBaseTheme">
-    <!-- All customizations that are NOT specific to a particular API-level can go here. -->
-    <item name="android:screenOrientation">portrait</item>
-  </style>
+    <!-- Application theme -->
+    <style name="AppTheme" parent="AppBaseTheme"/>
 
 </resources>

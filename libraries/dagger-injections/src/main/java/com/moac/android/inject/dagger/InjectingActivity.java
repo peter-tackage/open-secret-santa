@@ -82,7 +82,6 @@ public class InjectingActivity extends Activity implements Injector {
         // Eagerly clear the reference to the activity graph to allow it to be garbage collected as
         // soon as possible.
         mObjectGraph = null;
-
         super.onDestroy();
     }
 
@@ -93,8 +92,6 @@ public class InjectingActivity extends Activity implements Injector {
      * @return the list of modules
      */
     protected List<Object> getModules() {
-        List<Object> result = new ArrayList<Object>();
-        result.add(new InjectingActivityModule(this, this));
-        return result;
+        return new ArrayList<>();
     }
 }
