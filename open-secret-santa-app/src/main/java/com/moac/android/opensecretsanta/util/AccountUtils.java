@@ -69,11 +69,7 @@ public class AccountUtils {
                   GmailTransport.FEATURES_MAIL, null, null);
         try {
             return accountsFuture.getResult();
-        } catch(OperationCanceledException e) {
-            Log.e(TAG, "getAllGmailAccounts() - Error when fetching accounts", e);
-        } catch(IOException e) {
-            Log.e(TAG, "getAllGmailAccounts() - Error when fetching accounts", e);
-        } catch(AuthenticatorException e) {
+        } catch(OperationCanceledException | IOException | AuthenticatorException e) {
             Log.e(TAG, "getAllGmailAccounts() - Error when fetching accounts", e);
         }
         return null;
@@ -103,11 +99,7 @@ public class AccountUtils {
           getAuthToken(account, GmailTransport.GMAIL_TOKEN_TYPE, null, activity, null, null);
         try {
             return authTokenBundle.getResult().getString(AccountManager.KEY_AUTHTOKEN);
-        } catch(OperationCanceledException e) {
-            Log.e(TAG, "getGmailToken() - Error when fetching account token", e);
-        } catch(IOException e) {
-            Log.e(TAG, "getGmailToken() - Error when fetching account token", e);
-        } catch(AuthenticatorException e) {
+        } catch(OperationCanceledException | IOException | AuthenticatorException e) {
             Log.e(TAG, "getGmailToken() - Error when fetching account token", e);
         }
         return null;
