@@ -1,7 +1,11 @@
 package com.moac.android.opensecretsanta.fragment;
 
 import android.annotation.SuppressLint;
-import android.app.*;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -9,8 +13,22 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.util.SparseBooleanArray;
-import android.view.*;
-import android.widget.*;
+import android.view.ActionMode;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.moac.android.inject.dagger.InjectingListFragment;
 import com.moac.android.opensecretsanta.R;
@@ -19,26 +37,33 @@ import com.moac.android.opensecretsanta.adapter.MemberListAdapter;
 import com.moac.android.opensecretsanta.adapter.MemberRowDetails;
 import com.moac.android.opensecretsanta.adapter.SuggestionsAdapter;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.draw.*;
+import com.moac.android.opensecretsanta.draw.DefaultDrawExecutor;
+import com.moac.android.opensecretsanta.draw.DrawEngineFactory;
+import com.moac.android.opensecretsanta.draw.DrawExecutor;
+import com.moac.android.opensecretsanta.draw.DrawResultEvent;
+import com.moac.android.opensecretsanta.draw.InvalidDrawEngineException;
+import com.moac.android.opensecretsanta.draw.MemberEditor;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 import com.moac.android.opensecretsanta.notify.NotifyStatusEvent;
+import com.moac.android.opensecretsanta.util.validator.GroupNameValidator;
 import com.moac.drawengine.DrawEngine;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
-import rx.android.concurrency.AndroidSchedulers;
-import rx.concurrency.Schedulers;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
+import rx.android.concurrency.AndroidSchedulers;
+import rx.concurrency.Schedulers;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.moac.android.opensecretsanta.util.Utils.safeUnsubscribe;
@@ -51,6 +76,7 @@ public class MemberListFragment extends InjectingListFragment {
     public static final String ASSIGNMENT_FRAGMENT_KEY = "AssignmentFragment";
 
     private ActionMode mActionMode;
+
     private enum Mode {Building, Notify}
 
     @Inject
@@ -90,7 +116,7 @@ public class MemberListFragment extends InjectingListFragment {
         super.onAttach(activity);
         try {
             mFragmentContainer = (FragmentContainer) activity;
-        } catch(ClassCastException e) {
+        } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement FragmentContainer");
         }
     }
@@ -161,7 +187,7 @@ public class MemberListFragment extends InjectingListFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle *non-contextual* action bar selection
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.menu_item_clear_assignments:
                 confirmClearAssignments();
                 return true;
@@ -169,7 +195,7 @@ public class MemberListFragment extends InjectingListFragment {
                 confirmDeleteGroup();
                 return true;
             case R.id.menu_item_rename_group:
-             //   confirmRenameGroup();
+                openRenameGroupDialog();
                 return true;
             case R.id.menu_item_draw:
                 attemptDraw();
@@ -185,7 +211,7 @@ public class MemberListFragment extends InjectingListFragment {
     private void attemptDraw() {
         try {
             mDrawSubscription = doDraw();
-        } catch(InvalidDrawEngineException e) {
+        } catch (InvalidDrawEngineException e) {
             Log.e(TAG, "Failed to load Draw Engine: " + e.getMessage());
             Toast.makeText(getActivity(), getString(R.string.draw_engine_init_error_msg), Toast.LENGTH_LONG).show();
         }
@@ -193,7 +219,7 @@ public class MemberListFragment extends InjectingListFragment {
 
     @Override
     public void onDestroyView() {
-        if(mActionMode != null) mActionMode.finish();
+        if (mActionMode != null) mActionMode.finish();
         super.onDestroyView();
     }
 
@@ -326,7 +352,7 @@ public class MemberListFragment extends InjectingListFragment {
     }
 
     private void setHeader() {
-        switch(mMode) {
+        switch (mMode) {
             case Building:
                 mAutoCompleteTextView.setVisibility(View.VISIBLE);
                 break;
@@ -341,10 +367,10 @@ public class MemberListFragment extends InjectingListFragment {
 
     // TODO Do in background
     private void doDelete(long[] _ids) {
-        if(_ids == null || _ids.length == 0)
+        if (_ids == null || _ids.length == 0)
             return;
 
-        for(long id : _ids) {
+        for (long id : _ids) {
             mDb.delete(id, Member.class);
         }
         // FIXME This is seems to be required to delete the last one.
@@ -354,30 +380,26 @@ public class MemberListFragment extends InjectingListFragment {
     }
 
     private void confirmClearAssignments() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         @SuppressLint("InflateParams")
-        View view = inflater.inflate(R.layout.clear_assignments_dialog, null);
+        View view = inflater.inflate(R.layout.dialog_clear_assignments, null);
 
-        builder.setTitle(R.string.clear_assignments_dialog_title);
-        builder.setIcon(R.drawable.ic_menu_delete);
-
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                invalidateAssignments(mGroup);
-                populateMemberList();
-            }
-        });
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User cancelled the dialog
-            }
-        });
-
-        TextView dialogMsgView = (TextView) view.findViewById(R.id.textView_clear_assignments);
-        dialogMsgView.setText(R.string.clear_assignments_dialog_msg);
-        builder.setView(view);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                .setView(view)
+                .setTitle(R.string.clear_assignments_dialog_title)
+                .setIcon(R.drawable.ic_menu_delete)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        invalidateAssignments(mGroup);
+                        populateMemberList();
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
 
         Dialog dialog = builder.create();
         dialog.getWindow().setWindowAnimations(R.style.dialog_animate_overshoot);
@@ -386,38 +408,90 @@ public class MemberListFragment extends InjectingListFragment {
 
     private void confirmDeleteGroup() {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
         LayoutInflater inflater = getActivity().getLayoutInflater();
         @SuppressLint("InflateParams")
-        View view = inflater.inflate(R.layout.delete_group_dialog, null);
+        View view = inflater.inflate(R.layout.dialog_delete_group, null);
 
-        builder.setTitle(R.string.delete_group_dialog_title);
-        builder.setIcon(R.drawable.ic_menu_delete);
-
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-               mFragmentContainer.deleteGroup(mGroup.getId());
-            }
-        });
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User cancelled the dialog
-            }
-        });
-
-        TextView dialogMsgView = (TextView) view.findViewById(R.id.textView_delete_group);
-        dialogMsgView.setText(R.string.delete_group_dialog_msg);
-        builder.setView(view);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                .setView(view)
+                .setTitle(R.string.delete_group_dialog_title)
+                .setIcon(R.drawable.ic_menu_delete)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        mFragmentContainer.deleteGroup(mGroup.getId());
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
 
         Dialog dialog = builder.create();
         dialog.getWindow().setWindowAnimations(R.style.dialog_animate_overshoot);
         dialog.show();
     }
 
+    private void openRenameGroupDialog() {
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        @SuppressLint("InflateParams")
+        View view = inflater.inflate(R.layout.dialog_rename_group, null);
+        final EditText groupNameEditText = (EditText) view.findViewById(R.id.editText_groupName);
+        groupNameEditText.setText(mGroup.getName());
+        groupNameEditText.setSelection(groupNameEditText.getText().length());
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                .setView(view)
+                .setTitle(R.string.rename_group_dialog_title)
+                .setIcon(R.drawable.ic_menu_edit)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Handled in custom listener defined after show()
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+
+        final AlertDialog dialog = builder.create();
+        dialog.getWindow().setWindowAnimations(R.style.dialog_animate_overshoot);
+        dialog.show();
+
+        // Override the dialog positive button behaviour to allow for custom validation
+        Button okButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Clear error
+                groupNameEditText.setError(null);
+
+                String newGroupName = groupNameEditText.getText().toString().trim();
+
+                // Hasn't change, just dismiss - allow case change for the same group
+                if (newGroupName.equals(mGroup.getName())) {
+                    dialog.dismiss();
+                    return;
+                }
+
+                // Validate new Group name
+                GroupNameValidator validator = new GroupNameValidator(mDb, mGroup.getId(), newGroupName);
+                if (!validator.isValid()) {
+                    groupNameEditText.setError(validator.getMsg());
+                } else {
+                    mFragmentContainer.renameGroup(mGroup.getId(), newGroupName);
+                    dialog.dismiss();
+                }
+            }
+        });
+
+    }
+
     private void setMenuItemsForMode(Mode mode) {
         // Set visibility of Non-CAB buttons only
-        if(mMenu != null) {
+        if (mMenu != null) {
             mMenu.findItem(R.id.menu_item_draw).setVisible(mode == Mode.Building);
             mMenu.findItem(R.id.menu_item_notify_group).setVisible(mode == Mode.Notify && hasSendableItem(mAdapter));
             mMenu.findItem(R.id.menu_item_clear_assignments).setVisible(mode == Mode.Notify);
@@ -434,7 +508,7 @@ public class MemberListFragment extends InjectingListFragment {
     }
 
     private void doNotify(long[] _memberIds) {
-        if(_memberIds != null && _memberIds.length != 0) {
+        if (_memberIds != null && _memberIds.length != 0) {
             requestNotifyDraw(mGroup, _memberIds);
         }
     }
@@ -454,32 +528,32 @@ public class MemberListFragment extends InjectingListFragment {
         DrawExecutor drawExecutor = new DefaultDrawExecutor(mDb);
         Observable<DrawResultEvent> ob = drawExecutor.requestDraw(engine, mGroup);
         return ob.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).
-          subscribe(new Observer<DrawResultEvent>() {
-              @Override
-              public void onCompleted() {
-                  Log.i(TAG, "onCompleted");
-                  mDrawSubscription = null;
-                  mDrawProgressDialog.dismiss();
-                  mDrawProgressDialog = null;
-                  Log.i(TAG, "onDrawResult() - got event");
-                  mMode = evaluateMode();
-                  onModeChanged();
-                  populateMemberList();
-              }
+                subscribe(new Observer<DrawResultEvent>() {
+                    @Override
+                    public void onCompleted() {
+                        Log.i(TAG, "onCompleted");
+                        mDrawSubscription = null;
+                        mDrawProgressDialog.dismiss();
+                        mDrawProgressDialog = null;
+                        Log.i(TAG, "onDrawResult() - got event");
+                        mMode = evaluateMode();
+                        onModeChanged();
+                        populateMemberList();
+                    }
 
-              @Override
-              public void onError(Throwable e) {
-                  Log.i(TAG, "onError");
-                  mDrawProgressDialog.dismiss();
-                  Toast.makeText(getActivity(), getString(R.string.draw_failed_msg), Toast.LENGTH_SHORT).show();
-              }
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i(TAG, "onError");
+                        mDrawProgressDialog.dismiss();
+                        Toast.makeText(getActivity(), getString(R.string.draw_failed_msg), Toast.LENGTH_SHORT).show();
+                    }
 
-              @Override
-              public void onNext(DrawResultEvent args) {
-                  Log.i(TAG, "onNext");
-                  Toast.makeText(getActivity(), getString(R.string.draw_success_msg), Toast.LENGTH_SHORT).show();
-              }
-          });
+                    @Override
+                    public void onNext(DrawResultEvent args) {
+                        Log.i(TAG, "onNext");
+                        Toast.makeText(getActivity(), getString(R.string.draw_success_msg), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void showDrawProgressDialog() {
@@ -505,7 +579,7 @@ public class MemberListFragment extends InjectingListFragment {
         Member receiver = mDb.queryById(_receiverId, Member.class);
         String avatarUri = null;
         // TODO Check the validity of URIs with various values. Write Utils method.
-        if(receiver.getContactId() != PersistableObject.UNSET_ID && receiver.getLookupKey() != null) {
+        if (receiver.getContactId() != PersistableObject.UNSET_ID && receiver.getLookupKey() != null) {
             Uri lookupUri = ContactsContract.Contacts.getLookupUri(receiver.getContactId(), receiver.getLookupKey());
             Uri contactUri = ContactsContract.Contacts.lookupContact(getActivity().getContentResolver(), lookupUri);
             avatarUri = contactUri.toString();
@@ -524,7 +598,7 @@ public class MemberListFragment extends InjectingListFragment {
 
     // TODO Make calls do this asynchronously
     private void populateMemberList() {
-       // getListView().clearChoices();
+        // getListView().clearChoices();
         mAdapter.setNotifyOnChange(false);
         mAdapter.clear();
         mAdapter.addAll(buildMemberRowDetails(mGroup.getId()));
@@ -534,7 +608,7 @@ public class MemberListFragment extends InjectingListFragment {
     private List<MemberRowDetails> buildMemberRowDetails(long _groupId) {
         List<MemberRowDetails> rows = new ArrayList<MemberRowDetails>();
         List<Member> members = mDb.queryAllMembersForGroup(_groupId);
-        for(Member member : members) {
+        for (Member member : members) {
             Assignment assignment = mDb.queryAssignmentForMember(member.getId());
             MemberRowDetails row = new MemberRowDetails(member, assignment);
             rows.add(row);
@@ -545,18 +619,18 @@ public class MemberListFragment extends InjectingListFragment {
     }
 
     private void addMember(Member _member, Group _group) {
-        if(isNullOrEmpty(_member.getName())) return;
+        if (isNullOrEmpty(_member.getName())) return;
 
         final String msg;
         _member.setGroup(_group);
 
         // Test to see if we already have this member in the group.
         Member existing = mDb.queryMemberWithNameForGroup(_group.getId(), _member.getName());
-        if(existing != null) {
+        if (existing != null) {
             msg = String.format(getString(R.string.duplicate_name_msg_unformatted), _member.getName());
         } else {
             long id = mDb.create(_member);
-            if(id != PersistableObject.UNSET_ID) {
+            if (id != PersistableObject.UNSET_ID) {
                 msg = String.format(getString(R.string.member_add_msg_unformatted), _member.getName());
                 invalidateAssignments(_group);
                 populateMemberList();
@@ -578,15 +652,15 @@ public class MemberListFragment extends InjectingListFragment {
 
         String defaultName = getActivity().getString(R.string.defaultDrawEngine);
         String classname = mSharedPreferences.getString("engine_preference",
-          defaultName);
+                defaultName);
 
         Log.i(TAG, "getCurrentDrawEngine() - setting draw engine to: " + classname);
 
         try {
             return DrawEngineFactory.createDrawEngine(classname);
-        } catch(InvalidDrawEngineException e) {
+        } catch (InvalidDrawEngineException e) {
             // Error: If we weren't attempting to load the default name, then try that instead
-            if(!classname.equals(defaultName)) {
+            if (!classname.equals(defaultName)) {
                 Log.w(TAG, "Failed to initialise draw engine class: " + classname);
                 try {
                     // Try to set the default then.
@@ -594,7 +668,7 @@ public class MemberListFragment extends InjectingListFragment {
                     // Success - update preference to use the default.
                     mSharedPreferences.edit().putString("engine_preference", defaultName).apply();
                     return engine;
-                } catch(InvalidDrawEngineException ideexp2) {
+                } catch (InvalidDrawEngineException ideexp2) {
                     Log.e(TAG, "Unable to initialise default draw engine class: " + classname, ideexp2);
                     throw ideexp2;
                 }
@@ -606,10 +680,10 @@ public class MemberListFragment extends InjectingListFragment {
     // Gah...
     private boolean hasSendableItemChecked(ListView list) {
         SparseBooleanArray checkedPositions = list.getCheckedItemPositions();
-        for(int i = 0; i < checkedPositions.size(); i++) {
+        for (int i = 0; i < checkedPositions.size(); i++) {
             int position = checkedPositions.keyAt(i);
             boolean isChecked = checkedPositions.valueAt(i);
-            if(isChecked && ((MemberRowDetails) (list.getAdapter().getItem(position))).getMember().getContactMethod().isSendable()) {
+            if (isChecked && ((MemberRowDetails) (list.getAdapter().getItem(position))).getMember().getContactMethod().isSendable()) {
                 Log.v(TAG, "hasSendableItemChecked() - position checked: " + position);
                 return true;
             }
@@ -618,9 +692,9 @@ public class MemberListFragment extends InjectingListFragment {
     }
 
     private boolean hasSendableItem(MemberListAdapter adapter) {
-        for(int i = 0; i < adapter.getCount(); i++) {
+        for (int i = 0; i < adapter.getCount(); i++) {
             MemberRowDetails rowDetails = adapter.getItem(i);
-            if(rowDetails.getMember().getContactMethod().isSendable()) {
+            if (rowDetails.getMember().getContactMethod().isSendable()) {
                 return true;
             }
         }
@@ -651,5 +725,7 @@ public class MemberListFragment extends InjectingListFragment {
         void requestNotifyDraw(Group group, long[] memberIds);
 
         void deleteGroup(long groupId);
+
+        void renameGroup(long groupId, String newGroupName);
     }
 }

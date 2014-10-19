@@ -135,7 +135,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
             if (adapterPosition >= 0) {
                 // Check the valid list item
                 mDrawerList.setItemChecked(toListViewPosition(mDrawerList, adapterPosition), true);
-                showGroup(groupId);
+                showGroup(groupId, false);
             } else {
                 Log.i(TAG, "Most recent groupId was invalid: " + groupId);
                 mSharedPreferences.
@@ -244,7 +244,15 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
             mDrawerList.setItemChecked(toListViewPosition(mDrawerList, adapterPosition), true);
 
         }
-        showGroup(nextGroupId);
+        showGroup(nextGroupId, false);
+    }
+
+    @Override
+    public void renameGroup(long groupId, String newGroupName) {
+        mDb.updateGroupName(groupId, newGroupName);
+        // Refresh display
+        populateDrawerListView(mDrawerListAdapter);
+        showGroup(mCurrentGroupId, true);
     }
 
     private void populateDrawerListView(DrawerListAdapter drawerListAdapter) {
@@ -258,7 +266,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
             public void onClick(View v) {
                 Log.d(TAG, "Clicked Add Group Button");
                 long id = createNewGroup();
-                showGroup(id);
+                showGroup(id, false);
                 mDrawerLayout.closeDrawer(mDrawerList);
             }
         }));
@@ -314,7 +322,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
                 return;
 
             // Highlight the selected item, update the title, and close the drawer
-            showGroup(_id);
+            showGroup(_id, false);
             mDrawerList.setItemChecked(_position, true);
             mDrawerLayout.closeDrawer(mDrawerList);
         }
@@ -332,11 +340,11 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         }
     }
 
-    private void showGroup(long _groupId) {
+    private void showGroup(long _groupId, boolean forceUpdate) {
         Log.i(TAG, "showGroup() - start. groupId: " + _groupId);
 
         //  If the correct fragment already exists
-        if (_groupId == mCurrentGroupId) return;
+        if (_groupId == mCurrentGroupId && !forceUpdate) return;
 
         mCurrentGroupId = _groupId;
 

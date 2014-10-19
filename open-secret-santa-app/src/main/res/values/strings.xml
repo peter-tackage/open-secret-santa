@@ -25,12 +25,16 @@
     <string name="edit_sms_number_hint">Mobile Number</string>
 
     <!-- Clear assignments confirmation dialog -->
-    <string name="clear_assignments_dialog_title">Clear Assignments?</string>
+    <string name="clear_assignments_dialog_title">Clear Assignments</string>
     <string name="clear_assignments_dialog_msg">You\'ll lose all the Secret Santa assignments for this group"</string>
 
     <!-- Delete Group confirmation dialog -->
-    <string name="delete_group_dialog_title">Delete Group?</string>
+    <string name="delete_group_dialog_title">Delete Group</string>
     <string name="delete_group_dialog_msg">You\'ll lose all the members and assignments for this group"</string>
+
+    <!-- Rename Group -->
+    <string name="rename_group_dialog_title">Rename Group</string>
+    <string name="rename_group_name_hint">Group name</string>
 
     <!-- Preferences - Algorithm -->
     <string name="algorithm_preferences">Algorithm Preferences</string>

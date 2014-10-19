@@ -227,7 +227,22 @@ public class DatabaseManager {
         }
     }
 
-    public void updateAllAssignmentsInGroup(long groupId, Assignment.Status status) {
+    public Group queryForGroupWithName(String groupName) {
+        try {
+            // Use SelectArg to ensure values are properly escaped
+            // Refer - http://ormlite.com/javadoc/ormlite-core/doc-files/ormlite_3.html#index-select-arguments
+            SelectArg selectArg = new SelectArg();
+            selectArg.setValue(groupName);
+            return mDbHelper.getDaoEx(Group.class).queryBuilder()
+                    .where()
+                    .like(Group.Columns.NAME_COLUMN, selectArg)
+                    .queryForFirst();
+        } catch (java.sql.SQLException e) {
+            throw new SQLException(e.getMessage());
+        }
+    }
+
+    public int updateAllAssignmentsInGroup(long groupId, Assignment.Status status) {
         try {
             QueryBuilder<Member, Long> groupMembersQuery =
                     mDbHelper.getDaoEx(Member.class).queryBuilder();
@@ -237,7 +252,19 @@ public class DatabaseManager {
                     mDbHelper.getDaoEx(Assignment.class).updateBuilder();
             updateBuilder.updateColumnValue(Assignment.Columns.SEND_STATUS_COLUMN, status).
                     where().in(Assignment.Columns.GIVER_MEMBER_ID_COLUMN, groupMembersQuery);
-            updateBuilder.update();
+            return updateBuilder.update();
+        } catch (java.sql.SQLException e) {
+            throw new SQLException(e.getMessage());
+        }
+    }
+
+    public int updateGroupName(long groupId, String groupName) {
+        try {
+            UpdateBuilder<Group, Long> updateBuilder =
+                    mDbHelper.getDaoEx(Group.class).updateBuilder();
+            updateBuilder.updateColumnValue(Group.Columns.NAME_COLUMN, groupName).
+                    where().eq(Group.Columns._ID, groupId);
+            return updateBuilder.update();
         } catch (java.sql.SQLException e) {
             throw new SQLException(e.getMessage());
         }
@@ -252,4 +279,5 @@ public class DatabaseManager {
             throw new SQLException(e.getMessage());
         }
     }
+
 }
