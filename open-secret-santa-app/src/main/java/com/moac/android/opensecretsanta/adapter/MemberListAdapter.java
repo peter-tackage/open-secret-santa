@@ -16,8 +16,6 @@ import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 import com.squareup.picasso.Picasso;
 
-import java.util.List;
-
 public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
 
     private final String TAG = MemberListAdapter.class.getSimpleName();
@@ -61,24 +59,24 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
         if(v == null) {
             v = LayoutInflater.from(getContext()).inflate(mResource, _parent, false);
 
-            avatarView = (ImageView) v.findViewById(R.id.member_imageview);
-            memberNameView = (TextView) v.findViewById(R.id.member_name_textview);
-            contactAddressView = (TextView) v.findViewById(R.id.contact_address_textview);
-            restrictionsView = (TextView) v.findViewById(R.id.restriction_count_textview);
-            sendStatusTextView = (TextView) v.findViewById(R.id.sent_status_textview);
+            avatarView = (ImageView) v.findViewById(R.id.imageView_avatar);
+            memberNameView = (TextView) v.findViewById(R.id.textView_member_name);
+            contactAddressView = (TextView) v.findViewById(R.id.textView_contact_address);
+            restrictionsView = (TextView) v.findViewById(R.id.textView_restriction_count);
+            sendStatusTextView = (TextView) v.findViewById(R.id.textView_sent_status);
 
-            v.setTag(R.id.member_imageview, avatarView);
-            v.setTag(R.id.member_name_textview, memberNameView);
-            v.setTag(R.id.contact_address_textview, contactAddressView);
-            v.setTag(R.id.restriction_count_textview, restrictionsView);
-            v.setTag(R.id.sent_status_textview, sendStatusTextView);
+            v.setTag(R.id.imageView_avatar, avatarView);
+            v.setTag(R.id.textView_member_name, memberNameView);
+            v.setTag(R.id.textView_contact_address, contactAddressView);
+            v.setTag(R.id.textView_restriction_count, restrictionsView);
+            v.setTag(R.id.textView_sent_status, sendStatusTextView);
         } else {
             // Recycled View is available, retrieve the holder instance from the View
-            avatarView = (ImageView) v.getTag(R.id.member_imageview);
-            memberNameView = (TextView) v.getTag(R.id.member_name_textview);
-            contactAddressView = (TextView) v.getTag(R.id.contact_address_textview);
-            restrictionsView = (TextView) v.getTag(R.id.restriction_count_textview);
-            sendStatusTextView = (TextView) v.getTag(R.id.sent_status_textview);
+            avatarView = (ImageView) v.getTag(R.id.imageView_avatar);
+            memberNameView = (TextView) v.getTag(R.id.textView_member_name);
+            contactAddressView = (TextView) v.getTag(R.id.textView_contact_address);
+            restrictionsView = (TextView) v.getTag(R.id.textView_restriction_count);
+            sendStatusTextView = (TextView) v.getTag(R.id.textView_sent_status);
         }
 
         MemberRowDetails row = getItem(_position);

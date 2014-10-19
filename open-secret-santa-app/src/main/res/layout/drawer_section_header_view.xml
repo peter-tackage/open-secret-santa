@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:paddingTop="2dp"
-  android:paddingBottom="2dp"
-  android:background="@android:color/holo_blue_light">
-
-  <TextView
-    android:id="@+id/tv_section_header_label"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:textAppearance="@android:style/TextAppearance.Medium"
-    android:textColor="@color/white"
-    android:paddingLeft="8dp"
-    android:gravity="center_vertical" />
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textView_groupListLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingEnd="8dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingStart="8dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:text="@string/drawer_groups_header"
+        android:textColor="@android:color/holo_blue_light"
+        android:textStyle="bold" />
 
 </LinearLayout>

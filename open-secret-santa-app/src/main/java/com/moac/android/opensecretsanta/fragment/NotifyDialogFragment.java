@@ -62,17 +62,10 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
     private ViewGroup mEmailFromContainer;
 
     private int mMaxMsgLength;
-    // Apparently this is how you retain EditText fields - http://code.google.com/p/android/issues/detail?id=18719
+    // Apparently this is how you retain EditText fields in Dialogs - http://code.google.com/p/android/issues/detail?id=18719
     private String mSavedMsg;
     private TextView mCharCountView;
 
-    /**
-     * Factory method for this fragment class
-     *
-     * We do this because according to the Fragment docs -
-     *
-     * "It is strongly recommended that subclasses do not have other constructors with parameters"
-     */
     public static NotifyDialogFragment create(long _groupId, long[] _memberIds) {
         Log.i(TAG, "NotifyDialogFragment() - factory creating for groupId: " + _groupId + " memberIds: " + _memberIds);
         NotifyDialogFragment fragment = new NotifyDialogFragment();
@@ -139,7 +132,7 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
                     if(acc != null) {
                         // Set the selected email as the user preference
                         String emailPrefKey = getActivity().getString(R.string.gmail_account_preference);
-                        mSharedPreferences.edit().putString(emailPrefKey, acc.name).commit();
+                        mSharedPreferences.edit().putString(emailPrefKey, acc.name).apply();
 
                         AccountUtils.getPreferedGmailAuth(getActivity(), mAccountManager, mSharedPreferences, getActivity()).
                           subscribeOn(Schedulers.newThread()).

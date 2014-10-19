@@ -26,6 +26,7 @@ public class RestrictionsListFragment extends InjectingListFragment implements S
 
     private static final String TAG = RestrictionsListFragment.class.getSimpleName();
 
+    // Restriction change actions
     private enum Action {Create, Delete}
 
     @Inject
@@ -35,12 +36,12 @@ public class RestrictionsListFragment extends InjectingListFragment implements S
     private Group mGroup;
     private Map<Long, Action> mChanges;
 
-    public static RestrictionsListFragment create(long _groupId, long _fromMemberId) {
-        Log.i(TAG, "RestrictionsListFragment() - factory creating for groupId: " + _groupId + " fromMemberId: " + _fromMemberId);
+    public static RestrictionsListFragment create(long groupId, long fromMemberId) {
+        Log.i(TAG, "RestrictionsListFragment() - factory creating for groupId: " + groupId + " fromMemberId: " + fromMemberId);
         RestrictionsListFragment fragment = new RestrictionsListFragment();
         Bundle args = new Bundle();
-        args.putLong(Intents.GROUP_ID_INTENT_EXTRA, _groupId);
-        args.putLong(Intents.MEMBER_ID_INTENT_EXTRA, _fromMemberId);
+        args.putLong(Intents.GROUP_ID_INTENT_EXTRA, groupId);
+        args.putLong(Intents.MEMBER_ID_INTENT_EXTRA, fromMemberId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -53,10 +54,10 @@ public class RestrictionsListFragment extends InjectingListFragment implements S
         long memberId = getArguments().getLong(Intents.MEMBER_ID_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
         mFromMember = mDb.queryById(memberId, Member.class);
-        mChanges = new HashMap<Long, Action>();
+        mChanges = new HashMap<>();
 
-        TextView titleTextView = (TextView) getView().findViewById(R.id.content_title_textview);
-        titleTextView.setText(String.format(getString(R.string.restriction_list_title), mFromMember.getName()));
+        TextView titleTextView = (TextView) getView().findViewById(R.id.textView_groupName);
+        titleTextView.setText(String.format(getString(R.string.restriction_list_title_unformatted), mFromMember.getName()));
 
         // TODO Make this load asynchronously
         long fromMemberId = mFromMember.getId();
@@ -123,7 +124,7 @@ public class RestrictionsListFragment extends InjectingListFragment implements S
     }
 
     public boolean save() {
-        boolean isDirty = mChanges.size() > 0;
+        boolean isDirty = !mChanges.isEmpty();
         Log.i(TAG, "doSaveAction() - isDirty: " + isDirty);
 
         // TODO Make this a background task

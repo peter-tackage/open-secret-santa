@@ -27,14 +27,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.RestrictionsActivity"
-            android:screenOrientation="portrait" />
+            android:name=".activity.RestrictionsActivity" />
         <activity
-            android:name=".activity.EditActivity"
-            android:screenOrientation="portrait" />
+            android:name=".activity.EditActivity"/>
         <activity
-            android:name=".activity.AllPreferencesActivity"
-            android:screenOrientation="portrait" />
+            android:name=".activity.AllPreferencesActivity"/>
 
         <receiver
             android:name=".notify.sms.SmsManagerSendReceiver"

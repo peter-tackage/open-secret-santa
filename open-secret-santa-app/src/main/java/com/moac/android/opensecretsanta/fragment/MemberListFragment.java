@@ -40,7 +40,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static com.moac.android.opensecretsanta.util.Utils.safeUnsubscribe;
 
+// TODO(PT) This class is too big
 public class MemberListFragment extends InjectingListFragment {
 
     private static final String TAG = MemberListFragment.class.getSimpleName();
@@ -64,7 +66,7 @@ public class MemberListFragment extends InjectingListFragment {
     private Group mGroup;
 
     private MemberListAdapter mAdapter;
-    private AutoCompleteTextView mCompleteTextView;
+    private AutoCompleteTextView mAutoCompleteTextView;
     private Menu mMenu; // non CAB items
 
     private ProgressDialog mDrawProgressDialog;
@@ -72,9 +74,6 @@ public class MemberListFragment extends InjectingListFragment {
 
     private FragmentContainer mFragmentContainer;
 
-    /**
-     * Factory method for this fragment class
-     */
     public static MemberListFragment create(long _groupId) {
         Log.i(TAG, "MemberListFragment() - factory creating for groupId: " + _groupId);
         MemberListFragment fragment = new MemberListFragment();
@@ -85,13 +84,13 @@ public class MemberListFragment extends InjectingListFragment {
     }
 
     @Override
-    public void onAttach(Activity _activity) {
+    public void onAttach(Activity activity) {
         Log.i(TAG, "onAttach()");
-        super.onAttach(_activity);
+        super.onAttach(activity);
         try {
-            mFragmentContainer = (FragmentContainer) _activity;
+            mFragmentContainer = (FragmentContainer) activity;
         } catch(ClassCastException e) {
-            throw new ClassCastException(_activity.toString() + " must implement FragmentContainer");
+            throw new ClassCastException(activity.toString() + " must implement FragmentContainer");
         }
     }
 
@@ -104,7 +103,7 @@ public class MemberListFragment extends InjectingListFragment {
         mGroup = mDb.queryById(groupId, Group.class);
 
         // Initialise content dependent on injection
-        TextView titleText = (TextView) getView().findViewById(R.id.content_title_textview);
+        TextView titleText = (TextView) getView().findViewById(R.id.textView_groupName);
         titleText.setText(mGroup.getName());
     }
 
@@ -112,34 +111,119 @@ public class MemberListFragment extends InjectingListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView()");
-
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_members_list, container, false);
-
-        mCompleteTextView = (AutoCompleteTextView) view.findViewById(R.id.add_autoCompleteTextView);
-        mCompleteTextView.setThreshold(1);
-        mCompleteTextView.setAdapter(new SuggestionsAdapter(getActivity()));
-        mCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Member selected = (Member) mCompleteTextView.getAdapter().getItem(position);
-                Log.i(TAG, "OnItemClick() - name: " + selected.getName());
-                addMember(selected, mGroup);
-                mCompleteTextView.setText("");
-                mCompleteTextView.requestFocus(); // Keep focus for more entries
-            }
-        });
-
-        mAdapter = new MemberListAdapter(getActivity(), R.layout.member_row);
-        setListAdapter(mAdapter);
-
+        bindViews(view);
         return view;
+    }
+
+    private void bindViews(View view) {
+        mAutoCompleteTextView = (AutoCompleteTextView) view.findViewById(R.id.autoCompleteTextView_addMember);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         Log.i(TAG, "onViewCreated()");
         super.onViewCreated(view, savedInstanceState);
+        configureViews();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume() - registering event bus");
+        mBus.register(this);
+        populateUI();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i(TAG, "onPause() - deregistering event bus");
+        mBus.unregister(this);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(DRAW_IN_PROGRESS_KEY, mDrawSubscription != null);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        Log.i(TAG, "onCreateOptionsMenu()");
+        inflater.inflate(R.menu.action_bar_menu, menu);
+        inflater.inflate(R.menu.dropdown_menu, menu);
+        mMenu = menu;
+        setMenuItems();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle *non-contextual* action bar selection
+        switch(item.getItemId()) {
+            case R.id.menu_item_clear_assignments:
+                confirmClearAssignments();
+                return true;
+            case R.id.menu_item_draw:
+                attemptDraw();
+                return true;
+            case R.id.menu_item_notify_group:
+                doNotifyAll();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void attemptDraw() {
+        try {
+            mDrawSubscription = doDraw();
+        } catch(InvalidDrawEngineException e) {
+            Log.e(TAG, "Failed to load Draw Engine: " + e.getMessage());
+            Toast.makeText(getActivity(), getString(R.string.draw_engine_init_error_msg), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        if(mActionMode != null) mActionMode.finish();
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        safeUnsubscribe(mDrawSubscription);
+        setListAdapter(null);
+        super.onDestroy();
+    }
+
+    /*
+     * Bus method - receives events for changes in the notified state.
+     */
+
+    @Subscribe
+    public void onNotifyStatusChanged(NotifyStatusEvent event) {
+        Log.i(TAG, "onNotifyStatusChanged() - got event: " + event.getAssignment());
+        populateMemberList();
+    }
+
+    private void configureViews() {
+        mAutoCompleteTextView.setThreshold(1);
+        mAutoCompleteTextView.setAdapter(new SuggestionsAdapter(getActivity()));
+        mAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Member member = (Member) mAutoCompleteTextView.getAdapter().getItem(position);
+                Log.i(TAG, "OnItemClick() - name: " + member.getName());
+                addMember(member, mGroup);
+                mAutoCompleteTextView.setText("");
+                mAutoCompleteTextView.requestFocus(); // Keep focus for more entries
+            }
+        });
+
+        // Configure Adapter
+        mAdapter = new MemberListAdapter(getActivity(), R.layout.list_item_member);
+        setListAdapter(mAdapter);
 
         // Initially don't perform check selection.
         getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -203,7 +287,7 @@ public class MemberListFragment extends InjectingListFragment {
                 boolean isSingleItemChecked = checkedItemCount == 1;
                 boolean hasSendableItemChecked = hasSendableItemChecked(getListView());
 
-                mode.setTitle(String.format(getString(R.string.list_selection_count_title), checkedItemCount));
+                mode.setTitle(String.format(getString(R.string.list_selection_count_title_unformatted), checkedItemCount));
                 mode.getMenu().findItem(R.id.menu_item_edit).setVisible(isSingleItemChecked);
                 mode.getMenu().findItem(R.id.menu_item_delete).setVisible(mMode == Mode.Building);
                 mode.getMenu().findItem(R.id.menu_item_notify_selection).setVisible(mMode == Mode.Notify && hasSendableItemChecked);
@@ -221,94 +305,12 @@ public class MemberListFragment extends InjectingListFragment {
         });
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.i(TAG, "onResume() - registering event bus");
-        mBus.register(this);
-        populateUI();
-    }
-
     private void populateUI() {
         mMode = evaluateMode();
         setHeader(); // depends on mode
         // Populate member list
         populateMemberList();
         setMenuItems(); // depends on adapter contents
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.i(TAG, "onPause() - deregistering event bus");
-        mBus.unregister(this);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(DRAW_IN_PROGRESS_KEY, mDrawSubscription != null);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        Log.i(TAG, "onCreateOptionsMenu()");
-        inflater.inflate(R.menu.action_bar_menu, menu);
-        inflater.inflate(R.menu.dropdown_menu, menu);
-        mMenu = menu;
-        setMenuItems();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle *non-contextual* action bar selection
-        switch(item.getItemId()) {
-            case R.id.menu_item_clear_assignments:
-                confirmClearAssignments();
-                return true;
-            case R.id.menu_item_draw:
-                attemptDraw();
-                return true;
-            case R.id.menu_item_notify_group:
-                doNotifyAll();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private void attemptDraw() {
-        try {
-            mDrawSubscription = doDraw();
-        } catch(InvalidDrawEngineException e) {
-            Log.e(TAG, "Failed to load Draw Engine: " + e.getMessage());
-            Toast.makeText(getActivity(), getString(R.string.draw_engine_init_error_msg), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    @Override
-    public void onDestroyView() {
-        if(mActionMode != null) mActionMode.finish();
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onDestroy() {
-        if(mDrawSubscription != null) {
-            mDrawSubscription.unsubscribe();
-            mDrawSubscription = null;
-        }
-        super.onDestroy();
-    }
-
-    /*
-     * Bus method - receives events for changes in the notified state.
-     */
-
-    @Subscribe
-    public void onNotifyStatusChanged(NotifyStatusEvent event) {
-        Log.i(TAG, "onNotifyStatusChanged() - got event: " + event.getAssignment());
-        populateMemberList();
     }
 
     private void onModeChanged() {
@@ -319,11 +321,11 @@ public class MemberListFragment extends InjectingListFragment {
     private void setHeader() {
         switch(mMode) {
             case Building:
-                mCompleteTextView.setVisibility(View.VISIBLE);
+                mAutoCompleteTextView.setVisibility(View.VISIBLE);
                 break;
             case Notify:
-                mCompleteTextView.setVisibility(View.GONE);
-                mCompleteTextView.setText("");
+                mAutoCompleteTextView.setVisibility(View.GONE);
+                mAutoCompleteTextView.setText("");
                 break;
             default:
                 break;
@@ -470,7 +472,7 @@ public class MemberListFragment extends InjectingListFragment {
             avatarUri = contactUri.toString();
         }
         // Create an instance of the dialog fragment and show it
-        DialogFragment dialog = AssignmentFragment.create(giver.getName(), receiver.getName(), avatarUri);
+        DialogFragment dialog = RevealDialogFragment.create(giver.getName(), receiver.getName(), avatarUri);
         dialog.show(getFragmentManager(), ASSIGNMENT_FRAGMENT_KEY);
 
         // Set as Revealed
@@ -512,15 +514,15 @@ public class MemberListFragment extends InjectingListFragment {
         // Test to see if we already have this member in the group.
         Member existing = mDb.queryMemberWithNameForGroup(_group.getId(), _member.getName());
         if(existing != null) {
-            msg = String.format(getString(R.string.duplicate_name_msg), _member.getName());
+            msg = String.format(getString(R.string.duplicate_name_msg_unformatted), _member.getName());
         } else {
             long id = mDb.create(_member);
             if(id != PersistableObject.UNSET_ID) {
-                msg = String.format(getString(R.string.member_add_msg), _member.getName());
+                msg = String.format(getString(R.string.member_add_msg_unformatted), _member.getName());
                 invalidateAssignments(_group);
                 populateMemberList();
             } else {
-                msg = String.format(getString(R.string.failed_add_member_msg), _member.getName());
+                msg = String.format(getString(R.string.failed_add_member_msg_unformatted), _member.getName());
             }
         }
         Toast toast = Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT);
@@ -551,7 +553,7 @@ public class MemberListFragment extends InjectingListFragment {
                     // Try to set the default then.
                     DrawEngine engine = DrawEngineFactory.createDrawEngine(defaultName);
                     // Success - update preference to use the default.
-                    mSharedPreferences.edit().putString("engine_preference", defaultName).commit();
+                    mSharedPreferences.edit().putString("engine_preference", defaultName).apply();
                     return engine;
                 } catch(InvalidDrawEngineException ideexp2) {
                     Log.e(TAG, "Unable to initialise default draw engine class: " + classname, ideexp2);

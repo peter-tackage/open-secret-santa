@@ -5,7 +5,7 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:padding="8dp"
-  android:background="@drawable/group_listview_row"
+  android:background="@drawable/selector_group_list_item"
   android:alpha="0.90"
   android:clickable="true">
 
