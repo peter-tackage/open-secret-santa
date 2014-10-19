@@ -24,18 +24,20 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
+            android:layout_marginEnd="8dp"
             android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
             android:background="@color/transparent_black"
             android:gravity="center_horizontal"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
             android:singleLine="true"
             android:textAllCaps="true"
             android:textColor="@color/white"
             android:textSize="16sp"
-            tools:text="Some Member Name"/>
+            tools:text="Some Member Name" />
 
     </RelativeLayout>
 
