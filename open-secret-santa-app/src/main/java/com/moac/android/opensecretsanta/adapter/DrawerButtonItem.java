@@ -36,10 +36,10 @@ public class DrawerButtonItem implements DrawerListAdapter.Item {
         TextView textView;
         if(view == null) {
             view = LayoutInflater.from(_context).inflate(R.layout.drawer_button_view, _parent, false);
-            textView = (TextView) view.findViewById(R.id.tv_button_label);
-            view.setTag(R.id.tv_button_label, textView);
+            textView = (TextView) view.findViewById(R.id.textView_button_label);
+            view.setTag(R.id.textView_button_label, textView);
         } else {
-            textView = (TextView) view.getTag(R.id.tv_button_label);
+            textView = (TextView) view.getTag(R.id.textView_button_label);
         }
 
         textView.setText(mText);

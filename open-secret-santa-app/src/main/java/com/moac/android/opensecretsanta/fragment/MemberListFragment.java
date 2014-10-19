@@ -1,5 +1,6 @@
 package com.moac.android.opensecretsanta.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.*;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -154,7 +155,7 @@ public class MemberListFragment extends InjectingListFragment {
         inflater.inflate(R.menu.action_bar_menu, menu);
         inflater.inflate(R.menu.dropdown_menu, menu);
         mMenu = menu;
-        setMenuItems();
+        setMenuItemsForMode(mMode);
     }
 
     @Override
@@ -163,6 +164,12 @@ public class MemberListFragment extends InjectingListFragment {
         switch(item.getItemId()) {
             case R.id.menu_item_clear_assignments:
                 confirmClearAssignments();
+                return true;
+            case R.id.menu_item_delete_group:
+                confirmDeleteGroup();
+                return true;
+            case R.id.menu_item_rename_group:
+             //   confirmRenameGroup();
                 return true;
             case R.id.menu_item_draw:
                 attemptDraw();
@@ -310,11 +317,11 @@ public class MemberListFragment extends InjectingListFragment {
         setHeader(); // depends on mode
         // Populate member list
         populateMemberList();
-        setMenuItems(); // depends on adapter contents
+        setMenuItemsForMode(mMode); // depends on adapter contents
     }
 
     private void onModeChanged() {
-        setMenuItems();
+        setMenuItemsForMode(mMode);
         setHeader();
     }
 
@@ -350,6 +357,7 @@ public class MemberListFragment extends InjectingListFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
+        @SuppressLint("InflateParams")
         View view = inflater.inflate(R.layout.clear_assignments_dialog, null);
 
         builder.setTitle(R.string.clear_assignments_dialog_title);
@@ -367,7 +375,7 @@ public class MemberListFragment extends InjectingListFragment {
             }
         });
 
-        TextView dialogMsgView = (TextView) view.findViewById(R.id.clear_assignments_text);
+        TextView dialogMsgView = (TextView) view.findViewById(R.id.textView_clear_assignments);
         dialogMsgView.setText(R.string.clear_assignments_dialog_msg);
         builder.setView(view);
 
@@ -376,12 +384,43 @@ public class MemberListFragment extends InjectingListFragment {
         dialog.show();
     }
 
-    private void setMenuItems() {
-        // Non-CAB buttons only
+    private void confirmDeleteGroup() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        @SuppressLint("InflateParams")
+        View view = inflater.inflate(R.layout.delete_group_dialog, null);
+
+        builder.setTitle(R.string.delete_group_dialog_title);
+        builder.setIcon(R.drawable.ic_menu_delete);
+
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+               mFragmentContainer.deleteGroup(mGroup.getId());
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+            }
+        });
+
+        TextView dialogMsgView = (TextView) view.findViewById(R.id.textView_delete_group);
+        dialogMsgView.setText(R.string.delete_group_dialog_msg);
+        builder.setView(view);
+
+        Dialog dialog = builder.create();
+        dialog.getWindow().setWindowAnimations(R.style.dialog_animate_overshoot);
+        dialog.show();
+    }
+
+    private void setMenuItemsForMode(Mode mode) {
+        // Set visibility of Non-CAB buttons only
         if(mMenu != null) {
-            mMenu.findItem(R.id.menu_item_draw).setVisible(mMode == Mode.Building);
-            mMenu.findItem(R.id.menu_item_notify_group).setVisible(mMode == Mode.Notify && hasSendableItem(mAdapter));
-            mMenu.findItem(R.id.menu_item_clear_assignments).setVisible(mMode == Mode.Notify);
+            mMenu.findItem(R.id.menu_item_draw).setVisible(mode == Mode.Building);
+            mMenu.findItem(R.id.menu_item_notify_group).setVisible(mode == Mode.Notify && hasSendableItem(mAdapter));
+            mMenu.findItem(R.id.menu_item_clear_assignments).setVisible(mode == Mode.Notify);
         }
     }
 
@@ -610,5 +649,7 @@ public class MemberListFragment extends InjectingListFragment {
         void requestNotifyDraw(Group group);
 
         void requestNotifyDraw(Group group, long[] memberIds);
+
+        void deleteGroup(long groupId);
     }
 }

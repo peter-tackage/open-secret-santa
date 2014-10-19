@@ -14,12 +14,12 @@ public class GroupDetailsRow implements DrawerListAdapter.Item {
 
     private static final SimpleDateFormat format = new SimpleDateFormat("d MMM yyyy");
 
-    protected long mId;
+    protected long mGroupId;
     protected String mName;
     protected long mCreationDate;
 
     public GroupDetailsRow(long _groupId, String _groupName, long _groupCreationDate) {
-        mId = _groupId;
+        mGroupId = _groupId;
         mName = _groupName;
         mCreationDate = _groupCreationDate;
     }
@@ -31,7 +31,7 @@ public class GroupDetailsRow implements DrawerListAdapter.Item {
 
     @Override
     public long getItemId() {
-        return mId;
+        return mGroupId;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class GroupDetailsRow implements DrawerListAdapter.Item {
         return view;
     }
 
-    public long getId() { return mId; }
+    public long getId() { return mGroupId; }
 
     public String getName() { return mName; }
 

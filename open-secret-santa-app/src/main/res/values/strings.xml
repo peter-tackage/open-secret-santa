@@ -24,9 +24,13 @@
     <string name="edit_email_address_hint">Email Address</string>
     <string name="edit_sms_number_hint">Mobile Number</string>
 
-    <!-- Clear assignments confirmation dialog button -->
+    <!-- Clear assignments confirmation dialog -->
     <string name="clear_assignments_dialog_title">Clear Assignments?</string>
     <string name="clear_assignments_dialog_msg">You\'ll lose all the Secret Santa assignments for this group"</string>
+
+    <!-- Delete Group confirmation dialog -->
+    <string name="delete_group_dialog_title">Delete Group?</string>
+    <string name="delete_group_dialog_msg">You\'ll lose all the members and assignments for this group"</string>
 
     <!-- Preferences - Algorithm -->
     <string name="algorithm_preferences">Algorithm Preferences</string>
@@ -100,5 +104,6 @@
     <string name="restriction_list_title_unformatted" formatted="false">Restrictions for %s</string>
     <string name="list_selection_count_title_unformatted" formatted="false">%d selected</string>
     <string name="gift_giving_msg_unformatted" formatted="false">%s is giving a gift to</string>
+    <string name="add_group">Add Group</string>
 
 </resources>

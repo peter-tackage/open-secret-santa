@@ -7,7 +7,7 @@
   android:padding="16dp">
 
   <TextView
-    android:id="@+id/clear_assignments_text"
+    android:id="@+id/textView_clear_assignments"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textAppearance="?android:attr/textAppearanceSmall"

@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-  <!-- Drop down menu items -->
-  <item
-    android:id="@+id/menu_item_clear_assignments"
-    android:title="@string/menu_clear_assignments"
-    android:showAsAction="never" />
+    <!-- Drop down menu items -->
+    <item
+        android:id="@+id/menu_item_rename_group"
+        android:showAsAction="never"
+        android:title="@string/menu_rename" />
 
-  <!--
-  <item
-    android:id="@+id/menu_item_delete_group"
-    android:title="@string/menu_delete_group"
-    android:showAsAction="never" />
-  <item
-    android:id="@+id/menu_item_rename"
-    android:title="@string/menu_rename"
-    android:showAsAction="never" />   -->
+    <item
+        android:id="@+id/menu_item_clear_assignments"
+        android:showAsAction="never"
+        android:title="@string/menu_clear_assignments" />
 
-  <item
-    android:id="@+id/menu_item_settings"
-    android:title="@string/menu_settings"
-    android:showAsAction="never" />
+    <item
+        android:id="@+id/menu_item_delete_group"
+        android:showAsAction="never"
+        android:title="@string/menu_delete_group" />
+
+    <item
+        android:id="@+id/menu_item_settings"
+        android:showAsAction="never"
+        android:title="@string/menu_settings" />
 
 </menu>

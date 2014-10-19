@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -138,7 +137,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
                 mDrawerList.setItemChecked(toListViewPosition(mDrawerList, adapterPosition), true);
                 showGroup(groupId);
             } else {
-                Log.i(TAG, "Invalid most recent groupId: " + groupId);
+                Log.i(TAG, "Most recent groupId was invalid: " + groupId);
                 mSharedPreferences.
                         edit().remove(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY).apply();
                 // Show the drawer to allow Group creation/selection by user
@@ -229,13 +228,32 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         mNotifyExecutorFragment.notifyDraw(auth, group, members);
     }
 
+    @Override
+    public void deleteGroup(long groupId) {
+        mDb.delete(groupId, Group.class);
+        populateDrawerListView(mDrawerListAdapter);
+
+        // Show the first group, or create another if we have none
+        long nextGroupId;
+        Group group = mDb.queryForFirstGroup();
+        if (group == null) {
+            nextGroupId = createNewGroup();
+        } else {
+            nextGroupId = group.getId();
+            int adapterPosition = getItemAdapterPosition(mDrawerListAdapter, nextGroupId);
+            mDrawerList.setItemChecked(toListViewPosition(mDrawerList, adapterPosition), true);
+
+        }
+        showGroup(nextGroupId);
+    }
+
     private void populateDrawerListView(DrawerListAdapter drawerListAdapter) {
 
         List<DrawerListAdapter.Item> drawerListItems = new ArrayList<DrawerListAdapter.Item>();
 
         // Add "Add Group" button item
         Drawable addIcon = getResources().getDrawable(R.drawable.ic_content_new);
-        drawerListItems.add(new DrawerButtonItem(addIcon, "Add Group", new View.OnClickListener() {
+        drawerListItems.add(new DrawerButtonItem(addIcon, getString(R.string.add_group), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "Clicked Add Group Button");
@@ -251,6 +269,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         for (Group g : groups) {
             drawerListItems.add(new GroupDetailsRow(g.getId(), g.getName(), g.getCreatedAt()));
         }
+        drawerListAdapter.clear();
         drawerListAdapter.addAll(drawerListItems);
     }
 
