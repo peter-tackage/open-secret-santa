@@ -22,7 +22,9 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_gravity="center_horizontal"
-        android:layout_margin="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/shape_search_background"
         android:hint="@string/search_hint_label"
         android:imeOptions="actionDone"
@@ -36,6 +38,7 @@
         android:layout_height="match_parent"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
         android:divider="@null"
         android:dividerHeight="2dp" />
 
