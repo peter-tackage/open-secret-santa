@@ -260,9 +260,12 @@ public class DatabaseManager {
 
     public int updateGroupName(long groupId, String groupName) {
         try {
+            // Escape the group name
+            SelectArg selectArg = new SelectArg();
+            selectArg.setValue(groupName);
             UpdateBuilder<Group, Long> updateBuilder =
                     mDbHelper.getDaoEx(Group.class).updateBuilder();
-            updateBuilder.updateColumnValue(Group.Columns.NAME_COLUMN, groupName).
+            updateBuilder.updateColumnValue(Group.Columns.NAME_COLUMN, selectArg).
                     where().eq(Group.Columns._ID, groupId);
             return updateBuilder.update();
         } catch (java.sql.SQLException e) {
