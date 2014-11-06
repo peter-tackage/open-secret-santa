@@ -100,7 +100,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
                 mDrawerLayout,         /* DrawerLayout object */
-                R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
+                R.drawable.ic_menu_white_48dp,  /* nav drawer icon to replace 'Up' caret */
                 R.string.drawer_open_accesshint,  /* "open drawer" description */
                 R.string.drawer_close_accesshint) /* "close drawer" description */ {
 
