@@ -33,7 +33,14 @@
         <item name="android:windowExitAnimation">@anim/anim_overshoot_out</item>
     </style>
 
+    <!-- Styles -->
+    <style name="OverFlowMenu.Style" parent="@android:style/Widget.Holo.Light.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_more_vert_white_24dp</item>
+    </style>
+
     <!-- Application theme -->
-    <style name="AppTheme" parent="AppBaseTheme"/>
+    <style name="AppTheme" parent="AppBaseTheme">
+        <item name="android:actionOverflowButtonStyle">@style/OverFlowMenu.Style</item>
+    </style>
 
 </resources>
