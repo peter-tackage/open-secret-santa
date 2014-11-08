@@ -26,12 +26,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.RestrictionsActivity" />
         <activity
-            android:name=".activity.RestrictionsActivity" />
-        <activity
-            android:name=".activity.EditActivity"/>
-        <activity
-            android:name=".activity.AllPreferencesActivity"/>
+            android:name=".activity.EditActivity"
+            android:windowSoftInputMode="stateHidden" />
+        <activity android:name=".activity.AllPreferencesActivity" />
 
         <receiver
             android:name=".notify.sms.SmsManagerSendReceiver"
