@@ -12,6 +12,7 @@
         <item name="android:background">@android:color/holo_blue_light</item>
         <!-- if we want the action bar to have the blue shadow or not ... drawable/ab_transparent_mymenu</item-->
         <item name="android:titleTextStyle">@style/MyTheme.ActionBar.TitleTextStyle</item>
+        <item name="android:icon">@color/transparent</item>
     </style>
 
     <!-- Action bar text style -->

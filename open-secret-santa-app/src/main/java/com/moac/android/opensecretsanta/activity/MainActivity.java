@@ -107,7 +107,6 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 getActionBar().setTitle(getString(R.string.app_name));
-                getActionBar().setIcon(R.drawable.icon);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
