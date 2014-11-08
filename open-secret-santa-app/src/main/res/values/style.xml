@@ -23,8 +23,7 @@
 
     <!-- Background for the overflow menu -->
     <style name="MyTheme.PopupMenu.Style" parent="@android:style/Widget.Holo.Light.ListPopupWindow">
-        <item name="android:popupBackground">@color/white</item>
-        <item name="android:alpha">0.80</item>
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel</item>
     </style>
 
     <!-- Dialog window animations style -->
