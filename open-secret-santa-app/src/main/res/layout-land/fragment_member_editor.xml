@@ -57,7 +57,7 @@
             android:paddingBottom="4dp"
             android:text="@string/member_name_label"
             android:textAllCaps="true"
-            android:textColor="@android:color/holo_blue_light"
+            android:textColor="@color/primary_color"
             android:textSize="12sp"
             android:textStyle="bold" />
 
@@ -70,6 +70,7 @@
             android:id="@+id/editText_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/selector_edit_text"
             android:hint="@string/member_name_hint"
             android:inputType="textNoSuggestions|textCapWords|textPersonName"
             android:paddingTop="8dp"
@@ -84,7 +85,7 @@
             android:paddingTop="32dp"
             android:text="@string/contact_method_label"
             android:textAllCaps="true"
-            android:textColor="@android:color/holo_blue_light"
+            android:textColor="@color/primary_color"
             android:textSize="12sp"
             android:textStyle="bold" />
 
@@ -105,6 +106,7 @@
             android:id="@+id/editText_contact_detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/selector_edit_text"
             android:singleLine="true"
             android:textColor="@color/dark_grey"
             android:textColorHint="@color/shade_of_grey4"

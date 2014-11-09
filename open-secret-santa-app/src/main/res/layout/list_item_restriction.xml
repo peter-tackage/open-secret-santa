@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:background="@color/white"
-    android:padding="4dp">
+    android:padding="8dp">
 
     <ImageView
         android:id="@+id/imageView_avatar"
@@ -28,7 +28,7 @@
         android:singleLine="true"
         tools:text="Test User"
         android:textAppearance="@android:style/TextAppearance.Medium"
-        android:textColor="@color/shade_of_holo_blue6" />
+        android:textColor="@color/primary_color" />
 
     <CheckBox
         android:id="@+id/checkBox_restriction"

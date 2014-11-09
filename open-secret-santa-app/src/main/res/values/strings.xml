@@ -70,7 +70,7 @@
     <string name="menu_delete">Delete</string>
     <string name="menu_notify_group">Notify group</string>
     <string name="menu_notify_selected">Notify selection</string>
-    <string name="menu_draw">Draw!</string>
+    <string name="menu_assign">Assign</string>
     <string name="menu_reveal">Reveal</string>
     <string name="menu_rename">Rename group</string>
     <string name="menu_clear_assignments">Clear assignments</string>

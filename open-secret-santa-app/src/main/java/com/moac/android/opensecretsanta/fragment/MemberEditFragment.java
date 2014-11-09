@@ -31,9 +31,6 @@ import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
 
-/**
- * TODO(PT) Fix rotation and clobbering of field values when changed from original
- */
 public class MemberEditFragment extends InjectingFragment implements Saveable {
 
     private static final String TAG = MemberEditFragment.class.getSimpleName();

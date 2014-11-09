@@ -18,7 +18,7 @@
         android:paddingTop="4dp"
         android:paddingBottom="4dp"
         android:text="@string/drawer_groups_header"
-        android:textColor="@android:color/holo_blue_light"
+        android:textColor="@color/primary_color"
         android:textStyle="bold" />
 
 </FrameLayout>
