@@ -108,6 +108,6 @@
     <string name="restriction_list_title_unformatted" formatted="false">Restrictions for %s</string>
     <string name="list_selection_count_title_unformatted" formatted="false">%d selected</string>
     <string name="gift_giving_msg_unformatted" formatted="false">%s is giving a gift to</string>
-    <string name="add_group">Add Group</string>
+    <string name="add_group">Create new group</string>
 
 </resources>

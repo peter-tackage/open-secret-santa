@@ -13,11 +13,6 @@
     <!-- bg for member row -->
     <color name="light_blue">#cfe9f3</color>
 
-    <!-- shades of android holo blue -->
-    <color name="shade_of_holo_blue1">#e2f4fb</color>
-    <color name="shade_of_holo_blue2">#c5eaf8</color>
-    <color name="shade_of_holo_blue6">#50c0e9</color>
-
     <color name="transparent_black">#AA000000</color>
     <color name="transparent">#00000000</color>
 

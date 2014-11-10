@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/selector_group_list_item"
+    android:background="@color/white"
     android:clickable="true"
     android:padding="8dp">
 
@@ -12,9 +12,10 @@
         android:id="@+id/textView_button_label"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:drawablePadding="4dp"
         android:gravity="center_vertical"
         android:textAppearance="@android:style/TextAppearance.Medium"
-        android:textColor="@color/dark_grey"
+        android:textColor="@color/primary_color"
         android:textStyle="bold"
         tools:text="@string/drawer_groups_new" />
 </FrameLayout>
