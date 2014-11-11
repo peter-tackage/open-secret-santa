@@ -3,7 +3,6 @@
     android:id="@+id/dialog_container_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/shade_of_grey1"
     android:orientation="vertical"
     android:padding="8dp">
 
@@ -18,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/notify_email_from_label"
-            android:textColor="@android:color/holo_blue_dark" />
+            android:textColor="@color/text_neutral_color" />
 
         <Spinner
             android:id="@+id/spnr_email_selection"
@@ -32,7 +31,7 @@
         android:layout_height="150dp"
         android:layout_below="@+id/layout_notify_email_container"
         android:layout_marginBottom="4dp"
-        android:background="@color/light_blue"
+        android:background="@color/secondary_color"
         android:gravity="top"
         android:hint="@string/notify_message_text_hint"
         android:inputType="textShortMessage|textMultiLine|textCapSentences"
@@ -41,8 +40,7 @@
         android:scrollbars="vertical"
         android:singleLine="false"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/dark_grey"
-        android:textColorHint="@color/shade_of_grey4" />
+        android:textColor="@color/text_neutral_color" />
 
     <LinearLayout
         android:id="@+id/footer_container"
@@ -55,15 +53,15 @@
             android:id="@+id/tv_msg_chars_remaining"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingRight="2dp"
             android:text="@string/characters_remaining_message"
-            android:textColor="@color/dark_grey"
-            android:paddingEnd="2dp" />
+            android:textColor="@color/text_neutral_color" />
 
         <TextView
             android:id="@+id/tv_notify_msg_char_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/dark_grey"/>
+            android:textColor="@color/text_neutral_color" />
     </LinearLayout>
 
     <TextView

@@ -10,9 +10,6 @@
     <color name="shade_of_grey2">#dddddd</color>
     <color name="shade_of_grey1">#eeeeee</color>
 
-    <!-- bg for member row -->
-    <color name="light_blue">#cfe9f3</color>
-
     <color name="transparent_black">#AA000000</color>
     <color name="transparent">#00000000</color>
 

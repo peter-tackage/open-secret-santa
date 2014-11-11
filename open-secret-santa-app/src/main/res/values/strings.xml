@@ -109,5 +109,7 @@
     <string name="list_selection_count_title_unformatted" formatted="false">%d selected</string>
     <string name="gift_giving_msg_unformatted" formatted="false">%s is giving a gift to</string>
     <string name="add_group">Create new group</string>
+    <string name="contact_us_at">Contact us at:</string>
+    <string name="graphics_usage">We have used and adapted graphics by:</string>
 
 </resources>

@@ -2,7 +2,6 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:background="@color/shade_of_grey1"
     android:padding="16dp">
 
     <TextView
@@ -12,6 +11,6 @@
         android:gravity="center"
         android:text="@string/clear_assignments_dialog_msg"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/dark_grey" />
+        android:textColor="@color/text_neutral_color" />
 
 </FrameLayout>
