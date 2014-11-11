@@ -100,14 +100,13 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
                 mDrawerLayout,         /* DrawerLayout object */
-                R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
+                R.drawable.ic_menu_white_24dp,  /* nav drawer icon to replace 'Up' caret */
                 R.string.drawer_open_accesshint,  /* "open drawer" description */
                 R.string.drawer_close_accesshint) /* "close drawer" description */ {
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 getActionBar().setTitle(getString(R.string.app_name));
-                getActionBar().setIcon(R.drawable.icon);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
@@ -260,7 +259,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         List<DrawerListAdapter.Item> drawerListItems = new ArrayList<DrawerListAdapter.Item>();
 
         // Add "Add Group" button item
-        Drawable addIcon = getResources().getDrawable(R.drawable.ic_content_new);
+        Drawable addIcon = getResources().getDrawable(R.drawable.ic_action_add_group);
         drawerListItems.add(new DrawerButtonItem(addIcon, getString(R.string.add_group), new View.OnClickListener() {
             @Override
             public void onClick(View v) {

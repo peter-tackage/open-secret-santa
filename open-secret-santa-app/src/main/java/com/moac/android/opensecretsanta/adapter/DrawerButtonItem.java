@@ -31,11 +31,11 @@ public class DrawerButtonItem implements DrawerListAdapter.Item {
     }
 
     @Override
-    public View getView(Context _context, View _convertView, ViewGroup _parent) {
-        View view = _convertView;
+    public View getView(Context context, View convertView, ViewGroup parent) {
+        View view = convertView;
         TextView textView;
         if(view == null) {
-            view = LayoutInflater.from(_context).inflate(R.layout.drawer_button_view, _parent, false);
+            view = LayoutInflater.from(context).inflate(R.layout.drawer_button_view, parent, false);
             textView = (TextView) view.findViewById(R.id.textView_button_label);
             view.setTag(R.id.textView_button_label, textView);
         } else {

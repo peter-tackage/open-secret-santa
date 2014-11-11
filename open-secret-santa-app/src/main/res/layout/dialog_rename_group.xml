@@ -3,13 +3,14 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:background="@color/shade_of_grey1"
     android:padding="16dp">
 
     <EditText
         android:id="@+id/editText_groupName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/rename_group_name_hint" />
+        android:background="@drawable/selector_edit_text"
+        android:hint="@string/rename_group_name_hint"
+        android:textColor="@color/text_neutral_color" />
 
 </FrameLayout>

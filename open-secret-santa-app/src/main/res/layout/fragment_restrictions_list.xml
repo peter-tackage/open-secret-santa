@@ -13,7 +13,7 @@
         android:background="@color/white"
         android:gravity="center_horizontal"
         android:padding="4dp"
-        android:textColor="@android:color/holo_blue_light"
+        android:textColor="@color/primary_color"
         android:textStyle="bold"
         tools:text="The restrictions for some member" />
 
@@ -32,6 +32,6 @@
         android:id="@id/android:empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/transparent" />
+        android:background="@color/transparent" />
 
 </LinearLayout>

@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
@@ -65,7 +66,6 @@ import rx.Subscription;
 import rx.android.concurrency.AndroidSchedulers;
 import rx.concurrency.Schedulers;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.moac.android.opensecretsanta.util.Utils.safeUnsubscribe;
 
 // TODO(PT) This class is too big
@@ -561,20 +561,20 @@ public class MemberListFragment extends InjectingListFragment {
         mDrawProgressDialog = ProgressDialog.show(getActivity(), "", getString(R.string.draw_in_progress_msg), true);
     }
 
-    private void doEdit(long _memberId) {
-        getMemberEditor().onEditMember(_memberId);
+    private void doEdit(long memberId) {
+        getMemberEditor().onEditMember(memberId);
     }
 
-    private void doRestrictions(long _memberId) {
-        getMemberEditor().onRestrictMember(mGroup.getId(), _memberId);
+    private void doRestrictions(long memberId) {
+        getMemberEditor().onRestrictMember(mGroup.getId(), memberId);
     }
 
-    private void doReveal(long _memberId) {
-        Member giver = mDb.queryById(_memberId, Member.class);
-        Log.i(TAG, "doReveal(): memberId: " + _memberId);
+    private void doReveal(long memberId) {
+        Member giver = mDb.queryById(memberId, Member.class);
+        Log.i(TAG, "doReveal(): memberId: " + memberId);
         Log.i(TAG, "doReveal(): giver name: " + giver.getName());
 
-        Assignment assignment = mDb.queryAssignmentForMember(_memberId);
+        Assignment assignment = mDb.queryAssignmentForMember(memberId);
         long _receiverId = assignment.getReceiverMemberId();
         Member receiver = mDb.queryById(_receiverId, Member.class);
         String avatarUri = null;
@@ -605,9 +605,9 @@ public class MemberListFragment extends InjectingListFragment {
         mAdapter.notifyDataSetChanged();
     }
 
-    private List<MemberRowDetails> buildMemberRowDetails(long _groupId) {
-        List<MemberRowDetails> rows = new ArrayList<MemberRowDetails>();
-        List<Member> members = mDb.queryAllMembersForGroup(_groupId);
+    private List<MemberRowDetails> buildMemberRowDetails(long groupId) {
+        List<MemberRowDetails> rows = new ArrayList<>();
+        List<Member> members = mDb.queryAllMembersForGroup(groupId);
         for (Member member : members) {
             Assignment assignment = mDb.queryAssignmentForMember(member.getId());
             MemberRowDetails row = new MemberRowDetails(member, assignment);
@@ -618,24 +618,24 @@ public class MemberListFragment extends InjectingListFragment {
         return rows;
     }
 
-    private void addMember(Member _member, Group _group) {
-        if (isNullOrEmpty(_member.getName())) return;
+    private void addMember(Member member, Group group) {
+        if (TextUtils.isEmpty(member.getName())) return;
 
         final String msg;
-        _member.setGroup(_group);
+        member.setGroup(group);
 
         // Test to see if we already have this member in the group.
-        Member existing = mDb.queryMemberWithNameForGroup(_group.getId(), _member.getName());
+        Member existing = mDb.queryMemberWithNameForGroup(group.getId(), member.getName());
         if (existing != null) {
-            msg = String.format(getString(R.string.duplicate_name_msg_unformatted), _member.getName());
+            msg = String.format(getString(R.string.duplicate_name_msg_unformatted), member.getName());
         } else {
-            long id = mDb.create(_member);
+            long id = mDb.create(member);
             if (id != PersistableObject.UNSET_ID) {
-                msg = String.format(getString(R.string.member_add_msg_unformatted), _member.getName());
-                invalidateAssignments(_group);
+                msg = String.format(getString(R.string.member_add_msg_unformatted), member.getName());
+                invalidateAssignments(group);
                 populateMemberList();
             } else {
-                msg = String.format(getString(R.string.failed_add_member_msg_unformatted), _member.getName());
+                msg = String.format(getString(R.string.failed_add_member_msg_unformatted), member.getName());
             }
         }
         Toast toast = Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT);

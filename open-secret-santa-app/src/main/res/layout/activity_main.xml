@@ -4,7 +4,7 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/shade_of_grey1">
+    android:background="@drawable/background">
 
     <!-- The main content view -->
     <FrameLayout
@@ -18,7 +18,7 @@
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:choiceMode="singleChoice"
-    android:background="@android:color/white" />
+        android:background="@color/white"
+        android:choiceMode="singleChoice" />
 
 </android.support.v4.widget.DrawerLayout>

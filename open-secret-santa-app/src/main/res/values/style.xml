@@ -4,14 +4,15 @@
     <style name="AppBaseTheme" parent="android:Theme.Holo.Light">
         <item name="android:popupMenuStyle">@style/MyTheme.PopupMenu.Style</item>
         <item name="android:actionBarStyle">@style/MyTheme.ActionBar.Style</item>
-        <item name="android:actionMenuTextColor">@android:color/holo_blue_light</item>
+        <item name="android:actionMenuTextColor">@color/primary_color</item>
     </style>
 
     <!-- Action bar background -->
     <style name="MyTheme.ActionBar.Style" parent="@android:style/Widget.Holo.Light.ActionBar">
-        <item name="android:background">@android:color/holo_blue_light</item>
+        <item name="android:background">@color/primary_color</item>
         <!-- if we want the action bar to have the blue shadow or not ... drawable/ab_transparent_mymenu</item-->
         <item name="android:titleTextStyle">@style/MyTheme.ActionBar.TitleTextStyle</item>
+        <item name="android:icon">@color/transparent</item>
     </style>
 
     <!-- Action bar text style -->
@@ -23,8 +24,7 @@
 
     <!-- Background for the overflow menu -->
     <style name="MyTheme.PopupMenu.Style" parent="@android:style/Widget.Holo.Light.ListPopupWindow">
-        <item name="android:popupBackground">@color/white</item>
-        <item name="android:alpha">0.80</item>
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel</item>
     </style>
 
     <!-- Dialog window animations style -->
@@ -33,7 +33,14 @@
         <item name="android:windowExitAnimation">@anim/anim_overshoot_out</item>
     </style>
 
+    <!-- Overflow menu -->
+    <style name="OverFlowMenu.Style" parent="@android:style/Widget.Holo.Light.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_more_vert_white_24dp</item>
+    </style>
+
     <!-- Application theme -->
-    <style name="AppTheme" parent="AppBaseTheme"/>
+    <style name="AppTheme" parent="AppBaseTheme">
+        <item name="android:actionOverflowButtonStyle">@style/OverFlowMenu.Style</item>
+    </style>
 
 </resources>

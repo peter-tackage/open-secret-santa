@@ -13,7 +13,7 @@
         android:background="@color/white"
         android:gravity="center_horizontal"
         android:padding="4dp"
-        android:textColor="@android:color/holo_blue_light"
+        android:textColor="@color/primary_color"
         android:textStyle="bold"
         tools:text="Some Group Name" />
 
@@ -29,8 +29,7 @@
         android:hint="@string/search_hint_label"
         android:imeOptions="actionDone"
         android:inputType="textCapWords|textPersonName"
-        android:singleLine="true"
-        android:textColorHint="@color/shade_of_grey2" />
+        android:singleLine="true" />
 
     <ListView
         android:id="@id/android:list"
@@ -47,7 +46,7 @@
         android:id="@id/android:empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/transparent"
+        android:background="@color/transparent"
         android:orientation="vertical" />
 
 </LinearLayout>

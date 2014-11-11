@@ -70,7 +70,7 @@
     <string name="menu_delete">Delete</string>
     <string name="menu_notify_group">Notify group</string>
     <string name="menu_notify_selected">Notify selection</string>
-    <string name="menu_draw">Draw!</string>
+    <string name="menu_assign">Assign</string>
     <string name="menu_reveal">Reveal</string>
     <string name="menu_rename">Rename group</string>
     <string name="menu_clear_assignments">Clear assignments</string>
@@ -108,6 +108,8 @@
     <string name="restriction_list_title_unformatted" formatted="false">Restrictions for %s</string>
     <string name="list_selection_count_title_unformatted" formatted="false">%d selected</string>
     <string name="gift_giving_msg_unformatted" formatted="false">%s is giving a gift to</string>
-    <string name="add_group">Add Group</string>
+    <string name="add_group">Create new group</string>
+    <string name="contact_us_at">Contact us at:</string>
+    <string name="graphics_usage">We have used and adapted graphics by:</string>
 
 </resources>

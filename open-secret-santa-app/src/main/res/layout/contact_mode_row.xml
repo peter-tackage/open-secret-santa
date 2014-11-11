@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  android:id="@+id/linearLayout1"
-  android:layout_width="fill_parent"
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_height="?android:attr/listPreferredItemHeight"
-  android:paddingLeft="6dp"
-  android:paddingRight="6dp">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp">
 
-  <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/contactModeTextView"
-    android:layout_height="wrap_content"
-    android:layout_width="wrap_content"
-    android:layout_weight="1.0"
-    android:layout_gravity="center_vertical"/>
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/contactModeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1.0" />
 
-  <RadioButton
-    android:layout_weight="0"
-    android:layout_height="wrap_content"
-    android:layout_width="wrap_content"
-    android:id="@+id/radioButton1"
-    android:focusable="false"
-    android:layout_gravity="center_vertical"
-    android:clickable="false"/>
+    <RadioButton
+        android:id="@+id/radioButton1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0"
+        android:clickable="false"
+        android:focusable="false" />
 </LinearLayout>

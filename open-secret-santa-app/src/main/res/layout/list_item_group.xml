@@ -22,14 +22,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@android:style/TextAppearance.Medium"
-            android:textColor="@color/shade_of_holo_blue6" />
+            android:textColor="@color/primary_color" />
 
         <TextView
             android:id="@+id/textView_groupDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@android:style/TextAppearance.Small"
-            android:textColor="@color/shade_of_grey4"
+            android:textColor="@color/text_neutral_color"
             android:textSize="12sp" />
 
     </LinearLayout>

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 
 import com.moac.android.inject.dagger.InjectingActivity;
 import com.moac.android.opensecretsanta.R;
