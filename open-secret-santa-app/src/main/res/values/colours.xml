@@ -8,13 +8,13 @@
     <color name="shade_of_grey4">#ffaaaaaa</color>
     <color name="shade_of_grey3">#d3d3d3</color>
     <color name="shade_of_grey2">#dddddd</color>
-    <color name="shade_of_grey1">#eeeeee</color>
 
     <color name="transparent_black">#AA000000</color>
     <color name="transparent">#00000000</color>
-
+    #
     <color name="primary_color">#3f51b5</color>
     <color name="secondary_color">#C5CAE9</color>
+    <color name="tertiary_color">#9fa8da</color>
     <color name="accent_color">#ef5350</color>
     <color name="bg">#eeeeee</color>
     <color name="text_neutral_color">#5e5e5e</color>

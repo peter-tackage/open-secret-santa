@@ -29,8 +29,7 @@
         android:hint="@string/search_hint_label"
         android:imeOptions="actionDone"
         android:inputType="textCapWords|textPersonName"
-        android:singleLine="true"
-        android:textColorHint="@color/shade_of_grey2" />
+        android:singleLine="true" />
 
     <ListView
         android:id="@id/android:list"
