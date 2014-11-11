@@ -203,23 +203,23 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
     }
 
     @Override
-    public void requestNotifyDraw(Group _group, long[] _memberIds) {
-        Log.i(TAG, "onNotifyDraw() - Requesting Notify member set size:" + _memberIds.length);
+    public void requestNotifyDraw(Group group, long[] memberIds) {
+        Log.i(TAG, "onNotifyDraw() - Requesting Notify member set size:" + memberIds.length);
         // Check the requirement for the notify
-        DialogFragment dialog = NotifyDialogFragment.create(_group.getId(), _memberIds);
+        DialogFragment dialog = NotifyDialogFragment.create(group.getId(), memberIds);
         dialog.show(getFragmentManager(), NOTIFY_DIALOG_FRAGMENT_TAG);
     }
 
     @Override
-    public void requestNotifyDraw(Group _group) {
+    public void requestNotifyDraw(Group group) {
         Log.i(TAG, "onNotifyDraw() - Requesting Notify entire Group");
         // TODO Background
-        List<Member> members = mDb.queryAllMembersForGroup(_group.getId());
+        List<Member> members = mDb.queryAllMembersForGroup(group.getId());
         List<Long> memberIds = new ArrayList<Long>(members.size());
         for (Member member : members) {
             memberIds.add(member.getId());
         }
-        requestNotifyDraw(_group, Longs.toArray(memberIds));
+        requestNotifyDraw(group, Longs.toArray(memberIds));
     }
 
     @Override
