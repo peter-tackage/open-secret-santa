@@ -29,7 +29,7 @@
         <activity android:name=".activity.RestrictionsActivity" />
         <activity
             android:name=".activity.EditActivity"
-            android:windowSoftInputMode="stateHidden"/>
+            android:windowSoftInputMode="stateHidden" />
         <activity android:name=".activity.AllPreferencesActivity" />
 
         <receiver
@@ -39,6 +39,58 @@
                 <action android:name="com.moac.android.opensecretsanta.SENT_SMS_ACTION" />
             </intent-filter>
         </receiver>
+
+        <!-- These entries are required so that Android thinks that this app supports being the default SMS app -->
+        <!-- BroadcastReceiver that listens for incoming SMS messages -->
+        <receiver
+            android:name=".sms.dummy.DummySmsReceiver"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_DELIVER" />
+            </intent-filter>
+        </receiver>
+
+        <!-- BroadcastReceiver that listens for incoming MMS messages -->
+        <receiver
+            android:name=".sms.dummy.DummyMmsReceiver"
+            android:permission="android.permission.BROADCAST_WAP_PUSH">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.WAP_PUSH_DELIVER" />
+                <data android:mimeType="application/vnd.wap.mms-message" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Activity that allows the user to send new SMS/MMS messages -->
+        <activity android:name=".sms.dummy.DummySmsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+            </intent-filter>
+        </activity>
+
+        <!-- Service that delivers messages from the phone "quick response" -->
+        <service
+            android:name=".sms.dummy.DummySmsService"
+            android:exported="true"
+            android:permission="android.permission.SEND_RESPOND_VIA_MESSAGE">
+            <intent-filter>
+                <action android:name="android.intent.action.RESPOND_VIA_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

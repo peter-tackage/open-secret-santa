@@ -28,6 +28,5 @@ public class Utils {
         if(subscription != null) {
             subscription.unsubscribe();
         }
-        subscription = null;
     }
 }
