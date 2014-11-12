@@ -137,30 +137,24 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
                 .setPositiveButton(R.string.notify_send_button_text, null)
                 .create();
 
+        // We can't allow the dialog to be dismissed before the onActivityResult expected back
+        // from the SmsPermissionsManager is delivered (otherwise onNotifyRequest() is never called
+        // when SMS is being sent as the Fragment is usually destroyed before the result is returned.
+        // So to work-around this, add this listener which attaches anotherlistener that handles the
+        // positive (send) button press and explicitly call dismiss() to once onNotifyRequest() has
+        // completed.
+        //
+        // The OnShowListener is required as the sendButton is null until the View is created.
+        // While this listener could just be attached in onStart(), it's easier to read here.
         alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-
             @Override
             public void onShow(DialogInterface dialog) {
-
-                Button b = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                b.setOnClickListener(new View.OnClickListener() {
-                                         @Override
-                                         public void onClick(View v) {
-                                             if (mIsSmsPermissionRequired) {
-                                                 mSmsPermissionsManager.requestDefaultSmsPermission(getActivity().getApplicationContext(), NotifyDialogFragment.this, SMS_PERMISSION_REQUEST_CODE);
-                                             } else {
-                                                 onNotifyRequested();
-                                             }
-                                         }
-                                     }
-
-                );
+                Button sendButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                sendButton.setOnClickListener(new OnSendClickedListener());
             }
         });
         alertDialog.getWindow().setWindowAnimations(R.style.dialog_animate_overshoot);
-
         return alertDialog;
-
     }
 
     @Override
@@ -279,6 +273,21 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
 
     private void executeNotifyDraw(NotifyAuthorization auth, Group group, long[] members) {
         mFragmentContainer.executeNotifyDraw(auth, group, members);
+    }
+
+    private class OnSendClickedListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            if (mIsSmsPermissionRequired) {
+                mSmsPermissionsManager
+                        .requestDefaultSmsPermission(getActivity().getApplicationContext(),
+                                NotifyDialogFragment.this,
+                                SMS_PERMISSION_REQUEST_CODE);
+            } else {
+                onNotifyRequested();
+            }
+        }
     }
 
     public interface FragmentContainer {
