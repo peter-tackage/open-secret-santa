@@ -400,9 +400,9 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
 
         @Override
         public void run() {
-            AlertDialog smsWarningDialog = new AlertDialog.Builder(MainActivity.this)
-                    .setMessage("Test content with important message")
-                    .setTitle("Important!")
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle(getString(R.string.sms_permissions_warning_title))
+                    .setMessage(getString(R.string.sms_permissions_warning_msg))
                     .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {

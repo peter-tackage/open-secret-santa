@@ -14,6 +14,11 @@
     <string name="no_email_warning">WARNING: Assignments won\'t be sent. We can\'t find your Gmail account</string>
     <string name="notify_email_from_label">From:</string>
     <string name="notify_dialog_title">Notify</string>
+    <string name="sms_permissions_warning_title">Important!</string>
+    <string name="sms_permissions_warning_msg">You have asked to send some of your assignments as SMS messages.
+        To do this without leaving the messages in your conversations, Open Secret Santa needs to temporarily become your default SMS app.
+        Please accept the system dialog prompts as they appear. After the messages are sent, you will also be
+        prompted to restore your original setting.</string>
 
     <!-- Edit screen -->
     <string name="edit_member_title_unformatted" formatted="false">Editing %s</string>
