@@ -65,10 +65,11 @@ public class NotifyUtils {
         return count;
     }
 
-    public static boolean requiresSmsPermission(Context context) {
+    public static boolean requiresSmsPermission(Context context, DatabaseManager db, long[] memberIds) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             String defaultSmsApp = Telephony.Sms.getDefaultSmsPackage(context);
-            return !defaultSmsApp.equals(BuildConfig.PACKAGE_NAME);
+            return !defaultSmsApp.equals(BuildConfig.PACKAGE_NAME)
+                    && containsSmsSendableEntry(db, memberIds);
         } else {
             return false;
         }

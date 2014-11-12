@@ -175,7 +175,7 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
         mCharCountView.setText(String.valueOf(remainingChars));
 
         mIsEmailAuthRequired = NotifyUtils.containsEmailSendableEntry(mDb, mMemberIds);
-        mIsSmsPermissionRequired = NotifyUtils.requiresSmsPermission(getActivity());
+        mIsSmsPermissionRequired = NotifyUtils.requiresSmsPermission(getActivity(), mDb, mMemberIds);
 
         if (mIsEmailAuthRequired) {
             // Add all Gmail accounts to list
