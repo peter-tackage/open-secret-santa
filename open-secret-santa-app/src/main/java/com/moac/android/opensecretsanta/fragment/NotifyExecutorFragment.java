@@ -1,8 +1,9 @@
 package com.moac.android.opensecretsanta.fragment;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.moac.android.inject.dagger.InjectingFragment;
 import com.moac.android.opensecretsanta.R;
@@ -13,6 +14,7 @@ import com.moac.android.opensecretsanta.notify.DrawNotifier;
 import com.moac.android.opensecretsanta.notify.NotifyAuthorization;
 import com.moac.android.opensecretsanta.notify.NotifyStatusEvent;
 import com.moac.android.opensecretsanta.notify.mail.EmailTransporter;
+import com.moac.android.opensecretsanta.notify.sms.SmsPermissionsManager;
 import com.moac.android.opensecretsanta.notify.sms.SmsTransporter;
 import com.squareup.otto.Bus;
 
@@ -28,6 +30,8 @@ public class NotifyExecutorFragment extends InjectingFragment implements DrawNot
 
     private static final String TAG = NotifyExecutorFragment.class.getSimpleName();
 
+    private static final int RELINGUISH_SMS_PERMISSION_REQUEST_CODE = 33535;
+
     @Inject
     DatabaseManager mDb;
     @Inject
@@ -36,6 +40,8 @@ public class NotifyExecutorFragment extends InjectingFragment implements DrawNot
     SmsTransporter mSmsTransporter;
     @Inject
     EmailTransporter mEmailTransporter;
+    @Inject
+    SmsPermissionsManager mSmsPermissionsManager;
 
     private ProgressDialog mDrawProgressDialog;
     private Subscription mSubscription;
@@ -51,11 +57,10 @@ public class NotifyExecutorFragment extends InjectingFragment implements DrawNot
         // Show the progress dialog
         showDrawProgressDialog();
         // FIXME Um... what if it exists already
-        Log.i(TAG, "Current thread is: " + Thread.currentThread().toString());
         mSubscription = createNotifyObservable(auth, group, memberIds)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribeOn(Schedulers.newThread())
-          .subscribe(this);
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(this);
     }
 
     private Observable<NotifyStatusEvent> createNotifyObservable(NotifyAuthorization auth, Group group, long[] memberIds) {
@@ -68,13 +73,14 @@ public class NotifyExecutorFragment extends InjectingFragment implements DrawNot
     public void onCompleted() {
         Log.i(TAG, "onCompleted");
         dismissProgressDialog();
+        mSmsPermissionsManager.requestRelinquishDefaultSmsPermission(this, RELINGUISH_SMS_PERMISSION_REQUEST_CODE);
     }
 
     @Override
     public void onError(Throwable t) {
         Log.e(TAG, "onError() ", t);
         dismissProgressDialog();
-        Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
+        mSmsPermissionsManager.requestRelinquishDefaultSmsPermission(this, RELINGUISH_SMS_PERMISSION_REQUEST_CODE);
     }
 
     @Override
@@ -85,19 +91,31 @@ public class NotifyExecutorFragment extends InjectingFragment implements DrawNot
 
     @Override
     public void onDestroy() {
-        if(mSubscription != null) {
+        if (mSubscription != null) {
             mSubscription.unsubscribe();
             mSubscription = null;
         }
-        if(mDrawProgressDialog != null && mDrawProgressDialog.isShowing()) {
+        if (mDrawProgressDialog != null && mDrawProgressDialog.isShowing()) {
             dismissProgressDialog();
         }
         super.onDestroy();
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult() requestCode " + requestCode);
+        // User has agreed to change back, clear the recorded value
+        // This handles the situation when the user doesn't change back - they will get prompted
+        // again after each notify until they agree.
+        if (requestCode == RELINGUISH_SMS_PERMISSION_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            mSmsPermissionsManager.clearSavedDefaultSmsApp();
+        }
+    }
+
     private void showDrawProgressDialog() {
         Log.v(TAG, "showDrawProgressDialog() - start");
-        if(mDrawProgressDialog != null && mDrawProgressDialog.isShowing()) return;
+        if (mDrawProgressDialog != null && mDrawProgressDialog.isShowing()) return;
         mDrawProgressDialog = ProgressDialog.show(getActivity(), "", getString(R.string.notify_in_progress_msg), true);
     }
 

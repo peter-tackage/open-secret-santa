@@ -1,6 +1,5 @@
 package com.moac.android.opensecretsanta.notify.sms;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -36,14 +35,20 @@ public class SmsPermissionsManager {
         }
     }
 
-    public void requestRelinquishDefaultSmsPermission(Context context) {
+    public void requestRelinquishDefaultSmsPermission(Fragment fragment, int requestCode) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             String defaultSmsApp = getLastKnownDefaultSmsApp();
-            // Even if the record previous default is OSS, ask to change
-            Intent intent = new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
-            intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, defaultSmsApp);
-            context.startActivity(intent);
+            // If the recorded previous default isn't OSS; ask to change it
+            if (!defaultSmsApp.equals(BuildConfig.PACKAGE_NAME)) {
+                Intent intent = new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
+                intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, defaultSmsApp);
+                fragment.startActivityForResult(intent, requestCode);
+            }
         }
+    }
+
+    public void clearSavedDefaultSmsApp() {
+        mPreferences.edit().remove(DEFAULT_SMS_APP_KEY).apply();
     }
 
     protected void saveDefaultSmsApp(String defaultSmsApp) {

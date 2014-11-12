@@ -234,6 +234,7 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
         super.onActivityResult(requestCode, resultCode, data);
         Log.i(TAG, "onActivityResult() - requestCode: " + requestCode);
         if (requestCode == SMS_PERMISSION_REQUEST_CODE) {
+            // Send the result, regardless of selection (controls whether SMS is written to provider)
             onNotifyRequested();
         }
     }
