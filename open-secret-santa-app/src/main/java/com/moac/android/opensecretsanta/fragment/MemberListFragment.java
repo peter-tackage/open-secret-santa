@@ -366,11 +366,11 @@ public class MemberListFragment extends InjectingListFragment {
     }
 
     // TODO Do in background
-    private void doDelete(long[] _ids) {
-        if (_ids == null || _ids.length == 0)
+    private void doDelete(long[] ids) {
+        if (ids == null || ids.length == 0)
             return;
 
-        for (long id : _ids) {
+        for (long id : ids) {
             mDb.delete(id, Member.class);
         }
         // FIXME This is seems to be required to delete the last one.

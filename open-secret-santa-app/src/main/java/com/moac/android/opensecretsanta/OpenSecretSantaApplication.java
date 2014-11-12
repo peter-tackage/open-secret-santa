@@ -17,7 +17,7 @@ public class OpenSecretSantaApplication extends InjectingApplication {
 
     public static final String MOST_RECENT_GROUP_KEY = "most_recent_group_id";
 
-    private static final String CREATE_DEFAULT_GROUP = "createDefaultGroup";
+    private static final String CREATE_DEFAULT_GROUP_TASK = "createDefaultGroup";
     private static final String TAG = "OpenSecretSantaApplication";
 
     @Inject
@@ -29,9 +29,8 @@ public class OpenSecretSantaApplication extends InjectingApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-
         Utils.doOnce(mSharedPreferences,
-                CREATE_DEFAULT_GROUP, new Runnable() {
+                CREATE_DEFAULT_GROUP_TASK, new Runnable() {
             @Override
             public void run() {
                 // Don't add another group if there is at least one already

@@ -1,9 +1,11 @@
 package com.moac.android.opensecretsanta.activity;
 
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -36,6 +38,8 @@ import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 import com.moac.android.opensecretsanta.notify.NotifyAuthorization;
 import com.moac.android.opensecretsanta.util.GroupUtils;
+import com.moac.android.opensecretsanta.util.NotifyUtils;
+import com.moac.android.opensecretsanta.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +54,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
     private static final String MEMBERS_LIST_FRAGMENT_TAG = "MemberListFragment";
     private static final String NOTIFY_DIALOG_FRAGMENT_TAG = "NotifyDialogFragment";
     private static final String NOTIFY_EXECUTOR_FRAGMENT_TAG = "NotifyExecutorFragment";
+    private static final String SMS_WARNING_DIALOG_TASK = "sms_warning_task";
 
     @Inject
     DatabaseManager mDb;
@@ -205,7 +210,21 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
     @Override
     public void requestNotifyDraw(Group group, long[] memberIds) {
         Log.i(TAG, "onNotifyDraw() - Requesting Notify member set size:" + memberIds.length);
-        // Check the requirement for the notify
+
+        if (NotifyUtils.requiresSmsPermission(this, mDb, memberIds)) {
+            // If using SMS - display one-time warning about the SMS permissions
+            if (!Utils.doOnce(mSharedPreferences, SMS_WARNING_DIALOG_TASK, new ShowSmsWarningDialog(group, memberIds))) {
+                // Have already shown the message before, so just open the notify dialog
+                openNotifyDialog(group, memberIds);
+            }
+        } else {
+            // No need to show the warning dialog
+            openNotifyDialog(group, memberIds);
+        }
+
+    }
+
+    protected void openNotifyDialog(Group group, long[] memberIds) {
         DialogFragment dialog = NotifyDialogFragment.create(group.getId(), memberIds);
         dialog.show(getFragmentManager(), NOTIFY_DIALOG_FRAGMENT_TAG);
     }
@@ -366,5 +385,31 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         // Update preferences to save last viewed Group
         mSharedPreferences.
                 edit().putLong(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY, _groupId).apply();
+    }
+
+    // Opens the warning dialog
+    private class ShowSmsWarningDialog implements Runnable {
+
+        private final Group mNotifyGroup;
+        private final long[] mNotifyMemberIds;
+
+        private ShowSmsWarningDialog(Group group, long[] memberIds) {
+            mNotifyGroup = group;
+            mNotifyMemberIds = memberIds;
+        }
+
+        @Override
+        public void run() {
+            AlertDialog smsWarningDialog = new AlertDialog.Builder(MainActivity.this)
+                    .setMessage("Test content with important message")
+                    .setTitle("Important!")
+                    .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            openNotifyDialog(mNotifyGroup, mNotifyMemberIds);
+                        }
+                    }).show();
+
+        }
     }
 }
