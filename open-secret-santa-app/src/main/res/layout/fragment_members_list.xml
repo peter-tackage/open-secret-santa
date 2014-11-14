@@ -26,6 +26,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         android:paddingLeft="8dp"
+        android:textColorHint="@color/shade_of_grey4"
         android:background="@drawable/shape_search_background"
         android:hint="@string/search_hint_label"
         android:imeOptions="actionDone"

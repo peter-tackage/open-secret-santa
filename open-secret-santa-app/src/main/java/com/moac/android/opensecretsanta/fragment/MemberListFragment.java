@@ -319,7 +319,6 @@ public class MemberListFragment extends InjectingListFragment {
                 int checkedItemCount = getListView().getCheckedItemCount();
                 boolean isSingleItemChecked = checkedItemCount == 1;
                 boolean hasSendableItemChecked = hasSendableItemChecked(getListView());
-
                 mode.setTitle(String.format(getString(R.string.list_selection_count_title_unformatted), checkedItemCount));
                 mode.getMenu().findItem(R.id.menu_item_edit).setVisible(isSingleItemChecked);
                 mode.getMenu().findItem(R.id.menu_item_delete).setVisible(mMode == Mode.Building);
@@ -388,7 +387,7 @@ public class MemberListFragment extends InjectingListFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setTitle(R.string.clear_assignments_dialog_title)
-                .setIcon(R.drawable.ic_menu_delete)
+                .setIcon(R.drawable.ic_action_delete)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         invalidateAssignments(mGroup);
@@ -415,7 +414,7 @@ public class MemberListFragment extends InjectingListFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setTitle(R.string.delete_group_dialog_title)
-                .setIcon(R.drawable.ic_menu_delete)
+                .setIcon(R.drawable.ic_action_delete)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         mFragmentContainer.deleteGroup(mGroup.getId());
@@ -444,7 +443,7 @@ public class MemberListFragment extends InjectingListFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setTitle(R.string.rename_group_dialog_title)
-                .setIcon(R.drawable.ic_menu_edit)
+                .setIcon(R.drawable.ic_action_edit)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Handled in custom listener defined after show()
@@ -545,7 +544,7 @@ public class MemberListFragment extends InjectingListFragment {
                     public void onError(Throwable e) {
                         Log.i(TAG, "onError");
                         mDrawProgressDialog.dismiss();
-                        Toast.makeText(getActivity(), getString(R.string.draw_failed_msg), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getString(R.string.draw_failed_msg), Toast.LENGTH_LONG).show();
                     }
 
                     @Override

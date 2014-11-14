@@ -2,38 +2,43 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/white"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/giver_name_textview"
+        android:id="@+id/textView_giverName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@color/text_neutral_color" />
 
-    <ImageView
-        android:id="@+id/receiver_avatar_imageview"
-        android:layout_width=" 144dp"
-        android:layout_height="144dp"
-        android:layout_gravity="center"
-        android:contentDescription="@string/assignment_avatar_accesshint"
-        android:cropToPadding="true"
-        android:paddingTop="16dp"
-        android:scaleType="centerCrop" />
-
-    <TextView
-        android:id="@+id/receiver_name_textview"
+    <RelativeLayout
         android:layout_width="144dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="16dp"
-        android:background="@android:color/holo_green_light"
-        android:gravity="center"
-        android:textAppearance="?android:attr/textAppearanceListItemSmall"
-        android:textColor="@color/white"
-        android:textSize="20sp" />
+        android:layout_marginTop="8dp"
+        android:layout_height="144dp">
+
+        <ImageView
+            android:id="@+id/imageView_receiverAvatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:contentDescription="@string/assignment_avatar_accesshint"
+            android:cropToPadding="true"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/textView_receiverName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@android:color/holo_green_light"
+            android:gravity="center"
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+    </RelativeLayout>
 
 </LinearLayout>

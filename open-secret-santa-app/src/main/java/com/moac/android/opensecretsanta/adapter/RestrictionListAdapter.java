@@ -7,7 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 import com.squareup.picasso.Picasso;
@@ -23,10 +27,10 @@ public class RestrictionListAdapter extends BaseAdapter {
     private OnClickListener mRestrictClickListener;
     private List<RestrictionRowDetails> mItems = Collections.emptyList();
 
-    public RestrictionListAdapter(Context _context, List<RestrictionRowDetails> _items, OnClickListener _onClickListener) {
-        mContext = _context;
-        mItems = _items;
-        mRestrictClickListener = _onClickListener;
+    public RestrictionListAdapter(Context context, List<RestrictionRowDetails> items, OnClickListener onClickListener) {
+        mContext = context;
+        mItems = items;
+        mRestrictClickListener = onClickListener;
     }
 
     @Override
@@ -45,15 +49,15 @@ public class RestrictionListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int _position, View _convertView, ViewGroup _parent) {
+    public View getView(int position, View convertView, ViewGroup parent) {
 
-        View v = _convertView;
+        View v = convertView;
         ImageView memberImageView;
         TextView memberNameView;
         CheckBox checkBoxView;
 
-        if(v == null) {
-            v = LayoutInflater.from(mContext).inflate(R.layout.list_item_restriction, _parent, false);
+        if (v == null) {
+            v = LayoutInflater.from(mContext).inflate(R.layout.list_item_restriction, parent, false);
 
             memberImageView = (ImageView) v.findViewById(R.id.imageView_avatar);
             memberNameView = (TextView) v.findViewById(R.id.textView_member_name);
@@ -64,22 +68,27 @@ public class RestrictionListAdapter extends BaseAdapter {
             v.setTag(R.id.checkBox_restriction, checkBoxView);
 
         } else {
-            memberImageView = (ImageView)v.getTag(R.id.imageView_avatar);
-            memberNameView = (TextView)v.getTag(R.id.textView_member_name);
-            checkBoxView = (CheckBox)v.getTag(R.id.checkBox_restriction);
+            memberImageView = (ImageView) v.getTag(R.id.imageView_avatar);
+            memberNameView = (TextView) v.getTag(R.id.textView_member_name);
+            checkBoxView = (CheckBox) v.getTag(R.id.checkBox_restriction);
         }
 
-        RestrictionRowDetails item = getItem(_position);
+        RestrictionRowDetails item = getItem(position);
 
         // Assign the view with its content.
-        if(item.getContactId() == PersistableObject.UNSET_ID || item.getLookupKey() == null) {
-            Picasso.with(mContext).load(R.drawable.ic_contact_picture).into(memberImageView);
+        if (item.getContactId() == PersistableObject.UNSET_ID || item.getLookupKey() == null) {
+            Picasso.with(mContext).load(R.drawable.ic_contact_picture)
+                    .transform(new RoundEdgeTransformation())
+                    .into(memberImageView);
         } else {
             Uri lookupUri = ContactsContract.Contacts.getLookupUri(item.getContactId(), item.getLookupKey());
             Uri contactUri = ContactsContract.Contacts.lookupContact(mContext.getContentResolver(), lookupUri);
             Picasso.with(mContext).load(contactUri)
-              .placeholder(R.drawable.ic_contact_picture).error(R.drawable.ic_contact_picture)
-              .into(memberImageView);
+                    .placeholder(R.drawable.ic_contact_picture)
+                    .error(R.drawable.ic_contact_picture)
+                    .transform(new RoundEdgeTransformation())
+
+                    .into(memberImageView);
         }
 
         memberNameView.setText(item.getToMemberName());

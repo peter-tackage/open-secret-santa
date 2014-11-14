@@ -4,13 +4,13 @@
     <item
         android:id="@+id/menu_item_draw"
         android:showAsAction="ifRoom"
-        android:icon="@drawable/ic_action_cc_bcc"
+        android:icon="@drawable/ic_action_assign"
         android:title="@string/menu_assign" />
 
     <item
         android:id="@+id/menu_item_notify_group"
         android:showAsAction="ifRoom"
-        android:icon="@drawable/ic_menu_notify"
+        android:icon="@drawable/ic_action_notify_group"
         android:title="@string/menu_notify_group" />
 
 </menu>

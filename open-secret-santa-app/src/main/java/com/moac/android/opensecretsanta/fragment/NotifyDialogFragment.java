@@ -131,7 +131,7 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
         final AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setTitle(getString(R.string.notify_dialog_title))
-                .setIcon(R.drawable.ic_menu_notify)
+                .setIcon(R.drawable.ic_action_notify)
                 .setCancelable(true)
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(R.string.notify_send_button_text, null)

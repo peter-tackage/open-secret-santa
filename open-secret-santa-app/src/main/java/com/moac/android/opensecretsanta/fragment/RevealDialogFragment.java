@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.moac.android.opensecretsanta.R;
+import com.moac.android.opensecretsanta.adapter.RoundEdgeTransformation;
 import com.squareup.picasso.Picasso;
 
 public class RevealDialogFragment extends DialogFragment {
@@ -48,16 +49,21 @@ public class RevealDialogFragment extends DialogFragment {
         String avatarUrl = getArguments().getString(AVATAR_URL_EXTRA);
 
         // Set the values
-        TextView giver = (TextView) view.findViewById(R.id.giver_name_textview);
+        TextView giver = (TextView) view.findViewById(R.id.textView_giverName);
         giver.setText(getString(R.string.gift_giving_msg_unformatted, giverName));
-        TextView receiver = (TextView) view.findViewById(R.id.receiver_name_textview);
+        TextView receiver = (TextView) view.findViewById(R.id.textView_receiverName);
         receiver.setText(receiverName);
 
-        ImageView avatarView = (ImageView) view.findViewById(R.id.receiver_avatar_imageview);
+        ImageView avatarView = (ImageView) view.findViewById(R.id.imageView_receiverAvatar);
         if(avatarUrl != null) {
-            Picasso.with(getActivity()).load(avatarUrl).error(R.drawable.ic_contact_picture).into(avatarView);
+            Picasso.with(getActivity()).load(avatarUrl)
+                    .error(R.drawable.ic_contact_picture)
+                    .transform(new RoundEdgeTransformation())
+                    .into(avatarView);
         } else {
-            Picasso.with(getActivity()).load(R.drawable.ic_contact_picture).into(avatarView);
+            Picasso.with(getActivity()).load(R.drawable.ic_contact_picture)
+                    .transform(new RoundEdgeTransformation())
+                    .into(avatarView);
         }
 
         builder.setView(view);

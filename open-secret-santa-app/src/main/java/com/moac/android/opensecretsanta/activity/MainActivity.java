@@ -93,7 +93,6 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
 
         // Add Groups list header - *before adapter is set*
         View headerView = getLayoutInflater().inflate(R.layout.drawer_section_header_view, mDrawerList, false);
-        TextView headerLabel = (TextView) headerView.findViewById(R.id.textView_groupListLabel);
         mDrawerList.addHeaderView(headerView);
 
         mDrawerListAdapter = new DrawerListAdapter(this);
@@ -105,7 +104,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
                 mDrawerLayout,         /* DrawerLayout object */
-                R.drawable.ic_menu_white_24dp,  /* nav drawer icon to replace 'Up' caret */
+                R.drawable.ic_menu_drawer,  /* nav drawer icon to replace 'Up' caret */
                 R.string.drawer_open_accesshint,  /* "open drawer" description */
                 R.string.drawer_close_accesshint) /* "close drawer" description */ {
 
@@ -127,6 +126,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         if (getActionBar() != null) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
             getActionBar().setHomeButtonEnabled(true);
+            getActionBar().setDisplayUseLogoEnabled(false);
         }
 
         //  Fetch the most recently used Group Id from preferences
