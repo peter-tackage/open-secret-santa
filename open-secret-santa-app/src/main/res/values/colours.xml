@@ -15,12 +15,7 @@
     <color name="primary_color">#3f51b5</color>
     <color name="secondary_color">#C5CAE9</color>
     <color name="tertiary_color">#9fa8da</color>
-    <color name="accent_color">#ef5350</color>
-    <color name="accent_color_orange">#ff5722</color>
-    <color name="accent_color_other_orange">#ff6d00</color>
-    <color name="accent_color_other_green">#00c853</color>
-    <color name="accent_color_pink">#ff4081</color>
-    <color name="accent_color_deeppink">#c51162</color>
+    <color name="accent_color">#ff4081</color>
     <color name="bg">#eeeeee</color>
     <color name="text_neutral_color">#5e5e5e</color>
 
