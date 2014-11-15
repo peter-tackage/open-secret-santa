@@ -34,7 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:background="@android:color/holo_green_light"
+            android:background="@color/revealed"
             android:gravity="center"
             android:textAppearance="?android:attr/textAppearanceListItemSmall"
             android:textColor="@color/white"

@@ -127,14 +127,14 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
         switch (assignment.getSendStatus()) {
             case Sent:
             case Revealed:
-                view.setBackgroundResource(android.R.color.holo_green_light);
+                view.setBackgroundResource(R.color.revealed);
                 break;
             case Failed:
-                view.setBackgroundResource(android.R.color.holo_red_light);
+                view.setBackgroundResource(R.color.failed);
                 break;
             case Assigned:
             default:
-                view.setBackgroundResource(android.R.color.holo_orange_light);
+                view.setBackgroundResource(R.color.assigned);
         }
     }
 }
