@@ -709,8 +709,9 @@ public class MemberListFragment extends InjectingListFragment {
         // Find all the checked member ids that are sendable
         ArrayList<Long> sendableMemberIdsList = new ArrayList<>();
         for (int i = 0; i < checkedMemberPositions.size(); i++) {
-            if (checkedMemberPositions.get(i)) {
-                MemberRowDetails checkedMemberDetails = mAdapter.getItem(i);
+            int key = checkedMemberPositions.keyAt(i);
+            if (checkedMemberPositions.get(key)) {
+                MemberRowDetails checkedMemberDetails = mAdapter.getItem(key);
                 if (checkedMemberDetails.getMember().getContactMethod().isSendable()) {
                     sendableMemberIdsList.add(checkedMemberDetails.getMember().getId());
                 }
