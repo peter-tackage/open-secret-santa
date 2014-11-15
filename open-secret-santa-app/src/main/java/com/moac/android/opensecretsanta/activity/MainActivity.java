@@ -18,8 +18,8 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.google.common.primitives.Longs;
 import com.moac.android.inject.dagger.InjectingActivity;
@@ -39,7 +39,6 @@ import com.moac.android.opensecretsanta.model.PersistableObject;
 import com.moac.android.opensecretsanta.notify.NotifyAuthorization;
 import com.moac.android.opensecretsanta.util.GroupUtils;
 import com.moac.android.opensecretsanta.util.NotifyUtils;
-import com.moac.android.opensecretsanta.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +53,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
     private static final String MEMBERS_LIST_FRAGMENT_TAG = "MemberListFragment";
     private static final String NOTIFY_DIALOG_FRAGMENT_TAG = "NotifyDialogFragment";
     private static final String NOTIFY_EXECUTOR_FRAGMENT_TAG = "NotifyExecutorFragment";
-    private static final String SMS_WARNING_DIALOG_TASK = "sms_warning_task";
+    private static final String SHOW_SMS_WARNING_DIALOG_SETTING_KEY = "showSmsWarningDialog";
 
     @Inject
     DatabaseManager mDb;
@@ -212,8 +211,11 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         Log.i(TAG, "onNotifyDraw() - Requesting Notify member set size:" + memberIds.length);
 
         if (NotifyUtils.requiresSmsPermission(this, mDb, memberIds)) {
-            // If using SMS - display one-time warning about the SMS permissions
-            if (!Utils.doOnce(mSharedPreferences, SMS_WARNING_DIALOG_TASK, new ShowSmsWarningDialog(group, memberIds))) {
+            // If using SMS - display warning about the SMS permissions
+            boolean showSmsWarningDialog = mSharedPreferences.getBoolean(SHOW_SMS_WARNING_DIALOG_SETTING_KEY, true);
+            if (showSmsWarningDialog) {
+                showSmsWarningDialog(group, memberIds);
+            } else {
                 // Have already shown the message before, so just open the notify dialog
                 openNotifyDialog(group, memberIds);
             }
@@ -358,13 +360,13 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         }
     }
 
-    private void showGroup(long _groupId, boolean forceUpdate) {
-        Log.i(TAG, "showGroup() - start. groupId: " + _groupId);
+    private void showGroup(long groupId, boolean forceUpdate) {
+        Log.i(TAG, "showGroup() - start. groupId: " + groupId);
 
         //  If the correct fragment already exists
-        if (_groupId == mCurrentGroupId && !forceUpdate) return;
+        if (groupId == mCurrentGroupId && !forceUpdate) return;
 
-        mCurrentGroupId = _groupId;
+        mCurrentGroupId = groupId;
 
         FragmentManager fragmentManager = getFragmentManager();
         MemberListFragment existing = (MemberListFragment) fragmentManager.findFragmentByTag(MEMBERS_LIST_FRAGMENT_TAG);
@@ -378,38 +380,29 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         }
 
         Log.i(TAG, "showGroup() - creating new fragment");
-        MemberListFragment newFragment = MemberListFragment.create(_groupId);
+        MemberListFragment newFragment = MemberListFragment.create(groupId);
         transaction.add(R.id.container_content, newFragment, MEMBERS_LIST_FRAGMENT_TAG)
                 .commit();
 
         // Update preferences to save last viewed Group
         mSharedPreferences.
-                edit().putLong(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY, _groupId).apply();
+                edit().putLong(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY, groupId).apply();
     }
 
-    // Opens the warning dialog
-    private class ShowSmsWarningDialog implements Runnable {
+    // Opens the default SMS app warning dialog
+    private void showSmsWarningDialog(final Group group, final long[] memberIds) {
+        View dialogContentView = getLayoutInflater().inflate(R.layout.layout_dialog_sms_warning, null);
+        final CheckBox dontShowAgainCheckBox = (CheckBox) dialogContentView.findViewById(R.id.checkBox_dontShowAgain);
 
-        private final Group mNotifyGroup;
-        private final long[] mNotifyMemberIds;
-
-        private ShowSmsWarningDialog(Group group, long[] memberIds) {
-            mNotifyGroup = group;
-            mNotifyMemberIds = memberIds;
-        }
-
-        @Override
-        public void run() {
-            new AlertDialog.Builder(MainActivity.this)
-                    .setTitle(getString(R.string.sms_permissions_warning_title))
-                    .setMessage(getString(R.string.sms_permissions_warning_msg))
-                    .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            openNotifyDialog(mNotifyGroup, mNotifyMemberIds);
-                        }
-                    }).show();
-
-        }
+        new AlertDialog.Builder(MainActivity.this)
+                .setTitle(getString(R.string.sms_permissions_warning_title))
+                .setView(dialogContentView)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mSharedPreferences.edit().putBoolean(SHOW_SMS_WARNING_DIALOG_SETTING_KEY, !dontShowAgainCheckBox.isChecked()).apply();
+                        openNotifyDialog(group, memberIds);
+                    }
+                }).setNegativeButton(android.R.string.cancel, null).show();
     }
 }

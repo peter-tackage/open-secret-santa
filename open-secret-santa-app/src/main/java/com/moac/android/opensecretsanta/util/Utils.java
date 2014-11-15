@@ -13,11 +13,11 @@ public class Utils {
     // No instances
     private Utils() {}
 
-    public static boolean doOnce(SharedPreferences prefs, String _taskTag, Runnable _task) {
-        final String prefTag = DO_ONCE_TAG + _taskTag;
+    public static boolean doOnce(SharedPreferences prefs, String taskTag, Runnable task) {
+        final String prefTag = DO_ONCE_TAG + taskTag;
         boolean isDone = prefs.getBoolean(prefTag, false);
         if(!isDone) {
-            _task.run();
+            task.run();
             prefs.edit().putBoolean(prefTag, true).apply();
             return true;
         }
