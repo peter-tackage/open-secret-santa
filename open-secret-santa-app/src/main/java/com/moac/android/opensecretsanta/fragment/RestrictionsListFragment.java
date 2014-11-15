@@ -149,6 +149,7 @@ public class RestrictionsListFragment extends InjectingListFragment implements S
                 }
             }
         }
-        return isDirty;
+        // Save is always valid
+        return true;
     }
 }

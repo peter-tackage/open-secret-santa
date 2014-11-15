@@ -12,14 +12,16 @@ import com.moac.android.opensecretsanta.model.PersistableObject;
  */
 public class EditActivity extends BaseEditorActivity {
 
+    private static final String FRAGMENT_TAG = MemberEditFragment.class.getName();
+
     protected void createEditorFragment(Bundle savedInstance) {
         if (savedInstance == null) {
             final long memberId = getIntent().getLongExtra(Intents.MEMBER_ID_INTENT_EXTRA, PersistableObject.UNSET_ID);
             MemberEditFragment fragment = MemberEditFragment.create(memberId);
-            getFragmentManager().beginTransaction().add(R.id.container_content, fragment, MemberEditFragment.class.getName()).commit();
+            getFragmentManager().beginTransaction().add(R.id.container_content, fragment, FRAGMENT_TAG).commit();
             mSaveableFragment = fragment;
         } else {
-            mSaveableFragment = (Saveable) getFragmentManager().findFragmentByTag(MemberEditFragment.class.getName());
+            mSaveableFragment = (Saveable) getFragmentManager().findFragmentByTag(FRAGMENT_TAG);
         }
     }
 
