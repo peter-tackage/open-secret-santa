@@ -76,12 +76,13 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
     private String mSavedMsg;
     private TextView mCharCountView;
 
-    public static NotifyDialogFragment create(long groupId, long[] memberIds) {
+    public static NotifyDialogFragment create(long groupId, long[] memberIds, String title) {
         Log.i(TAG, "NotifyDialogFragment() - factory creating for groupId: " + groupId + " memberIds: " + Arrays.toString(memberIds));
         NotifyDialogFragment fragment = new NotifyDialogFragment();
         Bundle args = new Bundle();
         args.putLong(Intents.GROUP_ID_INTENT_EXTRA, groupId);
         args.putLongArray(Intents.MEMBER_ID_ARRAY_INTENT_EXTRA, memberIds);
+        args.putString(Intents.TITLE_INTENT_EXTRA, title);
         fragment.setArguments(args);
         return fragment;
     }
@@ -90,6 +91,7 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Log.i(TAG, "onCreateDialog() - start: " + this);
         mMemberIds = getArguments().getLongArray(Intents.MEMBER_ID_ARRAY_INTENT_EXTRA);
+        String title = getArguments().getString(Intents.TITLE_INTENT_EXTRA);
         mMaxMsgLength = getResources().getInteger(R.integer.max_notify_msg_length);
 
         // Inflate layout
@@ -130,7 +132,7 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
 
         final AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                 .setView(view)
-                .setTitle(getString(R.string.notify_dialog_title))
+                .setTitle(title)
                 .setIcon(R.drawable.ic_action_notify)
                 .setCancelable(true)
                 .setNegativeButton(android.R.string.cancel, null)

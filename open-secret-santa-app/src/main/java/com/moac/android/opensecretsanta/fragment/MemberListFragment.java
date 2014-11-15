@@ -294,7 +294,7 @@ public class MemberListFragment extends InjectingListFragment {
                         mode.finish();
                         return true;
                     case R.id.menu_item_notify_selection:
-                        doNotify(getListView().getCheckedItemIds());
+                        doNotify(getListView().getCheckedItemPositions());
                         mode.finish();
                         return true;
                     case R.id.menu_item_reveal:
@@ -506,9 +506,13 @@ public class MemberListFragment extends InjectingListFragment {
         onModeChanged();
     }
 
-    private void doNotify(long[] _memberIds) {
-        if (_memberIds != null && _memberIds.length != 0) {
-            requestNotifyDraw(mGroup, _memberIds);
+    private void doNotify(SparseBooleanArray checkedMemberPositions) {
+        if (checkedMemberPositions == null || checkedMemberPositions.size() == 0) return;
+
+        long[] sendableMemberIds = checkedMemberPositionToSendableIds(checkedMemberPositions);
+        if (sendableMemberIds.length != 0) {
+            // Remove non-sendable members
+            requestNotifyDraw(mGroup, sendableMemberIds);
         }
     }
 
@@ -677,7 +681,7 @@ public class MemberListFragment extends InjectingListFragment {
     }
 
     // Gah...
-    private boolean hasSendableItemChecked(ListView list) {
+    private static boolean hasSendableItemChecked(ListView list) {
         SparseBooleanArray checkedPositions = list.getCheckedItemPositions();
         for (int i = 0; i < checkedPositions.size(); i++) {
             int position = checkedPositions.keyAt(i);
@@ -690,7 +694,7 @@ public class MemberListFragment extends InjectingListFragment {
         return false;
     }
 
-    private boolean hasSendableItem(MemberListAdapter adapter) {
+    private static boolean hasSendableItem(MemberListAdapter adapter) {
         for (int i = 0; i < adapter.getCount(); i++) {
             MemberRowDetails rowDetails = adapter.getItem(i);
             if (rowDetails.getMember().getContactMethod().isSendable()) {
@@ -698,6 +702,27 @@ public class MemberListFragment extends InjectingListFragment {
             }
         }
         return false;
+    }
+
+    // FIXME This is terrible code
+    private long[] checkedMemberPositionToSendableIds(SparseBooleanArray checkedMemberPositions) {
+        // Find all the checked member ids that are sendable
+        ArrayList<Long> sendableMemberIdsList = new ArrayList<>();
+        for (int i = 0; i < checkedMemberPositions.size(); i++) {
+            if (checkedMemberPositions.get(i)) {
+                MemberRowDetails checkedMemberDetails = mAdapter.getItem(i);
+                if (checkedMemberDetails.getMember().getContactMethod().isSendable()) {
+                    sendableMemberIdsList.add(checkedMemberDetails.getMember().getId());
+                }
+            }
+        }
+
+        // Convert that list of Longs to long
+        long[] sendableMemberIds = new long[sendableMemberIdsList.size()];
+        for (int i = 0; i < sendableMemberIds.length; i++) {
+            sendableMemberIds[i] = sendableMemberIdsList.get(i);
+        }
+        return sendableMemberIds;
     }
 
     /*
@@ -713,7 +738,7 @@ public class MemberListFragment extends InjectingListFragment {
     }
 
     void requestNotifyDraw(Group group, long[] memberIds) {
-        mFragmentContainer.requestNotifyDraw(group, memberIds);
+        mFragmentContainer.requestNotifySelectionDraw(group, memberIds);
     }
 
     public interface FragmentContainer {
@@ -721,7 +746,7 @@ public class MemberListFragment extends InjectingListFragment {
 
         void requestNotifyDraw(Group group);
 
-        void requestNotifyDraw(Group group, long[] memberIds);
+        void requestNotifySelectionDraw(Group group, long[] memberIds);
 
         void deleteGroup(long groupId);
 

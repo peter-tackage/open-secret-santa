@@ -207,27 +207,35 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
     }
 
     @Override
-    public void requestNotifyDraw(Group group, long[] memberIds) {
+    public void requestNotifySelectionDraw(Group group, long[] memberIds) {
+        requestNotifyDraw(group, memberIds, false);
+    }
+
+    private void requestNotifyDraw(Group group, long[] memberIds, boolean isAllMembers) {
         Log.i(TAG, "onNotifyDraw() - Requesting Notify member set size:" + memberIds.length);
+
+        // Use the plural strings
+        String notifyDialogTitle = isAllMembers ? getString(R.string.notify_dialog_title)
+                : getString(R.string.notify_selection_dialog_title_unformatted, memberIds.length,
+                getResources().getQuantityString(R.plurals.memberQuantity, memberIds.length));
 
         if (NotifyUtils.requiresSmsPermission(this, mDb, memberIds)) {
             // If using SMS - display warning about the SMS permissions
             boolean showSmsWarningDialog = mSharedPreferences.getBoolean(SHOW_SMS_WARNING_DIALOG_SETTING_KEY, true);
             if (showSmsWarningDialog) {
-                showSmsWarningDialog(group, memberIds);
+                showSmsWarningDialog(group, memberIds, notifyDialogTitle);
             } else {
                 // Have already shown the message before, so just open the notify dialog
-                openNotifyDialog(group, memberIds);
+                openNotifyDialog(group, memberIds, notifyDialogTitle);
             }
         } else {
             // No need to show the warning dialog
-            openNotifyDialog(group, memberIds);
+            openNotifyDialog(group, memberIds, notifyDialogTitle);
         }
-
     }
 
-    protected void openNotifyDialog(Group group, long[] memberIds) {
-        DialogFragment dialog = NotifyDialogFragment.create(group.getId(), memberIds);
+    protected void openNotifyDialog(Group group, long[] memberIds, String title) {
+        DialogFragment dialog = NotifyDialogFragment.create(group.getId(), memberIds, title);
         dialog.show(getFragmentManager(), NOTIFY_DIALOG_FRAGMENT_TAG);
     }
 
@@ -240,7 +248,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         for (Member member : members) {
             memberIds.add(member.getId());
         }
-        requestNotifyDraw(group, Longs.toArray(memberIds));
+        requestNotifyDraw(group, Longs.toArray(memberIds), true);
     }
 
     @Override
@@ -390,7 +398,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
     }
 
     // Opens the default SMS app warning dialog
-    private void showSmsWarningDialog(final Group group, final long[] memberIds) {
+    private void showSmsWarningDialog(final Group group, final long[] memberIds, final String notifyTitle) {
         View dialogContentView = getLayoutInflater().inflate(R.layout.layout_dialog_sms_warning, null);
         final CheckBox dontShowAgainCheckBox = (CheckBox) dialogContentView.findViewById(R.id.checkBox_dontShowAgain);
 
@@ -401,7 +409,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         mSharedPreferences.edit().putBoolean(SHOW_SMS_WARNING_DIALOG_SETTING_KEY, !dontShowAgainCheckBox.isChecked()).apply();
-                        openNotifyDialog(group, memberIds);
+                        openNotifyDialog(group, memberIds, notifyTitle);
                     }
                 }).setNegativeButton(android.R.string.cancel, null).show();
     }
