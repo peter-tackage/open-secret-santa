@@ -116,7 +116,7 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
                 // Update the reported character length
                 mCharCountView.setText(String.valueOf(mMaxMsgLength - s.length()));
                 if (mMsgField.length() == mMaxMsgLength) {
-                    mCharCountView.setTextColor(Color.RED);
+                    mCharCountView.setTextColor(getResources().getColor(R.color.accent_color));
                 } else {
                     mCharCountView.setTextColor(getResources().getColor(R.color.text_neutral_color));
                 }
