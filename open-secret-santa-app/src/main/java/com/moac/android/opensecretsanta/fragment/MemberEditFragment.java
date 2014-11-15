@@ -125,9 +125,6 @@ public class MemberEditFragment extends InjectingFragment implements Saveable {
         mMember.setContactDetails(contactDetails);
         mDb.update(mMember);
 
-        // Notify user that Member has been updated
-        Toast.makeText(getActivity(), getString(R.string.member_updated_text), Toast.LENGTH_SHORT).show();
-
         return true;
     }
 
