@@ -44,7 +44,7 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
 
         Log.v(TAG, "getView() - creating for position: " + position);
 
-        View v = convertView;
+        View view = convertView;
 
         ImageView avatarView;
         TextView memberNameView;
@@ -57,27 +57,27 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
         // More up-to-date info here - http://www.piwai.info/android-adapter-good-practices/ (specifically using Tag)
         // Good info on LayoutInflater here - http://stackoverflow.com/questions/5026926/making-sense-of-layoutinflater
 
-        if (v == null) {
-            v = LayoutInflater.from(getContext()).inflate(mResource, parent, false);
+        if (view == null) {
+            view = LayoutInflater.from(getContext()).inflate(mResource, parent, false);
 
-            avatarView = (ImageView) v.findViewById(R.id.imageView_avatar);
-            memberNameView = (TextView) v.findViewById(R.id.textView_member_name);
-            contactAddressView = (TextView) v.findViewById(R.id.textView_contact_address);
-            restrictionsView = (TextView) v.findViewById(R.id.textView_restriction_count);
-            sendStatusTextView = (TextView) v.findViewById(R.id.textView_sent_status);
+            avatarView = (ImageView) view.findViewById(R.id.imageView_avatar);
+            memberNameView = (TextView) view.findViewById(R.id.textView_member_name);
+            contactAddressView = (TextView) view.findViewById(R.id.textView_contact_address);
+            restrictionsView = (TextView) view.findViewById(R.id.textView_restriction_count);
+            sendStatusTextView = (TextView) view.findViewById(R.id.textView_sent_status);
 
-            v.setTag(R.id.imageView_avatar, avatarView);
-            v.setTag(R.id.textView_member_name, memberNameView);
-            v.setTag(R.id.textView_contact_address, contactAddressView);
-            v.setTag(R.id.textView_restriction_count, restrictionsView);
-            v.setTag(R.id.textView_sent_status, sendStatusTextView);
+            view.setTag(R.id.imageView_avatar, avatarView);
+            view.setTag(R.id.textView_member_name, memberNameView);
+            view.setTag(R.id.textView_contact_address, contactAddressView);
+            view.setTag(R.id.textView_restriction_count, restrictionsView);
+            view.setTag(R.id.textView_sent_status, sendStatusTextView);
         } else {
             // Recycled View is available, retrieve the holder instance from the View
-            avatarView = (ImageView) v.getTag(R.id.imageView_avatar);
-            memberNameView = (TextView) v.getTag(R.id.textView_member_name);
-            contactAddressView = (TextView) v.getTag(R.id.textView_contact_address);
-            restrictionsView = (TextView) v.getTag(R.id.textView_restriction_count);
-            sendStatusTextView = (TextView) v.getTag(R.id.textView_sent_status);
+            avatarView = (ImageView) view.getTag(R.id.imageView_avatar);
+            memberNameView = (TextView) view.getTag(R.id.textView_member_name);
+            contactAddressView = (TextView) view.getTag(R.id.textView_contact_address);
+            restrictionsView = (TextView) view.getTag(R.id.textView_restriction_count);
+            sendStatusTextView = (TextView) view.getTag(R.id.textView_sent_status);
         }
 
         MemberRowDetails row = getItem(position);
@@ -100,6 +100,7 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
 
         memberNameView.setText(member.getName());
         contactAddressView.setText(member.getContactDetails());
+        contactAddressView.setVisibility(member.getContactMethod().isSendable() ? View.VISIBLE : View.GONE);
 
         final long restrictionCount = member.getRestrictionCount();
         if (restrictionCount > 0) {
@@ -116,7 +117,7 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
             setStatusColor(sendStatusTextView, assignment);
         }
 
-        return v;
+        return view;
     }
 
     private void setSendStatusText(TextView sendStatusTextView, Assignment assignment) {

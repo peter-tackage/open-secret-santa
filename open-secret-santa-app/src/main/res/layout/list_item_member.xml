@@ -6,7 +6,7 @@
     android:background="@drawable/selector_member_list_item"
     android:divider="@null"
     android:dividerHeight="2dp"
-    android:padding="8dp">
+    android:padding="4dp">
 
     <!-- android:background sets visual indicator of list item selection -->
 
@@ -36,45 +36,45 @@
         android:textSize="10sp"
         tools:text="State" />
 
-    <TextView
-        android:id="@+id/textView_member_name"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/imageView_avatar"
-        android:layout_toRightOf="@+id/imageView_avatar"
-        android:layout_toLeftOf="@+id/textView_restriction_count"
-        android:singleLine="true"
-        android:textAppearance="@android:style/TextAppearance.Large"
-        android:textColor="@color/primary_color"
-        tools:text="Miss User" />
-
-    <TextView
-        android:id="@+id/textView_contact_address"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/imageView_avatar"
-        android:layout_centerHorizontal="true"
+        android:layout_height="match_parent"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/textView_restriction_count"
         android:layout_toRightOf="@+id/imageView_avatar"
-        android:singleLine="true"
-        android:textAppearance="@android:style/TextAppearance.Small"
-        android:textColor="@color/tertiary_color"
-        android:textSize="14sp"
-        tools:text="test@example.com" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView_member_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textAppearance="@android:style/TextAppearance.Holo.Medium"
+            android:textColor="@color/primary_color"
+            tools:text="Miss User" />
+
+        <TextView
+            android:id="@+id/textView_contact_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:textColor="@color/tertiary_color"
+            tools:text="test@example.com" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/textView_restriction_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/textView_member_name"
+        android:layout_alignParentTop="true"
         android:layout_marginLeft="2dp"
-        android:layout_marginRight="2dp"
         android:background="@drawable/shape_restriction_count_background"
         android:enabled="false"
         android:gravity="right"
-        android:minWidth="48dp"
+        android:layout_margin="4dp"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
