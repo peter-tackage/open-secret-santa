@@ -10,15 +10,15 @@
 
     <!-- android:background sets visual indicator of list item selection -->
 
-    <ImageView
+    <com.makeramen.RoundedImageView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/imageView_avatar"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="center"
         android:layout_margin="4dp"
-        android:contentDescription="@string/member_avatar_accesshint"
         android:cropToPadding="true"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        app:riv_corner_radius="24dp" />
 
     <TextView
         android:id="@+id/textView_sent_status"
@@ -70,11 +70,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:layout_margin="4dp"
         android:layout_marginLeft="2dp"
         android:background="@drawable/shape_restriction_count_background"
         android:enabled="false"
         android:gravity="right"
-        android:layout_margin="4dp"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"

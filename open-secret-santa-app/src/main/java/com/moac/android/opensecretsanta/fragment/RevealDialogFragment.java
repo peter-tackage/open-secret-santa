@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.moac.android.opensecretsanta.R;
-import com.moac.android.opensecretsanta.adapter.RoundEdgeTransformation;
 import com.squareup.picasso.Picasso;
 
 public class RevealDialogFragment extends DialogFragment {
@@ -55,14 +54,12 @@ public class RevealDialogFragment extends DialogFragment {
         receiver.setText(receiverName);
 
         ImageView avatarView = (ImageView) view.findViewById(R.id.imageView_receiverAvatar);
-        if(avatarUrl != null) {
+        if (avatarUrl != null) {
             Picasso.with(getActivity()).load(avatarUrl)
                     .error(R.drawable.ic_contact_picture)
-                    .transform(new RoundEdgeTransformation())
                     .into(avatarView);
         } else {
             Picasso.with(getActivity()).load(R.drawable.ic_contact_picture)
-                    .transform(new RoundEdgeTransformation())
                     .into(avatarView);
         }
 

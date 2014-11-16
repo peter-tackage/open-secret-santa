@@ -86,15 +86,16 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
 
         // Assign the view with its content.
         if (member.getContactId() == PersistableObject.UNSET_ID || member.getLookupKey() == null) {
-            Picasso.with(getContext()).load(R.drawable.ic_contact_picture)
-                    .transform(new RoundEdgeTransformation())
+            Picasso.with(getContext())
+                    .load(R.drawable.ic_contact_picture)
                     .into(avatarView);
         } else {
             Uri lookupUri = ContactsContract.Contacts.getLookupUri(member.getContactId(), member.getLookupKey());
             Uri contactUri = ContactsContract.Contacts.lookupContact(getContext().getContentResolver(), lookupUri);
-            Picasso.with(getContext()).load(contactUri)
-                    .placeholder(R.drawable.ic_contact_picture).error(R.drawable.ic_contact_picture)
-                    .transform(new RoundEdgeTransformation())
+            Picasso.with(getContext())
+                    .load(contactUri)
+                    .placeholder(R.drawable.ic_contact_picture)
+                    .error(R.drawable.ic_contact_picture)
                     .into(avatarView);
         }
 

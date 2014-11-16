@@ -15,30 +15,28 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@color/text_neutral_color" />
 
-    <RelativeLayout
+    <com.makeramen.RoundedImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/imageView_receiverAvatar"
         android:layout_width="144dp"
+        android:layout_height="144dp"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="8dp"
-        android:layout_height="144dp">
+        android:cropToPadding="true"
+        android:scaleType="centerCrop"
+        app:riv_corner_radius="72dp" />
 
-        <ImageView
-            android:id="@+id/imageView_receiverAvatar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:contentDescription="@string/assignment_avatar_accesshint"
-            android:cropToPadding="true"
-            android:scaleType="centerCrop" />
-
-        <TextView
-            android:id="@+id/textView_receiverName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:background="@color/revealed"
-            android:gravity="center"
-            android:textAppearance="?android:attr/textAppearanceListItemSmall"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
-    </RelativeLayout>
-
+    <TextView
+        android:id="@+id/textView_receiverName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="4dp"
+        android:background="@color/revealed"
+        android:gravity="center"
+        android:singleLine="true"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
 </LinearLayout>

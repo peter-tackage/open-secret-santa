@@ -9,11 +9,11 @@ import android.provider.ContactsContract.Contacts;
 public class Queries {
 
     public static final Query PHONE = new Query(new String[]{
-      Contacts.DISPLAY_NAME_PRIMARY,       // 0
-      Phone.NUMBER,                // 1
-      Phone.CONTACT_ID,            // 2
-      Contacts.PHOTO_THUMBNAIL_URI,// 4
-      Phone.LOOKUP_KEY             // 5
+            Contacts.DISPLAY_NAME_PRIMARY,       // 0
+            Phone.NUMBER,                // 1
+            Phone.CONTACT_ID,            // 2
+            Contacts.PHOTO_THUMBNAIL_URI,// 4
+            Phone.LOOKUP_KEY             // 5
     }, Phone.CONTENT_FILTER_URI, Phone.CONTENT_URI) {
 
         @Override
@@ -22,11 +22,11 @@ public class Queries {
         }
 
         private final String SELECTION =
-          Phone.TYPE + "=" + Phone.TYPE_MOBILE
-            + " or " + Phone.TYPE + "=" + Phone.TYPE_MAIN
-            + " or " + Phone.TYPE + "=" + Phone.TYPE_HOME
-            + " or " + Phone.TYPE + "=" + Phone.TYPE_WORK_MOBILE
-            + " or " + Phone.TYPE + "=" + Phone.TYPE_WORK;
+                Phone.TYPE + "=" + Phone.TYPE_MOBILE
+                        + " or " + Phone.TYPE + "=" + Phone.TYPE_MAIN
+                        + " or " + Phone.TYPE + "=" + Phone.TYPE_HOME
+                        + " or " + Phone.TYPE + "=" + Phone.TYPE_WORK_MOBILE
+                        + " or " + Phone.TYPE + "=" + Phone.TYPE_WORK;
 
         public String getSelection() {
             return SELECTION;
@@ -34,11 +34,11 @@ public class Queries {
     };
 
     public static final Query EMAIL = new Query(new String[]{
-      Contacts.DISPLAY_NAME_PRIMARY,       // 0
-      Email.DATA,                  // 1
-      Email.CONTACT_ID,            // 2
-      Contacts.PHOTO_THUMBNAIL_URI,// 4
-      Email.LOOKUP_KEY             // 5
+            Contacts.DISPLAY_NAME_PRIMARY,       // 0
+            Email.DATA,                  // 1
+            Email.CONTACT_ID,            // 2
+            Contacts.PHOTO_THUMBNAIL_URI,// 4
+            Email.LOOKUP_KEY             // 5
     }, Email.CONTENT_FILTER_URI, Email.CONTENT_URI) {
 
         @Override

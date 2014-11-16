@@ -10,10 +10,10 @@
         android:id="@+id/textView_groupName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@color/accent_color"
         android:gravity="center_horizontal"
         android:padding="4dp"
-        android:textColor="@color/primary_color"
+        android:textColor="@color/white"
         android:textStyle="bold"
         tools:text="Some Group Name" />
 
