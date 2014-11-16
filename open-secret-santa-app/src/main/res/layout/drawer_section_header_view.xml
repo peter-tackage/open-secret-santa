@@ -3,7 +3,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/accent_color"
     android:orientation="vertical">
 
     <TextView
@@ -18,7 +18,7 @@
         android:paddingTop="4dp"
         android:paddingBottom="4dp"
         android:text="@string/drawer_groups_header"
-        android:textColor="@color/primary_color"
+        android:textColor="@color/white"
         android:textStyle="bold" />
 
 </FrameLayout>

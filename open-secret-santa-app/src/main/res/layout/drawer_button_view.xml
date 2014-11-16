@@ -15,7 +15,7 @@
         android:drawablePadding="4dp"
         android:gravity="center_vertical"
         android:textAppearance="@android:style/TextAppearance.Medium"
-        android:textColor="@color/primary_color"
+        android:textColor="@color/text_neutral_color"
         android:textStyle="bold"
         tools:text="@string/drawer_groups_new" />
 </FrameLayout>
