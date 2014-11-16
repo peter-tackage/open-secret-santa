@@ -18,7 +18,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 
@@ -157,7 +156,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         }
 
         mDefaultSmsWarningView = findViewById(R.id.view_default_sms_warning);
-        Button fixItButton = (Button) mDefaultSmsWarningView.findViewById(R.id.button_fixIt);
+        View fixItButton = mDefaultSmsWarningView.findViewById(R.id.button_fixIt);
         fixItButton.setOnClickListener(new FixDefaultSmsListener(this, mSmsPermissionManager));
     }
 

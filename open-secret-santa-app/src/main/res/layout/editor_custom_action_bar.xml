@@ -24,7 +24,7 @@
             android:background="@color/primary_color"
             android:clickable="true"
             android:focusable="true"
-            android:foreground="?actionBarButtonForeground"
+            android:foreground="?attr/buttonForeground"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -47,7 +47,7 @@
             android:background="@color/primary_color"
             android:clickable="true"
             android:focusable="true"
-            android:foreground="?actionBarButtonForeground"
+            android:foreground="?attr/buttonForeground"
             android:gravity="center"
             android:orientation="horizontal">
 

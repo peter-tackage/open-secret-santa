@@ -2,27 +2,37 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
     android:background="@color/failed"
     android:gravity="center_vertical"
+    android:orientation="horizontal"
     android:padding="16dp">
 
     <TextView
         style="?android:attr/textAppearanceMedium"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/sms_default_app_warning"
-        android:textColor="@color/white"
+        android:layout_marginRight="4dp"
         android:layout_weight="1"
-        android:layout_marginRight="4dp"/>
+        android:text="@string/sms_default_app_warning"
+        android:textColor="@color/white" />
 
-    <Button
+    <FrameLayout
         android:id="@+id/button_fixIt"
-        android:background="@color/white"
-        android:textAllCaps="true"
-        android:textColor="@color/failed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/fix_it" />
+        android:background="@color/white"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/buttonForeground">
+
+        <TextView
+            android:padding="8dp"
+            android:textAppearance="@android:style/TextAppearance.Holo.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/fix_it"
+            android:textAllCaps="true"
+            android:textColor="@color/failed" />
+    </FrameLayout>
 
 </LinearLayout>
