@@ -21,7 +21,7 @@ public class RestrictionsActivity extends BaseEditorActivity {
             final long groupId = getIntent().getLongExtra(Intents.GROUP_ID_INTENT_EXTRA, PersistableObject.UNSET_ID);
             final long memberId = getIntent().getLongExtra(Intents.MEMBER_ID_INTENT_EXTRA, PersistableObject.UNSET_ID);
             RestrictionsListFragment fragment = RestrictionsListFragment.create(groupId, memberId);
-            getFragmentManager().beginTransaction().add(R.id.container_content, fragment, FRAGMENT_TAG).commit();
+            getFragmentManager().beginTransaction().add(R.id.container_fragment_content, fragment, FRAGMENT_TAG).commit();
             mSaveableFragment = fragment;
         } else {
             mSaveableFragment = (Saveable) getFragmentManager().findFragmentByTag(FRAGMENT_TAG);

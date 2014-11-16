@@ -15,12 +15,15 @@
     <string name="notify_email_from_label">From:</string>
     <string name="notify_dialog_title">Notify Group</string>
     <string name="notify_selection_dialog_title_unformatted" formatted="false">Notify (%d %s)</string>
-    <string name="sms_permissions_warning_title">Important!</string>
-    <string name="sms_permissions_warning_msg">You have asked to send some of your assignments as SMS messages.
-        To do this without leaving the messages in your conversation history, Open Secret Santa needs to temporarily become your default SMS app.
-        To allow this, please accept the system dialog prompts as they appear. After the messages are sent, you will also be
-        prompted to restore your original setting.</string>
-    <string name="sms_permissions_dont_show_again">Don\'t show this warning again</string>
+
+    <!-- SMS Permissions -->
+    <string name="sms_permissions_warning_title">Important</string>
+    <string name="sms_permissions_warning_msg">To send assignments using SMS without them showing up in your conversation history, Open Secret Santa needs to temporarily become your default SMS app.
+        \n\nTo allow this, please accept the system dialog prompts as they appear.</string>
+    <string name="sms_permissions_dont_show_again">Don\'t show this again</string>
+    <string name="sms_default_app_warning">Open Secret Santa is currently your SMS app. You cannot not receive any messages on this device.</string>
+    <string name="fix_it">Fix it</string>
+    <string name="sms_default_setting_revert_failed">Sorry, we couldn\'t revert your setting automatically. Use your device\'s Settings app to change your default SMS app.</string>
 
     <!-- Edit screen -->
     <string name="edit_member_title_unformatted" formatted="false">Editing %s</string>
@@ -63,6 +66,8 @@
     <string name="fb_contact">www.facebook.com/manyobjectandcode</string>
     <string name="app_version_info">Version: 2.0.1</string>
     <string name="app_date_info">Date: 3rd December 2013</string>
+    <string name="contact_us_at">Contact us at:</string>
+    <string name="graphics_usage">We have used and adapted graphics by:</string>
 
     <!-- Accessibility hints -->
     <string name="drawer_open_accesshint">open drawer</string>
@@ -108,17 +113,12 @@
     <!-- Drawer List -->
     <string name="drawer_groups_header">My Groups</string>
     <string name="drawer_groups_new">New Group</string>
-    <string name="drawer_options_header">Options</string>
     <string name="base_group_name">My Group</string>
+    <string name="add_group">Create new group</string>
 
     <!-- Restrictions list -->
     <string name="restriction_list_title_unformatted" formatted="false">Restrictions for %s</string>
     <string name="list_selection_count_title_unformatted" formatted="false">%d selected</string>
     <string name="gift_giving_msg_unformatted" formatted="false">%s is giving a gift to</string>
-    <string name="add_group">Create new group</string>
-    <string name="contact_us_at">Contact us at:</string>
-    <string name="graphics_usage">We have used and adapted graphics by:</string>
-
-
 
 </resources>

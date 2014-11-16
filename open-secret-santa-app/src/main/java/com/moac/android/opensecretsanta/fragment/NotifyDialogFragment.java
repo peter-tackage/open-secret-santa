@@ -68,7 +68,6 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
     private TextView mInfoTextView;
     private ViewGroup mEmailFromContainer;
     private boolean mIsEmailAuthRequired;
-    private boolean mIsSmsPermissionRequired;
     private int mMaxMsgLength;
 
     // Apparently this is how you retain EditText fields in Dialogs - http://code.google.com/p/android/issues/detail?id=18719
@@ -171,7 +170,6 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
         setCharactersRemaining(remainingChars);
 
         mIsEmailAuthRequired = NotifyUtils.containsEmailSendableEntry(mDb, mMemberIds);
-        mIsSmsPermissionRequired = NotifyUtils.requiresSmsPermission(getActivity(), mDb, mMemberIds);
 
         if (mIsEmailAuthRequired) {
             // Add all Gmail accounts to list
@@ -285,7 +283,7 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
 
         @Override
         public void onClick(View v) {
-            if (mIsSmsPermissionRequired) {
+            if (NotifyUtils.requiresSmsPermission(getActivity(), mDb, mMemberIds)) {
                 mSmsPermissionsManager
                         .requestDefaultSmsPermission(getActivity().getApplicationContext(),
                                 NotifyDialogFragment.this,

@@ -6,6 +6,7 @@ import com.moac.android.opensecretsanta.model.Group;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+// FIXME These should use String.format()
 public class GroupUtils {
 
     public static Group createIncrementingGroup(DatabaseManager db, String baseName) {

@@ -1,5 +1,6 @@
 package com.moac.android.opensecretsanta.util;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.provider.Telephony;
@@ -66,12 +67,15 @@ public class NotifyUtils {
     }
 
     public static boolean requiresSmsPermission(Context context, DatabaseManager db, long[] memberIds) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            String defaultSmsApp = Telephony.Sms.getDefaultSmsPackage(context);
-            return !defaultSmsApp.equals(BuildConfig.PACKAGE_NAME)
-                    && containsSmsSendableEntry(db, memberIds);
-        } else {
-            return false;
-        }
+        return !isDefaultSmsApp(context) && containsSmsSendableEntry(db, memberIds);
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    public static boolean isDefaultSmsApp(Context context) {
+        // Pre-Kitkat report that we are not the default
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return false;
+
+        String currentDefaultApp = Telephony.Sms.getDefaultSmsPackage(context);
+        return currentDefaultApp != null && currentDefaultApp.equals(BuildConfig.PACKAGE_NAME);
     }
 }

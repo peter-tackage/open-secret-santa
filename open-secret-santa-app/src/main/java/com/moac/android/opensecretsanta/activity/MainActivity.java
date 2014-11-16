@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 
@@ -37,6 +38,7 @@ import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 import com.moac.android.opensecretsanta.notify.NotifyAuthorization;
+import com.moac.android.opensecretsanta.notify.sms.SmsPermissionsManager;
 import com.moac.android.opensecretsanta.util.GroupUtils;
 import com.moac.android.opensecretsanta.util.NotifyUtils;
 
@@ -61,12 +63,16 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
     @Inject
     SharedPreferences mSharedPreferences;
 
+    @Inject
+    SmsPermissionsManager mSmsPermissionManager;
+
     protected DrawerLayout mDrawerLayout;
     protected ActionBarDrawerToggle mDrawerToggle;
     protected ListView mDrawerList;
     private NotifyExecutorFragment mNotifyExecutorFragment;
     private DrawerListAdapter mDrawerListAdapter;
     private long mCurrentGroupId = Group.UNSET_ID;
+    private View mDefaultSmsWarningView;
 
     @Override
     public void onCreate(Bundle _savedInstanceState) {
@@ -149,6 +155,10 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
             // Show the drawer to allow Group creation by user
             mDrawerLayout.openDrawer(mDrawerList);
         }
+
+        mDefaultSmsWarningView = findViewById(R.id.view_default_sms_warning);
+        Button fixItButton = (Button) mDefaultSmsWarningView.findViewById(R.id.button_fixIt);
+        fixItButton.setOnClickListener(new FixDefaultSmsListener(this, mSmsPermissionManager));
     }
 
     private static int getItemAdapterPosition(DrawerListAdapter adapter, long groupId) {
@@ -165,6 +175,12 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
         mDrawerToggle.syncState();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mDefaultSmsWarningView.setVisibility(NotifyUtils.isDefaultSmsApp(this) ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -388,7 +404,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
 
         Log.i(TAG, "showGroup() - creating new fragment");
         MemberListFragment newFragment = MemberListFragment.create(groupId);
-        transaction.add(R.id.container_content, newFragment, MEMBERS_LIST_FRAGMENT_TAG)
+        transaction.add(R.id.container_fragment_content, newFragment, MEMBERS_LIST_FRAGMENT_TAG)
                 .commit();
 
         // Update preferences to save last viewed Group
