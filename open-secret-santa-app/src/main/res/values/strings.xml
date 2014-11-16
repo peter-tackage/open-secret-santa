@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Add member search -->
-  <string name="search_hint_label">Add people to the group</string>
+    <string name="search_hint_label">Add people to the group</string>
 
     <!-- Member row restrictions label -->
     <string name="restrictions_label">restriction</string>
@@ -41,6 +41,10 @@
     <!-- Delete Group confirmation dialog -->
     <string name="delete_group_dialog_title">Delete Group</string>
     <string name="delete_group_dialog_msg">You\'ll lose all the members and assignments for this group"</string>
+
+    <!-- Delete members confirmation dialog -->
+    <string name="delete_selection_dialog_title_unformatted" formatted="false">Delete (%d %s)</string>
+    <string name="delete_members_confirm_msg_unformatted" formatted="false">Remove the %s from the group?</string>
 
     <!-- Rename Group -->
     <string name="rename_group_dialog_title">Rename Group</string>

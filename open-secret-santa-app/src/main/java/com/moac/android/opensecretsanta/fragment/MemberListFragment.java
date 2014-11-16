@@ -290,7 +290,7 @@ public class MemberListFragment extends InjectingListFragment {
                         mode.finish();
                         return true;
                     case R.id.menu_item_delete:
-                        doDelete(getListView().getCheckedItemIds());
+                        confirmDeleteMembers(getListView().getCheckedItemIds());
                         mode.finish();
                         return true;
                     case R.id.menu_item_notify_selection:
@@ -335,6 +335,23 @@ public class MemberListFragment extends InjectingListFragment {
                 ((ListView) parent).setItemChecked(position, true);
             }
         });
+    }
+
+    private void confirmDeleteMembers(final long[] memberIds) {
+        String memberQuantity = getResources().getQuantityString(R.plurals.memberQuantity, memberIds.length);
+        new AlertDialog.Builder(getActivity())
+                .setTitle(getString(R.string.delete_selection_dialog_title_unformatted, memberIds.length,
+                        memberQuantity))
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        doDelete(memberIds);
+                    }
+                })
+                .setMessage(getString(R.string.delete_members_confirm_msg_unformatted, memberQuantity))
+                .create()
+                .show();
     }
 
     private void populateUI() {
