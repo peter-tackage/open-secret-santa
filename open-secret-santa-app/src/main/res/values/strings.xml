@@ -9,7 +9,7 @@
 
     <!-- Notify Dialog -->
     <string name="notify_message_text_hint">Enter an additional message you\'d like to send with the Secret Santa assignments</string>
-    <string name="characters_remaining_message">Characters remaining:</string>
+    <string name="characters_remaining_message_unformatted">Characters remaining: %d</string>
     <string name="notify_send_button_text">Send</string>
     <string name="no_email_warning">WARNING: Assignments won\'t be sent. We can\'t find your Gmail account</string>
     <string name="notify_email_from_label">From:</string>

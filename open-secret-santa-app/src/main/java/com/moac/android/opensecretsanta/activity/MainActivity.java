@@ -85,7 +85,6 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
         initialiseUI();
     }
 
-
     private void initialiseUI() {
         setContentView(R.layout.activity_main);
         mDrawerList = (ListView) findViewById(R.id.left_drawer_list);

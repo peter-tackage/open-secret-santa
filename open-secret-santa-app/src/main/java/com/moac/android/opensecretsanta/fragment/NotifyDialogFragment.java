@@ -9,7 +9,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -101,7 +100,7 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
 
         // Configure the views
         mMsgField = (EditText) view.findViewById(R.id.tv_notify_msg);
-        mCharCountView = (TextView) view.findViewById(R.id.tv_notify_msg_char_count);
+        mCharCountView = (TextView) view.findViewById(R.id.textView_characters_remaining);
 
         // Add the callback to the field
         mMsgField.addTextChangedListener(new TextWatcher() {
@@ -116,12 +115,7 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
             @Override
             public void afterTextChanged(Editable s) {
                 // Update the reported character length
-                mCharCountView.setText(String.valueOf(mMaxMsgLength - s.length()));
-                if (mMsgField.length() == mMaxMsgLength) {
-                    mCharCountView.setTextColor(getResources().getColor(R.color.accent_color));
-                } else {
-                    mCharCountView.setTextColor(getResources().getColor(R.color.text_neutral_color));
-                }
+                setCharactersRemaining(mMaxMsgLength - s.length());
             }
         });
 
@@ -174,7 +168,7 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
         if (message != null) {
             remainingChars = message.length() >= mMaxMsgLength ? 0 : mMaxMsgLength - message.length();
         }
-        mCharCountView.setText(String.valueOf(remainingChars));
+        setCharactersRemaining(remainingChars);
 
         mIsEmailAuthRequired = NotifyUtils.containsEmailSendableEntry(mDb, mMemberIds);
         mIsSmsPermissionRequired = NotifyUtils.requiresSmsPermission(getActivity(), mDb, mMemberIds);
@@ -202,6 +196,15 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
                                 }
                             }
                     );
+        }
+    }
+
+    protected void setCharactersRemaining(int charsRemaining) {
+        mCharCountView.setText(getString(R.string.characters_remaining_message_unformatted, charsRemaining));
+        if (mMsgField.length() >= mMaxMsgLength) {
+            mCharCountView.setTextColor(getResources().getColor(R.color.accent_color));
+        } else {
+            mCharCountView.setTextColor(getResources().getColor(R.color.text_neutral_color));
         }
     }
 
