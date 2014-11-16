@@ -15,7 +15,7 @@
 
         <include
             android:id="@+id/view_default_sms_warning"
-            layout="@layout/layout_default_sms_warning"
+            layout="@layout/layout_fix_default_sms_app"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
