@@ -49,6 +49,7 @@
         <item name="android:actionModeCloseDrawable">@drawable/ic_cab_done</item>
         <item name="android:actionModeStyle">@style/MyTheme.ActionMode.Style</item>
         <item name="android:actionOverflowButtonStyle">@style/OverFlowMenu.Style</item>
+        <item name="actionBarButtonForeground">?android:selectableItemBackground</item>
     </style>
 
 </resources>
