@@ -31,7 +31,7 @@
         android:layout_height="150dp"
         android:layout_below="@+id/layout_notify_email_container"
         android:layout_marginBottom="4dp"
-        android:background="@color/secondary_color"
+        android:background="@color/very_light_gray"
         android:gravity="top"
         android:hint="@string/notify_message_text_hint"
         android:inputType="textShortMessage|textMultiLine|textCapSentences"
