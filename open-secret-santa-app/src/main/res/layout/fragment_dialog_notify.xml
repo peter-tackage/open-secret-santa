@@ -42,26 +42,18 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@color/text_neutral_color" />
 
-    <LinearLayout
-        android:id="@+id/footer_container"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/textView_characters_remaining"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tv_notify_msg"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textView_characters_remaining"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
+        android:layout_below="@+id/tv_notify_msg" />
 
     <TextView
         android:id="@+id/tv_notify_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="false"
-        android:layout_below="@+id/footer_container"
+        android:layout_below="@+id/textView_characters_remaining"
         android:layout_marginTop="8dp"
         android:gravity="center_horizontal"
         android:textColor="@color/failed"
