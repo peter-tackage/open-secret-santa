@@ -148,7 +148,6 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
                 sendButton.setOnClickListener(new OnSendClickedListener());
             }
         });
-        alertDialog.getWindow().setWindowAnimations(R.style.dialog_animate_overshoot);
         return alertDialog;
     }
 

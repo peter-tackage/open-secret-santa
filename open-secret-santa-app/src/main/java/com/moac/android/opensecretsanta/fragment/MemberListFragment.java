@@ -418,7 +418,6 @@ public class MemberListFragment extends InjectingListFragment {
                 });
 
         Dialog dialog = builder.create();
-        dialog.getWindow().setWindowAnimations(R.style.dialog_animate_overshoot);
         dialog.show();
     }
 
@@ -444,7 +443,6 @@ public class MemberListFragment extends InjectingListFragment {
                 });
 
         Dialog dialog = builder.create();
-        dialog.getWindow().setWindowAnimations(R.style.dialog_animate_overshoot);
         dialog.show();
     }
 
@@ -473,7 +471,6 @@ public class MemberListFragment extends InjectingListFragment {
                 });
 
         final AlertDialog dialog = builder.create();
-        dialog.getWindow().setWindowAnimations(R.style.dialog_animate_overshoot);
         dialog.show();
 
         // Override the dialog positive button behaviour to allow for custom validation
