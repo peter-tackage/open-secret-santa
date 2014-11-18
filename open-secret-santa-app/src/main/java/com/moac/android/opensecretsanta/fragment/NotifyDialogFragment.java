@@ -134,7 +134,7 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
         // We can't allow the dialog to be dismissed before the onActivityResult expected back
         // from the SmsPermissionsManager is delivered (otherwise onNotifyRequest() is never called
         // when SMS is being sent as the Fragment is usually destroyed before the result is returned.
-        // So to work-around this, add this listener which attaches anotherlistener that handles the
+        // So to work-around this, add this listener which attaches another listener that handles the
         // positive (send) button press and explicitly call dismiss() to once onNotifyRequest() has
         // completed.
         //
