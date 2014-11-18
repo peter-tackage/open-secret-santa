@@ -5,12 +5,18 @@
     android:background="@color/failed"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="16dp">
+    android:padding="8dp">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_warning_white_36dp" />
 
     <TextView
         style="?android:attr/textAppearanceMedium"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_weight="1"
         android:text="@string/sms_default_app_warning"
@@ -26,12 +32,12 @@
         android:foreground="?attr/buttonForeground">
 
         <TextView
-            android:padding="8dp"
-            android:textAppearance="@android:style/TextAppearance.Holo.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="8dp"
             android:text="@string/fix_it"
             android:textAllCaps="true"
+            android:textAppearance="@android:style/TextAppearance.Holo.Medium"
             android:textColor="@color/failed" />
     </FrameLayout>
 
