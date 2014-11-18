@@ -404,7 +404,6 @@ public class MemberListFragment extends InjectingListFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setTitle(R.string.clear_assignments_dialog_title)
-                .setIcon(R.drawable.ic_action_delete)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         invalidateAssignments(mGroup);
@@ -430,7 +429,6 @@ public class MemberListFragment extends InjectingListFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setTitle(R.string.delete_group_dialog_title)
-                .setIcon(R.drawable.ic_action_delete)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         mFragmentContainer.deleteGroup(mGroup.getId());
@@ -458,7 +456,6 @@ public class MemberListFragment extends InjectingListFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setTitle(R.string.rename_group_dialog_title)
-                .setIcon(R.drawable.ic_action_edit)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Handled in custom listener defined after show()
