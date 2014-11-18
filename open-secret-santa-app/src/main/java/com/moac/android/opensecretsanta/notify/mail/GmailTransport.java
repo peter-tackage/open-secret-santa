@@ -25,7 +25,7 @@ public class GmailTransport implements EmailTransporter {
 
     @Override
     public synchronized void send(String subject, String body, String senderAddress,
-                                  String oauthToken, String toAddress) throws NotificationFailureException {
+                                  String toAddress, String oauthToken) throws NotificationFailureException {
 
         Properties props = new Properties();
         props.put("mail.smtp.starttls.enable", "true");
