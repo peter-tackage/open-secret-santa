@@ -21,7 +21,7 @@
     <string name="sms_permissions_warning_msg">To send assignments using SMS without them showing up in your conversation history, Open Secret Santa needs to temporarily become your default SMS app.
         \n\nTo allow this, please accept the system dialog prompts as they appear.</string>
     <string name="sms_permissions_dont_show_again">Don\'t show this again</string>
-    <string name="sms_default_app_warning">Open Secret Santa is currently your SMS app. You cannot not receive any messages on this device at this time.</string>
+    <string name="sms_default_app_warning">You currently cannot receive any SMS messages on this device as Open Secret Santa is your SMS app.</string>
     <string name="fix_it">Fix it</string>
     <string name="sms_default_setting_revert_failed">Sorry, we couldn\'t revert your setting automatically. Use your device\'s Settings app to change your default SMS app.</string>
 
@@ -121,7 +121,7 @@
     <string name="add_group">Create new group</string>
 
     <!-- Restrictions list -->
-    <string name="restriction_list_title_unformatted" formatted="false">Restrictions for %s</string>
+    <string name="restriction_list_title_unformatted" formatted="false">Set restrictions for %s</string>
     <string name="list_selection_count_title_unformatted" formatted="false">%d selected</string>
     <string name="gift_giving_msg_unformatted" formatted="false">%s is giving a gift to</string>
 
