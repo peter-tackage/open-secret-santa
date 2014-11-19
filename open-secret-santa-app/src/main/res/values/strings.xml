@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Add member search -->
-    <string name="search_hint_label">Add people to the group</string>
+    <string name="search_hint_label">Tap here to add people</string>
 
     <!-- Member row restrictions label -->
     <string name="restrictions_label">restriction</string>
