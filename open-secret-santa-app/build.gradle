@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 20
+    compileSdkVersion 21
     buildToolsVersion '20.0.0'
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId "com.moac.android.opensecretsanta"
         minSdkVersion 14
-        targetSdkVersion 20
+        targetSdkVersion 21
         versionCode 10
         versionName "2.0.1"
     }
