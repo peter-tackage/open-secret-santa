@@ -12,8 +12,8 @@ android {
         applicationId "com.moac.android.opensecretsanta"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 10
-        versionName "2.0.1"
+        versionCode 11
+        versionName "2.1"
     }
 
     signingConfigs {
