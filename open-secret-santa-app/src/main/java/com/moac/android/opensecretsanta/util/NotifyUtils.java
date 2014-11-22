@@ -67,15 +67,20 @@ public class NotifyUtils {
     }
 
     public static boolean requiresSmsPermission(Context context, DatabaseManager db, long[] memberIds) {
-        return !isDefaultSmsApp(context) && containsSmsSendableEntry(db, memberIds);
+        return requiresDefaultSmsCheck() && !isDefaultSmsApp(context) && containsSmsSendableEntry(db, memberIds);
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public static boolean isDefaultSmsApp(Context context) {
-        // Pre-Kitkat report that we are not the default
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return false;
+        // Pre-Kitkat report that we are the default - we have equivalent privileges
+        if (!requiresDefaultSmsCheck()) return true;
 
         String currentDefaultApp = Telephony.Sms.getDefaultSmsPackage(context);
         return currentDefaultApp != null && currentDefaultApp.equals(BuildConfig.PACKAGE_NAME);
+    }
+
+    public static boolean requiresDefaultSmsCheck() {
+        // Pre Kitkat, we don't have the concept of Default SMS apps
+        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT);
     }
 }

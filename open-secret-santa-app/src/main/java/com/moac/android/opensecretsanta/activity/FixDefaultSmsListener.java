@@ -28,6 +28,13 @@ public class FixDefaultSmsListener implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        // No action necessary when no concept of default SMS app
+        if (!NotifyUtils.requiresDefaultSmsCheck()) {
+            // This listener should never been called!
+            Log.w(TAG, "Showing Fix Default Dialog when not required");
+            return;
+        }
+
         // No action necessary when this app is not the default
         if (!NotifyUtils.isDefaultSmsApp(mContext)) return;
 

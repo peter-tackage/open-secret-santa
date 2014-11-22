@@ -179,7 +179,9 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
     @Override
     protected void onResume() {
         super.onResume();
-        mDefaultSmsWarningView.setVisibility(NotifyUtils.isDefaultSmsApp(this) ? View.VISIBLE : View.GONE);
+        mDefaultSmsWarningView.setVisibility(
+                NotifyUtils.requiresDefaultSmsCheck() && NotifyUtils.isDefaultSmsApp(this)
+                        ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -233,7 +235,7 @@ public class MainActivity extends InjectingActivity implements MemberListFragmen
                 : getString(R.string.notify_selection_dialog_title_unformatted, memberIds.length,
                 getResources().getQuantityString(R.plurals.memberQuantity, memberIds.length));
 
-        if (NotifyUtils.requiresSmsPermission(this, mDb, memberIds)) {
+        if (NotifyUtils.requiresDefaultSmsCheck() && NotifyUtils.requiresSmsPermission(this, mDb, memberIds)) {
             // If using SMS - display warning about the SMS permissions
             boolean showSmsWarningDialog = mSharedPreferences.getBoolean(SHOW_SMS_WARNING_DIALOG_SETTING_KEY, true);
             if (showSmsWarningDialog) {

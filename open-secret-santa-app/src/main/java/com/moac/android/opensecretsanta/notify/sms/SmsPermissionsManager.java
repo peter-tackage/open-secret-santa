@@ -14,6 +14,8 @@ import com.moac.android.opensecretsanta.inject.ForApplication;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import static com.moac.android.opensecretsanta.util.NotifyUtils.requiresDefaultSmsCheck;
+
 @Singleton
 public class SmsPermissionsManager {
 
@@ -30,7 +32,7 @@ public class SmsPermissionsManager {
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public void requestDefaultSmsPermission(Context context, Fragment fragment, int requestCode) {
-        if (isPreKitKat()) return;
+        if (!requiresDefaultSmsCheck()) return;
 
         String defaultSmsApp = Telephony.Sms.getDefaultSmsPackage(context.getApplicationContext());
         saveDefaultSmsApp(defaultSmsApp);
@@ -43,7 +45,7 @@ public class SmsPermissionsManager {
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public void requestRelinquishDefaultSmsPermission(Fragment fragment, int requestCode) {
-        if (isPreKitKat()) return;
+        if (!requiresDefaultSmsCheck()) return;
 
         String defaultSmsApp = getLastKnownDefaultSmsApp();
         // If the recorded previous default isn't OSS and it's not the current default SMS app: ask to change it
@@ -56,7 +58,7 @@ public class SmsPermissionsManager {
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public void requestRelinquishDefaultSmsPermission(Context context, String toApp) {
-        if (isPreKitKat()) return;
+        if (!requiresDefaultSmsCheck()) return;
 
         // If the recorded previous default isn't OSS and it's not the current default SMS app: ask to change it
         if (isRelinguishable(toApp)) {
@@ -82,14 +84,10 @@ public class SmsPermissionsManager {
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     private boolean isRelinguishable(String toApp) {
-        return !isPreKitKat()
+        return requiresDefaultSmsCheck()
                 && !toApp.equals(BuildConfig.PACKAGE_NAME) // Don't relinquish to ourselves!
                 && !Telephony.Sms.getDefaultSmsPackage(mContext).equals(toApp); // Don't relinquish if already default
     }
 
-    // Pre Kitkat, we don't have the concept of Default SMS apps
-    private static boolean isPreKitKat() {
-        return (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT);
-    }
 
 }

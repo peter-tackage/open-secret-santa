@@ -14,7 +14,7 @@
     <string name="no_email_warning">WARNING: Assignments won\'t be sent. We can\'t find your Gmail account</string>
     <string name="notify_email_from_label">From:</string>
     <string name="notify_dialog_title">Notify Group</string>
-    <string name="notify_selection_dialog_title_unformatted" formatted="false">Notify %d %s</string>
+    <string name="notify_selection_dialog_title_unformatted" formatted="false">Notify (%d %s)</string>
 
     <!-- SMS Permissions -->
     <string name="sms_permissions_warning_title">Important</string>
@@ -42,7 +42,7 @@
     <string name="delete_group_dialog_msg">You\'ll lose all the members and assignments for this group"</string>
 
     <!-- Delete members confirmation dialog -->
-    <string name="delete_selection_dialog_title_unformatted" formatted="false">Delete %d %s</string>
+    <string name="delete_selection_dialog_title_unformatted" formatted="false">Delete (%d %s)</string>
     <string name="delete_members_confirm_msg_unformatted" formatted="false">Remove the %s from the group?</string>
 
     <!-- Rename Group -->
