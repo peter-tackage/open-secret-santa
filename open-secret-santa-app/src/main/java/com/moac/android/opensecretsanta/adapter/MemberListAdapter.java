@@ -46,7 +46,7 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
 
         View view = convertView;
 
-        ImageView avatarView;
+        ImageView avatarImageView;
         TextView memberNameView;
         TextView contactAddressView;
         TextView restrictionsView;
@@ -60,20 +60,20 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
         if (view == null) {
             view = LayoutInflater.from(getContext()).inflate(mResource, parent, false);
 
-            avatarView = (ImageView) view.findViewById(R.id.imageView_avatar);
+            avatarImageView = (ImageView) view.findViewById(R.id.imageView_avatar);
             memberNameView = (TextView) view.findViewById(R.id.textView_member_name);
             contactAddressView = (TextView) view.findViewById(R.id.textView_contact_address);
             restrictionsView = (TextView) view.findViewById(R.id.textView_restriction_count);
             sendStatusTextView = (TextView) view.findViewById(R.id.textView_sent_status);
 
-            view.setTag(R.id.imageView_avatar, avatarView);
+            view.setTag(R.id.imageView_avatar, avatarImageView);
             view.setTag(R.id.textView_member_name, memberNameView);
             view.setTag(R.id.textView_contact_address, contactAddressView);
             view.setTag(R.id.textView_restriction_count, restrictionsView);
             view.setTag(R.id.textView_sent_status, sendStatusTextView);
         } else {
             // Recycled View is available, retrieve the holder instance from the View
-            avatarView = (ImageView) view.getTag(R.id.imageView_avatar);
+            avatarImageView = (ImageView) view.getTag(R.id.imageView_avatar);
             memberNameView = (TextView) view.getTag(R.id.textView_member_name);
             contactAddressView = (TextView) view.getTag(R.id.textView_contact_address);
             restrictionsView = (TextView) view.getTag(R.id.textView_restriction_count);
@@ -86,9 +86,7 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
 
         // Assign the view with its content.
         if (member.getContactId() == PersistableObject.UNSET_ID || member.getLookupKey() == null) {
-            Picasso.with(getContext())
-                    .load(R.drawable.ic_contact_picture)
-                    .into(avatarView);
+            avatarImageView.setImageResource(R.drawable.ic_contact_picture);
         } else {
             Uri lookupUri = ContactsContract.Contacts.getLookupUri(member.getContactId(), member.getLookupKey());
             Uri contactUri = ContactsContract.Contacts.lookupContact(getContext().getContentResolver(), lookupUri);
@@ -96,7 +94,7 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
                     .load(contactUri)
                     .placeholder(R.drawable.ic_contact_picture)
                     .error(R.drawable.ic_contact_picture)
-                    .into(avatarView);
+                    .into(avatarImageView);
         }
 
         memberNameView.setText(member.getName());

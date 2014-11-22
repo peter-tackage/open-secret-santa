@@ -77,12 +77,12 @@ public class RestrictionListAdapter extends BaseAdapter {
 
         // Assign the view with its content.
         if (item.getContactId() == PersistableObject.UNSET_ID || item.getLookupKey() == null) {
-            Picasso.with(mContext).load(R.drawable.ic_contact_picture)
-                    .into(memberImageView);
+            memberImageView.setImageResource(R.drawable.ic_contact_picture);
         } else {
             Uri lookupUri = ContactsContract.Contacts.getLookupUri(item.getContactId(), item.getLookupKey());
             Uri contactUri = ContactsContract.Contacts.lookupContact(mContext.getContentResolver(), lookupUri);
-            Picasso.with(mContext).load(contactUri)
+            Picasso.with(mContext)
+                    .load(contactUri)
                     .placeholder(R.drawable.ic_contact_picture)
                     .error(R.drawable.ic_contact_picture)
                     .into(memberImageView);

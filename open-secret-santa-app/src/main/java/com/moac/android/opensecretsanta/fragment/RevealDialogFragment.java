@@ -55,12 +55,13 @@ public class RevealDialogFragment extends DialogFragment {
 
         ImageView avatarView = (ImageView) view.findViewById(R.id.imageView_receiverAvatar);
         if (avatarUrl != null) {
-            Picasso.with(getActivity()).load(avatarUrl)
+            Picasso.with(getActivity())
+                    .load(avatarUrl)
+                    .placeholder(R.drawable.ic_contact_picture)
                     .error(R.drawable.ic_contact_picture)
                     .into(avatarView);
         } else {
-            Picasso.with(getActivity()).load(R.drawable.ic_contact_picture)
-                    .into(avatarView);
+            avatarView.setImageResource(R.drawable.ic_contact_picture);
         }
 
         builder.setView(view);

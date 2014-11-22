@@ -13,7 +13,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.moac.android.inject.dagger.InjectingFragment;
 import com.moac.android.opensecretsanta.R;
@@ -244,12 +243,14 @@ public class MemberEditFragment extends InjectingFragment implements Saveable {
     private void populateAvatar() {
         ImageView avatarImageView = (ImageView) getView().findViewById(R.id.imageView_avatar);
         if (mMember.getContactId() == PersistableObject.UNSET_ID || mMember.getLookupKey() == null) {
-            Picasso.with(getActivity()).load(R.drawable.ic_contact_picture).into(avatarImageView);
+            avatarImageView.setImageResource(R.drawable.ic_contact_picture);
         } else {
             Uri lookupUri = ContactsContract.Contacts.getLookupUri(mMember.getContactId(), mMember.getLookupKey());
             Uri contactUri = ContactsContract.Contacts.lookupContact(getActivity().getContentResolver(), lookupUri);
-            Picasso.with(getActivity()).load(contactUri)
-                    .placeholder(R.drawable.ic_contact_picture).error(R.drawable.ic_contact_picture)
+            Picasso.with(getActivity())
+                    .load(contactUri)
+                    .placeholder(R.drawable.ic_contact_picture)
+                    .error(R.drawable.ic_contact_picture)
                     .into(avatarImageView);
         }
     }
