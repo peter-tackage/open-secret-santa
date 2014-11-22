@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textView_groupName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/accent_color"
+        android:gravity="center_horizontal"
+        android:padding="4dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        tools:text="Some Group Name" />
+
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteTextView_addMember"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:paddingLeft="8dp"
+        android:textColorHint="@color/shade_of_grey4"
+        android:background="@drawable/shape_search_background"
+        android:hint="@string/search_hint_label"
+        android:imeOptions="actionDone"
+        android:inputType="textCapWords|textPersonName"
+        android:singleLine="true" />
+
+    <ListView
+        android:id="@id/android:list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:divider="@null"
+        android:dividerHeight="2dp" />
+
+    <!-- TODO(PT) Replace this with a better empty list fragment -->
+    <LinearLayout
+        android:id="@id/android:empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparent"
+        android:orientation="vertical" />
+
+</LinearLayout>

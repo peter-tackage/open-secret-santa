@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/container_avatar"
+        android:layout_width="250dp"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/imageView_avatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentStart="true"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/textView_groupName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/accent_color"
+            android:gravity="center_horizontal"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:singleLine="true"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            tools:text="Some Member Name" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toEndOf="@id/container_avatar"
+        android:layout_toRightOf="@+id/container_avatar"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            android:text="@string/member_name_label"
+            android:textAllCaps="true"
+            android:textColor="@color/primary_color"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/shade_of_grey3" />
+
+        <EditText
+            android:id="@+id/editText_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_edit_text"
+            android:hint="@string/member_name_hint"
+            android:inputType="textNoSuggestions|textCapWords|textPersonName"
+            android:paddingTop="8dp"
+            android:singleLine="true"
+            android:textColor="@color/text_neutral_color"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            android:paddingTop="32dp"
+            android:text="@string/contact_method_label"
+            android:textAllCaps="true"
+            android:textColor="@color/primary_color"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/shade_of_grey3" />
+
+        <Spinner
+            android:id="@+id/spinner_contact_method"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp" />
+
+        <!-- Visibility varies with contact method -->
+
+        <EditText
+            android:id="@+id/editText_contact_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_edit_text"
+            android:singleLine="true"
+            android:textColor="@color/text_neutral_color"
+            android:visibility="invisible"
+            tools:ignore="TextFields" />
+        <!-- Ignore warnings about inputType: it is set dynamically -->
+
+    </LinearLayout>
+</RelativeLayout>

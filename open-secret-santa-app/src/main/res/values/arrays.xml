@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+  <string-array name="engine_names">
+    <item>Basic Engine</item>
+    <item>Recursive Engine</item>
+  </string-array>
+  <string-array name="engine_classes">
+    <item>com.moac.drawengine.BasicDrawEngine</item>
+    <item>com.moac.drawengine.RecursiveDrawEngine</item>
+  </string-array>
+</resources>

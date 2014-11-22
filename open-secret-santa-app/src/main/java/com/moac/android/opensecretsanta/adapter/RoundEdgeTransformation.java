@@ -14,7 +14,8 @@ public class RoundEdgeTransformation implements Transformation {
         paint.setShader(new BitmapShader(source, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
 
         Canvas c = new Canvas(roundEdgeBitmap);
-        c.drawRoundRect((new RectF(0.0f, 0.0f, source.getWidth(), source.getHeight())), 10, 10, paint);
+        int shortestAxis = Math.min(source.getWidth(), source.getHeight());
+        c.drawCircle(source.getWidth() / 2, source.getHeight() / 2, (float) shortestAxis / 2f, paint);
 
         if(roundEdgeBitmap != source) {
             source.recycle();

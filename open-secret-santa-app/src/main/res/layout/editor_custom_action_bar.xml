@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Using a Relative Layout and fill_horizontal allows centering in AB -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_gravity="fill_horizontal"
+    android:background="@color/primary_color">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:baselineAligned="false"
+        android:divider="?android:attr/dividerVertical"
+        android:dividerPadding="12dp"
+        android:orientation="horizontal"
+        android:showDividers="middle">
+
+        <FrameLayout
+            android:id="@+id/menuItem_discard"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:background="@color/primary_color"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/buttonForeground"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@android:style/Widget.Holo.ActionBar.TabText"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:drawableLeft="@drawable/ic_action_remove"
+                android:gravity="center_vertical"
+                android:text="@string/menu_cancel"
+                android:textColor="@color/white" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/menuItem_ok"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:background="@color/primary_color"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/buttonForeground"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@android:style/Widget.Holo.ActionBar.TabText"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:drawableLeft="@drawable/ic_action_done"
+                android:gravity="center_vertical"
+                android:text="@string/menu_ok"
+                android:textColor="@color/white" />
+        </FrameLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

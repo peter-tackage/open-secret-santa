@@ -1,0 +1,14 @@
+# Release signing properties
+signing.properties
+
+# IntelliJ artifacts
+*.iml
+.idea/
+
+# Gradle artifacts
+build/
+.gradle/
+
+# Generated
+local.properties
+

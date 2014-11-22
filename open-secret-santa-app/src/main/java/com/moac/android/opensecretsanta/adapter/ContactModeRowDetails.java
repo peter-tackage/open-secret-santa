@@ -21,7 +21,7 @@ public class ContactModeRowDetails {
         ContactModeRowDetails that = (ContactModeRowDetails) other;
 
         return this.mContactMode == that.mContactMode
-          && (null == this.mContactDetail ? (this.mContactDetail == that.mContactDetail) : this.mContactDetail.equals(that.mContactDetail));
+          && (null == this.mContactDetail ? that.mContactDetail == null : this.mContactDetail.equals(that.mContactDetail));
     }
 
     @Override
@@ -31,18 +31,5 @@ public class ContactModeRowDetails {
         hash = 31 * hash + (null == mContactDetail ? 0 : mContactDetail.hashCode());
         return hash;
     }
-//
-//    @Override
-//    public String toString() {
-//        switch(mContactMode) {
-//            case ContactMethod.REVEAL_ONLY:
-//                return "View draw result on this phone";
-//            case ContactMethod.SMS_CONTACT_MODE:
-//                return "(SMS) " + mContactDetail;
-//            case ContactMethod.EMAIL_CONTACT_MODE:
-//                return "(Email) " + mContactDetail;
-//            default:
-//                return "Unsupported Mode";
-//        }
-//    }
+
 }

@@ -1,0 +1,33 @@
+Version - 2.1
+-------------
+Pseudo Material Design and group management, SMS improvements
+
+Version - 2.0.1
+---------------
+Bug fix for unselected Member List items
+
+Version - 2.0.0
+---------------
+New design and many new features, particularly for resending assignments.
+
+Version - 1.4.3
+---------------
+Version bump
+
+Version - 1.4.2
+---------------
+Fix to allow querying of Member names that contain apostrophes.
+
+Version - 1.3.1
+---------------
+Added checks to validate email address and phone numbers before selection dialog. 
+	- Duplicate or invalid entries will now not appear in the contact mode selection list.
+Prevent duplicate email addresses being added to selection dialog.
+Bug in "failure to send" email message - was using the gift receiver name not the giver when creating the message.
+
+Changes to DrawEngineProvider and sender - this need further work.
+	- What happens when can't initialise in the AssignmentSharerActivity?
+	
+Added checks for PackageManager.FEATURE_TELEPHONE to prevent people adding phone numbers when they don't have telephony.
+
+Changed Database from standalone singleton to one fetched from the Application instance subclass.

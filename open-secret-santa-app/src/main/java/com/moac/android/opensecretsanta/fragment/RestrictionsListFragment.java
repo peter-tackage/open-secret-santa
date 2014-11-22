@@ -1,6 +1,5 @@
 package com.moac.android.opensecretsanta.fragment;
 
-import android.app.ListFragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,7 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.TextView;
-import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
+
+import com.moac.android.inject.dagger.InjectingListFragment;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.adapter.RestrictionListAdapter;
@@ -20,47 +20,44 @@ import com.moac.android.opensecretsanta.model.Restriction;
 
 import java.util.*;
 
-public class RestrictionsListFragment extends ListFragment {
+import javax.inject.Inject;
+
+public class RestrictionsListFragment extends InjectingListFragment implements Saveable {
 
     private static final String TAG = RestrictionsListFragment.class.getSimpleName();
 
+    // Restriction change actions
     private enum Action {Create, Delete}
 
-    private DatabaseManager mDb;
+    @Inject
+    DatabaseManager mDb;
+
     private Member mFromMember;
     private Group mGroup;
-    private ListAdapter mAdapter;
     private Map<Long, Action> mChanges;
 
-    /**
-     * Factory method for this fragment class
-     *
-     * We do this because according to the Fragment docs -
-     *
-     * "It is strongly recommended that subclasses do not have other constructors with parameters"
-     */
-    public static RestrictionsListFragment create(long _groupId, long _fromMemberId) {
-        Log.i(TAG, "RestrictionsListFragment() - factory creating for groupId: " + _groupId + " fromMemberId: " + _fromMemberId);
+    public static RestrictionsListFragment create(long groupId, long fromMemberId) {
+        Log.i(TAG, "RestrictionsListFragment() - factory creating for groupId: " + groupId + " fromMemberId: " + fromMemberId);
         RestrictionsListFragment fragment = new RestrictionsListFragment();
         Bundle args = new Bundle();
-        args.putLong(Intents.GROUP_ID_INTENT_EXTRA, _groupId);
-        args.putLong(Intents.MEMBER_ID_INTENT_EXTRA, _fromMemberId);
+        args.putLong(Intents.GROUP_ID_INTENT_EXTRA, groupId);
+        args.putLong(Intents.MEMBER_ID_INTENT_EXTRA, fromMemberId);
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        mDb = OpenSecretSantaApplication.getInstance().getDatabase();
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         long memberId = getArguments().getLong(Intents.MEMBER_ID_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
         mFromMember = mDb.queryById(memberId, Member.class);
+        mChanges = new HashMap<>();
 
-        mChanges = new HashMap<Long, Action>();
+        TextView titleTextView = (TextView) getView().findViewById(R.id.textView_groupName);
+        titleTextView.setText(String.format(getString(R.string.restriction_list_title_unformatted), mFromMember.getName()));
 
         // TODO Make this load asynchronously
         long fromMemberId = mFromMember.getId();
@@ -68,26 +65,20 @@ public class RestrictionsListFragment extends ListFragment {
         List<Restriction> restrictionsForMember = mDb.queryAllRestrictionsForMemberId(fromMemberId);
         Set<Long> restrictions = buildRestrictedMembers(restrictionsForMember);
         List<RestrictionRowDetails> rows = buildRowData(fromMemberId, otherMembers, restrictions);
-        mAdapter = new RestrictionListAdapter(getActivity(), rows, new View.OnClickListener() {
+        ListAdapter adapter = new RestrictionListAdapter(getActivity(), rows, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 RestrictionRowDetails details = (RestrictionRowDetails) v.getTag();
                 handleRestrictionToggle(details);
             }
         });
+        setListAdapter(adapter);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_restrictions_list, container, false);
-        TextView titleTextView = (TextView) view.findViewById(R.id.content_title_textview);
-        titleTextView.setText("Restrictions for " + mFromMember.getName());
-
-        setListAdapter(mAdapter);
-
-        return view;
+        return inflater.inflate(R.layout.fragment_restrictions_list, container, false);
     }
 
     /**
@@ -132,8 +123,8 @@ public class RestrictionsListFragment extends ListFragment {
         return result;
     }
 
-    public boolean doSaveAction() {
-        boolean isDirty = mChanges.size() > 0;
+    public boolean save() {
+        boolean isDirty = !mChanges.isEmpty();
         Log.i(TAG, "doSaveAction() - isDirty: " + isDirty);
 
         // TODO Make this a background task
@@ -158,6 +149,7 @@ public class RestrictionsListFragment extends ListFragment {
                 }
             }
         }
-        return isDirty;
+        // Save is always valid
+        return true;
     }
 }

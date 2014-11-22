@@ -1,8 +1,8 @@
 package com.moac.android.opensecretsanta.util;
 
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+
+import rx.Subscription;
 
 public class Utils {
 
@@ -10,15 +10,23 @@ public class Utils {
 
     private static final String DO_ONCE_TAG = "do_once";
 
-    public static boolean doOnce(Context _context, String _taskTag, Runnable _task) {
-        final String prefTag = DO_ONCE_TAG + _taskTag;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(_context);
+    // No instances
+    private Utils() {}
+
+    public static boolean doOnce(SharedPreferences prefs, String taskTag, Runnable task) {
+        final String prefTag = DO_ONCE_TAG + taskTag;
         boolean isDone = prefs.getBoolean(prefTag, false);
         if(!isDone) {
-            _task.run();
+            task.run();
             prefs.edit().putBoolean(prefTag, true).apply();
             return true;
         }
         return false;
+    }
+
+    public static void safeUnsubscribe(Subscription subscription) {
+        if(subscription != null) {
+            subscription.unsubscribe();
+        }
     }
 }

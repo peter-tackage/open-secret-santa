@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/selector_member_list_item"
+    android:divider="@null"
+    android:dividerHeight="2dp"
+    android:padding="4dp">
+
+    <!-- android:background sets visual indicator of list item selection -->
+
+    <com.makeramen.RoundedImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/imageView_avatar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:layout_margin="4dp"
+        android:cropToPadding="true"
+        android:scaleType="centerCrop"
+        app:riv_corner_radius="24dp" />
+
+    <TextView
+        android:id="@+id/textView_sent_status"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageView_avatar"
+        android:layout_alignLeft="@+id/imageView_avatar"
+        android:layout_alignParentLeft="true"
+        android:layout_alignRight="@+id/imageView_avatar"
+        android:layout_marginLeft="4dp"
+        android:gravity="center"
+        android:minWidth="48dp"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:textColor="@color/white"
+        android:textSize="10sp"
+        tools:text="State" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/textView_restriction_count"
+        android:layout_toRightOf="@+id/imageView_avatar"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView_member_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textAppearance="@android:style/TextAppearance.Holo.Medium"
+            android:textColor="@color/primary_color"
+            tools:text="Miss User" />
+
+        <TextView
+            android:id="@+id/textView_contact_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:textColor="@color/tertiary_color"
+            tools:text="test@example.com" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView_restriction_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="4dp"
+        android:layout_marginLeft="2dp"
+        android:background="@drawable/shape_restriction_count_background"
+        android:enabled="false"
+        android:gravity="right"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        tools:text="2 restrictions" />
+
+</RelativeLayout>

@@ -10,13 +10,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 import com.squareup.picasso.Picasso;
-
-import java.util.List;
 
 public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
 
@@ -24,9 +23,9 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
 
     private int mResource;
 
-    public MemberListAdapter(Context _context, int _resource) {
-        super(_context, _resource);
-        mResource = _resource;
+    public MemberListAdapter(Context context, int resource) {
+        super(context, resource);
+        mResource = resource;
     }
 
     @Override
@@ -41,13 +40,13 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
     }
 
     @Override
-    public View getView(int _position, View _convertView, ViewGroup _parent) {
+    public View getView(int position, View convertView, ViewGroup parent) {
 
-        Log.v(TAG, "getView() - creating for position: " + _position);
+        Log.v(TAG, "getView() - creating for position: " + position);
 
-        View v = _convertView;
+        View view = convertView;
 
-        ImageView avatarView;
+        ImageView avatarImageView;
         TextView memberNameView;
         TextView contactAddressView;
         TextView restrictionsView;
@@ -58,50 +57,53 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
         // More up-to-date info here - http://www.piwai.info/android-adapter-good-practices/ (specifically using Tag)
         // Good info on LayoutInflater here - http://stackoverflow.com/questions/5026926/making-sense-of-layoutinflater
 
-        if(v == null) {
-            v = LayoutInflater.from(getContext()).inflate(mResource, _parent, false);
+        if (view == null) {
+            view = LayoutInflater.from(getContext()).inflate(mResource, parent, false);
 
-            avatarView = (ImageView) v.findViewById(R.id.member_imageview);
-            memberNameView = (TextView) v.findViewById(R.id.member_name_textview);
-            contactAddressView = (TextView) v.findViewById(R.id.contact_address_textview);
-            restrictionsView = (TextView) v.findViewById(R.id.restriction_count_textview);
-            sendStatusTextView = (TextView) v.findViewById(R.id.sent_status_textview);
+            avatarImageView = (ImageView) view.findViewById(R.id.imageView_avatar);
+            memberNameView = (TextView) view.findViewById(R.id.textView_member_name);
+            contactAddressView = (TextView) view.findViewById(R.id.textView_contact_address);
+            restrictionsView = (TextView) view.findViewById(R.id.textView_restriction_count);
+            sendStatusTextView = (TextView) view.findViewById(R.id.textView_sent_status);
 
-            v.setTag(R.id.member_imageview, avatarView);
-            v.setTag(R.id.member_name_textview, memberNameView);
-            v.setTag(R.id.contact_address_textview, contactAddressView);
-            v.setTag(R.id.restriction_count_textview, restrictionsView);
-            v.setTag(R.id.sent_status_textview, sendStatusTextView);
+            view.setTag(R.id.imageView_avatar, avatarImageView);
+            view.setTag(R.id.textView_member_name, memberNameView);
+            view.setTag(R.id.textView_contact_address, contactAddressView);
+            view.setTag(R.id.textView_restriction_count, restrictionsView);
+            view.setTag(R.id.textView_sent_status, sendStatusTextView);
         } else {
             // Recycled View is available, retrieve the holder instance from the View
-            avatarView = (ImageView) v.getTag(R.id.member_imageview);
-            memberNameView = (TextView) v.getTag(R.id.member_name_textview);
-            contactAddressView = (TextView) v.getTag(R.id.contact_address_textview);
-            restrictionsView = (TextView) v.getTag(R.id.restriction_count_textview);
-            sendStatusTextView = (TextView) v.getTag(R.id.sent_status_textview);
+            avatarImageView = (ImageView) view.getTag(R.id.imageView_avatar);
+            memberNameView = (TextView) view.getTag(R.id.textView_member_name);
+            contactAddressView = (TextView) view.getTag(R.id.textView_contact_address);
+            restrictionsView = (TextView) view.getTag(R.id.textView_restriction_count);
+            sendStatusTextView = (TextView) view.getTag(R.id.textView_sent_status);
         }
 
-        MemberRowDetails row = getItem(_position);
+        MemberRowDetails row = getItem(position);
         Member member = row.getMember();
         Assignment assignment = row.getAssignment();
 
         // Assign the view with its content.
-        if(member.getContactId() == PersistableObject.UNSET_ID || member.getLookupKey() == null) {
-            Picasso.with(getContext()).load(R.drawable.ic_contact_picture).into(avatarView);
+        if (member.getContactId() == PersistableObject.UNSET_ID || member.getLookupKey() == null) {
+            avatarImageView.setImageResource(R.drawable.ic_contact_picture);
         } else {
             Uri lookupUri = ContactsContract.Contacts.getLookupUri(member.getContactId(), member.getLookupKey());
             Uri contactUri = ContactsContract.Contacts.lookupContact(getContext().getContentResolver(), lookupUri);
-            Picasso.with(getContext()).load(contactUri)
-              .placeholder(R.drawable.ic_contact_picture).error(R.drawable.ic_contact_picture)
-              .into(avatarView);
+            Picasso.with(getContext())
+                    .load(contactUri)
+                    .placeholder(R.drawable.ic_contact_picture)
+                    .error(R.drawable.ic_contact_picture)
+                    .into(avatarImageView);
         }
 
         memberNameView.setText(member.getName());
         contactAddressView.setText(member.getContactDetails());
+        contactAddressView.setVisibility(member.getContactMethod().isSendable() ? View.VISIBLE : View.GONE);
 
         final long restrictionCount = member.getRestrictionCount();
-        if(restrictionCount > 0) {
-            restrictionsView.setText(String.valueOf(restrictionCount) + " " + getContext().getString(R.string.restrictions_label) + (restrictionCount > 1?"s":""));
+        if (restrictionCount > 0) {
+            restrictionsView.setText(String.valueOf(restrictionCount) + " " + getContext().getString(R.string.restrictions_label) + (restrictionCount > 1 ? "s" : ""));
             restrictionsView.setVisibility(View.VISIBLE);
         } else {
             restrictionsView.setVisibility(View.GONE);
@@ -109,30 +111,30 @@ public class MemberListAdapter extends ArrayAdapter<MemberRowDetails> {
 
         sendStatusTextView.setVisibility(assignment == null ? View.INVISIBLE : View.VISIBLE);
 
-        if(assignment != null) {
+        if (assignment != null) {
             setSendStatusText(sendStatusTextView, assignment);
             setStatusColor(sendStatusTextView, assignment);
         }
 
-        return v;
+        return view;
     }
 
-    private void setSendStatusText(TextView _sendStatusTextView, Assignment _assignment) {
-        _sendStatusTextView.setText(_assignment.getSendStatus().getText());
+    private void setSendStatusText(TextView sendStatusTextView, Assignment assignment) {
+        sendStatusTextView.setText(assignment.getSendStatus().getText());
     }
 
-    private void setStatusColor(View _view, Assignment _assignment) {
-        switch(_assignment.getSendStatus()) {
+    private void setStatusColor(View view, Assignment assignment) {
+        switch (assignment.getSendStatus()) {
             case Sent:
             case Revealed:
-                _view.setBackgroundResource(android.R.color.holo_green_light);
+                view.setBackgroundResource(R.color.revealed);
                 break;
             case Failed:
-                _view.setBackgroundResource(android.R.color.holo_red_light);
+                view.setBackgroundResource(R.color.failed);
                 break;
             case Assigned:
             default:
-                _view.setBackgroundResource(android.R.color.holo_orange_light);
+                view.setBackgroundResource(R.color.assigned);
         }
     }
 }

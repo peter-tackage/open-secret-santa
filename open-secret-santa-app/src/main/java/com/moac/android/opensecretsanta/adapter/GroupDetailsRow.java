@@ -14,12 +14,12 @@ public class GroupDetailsRow implements DrawerListAdapter.Item {
 
     private static final SimpleDateFormat format = new SimpleDateFormat("d MMM yyyy");
 
-    protected long mId;
+    protected long mGroupId;
     protected String mName;
     protected long mCreationDate;
 
     public GroupDetailsRow(long _groupId, String _groupName, long _groupCreationDate) {
-        mId = _groupId;
+        mGroupId = _groupId;
         mName = _groupName;
         mCreationDate = _groupCreationDate;
     }
@@ -31,7 +31,7 @@ public class GroupDetailsRow implements DrawerListAdapter.Item {
 
     @Override
     public long getItemId() {
-        return mId;
+        return mGroupId;
     }
 
     @Override
@@ -41,14 +41,14 @@ public class GroupDetailsRow implements DrawerListAdapter.Item {
         TextView groupDateView;
 
         if(view == null) {
-            view = LayoutInflater.from(_context).inflate(R.layout.group_row_view, _parent, false);
-            groupNameView = (TextView) view.findViewById(R.id.group_name_textView);
-            groupDateView = (TextView) view.findViewById(R.id.group_date_textView);
-            view.setTag(R.id.group_name_textView, groupNameView);
-            view.setTag(R.id.group_date_textView, groupDateView);
+            view = LayoutInflater.from(_context).inflate(R.layout.list_item_group, _parent, false);
+            groupNameView = (TextView) view.findViewById(R.id.textView_groupName);
+            groupDateView = (TextView) view.findViewById(R.id.textView_groupDate);
+            view.setTag(R.id.textView_groupName, groupNameView);
+            view.setTag(R.id.textView_groupDate, groupDateView);
         } else {
-            groupNameView = (TextView) view.getTag(R.id.group_name_textView);
-            groupDateView = (TextView) view.getTag(R.id.group_date_textView);
+            groupNameView = (TextView) view.getTag(R.id.textView_groupName);
+            groupDateView = (TextView) view.getTag(R.id.textView_groupDate);
         }
 
         groupNameView.setText(mName);
@@ -57,7 +57,7 @@ public class GroupDetailsRow implements DrawerListAdapter.Item {
         return view;
     }
 
-    public long getId() { return mId; }
+    public long getId() { return mGroupId; }
 
     public String getName() { return mName; }
 

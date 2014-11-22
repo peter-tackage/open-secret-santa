@@ -1,59 +1,99 @@
 package com.moac.android.opensecretsanta.fragment;
 
-import android.app.*;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseBooleanArray;
-import android.view.*;
-import android.widget.*;
-import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
+import android.view.ActionMode;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.moac.android.inject.dagger.InjectingListFragment;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.activity.Intents;
 import com.moac.android.opensecretsanta.adapter.MemberListAdapter;
 import com.moac.android.opensecretsanta.adapter.MemberRowDetails;
 import com.moac.android.opensecretsanta.adapter.SuggestionsAdapter;
-import com.moac.android.opensecretsanta.content.BusProvider;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
-import com.moac.android.opensecretsanta.draw.*;
+import com.moac.android.opensecretsanta.draw.DefaultDrawExecutor;
+import com.moac.android.opensecretsanta.draw.DrawEngineFactory;
+import com.moac.android.opensecretsanta.draw.DrawExecutor;
+import com.moac.android.opensecretsanta.draw.DrawResultEvent;
+import com.moac.android.opensecretsanta.draw.InvalidDrawEngineException;
+import com.moac.android.opensecretsanta.draw.MemberEditor;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 import com.moac.android.opensecretsanta.notify.NotifyStatusEvent;
+import com.moac.android.opensecretsanta.util.validator.GroupNameValidator;
 import com.moac.drawengine.DrawEngine;
+import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import javax.inject.Inject;
+
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.concurrency.AndroidSchedulers;
 import rx.concurrency.Schedulers;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import static com.moac.android.opensecretsanta.util.Utils.safeUnsubscribe;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
-
-public class MemberListFragment extends ListFragment implements AbsListView.MultiChoiceModeListener {
+// TODO(PT) This class is too big
+public class MemberListFragment extends InjectingListFragment {
 
     private static final String TAG = MemberListFragment.class.getSimpleName();
     private static final String DRAW_IN_PROGRESS_KEY = "drawInProgress";
     public static final String ASSIGNMENT_FRAGMENT_KEY = "AssignmentFragment";
 
+    private ActionMode mActionMode;
+
     private enum Mode {Building, Notify}
 
-    private DatabaseManager mDb;
-    private Group mGroup;
-    private MemberListAdapter mAdapter;
+    @Inject
+    DatabaseManager mDb;
+
+    @Inject
+    SharedPreferences mSharedPreferences;
+
+    @Inject
+    Bus mBus;
 
     // FIXME Perhaps hold this in a separate model with listeners/observers
     private Mode mMode = Mode.Building;
-    private AutoCompleteTextView mCompleteTextView;
+    private Group mGroup;
+
+    private MemberListAdapter mAdapter;
+    private AutoCompleteTextView mAutoCompleteTextView;
     private Menu mMenu; // non CAB items
 
     private ProgressDialog mDrawProgressDialog;
@@ -61,9 +101,6 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     private FragmentContainer mFragmentContainer;
 
-    /**
-     * Factory method for this fragment class
-     */
     public static MemberListFragment create(long _groupId) {
         Log.i(TAG, "MemberListFragment() - factory creating for groupId: " + _groupId);
         MemberListFragment fragment = new MemberListFragment();
@@ -74,96 +111,62 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     @Override
-    public void onAttach(Activity _activity) {
+    public void onAttach(Activity activity) {
         Log.i(TAG, "onAttach()");
-        super.onAttach(_activity);
+        super.onAttach(activity);
         try {
-            mFragmentContainer = (FragmentContainer) _activity;
-        } catch(ClassCastException e) {
-            throw new ClassCastException(_activity.toString() + " must implement FragmentContainer");
+            mFragmentContainer = (FragmentContainer) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement FragmentContainer");
         }
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
 
-        mDb = OpenSecretSantaApplication.getInstance().getDatabase();
         long groupId = getArguments().getLong(Intents.GROUP_ID_INTENT_EXTRA);
         mGroup = mDb.queryById(groupId, Group.class);
+
+        // Initialise content dependent on injection
+        TextView titleText = (TextView) getView().findViewById(R.id.textView_groupName);
+        titleText.setText(mGroup.getName());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView()");
-
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_members_list, container, false);
-
-        mCompleteTextView = (AutoCompleteTextView) view.findViewById(R.id.add_autoCompleteTextView);
-        mCompleteTextView.setThreshold(1);
-        mCompleteTextView.setAdapter(new SuggestionsAdapter(getActivity()));
-        mCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Member selected = (Member) mCompleteTextView.getAdapter().getItem(position);
-                Log.i(TAG, "OnItemClick() - name: " + selected.getName());
-                addMember(selected, mGroup);
-                mCompleteTextView.setText("");
-                mCompleteTextView.requestFocus(); // Keep focus for more entries
-            }
-        });
-
-        TextView titleText = (TextView) view.findViewById(R.id.content_title_textview);
-        titleText.setText(mGroup.getName());
-
-        mAdapter = new MemberListAdapter(getActivity(), R.layout.member_row);
-        setListAdapter(mAdapter);
-
+        bindViews(view);
         return view;
+    }
+
+    private void bindViews(View view) {
+        mAutoCompleteTextView = (AutoCompleteTextView) view.findViewById(R.id.autoCompleteTextView_addMember);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         Log.i(TAG, "onViewCreated()");
         super.onViewCreated(view, savedInstanceState);
-
-        // Initially don't perform check selection.
-        getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-        getListView().setMultiChoiceModeListener(this);
-        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Show visual indicator of selection and trigger CAB.
-                ((ListView) parent).setItemChecked(position, true);
-            }
-        });
+        configureViews();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         Log.i(TAG, "onResume() - registering event bus");
-        BusProvider.getInstance().register(this);
+        mBus.register(this);
         populateUI();
-    }
-
-    private void populateUI() {
-        mMode = evaluateMode();
-        setHeader(); // depends on mode
-        // Populate member list
-        populateMemberList();
-        setMenuItems(); // depends on adapter contents
     }
 
     @Override
     public void onPause() {
         super.onPause();
         Log.i(TAG, "onPause() - deregistering event bus");
-        BusProvider.getInstance().unregister(this);
+        mBus.unregister(this);
     }
 
     @Override
@@ -178,28 +181,21 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         inflater.inflate(R.menu.action_bar_menu, menu);
         inflater.inflate(R.menu.dropdown_menu, menu);
         mMenu = menu;
-        setMenuItems();
-    }
-
-    @Override
-    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-        // Inflate a menu resource providing context menu items
-        MenuInflater inflater = mode.getMenuInflater();
-        inflater.inflate(R.menu.cab_member_list_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        return false;
+        setMenuItemsForMode(mMode);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle *non-contextual* action bar selection
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.menu_item_clear_assignments:
                 confirmClearAssignments();
+                return true;
+            case R.id.menu_item_delete_group:
+                confirmDeleteGroup();
+                return true;
+            case R.id.menu_item_rename_group:
+                openRenameGroupDialog();
                 return true;
             case R.id.menu_item_draw:
                 attemptDraw();
@@ -215,68 +211,23 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     private void attemptDraw() {
         try {
             mDrawSubscription = doDraw();
-        } catch(InvalidDrawEngineException e) {
+        } catch (InvalidDrawEngineException e) {
             Log.e(TAG, "Failed to load Draw Engine: " + e.getMessage());
             Toast.makeText(getActivity(), getString(R.string.draw_engine_init_error_msg), Toast.LENGTH_LONG).show();
         }
     }
 
     @Override
-    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-        // Handle contextual action bar selection
-        // Some actions will end the current action mode on completion, others not.
-        switch(item.getItemId()) {
-            case R.id.menu_item_edit:
-                doEdit(getListView().getCheckedItemIds()[0]);
-                mode.finish();
-                return true;
-            case R.id.menu_item_restrict:
-                doRestrictions(getListView().getCheckedItemIds()[0]);
-                mode.finish();
-                return true;
-            case R.id.menu_item_delete:
-                doDelete(getListView().getCheckedItemIds());
-                mode.finish();
-                return true;
-            case R.id.menu_item_notify_selection:
-                doNotify(getListView().getCheckedItemIds());
-                mode.finish();
-                return true;
-            case R.id.menu_item_reveal:
-                doReveal(getListView().getCheckedItemIds()[0]);
-                mode.finish();
-                return true;
-            default:
-                return false;
-        }
+    public void onDestroyView() {
+        if (mActionMode != null) mActionMode.finish();
+        super.onDestroyView();
     }
 
     @Override
     public void onDestroy() {
-        if(mDrawSubscription != null) {
-            mDrawSubscription.unsubscribe();
-            mDrawSubscription = null;
-        }
+        safeUnsubscribe(mDrawSubscription);
+        setListAdapter(null);
         super.onDestroy();
-    }
-
-    @Override
-    public void onDestroyActionMode(ActionMode mode) {
-        Log.i(TAG, "onDestroyActionMode()");
-    }
-
-    @Override
-    public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-        Log.i(TAG, "onItemCheckedStateChanged()");
-        int selectedCount = getListView().getCheckedItemCount();
-        boolean isCheckedSelected = hasSendableItemChecked(getListView());
-
-        mode.setTitle(selectedCount + " selected");
-        mode.getMenu().findItem(R.id.menu_item_edit).setVisible(selectedCount == 1);
-        mode.getMenu().findItem(R.id.menu_item_delete).setVisible(mMode == Mode.Building);
-        mode.getMenu().findItem(R.id.menu_item_notify_selection).setVisible(mMode == Mode.Notify && isCheckedSelected);
-        mode.getMenu().findItem(R.id.menu_item_restrict).setVisible(mMode == Mode.Building && selectedCount == 1);
-        mode.getMenu().findItem(R.id.menu_item_reveal).setVisible(mMode == Mode.Notify && selectedCount == 1);
     }
 
     /*
@@ -289,19 +240,141 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         populateMemberList();
     }
 
+    private void configureViews() {
+        mAutoCompleteTextView.setThreshold(1);
+        mAutoCompleteTextView.setAdapter(new SuggestionsAdapter(getActivity()));
+        mAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Member member = (Member) mAutoCompleteTextView.getAdapter().getItem(position);
+                Log.i(TAG, "OnItemClick() - name: " + member.getName());
+                addMember(member, mGroup);
+                mAutoCompleteTextView.setText("");
+                mAutoCompleteTextView.requestFocus(); // Keep focus for more entries
+            }
+        });
+
+        // Configure Adapter
+        mAdapter = new MemberListAdapter(getActivity(), R.layout.list_item_member);
+        setListAdapter(mAdapter);
+
+        // Initially don't perform check selection.
+        getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        getListView().setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                // Inflate a menu resource providing context menu items
+                MenuInflater inflater = mode.getMenuInflater();
+                inflater.inflate(R.menu.cab_member_list_menu, menu);
+                mActionMode = mode;
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                // Handle contextual action bar selection
+                // Some actions will end the current action mode on completion, others not.
+                switch (item.getItemId()) {
+                    case R.id.menu_item_edit:
+                        doEdit(getListView().getCheckedItemIds()[0]);
+                        mode.finish();
+                        return true;
+                    case R.id.menu_item_restrict:
+                        doRestrictions(getListView().getCheckedItemIds()[0]);
+                        mode.finish();
+                        return true;
+                    case R.id.menu_item_delete:
+                        confirmDeleteMembers(getListView().getCheckedItemIds());
+                        mode.finish();
+                        return true;
+                    case R.id.menu_item_notify_selection:
+                        doNotify(getListView().getCheckedItemPositions());
+                        mode.finish();
+                        return true;
+                    case R.id.menu_item_reveal:
+                        doReveal(getListView().getCheckedItemIds()[0]);
+                        mode.finish();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                Log.i(TAG, "onDestroyActionMode()");
+                mode.getMenu().clear();
+                mActionMode = null;
+            }
+
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+                Log.i(TAG, "onItemCheckedStateChanged()");
+                int checkedItemCount = getListView().getCheckedItemCount();
+                boolean isSingleItemChecked = checkedItemCount == 1;
+                boolean hasSendableItemChecked = hasSendableItemChecked(getListView());
+                mode.setTitle(String.format(getString(R.string.list_selection_count_title_unformatted), checkedItemCount));
+                mode.getMenu().findItem(R.id.menu_item_edit).setVisible(isSingleItemChecked);
+                mode.getMenu().findItem(R.id.menu_item_delete).setVisible(mMode == Mode.Building);
+                mode.getMenu().findItem(R.id.menu_item_notify_selection).setVisible(mMode == Mode.Notify && hasSendableItemChecked);
+                mode.getMenu().findItem(R.id.menu_item_restrict).setVisible(mMode == Mode.Building && isSingleItemChecked);
+                mode.getMenu().findItem(R.id.menu_item_reveal).setVisible(mMode == Mode.Notify && isSingleItemChecked);
+            }
+        });
+        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Show visual indicator of selection and trigger CAB.
+                Log.i(TAG, "onItemClick() - position: " + position);
+                ((ListView) parent).setItemChecked(position, true);
+            }
+        });
+    }
+
+    private void confirmDeleteMembers(final long[] memberIds) {
+        String memberQuantity = getResources().getQuantityString(R.plurals.memberQuantity, memberIds.length);
+        new AlertDialog.Builder(getActivity())
+                .setTitle(getString(R.string.delete_selection_dialog_title_unformatted, memberIds.length,
+                        memberQuantity))
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        doDelete(memberIds);
+                    }
+                })
+                .setMessage(getString(R.string.delete_members_confirm_msg_unformatted, memberQuantity))
+                .create()
+                .show();
+    }
+
+    private void populateUI() {
+        mMode = evaluateMode();
+        setHeader(); // depends on mode
+        // Populate member list
+        populateMemberList();
+        setMenuItemsForMode(mMode); // depends on adapter contents
+    }
+
     private void onModeChanged() {
-        setMenuItems();
+        setMenuItemsForMode(mMode);
         setHeader();
     }
 
     private void setHeader() {
-        switch(mMode) {
+        switch (mMode) {
             case Building:
-                mCompleteTextView.setVisibility(View.VISIBLE);
+                mAutoCompleteTextView.setVisibility(View.VISIBLE);
                 break;
             case Notify:
-                mCompleteTextView.setVisibility(View.GONE);
-                mCompleteTextView.setText("");
+                mAutoCompleteTextView.setVisibility(View.GONE);
+                mAutoCompleteTextView.setText("");
                 break;
             default:
                 break;
@@ -309,11 +382,11 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     // TODO Do in background
-    private void doDelete(long[] _ids) {
-        if(_ids == null || _ids.length == 0)
+    private void doDelete(long[] ids) {
+        if (ids == null || ids.length == 0)
             return;
 
-        for(long id : _ids) {
+        for (long id : ids) {
             mDb.delete(id, Member.class);
         }
         // FIXME This is seems to be required to delete the last one.
@@ -323,40 +396,115 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     private void confirmClearAssignments() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.clear_assignments_dialog, null);
+        @SuppressLint("InflateParams")
+        View view = inflater.inflate(R.layout.dialog_clear_assignments, null);
 
-        builder.setTitle(R.string.clear_assignments_dialog_title);
-        builder.setIcon(R.drawable.ic_menu_delete);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                .setView(view)
+                .setTitle(R.string.clear_assignments_dialog_title)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        invalidateAssignments(mGroup);
+                        populateMemberList();
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
 
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                invalidateAssignments(mGroup);
-                populateMemberList();
-            }
-        });
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User cancelled the dialog
-            }
-        });
-
-        TextView dialogMsgView = (TextView) view.findViewById(R.id.clear_assignments_text);
-        dialogMsgView.setText(R.string.clear_assignments_dialog_msg);
-        builder.setView(view);
-
-        AlertDialog dialog = builder.create();
+        Dialog dialog = builder.create();
         dialog.show();
     }
 
-    private void setMenuItems() {
-        // Non-CAB buttons only
-        if(mMenu != null) {
-            mMenu.findItem(R.id.menu_item_draw).setVisible(mMode == Mode.Building);
-            mMenu.findItem(R.id.menu_item_notify_group).setVisible(mMode == Mode.Notify && hasSendableItem(mAdapter));
-            mMenu.findItem(R.id.menu_item_clear_assignments).setVisible(mMode == Mode.Notify);
+    private void confirmDeleteGroup() {
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        @SuppressLint("InflateParams")
+        View view = inflater.inflate(R.layout.dialog_delete_group, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                .setView(view)
+                .setTitle(R.string.delete_group_dialog_title)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        mFragmentContainer.deleteGroup(mGroup.getId());
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+
+        Dialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void openRenameGroupDialog() {
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        @SuppressLint("InflateParams")
+        View view = inflater.inflate(R.layout.dialog_rename_group, null);
+        final EditText groupNameEditText = (EditText) view.findViewById(R.id.editText_groupName);
+        groupNameEditText.setText(mGroup.getName());
+        groupNameEditText.setSelection(groupNameEditText.getText().length());
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                .setView(view)
+                .setTitle(R.string.rename_group_dialog_title)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Handled in custom listener defined after show()
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+
+        // Override the dialog positive button behaviour to allow for custom validation
+        Button okButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Clear error
+                groupNameEditText.setError(null);
+
+                String newGroupName = groupNameEditText.getText().toString().trim();
+
+                // Hasn't change, just dismiss - allow case change for the same group
+                if (newGroupName.equals(mGroup.getName())) {
+                    dialog.dismiss();
+                    return;
+                }
+
+                // Validate new Group name
+                GroupNameValidator validator = new GroupNameValidator(mDb, mGroup.getId(), newGroupName);
+                if (!validator.isValid()) {
+                    groupNameEditText.setError(validator.getMsg());
+                } else {
+                    mFragmentContainer.renameGroup(mGroup.getId(), newGroupName);
+                    dialog.dismiss();
+                }
+            }
+        });
+
+    }
+
+    private void setMenuItemsForMode(Mode mode) {
+        // Set visibility of Non-CAB buttons only
+        if (mMenu != null) {
+            mMenu.findItem(R.id.menu_item_draw).setVisible(mode == Mode.Building);
+            mMenu.findItem(R.id.menu_item_notify_group).setVisible(mode == Mode.Notify && hasSendableItem(mAdapter));
+            mMenu.findItem(R.id.menu_item_clear_assignments).setVisible(mode == Mode.Notify);
         }
     }
 
@@ -369,10 +517,14 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         onModeChanged();
     }
 
-    private void doNotify(long[] _memberIds) {
-        if(_memberIds == null || _memberIds.length == 0)
-            return;
-        requestNotifyDraw(mGroup, _memberIds);
+    private void doNotify(SparseBooleanArray checkedMemberPositions) {
+        if (checkedMemberPositions == null || checkedMemberPositions.size() == 0) return;
+
+        long[] sendableMemberIds = checkedMemberPositionToSendableIds(checkedMemberPositions);
+        if (sendableMemberIds.length != 0) {
+            // Remove non-sendable members
+            requestNotifyDraw(mGroup, sendableMemberIds);
+        }
     }
 
     private void doNotifyAll() {
@@ -390,32 +542,32 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         DrawExecutor drawExecutor = new DefaultDrawExecutor(mDb);
         Observable<DrawResultEvent> ob = drawExecutor.requestDraw(engine, mGroup);
         return ob.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).
-          subscribe(new Observer<DrawResultEvent>() {
-              @Override
-              public void onCompleted() {
-                  Log.i(TAG, "onCompleted");
-                  mDrawSubscription = null;
-                  mDrawProgressDialog.dismiss();
-                  mDrawProgressDialog = null;
-                  Log.i(TAG, "onDrawResult() - got event");
-                  mMode = evaluateMode();
-                  onModeChanged();
-                  populateMemberList();
-              }
+                subscribe(new Observer<DrawResultEvent>() {
+                    @Override
+                    public void onCompleted() {
+                        Log.i(TAG, "onCompleted");
+                        mDrawSubscription = null;
+                        mDrawProgressDialog.dismiss();
+                        mDrawProgressDialog = null;
+                        Log.i(TAG, "onDrawResult() - got event");
+                        mMode = evaluateMode();
+                        onModeChanged();
+                        populateMemberList();
+                    }
 
-              @Override
-              public void onError(Throwable e) {
-                  Log.i(TAG, "onError");
-                  mDrawProgressDialog.dismiss();
-                  Toast.makeText(getActivity(), getString(R.string.draw_failed_msg), Toast.LENGTH_SHORT).show();
-              }
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i(TAG, "onError");
+                        mDrawProgressDialog.dismiss();
+                        Toast.makeText(getActivity(), getString(R.string.draw_failed_msg), Toast.LENGTH_LONG).show();
+                    }
 
-              @Override
-              public void onNext(DrawResultEvent args) {
-                  Log.i(TAG, "onNext");
-                  Toast.makeText(getActivity(), getString(R.string.draw_success_msg), Toast.LENGTH_SHORT).show();
-              }
-          });
+                    @Override
+                    public void onNext(DrawResultEvent args) {
+                        Log.i(TAG, "onNext");
+                        Toast.makeText(getActivity(), getString(R.string.draw_success_msg), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void showDrawProgressDialog() {
@@ -423,31 +575,31 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         mDrawProgressDialog = ProgressDialog.show(getActivity(), "", getString(R.string.draw_in_progress_msg), true);
     }
 
-    private void doEdit(long _memberId) {
-        getMemberEditor().onEditMember(_memberId);
+    private void doEdit(long memberId) {
+        getMemberEditor().onEditMember(memberId);
     }
 
-    private void doRestrictions(long _memberId) {
-        getMemberEditor().onRestrictMember(mGroup.getId(), _memberId);
+    private void doRestrictions(long memberId) {
+        getMemberEditor().onRestrictMember(mGroup.getId(), memberId);
     }
 
-    private void doReveal(long _memberId) {
-        Member giver = mDb.queryById(_memberId, Member.class);
-        Log.i(TAG, "doReveal(): memberId: " + _memberId);
+    private void doReveal(long memberId) {
+        Member giver = mDb.queryById(memberId, Member.class);
+        Log.i(TAG, "doReveal(): memberId: " + memberId);
         Log.i(TAG, "doReveal(): giver name: " + giver.getName());
 
-        Assignment assignment = mDb.queryAssignmentForMember(_memberId);
+        Assignment assignment = mDb.queryAssignmentForMember(memberId);
         long _receiverId = assignment.getReceiverMemberId();
         Member receiver = mDb.queryById(_receiverId, Member.class);
         String avatarUri = null;
         // TODO Check the validity of URIs with various values. Write Utils method.
-        if(receiver.getContactId() != PersistableObject.UNSET_ID && receiver.getLookupKey() != null) {
+        if (receiver.getContactId() != PersistableObject.UNSET_ID && receiver.getLookupKey() != null) {
             Uri lookupUri = ContactsContract.Contacts.getLookupUri(receiver.getContactId(), receiver.getLookupKey());
             Uri contactUri = ContactsContract.Contacts.lookupContact(getActivity().getContentResolver(), lookupUri);
             avatarUri = contactUri.toString();
         }
         // Create an instance of the dialog fragment and show it
-        DialogFragment dialog = AssignmentFragment.create(giver.getName(), receiver.getName(), avatarUri);
+        DialogFragment dialog = RevealDialogFragment.create(giver.getName(), receiver.getName(), avatarUri);
         dialog.show(getFragmentManager(), ASSIGNMENT_FRAGMENT_KEY);
 
         // Set as Revealed
@@ -460,17 +612,17 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
     // TODO Make calls do this asynchronously
     private void populateMemberList() {
-       // getListView().clearChoices();
+        // getListView().clearChoices();
         mAdapter.setNotifyOnChange(false);
         mAdapter.clear();
         mAdapter.addAll(buildMemberRowDetails(mGroup.getId()));
         mAdapter.notifyDataSetChanged();
     }
 
-    private List<MemberRowDetails> buildMemberRowDetails(long _groupId) {
-        List<MemberRowDetails> rows = new ArrayList<MemberRowDetails>();
-        List<Member> members = mDb.queryAllMembersForGroup(_groupId);
-        for(Member member : members) {
+    private List<MemberRowDetails> buildMemberRowDetails(long groupId) {
+        List<MemberRowDetails> rows = new ArrayList<>();
+        List<Member> members = mDb.queryAllMembersForGroup(groupId);
+        for (Member member : members) {
             Assignment assignment = mDb.queryAssignmentForMember(member.getId());
             MemberRowDetails row = new MemberRowDetails(member, assignment);
             rows.add(row);
@@ -480,30 +632,24 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         return rows;
     }
 
-    public long getGroupId() {
-        return mGroup.getId();
-    }
-
-    private void addMember(Member _member, Group _group) {
-        if(isNullOrEmpty(_member.getName()))
-            return;
+    private void addMember(Member member, Group group) {
+        if (TextUtils.isEmpty(member.getName())) return;
 
         final String msg;
-        _member.setGroup(_group);
+        member.setGroup(group);
 
         // Test to see if we already have this member in the group.
-        Member existing = mDb.queryMemberWithNameForGroup(_group.getId(), _member.getName());
-
-        if(existing != null) {
-            msg = String.format(getString(R.string.duplicate_name_msg), _member.getName());
+        Member existing = mDb.queryMemberWithNameForGroup(group.getId(), member.getName());
+        if (existing != null) {
+            msg = String.format(getString(R.string.duplicate_name_msg_unformatted), member.getName());
         } else {
-            long id = mDb.create(_member);
-            if(id != PersistableObject.UNSET_ID) {
-                msg = String.format(getString(R.string.member_add_msg), _member.getName());
-                invalidateAssignments(_group);
+            long id = mDb.create(member);
+            if (id != PersistableObject.UNSET_ID) {
+                msg = String.format(getString(R.string.member_add_msg_unformatted), member.getName());
+                invalidateAssignments(group);
                 populateMemberList();
             } else {
-                msg = String.format(getString(R.string.failed_add_member_msg), _member.getName());
+                msg = String.format(getString(R.string.failed_add_member_msg_unformatted), member.getName());
             }
         }
         Toast toast = Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT);
@@ -518,26 +664,25 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     // Returns an instance of the currently preferred DrawEngine
     private DrawEngine getCurrentDrawEngine() throws InvalidDrawEngineException {
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String defaultName = getActivity().getString(R.string.defaultDrawEngine);
-        String classname = prefs.getString("engine_preference",
-          defaultName);
+        String classname = mSharedPreferences.getString("engine_preference",
+                defaultName);
 
         Log.i(TAG, "getCurrentDrawEngine() - setting draw engine to: " + classname);
 
         try {
             return DrawEngineFactory.createDrawEngine(classname);
-        } catch(InvalidDrawEngineException e) {
+        } catch (InvalidDrawEngineException e) {
             // Error: If we weren't attempting to load the default name, then try that instead
-            if(!classname.equals(defaultName)) {
+            if (!classname.equals(defaultName)) {
                 Log.w(TAG, "Failed to initialise draw engine class: " + classname);
                 try {
                     // Try to set the default then.
                     DrawEngine engine = DrawEngineFactory.createDrawEngine(defaultName);
                     // Success - update preference to use the default.
-                    prefs.edit().putString("engine_preference", defaultName).commit();
+                    mSharedPreferences.edit().putString("engine_preference", defaultName).apply();
                     return engine;
-                } catch(InvalidDrawEngineException ideexp2) {
+                } catch (InvalidDrawEngineException ideexp2) {
                     Log.e(TAG, "Unable to initialise default draw engine class: " + classname, ideexp2);
                     throw ideexp2;
                 }
@@ -547,12 +692,12 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     // Gah...
-    private boolean hasSendableItemChecked(ListView list) {
+    private static boolean hasSendableItemChecked(ListView list) {
         SparseBooleanArray checkedPositions = list.getCheckedItemPositions();
-        for(int i = 0; i < checkedPositions.size(); i++) {
+        for (int i = 0; i < checkedPositions.size(); i++) {
             int position = checkedPositions.keyAt(i);
             boolean isChecked = checkedPositions.valueAt(i);
-            if(isChecked && ((MemberRowDetails) (list.getAdapter().getItem(position))).getMember().getContactMethod().isSendable()) {
+            if (isChecked && ((MemberRowDetails) (list.getAdapter().getItem(position))).getMember().getContactMethod().isSendable()) {
                 Log.v(TAG, "hasSendableItemChecked() - position checked: " + position);
                 return true;
             }
@@ -560,14 +705,36 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
         return false;
     }
 
-    private boolean hasSendableItem(MemberListAdapter adapter) {
-        for(int i = 0; i < adapter.getCount(); i++) {
+    private static boolean hasSendableItem(MemberListAdapter adapter) {
+        for (int i = 0; i < adapter.getCount(); i++) {
             MemberRowDetails rowDetails = adapter.getItem(i);
-            if(rowDetails.getMember().getContactMethod().isSendable()) {
+            if (rowDetails.getMember().getContactMethod().isSendable()) {
                 return true;
             }
         }
         return false;
+    }
+
+    // FIXME This is terrible code
+    private long[] checkedMemberPositionToSendableIds(SparseBooleanArray checkedMemberPositions) {
+        // Find all the checked member ids that are sendable
+        ArrayList<Long> sendableMemberIdsList = new ArrayList<>();
+        for (int i = 0; i < checkedMemberPositions.size(); i++) {
+            int key = checkedMemberPositions.keyAt(i);
+            if (checkedMemberPositions.get(key)) {
+                MemberRowDetails checkedMemberDetails = mAdapter.getItem(key);
+                if (checkedMemberDetails.getMember().getContactMethod().isSendable()) {
+                    sendableMemberIdsList.add(checkedMemberDetails.getMember().getId());
+                }
+            }
+        }
+
+        // Convert that list of Longs to long
+        long[] sendableMemberIds = new long[sendableMemberIdsList.size()];
+        for (int i = 0; i < sendableMemberIds.length; i++) {
+            sendableMemberIds[i] = sendableMemberIdsList.get(i);
+        }
+        return sendableMemberIds;
     }
 
     /*
@@ -583,7 +750,7 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
     }
 
     void requestNotifyDraw(Group group, long[] memberIds) {
-        mFragmentContainer.requestNotifyDraw(group, memberIds);
+        mFragmentContainer.requestNotifySelectionDraw(group, memberIds);
     }
 
     public interface FragmentContainer {
@@ -591,6 +758,10 @@ public class MemberListFragment extends ListFragment implements AbsListView.Mult
 
         void requestNotifyDraw(Group group);
 
-        void requestNotifyDraw(Group group, long[] memberIds);
+        void requestNotifySelectionDraw(Group group, long[] memberIds);
+
+        void deleteGroup(long groupId);
+
+        void renameGroup(long groupId, String newGroupName);
     }
 }

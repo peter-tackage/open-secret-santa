@@ -1,5 +1,7 @@
 package com.moac.android.opensecretsanta.util.validator;
 
+import android.util.Patterns;
+
 public class SmsValidator implements Validator{
 
     private final String mPhoneNumber;
@@ -11,9 +13,8 @@ public class SmsValidator implements Validator{
 
     @Override
     public boolean isValid() {
-        // TODO A bit like email in terms of actual validation.
-        if(mPhoneNumber == null || mPhoneNumber.isEmpty()) {
-            mMsg = "Something doesn't seem right!";
+        if(!Patterns.PHONE.matcher(mPhoneNumber).matches()) {
+            mMsg = "Phone number isn't valid";
         }
         return mMsg == null;
     }
