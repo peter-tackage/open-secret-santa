@@ -233,9 +233,9 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.i(TAG, "onActivityResult() - requestCode: " + requestCode);
-        if (requestCode == SMS_PERMISSION_REQUEST_CODE) {
-            // Send the result, regardless of selection (controls whether SMS is written to provider)
+        Log.i(TAG, "onActivityResult() - requestCode: " + requestCode + " resultCode: " + resultCode);
+        if (requestCode == SMS_PERMISSION_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            // Send the result
             onNotifyRequested();
         }
     }
