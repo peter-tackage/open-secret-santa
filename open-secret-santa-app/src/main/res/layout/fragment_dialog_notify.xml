@@ -33,7 +33,7 @@
         android:background="@color/very_light_gray"
         android:gravity="top"
         android:hint="@string/notify_message_text_hint"
-        android:inputType="textShortMessage|textMultiLine|textCapSentences"
+        android:inputType="textMultiLine|textCapSentences"
         android:maxLength="@integer/max_notify_msg_length"
         android:padding="8dp"
         android:scrollbars="vertical"
