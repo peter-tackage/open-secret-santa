@@ -35,7 +35,7 @@
                 android:layout_gravity="center_horizontal"
                 android:drawableLeft="@drawable/ic_action_remove"
                 android:gravity="center_vertical"
-                android:text="@string/menu_discard"
+                android:text="@string/menu_cancel"
                 android:textColor="@color/white" />
         </FrameLayout>
 
