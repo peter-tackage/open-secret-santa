@@ -53,6 +53,13 @@
             android:autoLink="web"
             android:text="@string/fb_contact" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:autoLink="email"
+            android:text="@string/email_contact" />
+
     </LinearLayout>
 
 </LinearLayout>
