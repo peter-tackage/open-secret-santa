@@ -14,6 +14,8 @@
     <color name="transparent">#00000000</color>
 
     <color name="primary_color">#3f51b5</color>
+    <color name="primary_fallback_color">#5c6bc0</color>
+
     <color name="secondary_color">#C5CAE9</color>
     <color name="tertiary_color">#9fa8da</color>
     <color name="accent_color">#ff4081</color>
