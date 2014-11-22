@@ -120,5 +120,6 @@
     <string name="restriction_list_title_unformatted" formatted="false">Set restrictions for %s</string>
     <string name="list_selection_count_title_unformatted" formatted="false">%d selected</string>
     <string name="gift_giving_msg_unformatted" formatted="false">%s is giving a gift to</string>
+    <string name="empty_restrictions_list_msg">There\'s no-one else in the group!</string>
 
 </resources>

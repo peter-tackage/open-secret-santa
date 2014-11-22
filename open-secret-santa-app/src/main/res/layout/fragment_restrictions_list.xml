@@ -33,6 +33,14 @@
         android:id="@id/android:empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/transparent" />
+        android:background="@color/transparent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/empty_restrictions_list_msg"
+            android:textColor="@color/text_neutral_color" />
+    </FrameLayout>
 
 </LinearLayout>
