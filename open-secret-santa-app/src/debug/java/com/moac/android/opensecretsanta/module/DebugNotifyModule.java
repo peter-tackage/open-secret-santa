@@ -1,7 +1,5 @@
 package com.moac.android.opensecretsanta.module;
 
-import android.telephony.SmsManager;
-
 import com.moac.android.opensecretsanta.MockEmailTransport;
 import com.moac.android.opensecretsanta.MockSmsTransport;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
