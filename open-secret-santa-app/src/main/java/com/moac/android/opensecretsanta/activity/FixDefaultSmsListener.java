@@ -41,7 +41,7 @@ public class FixDefaultSmsListener implements View.OnClickListener {
         // Is there a recorded default app?
         String defaultApp = mSmsPermissionsManager.getLastKnownDefaultSmsApp();
 
-        if (!TextUtils.isEmpty(defaultApp) && !defaultApp.equals(BuildConfig.PACKAGE_NAME) && isAppInstalled(defaultApp)) {
+        if (!TextUtils.isEmpty(defaultApp) && !defaultApp.equals(BuildConfig.APPLICATION_ID) && isAppInstalled(defaultApp)) {
             Log.d(TAG, "Previous default SMS app is still installed, attempt to revert");
             // There is a recorded default that isn't this app and it is still installed - attempt to set that as default
             // I guess this could fail if in between usage of this app, the original app changed to no longer be default SMS app capable

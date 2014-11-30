@@ -76,7 +76,7 @@ public class NotifyUtils {
         if (!requiresDefaultSmsCheck()) return true;
 
         String currentDefaultApp = Telephony.Sms.getDefaultSmsPackage(context);
-        return currentDefaultApp != null && currentDefaultApp.equals(BuildConfig.PACKAGE_NAME);
+        return currentDefaultApp != null && currentDefaultApp.equals(BuildConfig.APPLICATION_ID);
     }
 
     public static boolean requiresDefaultSmsCheck() {
