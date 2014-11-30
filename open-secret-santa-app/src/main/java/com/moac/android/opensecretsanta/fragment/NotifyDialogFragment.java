@@ -95,7 +95,7 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
         // Inflate layout
         LayoutInflater inflater = getActivity().getLayoutInflater();
         @SuppressLint("InflateParams") // Null parent OK for dialog
-                View view = inflater.inflate(R.layout.fragment_dialog_notify, null);
+        View view = inflater.inflate(R.layout.fragment_dialog_notify, null);
 
         // Configure the views
         mMsgField = (EditText) view.findViewById(R.id.tv_notify_msg);

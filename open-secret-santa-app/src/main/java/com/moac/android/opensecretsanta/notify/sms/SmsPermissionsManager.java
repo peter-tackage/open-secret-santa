@@ -36,9 +36,9 @@ public class SmsPermissionsManager {
 
         String defaultSmsApp = Telephony.Sms.getDefaultSmsPackage(context.getApplicationContext());
         saveDefaultSmsApp(defaultSmsApp);
-        if (!defaultSmsApp.equals(BuildConfig.PACKAGE_NAME)) {
+        if (!defaultSmsApp.equals(BuildConfig.APPLICATION_ID)) {
             Intent intent = new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
-            intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, BuildConfig.PACKAGE_NAME);
+            intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, BuildConfig.APPLICATION_ID);
             fragment.startActivityForResult(intent, requestCode);
         }
     }
@@ -77,7 +77,7 @@ public class SmsPermissionsManager {
     }
 
     public String getLastKnownDefaultSmsApp() {
-        return mPreferences.getString(DEFAULT_SMS_APP_KEY, BuildConfig.PACKAGE_NAME);
+        return mPreferences.getString(DEFAULT_SMS_APP_KEY, BuildConfig.APPLICATION_ID);
     }
 
     // Helpers
@@ -85,7 +85,7 @@ public class SmsPermissionsManager {
     @TargetApi(Build.VERSION_CODES.KITKAT)
     private boolean isRelinguishable(String toApp) {
         return requiresDefaultSmsCheck()
-                && !toApp.equals(BuildConfig.PACKAGE_NAME) // Don't relinquish to ourselves!
+                && !toApp.equals(BuildConfig.APPLICATION_ID) // Don't relinquish to ourselves!
                 && !Telephony.Sms.getDefaultSmsPackage(mContext).equals(toApp); // Don't relinquish if already default
     }
 

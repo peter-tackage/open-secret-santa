@@ -96,8 +96,9 @@ public class MemberSuggestionProvider extends ContentProvider {
 
                 // We need to add our own custom entries to the suggestions list.
                 MatrixCursor manualCursor = new MatrixCursor(SEARCH_SUGGESTIONS_COLUMNS);
-                if(!query.isEmpty())
-                    manualCursor.addRow(new Object[]{ MANUAL_ENTRY_ID, query, "Add name only entry", null, null });
+                if(!query.isEmpty()) {
+                    manualCursor.addRow(new Object[]{MANUAL_ENTRY_ID, query, "Add name only entry", null, null});
+                }
 
                 MergeCursor merged = new MergeCursor(new Cursor[]{ manualCursor, contactsCursor});
 
