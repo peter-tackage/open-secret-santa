@@ -77,7 +77,7 @@ public class SmsManagerTransport implements SmsTransporter {
          */
         Log.v(TAG, "send() - backing off");
         try {
-            Thread.sleep(750);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             // Deliberately ignore
         }

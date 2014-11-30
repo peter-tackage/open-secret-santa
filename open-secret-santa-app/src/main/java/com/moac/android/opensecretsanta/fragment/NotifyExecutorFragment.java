@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.moac.android.inject.dagger.InjectingFragment;
 import com.moac.android.opensecretsanta.R;
@@ -81,6 +82,7 @@ public class NotifyExecutorFragment extends InjectingFragment implements DrawNot
         Log.e(TAG, "onError() ", t);
         dismissProgressDialog();
         mSmsPermissionsManager.requestRelinquishDefaultSmsPermission(this, RELINGUISH_SMS_PERMISSION_REQUEST_CODE);
+        Toast.makeText(getActivity(), getString(R.string.generic_notify_error_msg), Toast.LENGTH_LONG).show();
     }
 
     @Override

@@ -100,6 +100,7 @@
     <string name="draw_failed_msg">"Couldn't complete the draw"</string>
     <string name="draw_success_msg">Draw was successful</string>
     <string name="draw_engine_init_error_msg">Could not find Draw Engine</string>
+    <string name="generic_notify_error_msg">An error occurred when sending the assignments</string>
 
     <!-- Assignment Messages -->
     <string name="sms_assignment_msg_unformatted" formatted="false">Hi %s, you\'re giving a gift to %s. Sent via the Open Secret Santa app.</string>
