@@ -68,8 +68,8 @@
     <string name="credits">By Peter and Melissa from Many Object and Code</string>
     <string name="fb_contact">www.facebook.com/manyobjectandcode</string>
     <string name="email_contact">manyobjectandcode@gmail.com</string>
-    <string name="app_version_info">Version: 3.0</string>
-    <string name="app_date_info">Date: 22nd November 2014</string>
+    <string name="app_version_info">Version: 3.1</string>
+    <string name="app_date_info">Date: 30th November 2014</string>
     <string name="contact_us_at">Contact us at:</string>
 
     <!-- Accessibility hints -->
