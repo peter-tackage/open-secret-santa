@@ -23,7 +23,15 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            proguardFile 'proguard.cfg'
+            proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
+            proguardFile 'proguard-app-rules.pro'
+            proguardFile 'proguard-dagger.pro'
+            proguardFile 'proguard-draw-engine.pro'
+            proguardFile 'proguard-javamail.pro'
+            proguardFile 'proguard-ormlite.pro'
+            proguardFile 'proguard-otto.pro'
+            proguardFile 'proguard-picasso.pro'
+            proguardFile 'proguard-rxjava.pro'
             signingConfig signingConfigs.release
         }
     }
