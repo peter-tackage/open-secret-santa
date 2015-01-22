@@ -49,21 +49,12 @@
     <string name="rename_group_dialog_title">Rename Group</string>
     <string name="rename_group_name_hint">Group name</string>
 
-    <!-- Preferences - Algorithm -->
-    <string name="algorithm_preferences">Algorithm Preferences</string>
-    <string name="algorithm_list_preference">Draw Engine</string>
-    <string name="summary_list_preference">The algorithm that is used to calculate your draws</string>
-    <string name="dialog_title_list_preference">Draw Engine</string>
-    <string name="defaultDrawEngine">com.moac.drawengine.BasicDrawEngine</string>
-
-    <!-- Preferences - Email -->
-    <string name="gmail_account_preference">gmail_account_preference</string>
-
-    <!-- LEGACY - Preferences SMS -->
-    <string name="use_multipart_sms">Use Multipart SMS</string>
-
-    <!-- App Info -->
-    <string name="about_title">About Open Secret Santa</string>
+    <!-- Preferences App Info -->
+    <string name="setting_category_title_app_information">App Information</string>
+    <string name="setting_summary_version_number">Version number and credits</string>
+    <string name="setting_title_about">About</string>
+    <string name="setting_summary_legal_information">Legal information</string>
+    <string name="setting_title_legal">Legal</string>
     <string name="app_name">Open Secret Santa</string>
     <string name="credits">By Peter and Melissa from Many Object and Code</string>
     <string name="fb_contact">www.facebook.com/manyobjectandcode</string>
@@ -71,6 +62,19 @@
     <string name="app_version_info">Version: 3.1</string>
     <string name="app_date_info">Date: 30th November 2014</string>
     <string name="contact_us_at">Contact us at:</string>
+
+    <!-- Preferences - Algorithm -->
+    <string name="setting_category_title_algorithm">Algorithm</string>
+    <string name="setting_title_draw_engine">Draw Engine</string>
+    <string name="setting_summary_draw_algorithm">The algorithm that is used to calculate your draws</string>
+    <string name="setting_dialog_title_draw_engine">Draw Engine</string>
+    <string name="defaultDrawEngine">com.moac.drawengine.BasicDrawEngine</string>
+
+    <!-- Preferences - Email -->
+    <string name="gmail_account_preference">gmail_account_preference</string>
+
+    <!-- LEGACY - Preferences SMS (no longer configurable) -->
+    <string name="use_multipart_sms">Use Multipart SMS</string>
 
     <!-- Accessibility hints -->
     <string name="drawer_open_accesshint">open drawer</string>
@@ -123,5 +127,6 @@
     <string name="list_selection_count_title_unformatted" formatted="false">%d selected</string>
     <string name="gift_giving_msg_unformatted" formatted="false">%s is giving a gift to</string>
     <string name="empty_restrictions_list_msg">There\'s no-one else in the group!</string>
+
 
 </resources>

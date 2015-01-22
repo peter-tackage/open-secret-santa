@@ -1,38 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-  android:title="Open Secret Santa Preferences">
+    android:title="Settings">
 
-  <PreferenceCategory android:title="About">
-    <PreferenceScreen
-      android:key="aboutOpenSecretSanta"
-      android:summary="Version information and credits"
-      android:title="About Open Secret Santa">
+    <PreferenceCategory android:title="@string/setting_category_title_app_information">
+        <PreferenceScreen
+            android:summary="@string/setting_summary_version_number"
+            android:title="@string/setting_title_about">
 
-      <PreferenceScreen
-        android:layout="@layout/about"
-        android:selectable="false" />
-    </PreferenceScreen>
+            <PreferenceScreen
+                android:layout="@layout/layout_about"
+                android:selectable="false" />
+        </PreferenceScreen>
 
-    <PreferenceScreen
-      android:key="aboutOpenSecretSanta"
-      android:summary="Acknowledgments and thanks"
-      android:title="Acknowledgments">
+        <PreferenceScreen
+            android:summary="@string/setting_summary_legal_information"
+            android:title="@string/setting_title_legal">
 
-      <PreferenceScreen
-        android:layout="@layout/acknowledgments"
-        android:selectable="false" />
-    </PreferenceScreen>
-  </PreferenceCategory>
+            <PreferenceScreen
+                android:layout="@layout/layout_legal"
+                android:selectable="false" />
+        </PreferenceScreen>
+    </PreferenceCategory>
 
-  <PreferenceCategory android:title="@string/algorithm_preferences">
-    <ListPreference
-      android:defaultValue="@string/defaultDrawEngine"
-      android:dialogTitle="@string/dialog_title_list_preference"
-      android:entries="@array/engine_names"
-      android:entryValues="@array/engine_classes"
-      android:key="engine_preference"
-      android:summary="@string/summary_list_preference"
-      android:title="@string/algorithm_list_preference" />
-  </PreferenceCategory>
+    <PreferenceCategory android:title="@string/setting_category_title_algorithm">
+        <ListPreference
+            android:defaultValue="@string/defaultDrawEngine"
+            android:dialogTitle="@string/setting_dialog_title_draw_engine"
+            android:entries="@array/engine_names"
+            android:entryValues="@array/engine_classes"
+            android:key="engine_preference"
+            android:summary="@string/setting_summary_draw_algorithm"
+            android:title="@string/setting_title_draw_engine" />
+    </PreferenceCategory>
 
 </PreferenceScreen>
