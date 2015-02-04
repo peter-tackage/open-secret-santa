@@ -52,4 +52,9 @@
         <item name="buttonForeground">?android:selectableItemBackground</item>
     </style>
 
+    <!-- Background window color to match Activity background -->
+    <style name="AppLauncherTheme" parent="AppTheme">
+        <item name="android:windowBackground">@color/secondary_color</item>
+    </style>
+
 </resources>
