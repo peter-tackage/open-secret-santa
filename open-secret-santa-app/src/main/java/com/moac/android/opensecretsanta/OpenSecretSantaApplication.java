@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 
 import com.moac.android.inject.dagger.InjectingApplication;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
+import com.moac.android.opensecretsanta.instrumentation.Instrumentation;
 import com.moac.android.opensecretsanta.model.Group;
 import com.moac.android.opensecretsanta.util.GroupUtils;
 import com.moac.android.opensecretsanta.util.Utils;
@@ -26,19 +27,31 @@ public class OpenSecretSantaApplication extends InjectingApplication {
     @Inject
     SharedPreferences mSharedPreferences;
 
+    @Inject
+    Instrumentation mInstrumentation;
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // Initialize app instrumentation
+        mInstrumentation.init();
+
+        // Ensure a default group exists
+        initializeDefaultGroup();
+    }
+
+    private void initializeDefaultGroup() {
         Utils.doOnce(mSharedPreferences,
                 CREATE_DEFAULT_GROUP_TASK, new Runnable() {
-            @Override
-            public void run() {
-                // Don't add another group if there is at least one already
-                if (!mDatabaseManager.queryHasGroup()) {
-                    createDefaultInitialGroup();
-                }
-            }
-        });
+                    @Override
+                    public void run() {
+                        // Don't add another group if there is at least one already
+                        if (!mDatabaseManager.queryHasGroup()) {
+                            createDefaultInitialGroup();
+                        }
+                    }
+                });
     }
 
     private void createDefaultInitialGroup() {
@@ -46,7 +59,7 @@ public class OpenSecretSantaApplication extends InjectingApplication {
         Group myFirstGroup = GroupUtils.createIncrementingGroup(mDatabaseManager, baseName);
         // Assign as the current Group
         mSharedPreferences.edit().
-          putLong(MOST_RECENT_GROUP_KEY, myFirstGroup.getId()).apply();
+                putLong(MOST_RECENT_GROUP_KEY, myFirstGroup.getId()).apply();
     }
 
     @Override

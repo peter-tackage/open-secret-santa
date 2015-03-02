@@ -1,6 +1,7 @@
 package com.moac.android.opensecretsanta;
 
 import com.moac.android.opensecretsanta.module.AppModule;
+import com.moac.android.opensecretsanta.module.DebugInstrumentationModule;
 import com.moac.android.opensecretsanta.module.DebugNotifyModule;
 
 /**
@@ -8,9 +9,10 @@ import com.moac.android.opensecretsanta.module.DebugNotifyModule;
  */
 public class Modules {
     static Object[] list(OpenSecretSantaApplication app) {
-        return new Object[] {
+        return new Object[]{
                 new AppModule(app),
-                new DebugNotifyModule()
+                new DebugNotifyModule(),
+                new DebugInstrumentationModule()
         };
     }
 

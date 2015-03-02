@@ -98,6 +98,8 @@ dependencies {
     androidTestCompile 'com.google.dexmaker:dexmaker:1.0'
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.0'
 
+    debugCompile 'com.facebook.stetho:stetho:1.0.1'
+
 }
 
 

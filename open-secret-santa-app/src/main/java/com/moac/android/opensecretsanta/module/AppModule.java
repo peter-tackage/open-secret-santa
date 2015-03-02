@@ -8,6 +8,7 @@ import com.moac.android.opensecretsanta.inject.ForApplication;
 import dagger.Provides;
 
 @dagger.Module(injects = {OpenSecretSantaApplication.class},
+        complete = false,
         includes = {PersistenceModule.class, EventModule.class, NotifyModule.class})
 public final class AppModule {
 
@@ -25,6 +26,4 @@ public final class AppModule {
         return mApplication.getApplicationContext();
     }
 
-    // I don't like use the InjectingApplicationModule as it requires complete=false here, thus
-    // disabling many of the compile time checks
 }
