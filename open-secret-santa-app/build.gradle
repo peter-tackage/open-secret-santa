@@ -84,8 +84,8 @@ dependencies {
     compile 'com.squareup.dagger:dagger-compiler:1.2.2'
     compile 'com.squareup.picasso:picasso:2.3.4'
 
-    compile 'com.netflix.rxjava:rxjava-core:0.14.9'
-    compile 'com.netflix.rxjava:rxjava-android:0.14.9'
+    compile 'io.reactivex:rxjava:1.0.7'
+    compile 'io.reactivex:rxandroid:0.24.0'
 
     compile 'javamail-android:mail:1.0.0'
     compile 'javamail-android:additionnal:1.0.0'

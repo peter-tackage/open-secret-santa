@@ -24,8 +24,8 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.android.concurrency.AndroidSchedulers;
-import rx.concurrency.Schedulers;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class NotifyExecutorFragment extends InjectingFragment implements DrawNotifier, Observer<NotifyStatusEvent> {
 

@@ -1,6 +1,7 @@
 package com.moac.android.opensecretsanta.draw;
 
 import android.util.Log;
+
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Group;
@@ -8,12 +9,15 @@ import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.Restriction;
 import com.moac.drawengine.DrawEngine;
 import com.moac.drawengine.DrawFailureException;
-import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
-import rx.subscriptions.Subscriptions;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import rx.Observable;
+import rx.Subscriber;
 
 public class DefaultDrawExecutor implements DrawExecutor {
 
@@ -28,9 +32,10 @@ public class DefaultDrawExecutor implements DrawExecutor {
     @Override
     public Observable<DrawResultEvent> requestDraw(final DrawEngine _engine, final Group _group) {
 
-        return Observable.create(new Observable.OnSubscribeFunc<DrawResultEvent>() {
+        return Observable.create(new Observable.OnSubscribe<DrawResultEvent>() {
+
             @Override
-            public Subscription onSubscribe(Observer<? super DrawResultEvent> observer) {
+            public void call(Subscriber<? super DrawResultEvent> subscriber) {
                 Log.i(TAG, "requestDraw() - Requesting Draw");
 
                 // Clear in case something failed uncleanly
@@ -40,13 +45,11 @@ public class DefaultDrawExecutor implements DrawExecutor {
                     // Execute the draw
                     DrawResultEvent result = executeDraw(_engine, _group);
                     saveAssignments(_group, result.getAssignments());
-                    observer.onNext(result);
-                } catch(DrawFailureException e) {
-                    observer.onError(e);
+                    subscriber.onNext(result);
+                    subscriber.onCompleted();
+                } catch (DrawFailureException e) {
+                    subscriber.onError(e);
                 }
-
-                observer.onCompleted();
-                return Subscriptions.empty();
             }
         });
     }
@@ -65,10 +68,10 @@ public class DefaultDrawExecutor implements DrawExecutor {
         Log.v(TAG, "executeDraw() - Group: " + _group.getId() + " has member count: " + members.size());
         Map<Long, Set<Long>> participants = new HashMap<Long, Set<Long>>();
 
-        for(Member m : members) {
+        for (Member m : members) {
             List<Restriction> restrictions = mDb.queryAllRestrictionsForMemberId(m.getId());
             Set<Long> restrictionIds = new HashSet<Long>();
-            for(Restriction r : restrictions) {
+            for (Restriction r : restrictions) {
                 restrictionIds.add(r.getOtherMemberId());
             }
             participants.put(m.getId(), restrictionIds);
@@ -86,14 +89,14 @@ public class DefaultDrawExecutor implements DrawExecutor {
         mDb.update(_group);
 
         // Now add the corresponding draw result entries.
-        for(Long m1Id : _assignments.keySet()) {
+        for (Long m1Id : _assignments.keySet()) {
 
             // We are notifying m1 that they have been assigned m2.
             Member m1 = mDb.queryById(m1Id, Member.class);
             Member m2 = mDb.queryById(_assignments.get(m1Id), Member.class);
 
             Log.v(TAG, "saveDrawResult() - saving Assignment: " + m1.getName() + " - " + m2.getName() + " with: "
-              + m1.getContactMethod() + " " + m1.getContactDetails());
+                    + m1.getContactMethod() + " " + m1.getContactDetails());
 
             // Create the individual Draw Result Entry
             Assignment assignment = new Assignment();

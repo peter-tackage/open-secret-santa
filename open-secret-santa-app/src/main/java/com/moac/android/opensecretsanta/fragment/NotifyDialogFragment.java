@@ -38,9 +38,9 @@ import java.util.Arrays;
 import javax.inject.Inject;
 
 import rx.Observable;
-import rx.android.concurrency.AndroidSchedulers;
-import rx.concurrency.Schedulers;
-import rx.util.functions.Action1;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 public class NotifyDialogFragment extends InjectingDialogFragment {
 
@@ -250,7 +250,7 @@ public class NotifyDialogFragment extends InjectingDialogFragment {
                 String emailPrefKey = getActivity().getString(R.string.gmail_account_preference);
                 mSharedPreferences.edit().putString(emailPrefKey, acc.name).apply();
 
-                AccountUtils.getPreferedGmailAuth(getActivity(), mAccountManager, mSharedPreferences, getActivity()).
+                AccountUtils.getPreferredGmailAuth(getActivity(), mAccountManager, mSharedPreferences, getActivity()).
                         subscribeOn(Schedulers.newThread()).
                         observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<EmailAuthorization>() {
                     @Override

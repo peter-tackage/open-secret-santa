@@ -12,3 +12,6 @@ build/
 # Generated
 local.properties
 
+# Mac artifacts
+.DS_Store
+
