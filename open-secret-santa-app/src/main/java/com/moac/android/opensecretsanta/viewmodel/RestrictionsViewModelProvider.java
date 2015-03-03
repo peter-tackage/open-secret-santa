@@ -5,15 +5,14 @@ import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.model.Restriction;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
+import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 @Singleton
@@ -29,33 +28,38 @@ public class RestrictionsViewModelProvider {
     public Observable<List<RestrictionViewModel>> getRestrictionViewModel(long groupId, long memberId) {
         List<Member> otherMembers = mDb.queryAllMembersForGroupExcept(groupId, memberId);
         List<Restriction> restrictionsForMember = mDb.queryAllRestrictionsForMemberId(memberId);
-        Set<Long> restrictions = buildRestrictedMembers(restrictionsForMember);
-        return Observable
-                .just(buildViewModel(otherMembers, restrictions))
+        return createViewModelObservable(otherMembers, restrictionsForMember)
                 .subscribeOn(Schedulers.computation());
         // TODO This is a combination of io and computation
     }
 
-    // Bit clunky, but probably better than iterating through the List<Restriction> multiple times.
-    private static Set<Long> buildRestrictedMembers(List<Restriction> _restrictions) {
-        Set<Long> result = new HashSet<Long>();
-        for (Restriction restriction : _restrictions) {
-            result.add(restriction.getOtherMemberId());
-        }
-        return result;
-    }
+    private static Observable<List<RestrictionViewModel>> createViewModelObservable(final List<Member> otherMembers,
+                                                                                    final List<Restriction> restrictions) {
 
-    private static List<RestrictionViewModel> buildViewModel(List<Member> otherMembers, Set<Long> restrictions) {
-        List<RestrictionViewModel> viewModels = new ArrayList<>(otherMembers.size());
-        for (Member other : otherMembers) {
-            RestrictionViewModel rowDetails = new RestrictionViewModel(
-                    other.getId(),
-                    other.getName(),
-                    restrictions.contains(other.getId()),
-                    other.getContactId(),
-                    other.getLookupKey());
-            viewModels.add(rowDetails);
-        }
-        return viewModels;
+        // Note: The order of the observable arguments is important.
+        // If they are the other way around, then the first emits all its items before only emitting
+        // the second once; we would only get one emission for the overall Observable.
+        return Observable.combineLatest(
+                Observable.from(restrictions)
+                        .map(new Func1<Restriction, Long>() {
+                            @Override
+                            public Long call(Restriction restriction) {
+                                return restriction.getOtherMemberId();
+                            }
+                        })
+                        .toList(),
+                Observable.from(otherMembers),
+                new Func2<List<Long>, Member, RestrictionViewModel>() {
+                    @Override
+                    public RestrictionViewModel call(List<Long> restrictions, Member other) {
+                        return new RestrictionViewModel(
+                                other.getId(),
+                                other.getName(),
+                                restrictions.contains(other.getId()),
+                                other.getContactId(),
+                                other.getLookupKey());
+                    }
+                })
+                .toSortedList();
     }
 }
