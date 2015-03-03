@@ -25,9 +25,9 @@ public class RestrictionListAdapter extends BaseAdapter {
 
     private final Context mContext;
     private OnClickListener mRestrictClickListener;
-    private List<RestrictionRowDetails> mItems = Collections.emptyList();
+    private List<RestrictionViewModel> mItems = Collections.emptyList();
 
-    public RestrictionListAdapter(Context context, List<RestrictionRowDetails> items, OnClickListener onClickListener) {
+    public RestrictionListAdapter(Context context, List<RestrictionViewModel> items, OnClickListener onClickListener) {
         mContext = context;
         mItems = items;
         mRestrictClickListener = onClickListener;
@@ -39,7 +39,7 @@ public class RestrictionListAdapter extends BaseAdapter {
     }
 
     @Override
-    public RestrictionRowDetails getItem(int position) {
+    public RestrictionViewModel getItem(int position) {
         return mItems.get(position);
     }
 
@@ -73,7 +73,7 @@ public class RestrictionListAdapter extends BaseAdapter {
             checkBoxView = (CheckBox) v.getTag(R.id.checkBox_restriction);
         }
 
-        RestrictionRowDetails item = getItem(position);
+        RestrictionViewModel item = getItem(position);
 
         // Assign the view with its content.
         if (item.getContactId() == PersistableObject.UNSET_ID || item.getLookupKey() == null) {
