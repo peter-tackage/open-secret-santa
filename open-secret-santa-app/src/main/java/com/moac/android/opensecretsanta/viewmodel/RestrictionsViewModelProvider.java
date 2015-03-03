@@ -31,7 +31,7 @@ public class RestrictionsViewModelProvider {
         List<Restriction> restrictionsForMember = mDb.queryAllRestrictionsForMemberId(memberId);
         Set<Long> restrictions = buildRestrictedMembers(restrictionsForMember);
         return Observable
-                .just(buildViewModel(memberId, otherMembers, restrictions))
+                .just(buildViewModel(otherMembers, restrictions))
                 .subscribeOn(Schedulers.computation());
         // TODO This is a combination of io and computation
     }
@@ -45,11 +45,10 @@ public class RestrictionsViewModelProvider {
         return result;
     }
 
-    private static List<RestrictionViewModel> buildViewModel(long fromMemberId, List<Member> otherMembers, Set<Long> restrictions) {
+    private static List<RestrictionViewModel> buildViewModel(List<Member> otherMembers, Set<Long> restrictions) {
         List<RestrictionViewModel> viewModels = new ArrayList<>(otherMembers.size());
         for (Member other : otherMembers) {
             RestrictionViewModel rowDetails = new RestrictionViewModel(
-                    fromMemberId,
                     other.getId(),
                     other.getName(),
                     restrictions.contains(other.getId()),

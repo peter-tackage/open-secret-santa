@@ -2,16 +2,14 @@ package com.moac.android.opensecretsanta.adapter;
 
 public class RestrictionViewModel implements Comparable<RestrictionViewModel> {
 
-    private long mFromMemberId;
     private long mToMemberId;
     private String mToMemberName;
     private boolean mIsRestricted;
     private long mContactId;
     private String mLookupKey;
 
-    public RestrictionViewModel(long fromMemberId, long toMemberId, String toMemberName, boolean isRestricted,
+    public RestrictionViewModel(long toMemberId, String toMemberName, boolean isRestricted,
                                 long contactId, String lookupKey) {
-        this.mFromMemberId = fromMemberId;
         this.mToMemberId = toMemberId;
         this.mToMemberName = toMemberName;
         this.mIsRestricted = isRestricted;
@@ -21,10 +19,6 @@ public class RestrictionViewModel implements Comparable<RestrictionViewModel> {
 
     public boolean isRestricted() {
         return mIsRestricted;
-    }
-
-    public long getFromMemberId() {
-        return mFromMemberId;
     }
 
     public long getToMemberId() {
