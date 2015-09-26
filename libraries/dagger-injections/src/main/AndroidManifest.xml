@@ -3,6 +3,6 @@
     package="com.moac.android.inject.dagger"
     android:versionCode="1"
     android:versionName="1.0">
-    <uses-sdk android:minSdkVersion="11" android:targetSdkVersion="19" />
+    <uses-sdk android:minSdkVersion="11" android:targetSdkVersion="23" />
 
 </manifest>
