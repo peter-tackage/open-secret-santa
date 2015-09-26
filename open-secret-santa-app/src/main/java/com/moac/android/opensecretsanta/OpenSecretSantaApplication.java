@@ -18,8 +18,8 @@ public class OpenSecretSantaApplication extends InjectingApplication {
 
     public static final String MOST_RECENT_GROUP_KEY = "most_recent_group_id";
 
+    private static final String TAG = OpenSecretSantaApplication.class.getSimpleName();
     private static final String CREATE_DEFAULT_GROUP_TASK = "createDefaultGroup";
-    private static final String TAG = "OpenSecretSantaApplication";
 
     @Inject
     DatabaseManager mDatabaseManager;

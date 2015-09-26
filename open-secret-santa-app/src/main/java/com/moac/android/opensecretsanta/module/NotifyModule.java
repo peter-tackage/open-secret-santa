@@ -16,12 +16,10 @@ import com.moac.android.opensecretsanta.notify.sms.SmsTransporter;
 
 import javax.inject.Singleton;
 
+import dagger.Module;
 import dagger.Provides;
 
-@dagger.Module(
-        injects = {
-                NotifyExecutorFragment.class,
-                NotifyDialogFragment.class},
+@Module(injects = {NotifyExecutorFragment.class, NotifyDialogFragment.class},
         complete = false)
 public final class NotifyModule {
 

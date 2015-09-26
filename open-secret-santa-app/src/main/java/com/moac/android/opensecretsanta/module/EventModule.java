@@ -7,14 +7,15 @@ import com.squareup.otto.Bus;
 
 import javax.inject.Singleton;
 
+import dagger.Module;
 import dagger.Provides;
 
-@dagger.Module(
+@Module(
         injects = {
                 MemberListFragment.class,
                 NotifyExecutorFragment.class,
-                SmsManagerSendReceiver.class
-        }, complete = false)
+                SmsManagerSendReceiver.class},
+        complete = false)
 
 // Complete = false because this module cannot provide all the dependencies for all the injection points
 public final class EventModule {

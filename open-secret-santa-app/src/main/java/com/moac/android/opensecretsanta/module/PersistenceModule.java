@@ -1,6 +1,5 @@
 package com.moac.android.opensecretsanta.module;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -20,9 +19,10 @@ import com.moac.android.opensecretsanta.notify.sms.SmsManagerSendReceiver;
 
 import javax.inject.Singleton;
 
+import dagger.Module;
 import dagger.Provides;
 
-@dagger.Module(
+@Module(
         injects = {
                 OpenSecretSantaApplication.class,
                 MainActivity.class,
@@ -48,7 +48,7 @@ public final class PersistenceModule {
     @Provides
     @Singleton
     SharedPreferences provideDefaultSharedPreferences(@ForApplication Context context) {
-        return  PreferenceManager.getDefaultSharedPreferences(context);
+        return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
 }

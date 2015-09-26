@@ -5,11 +5,11 @@ import android.content.Context;
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.inject.ForApplication;
 
+import dagger.Module;
 import dagger.Provides;
 
-@dagger.Module(injects = {OpenSecretSantaApplication.class},
-        complete = false,
-        includes = {PersistenceModule.class, EventModule.class, NotifyModule.class})
+@Module(includes = {PersistenceModule.class, EventModule.class, NotifyModule.class, InstrumentationModule.class},
+        injects = OpenSecretSantaApplication.class)
 public final class AppModule {
 
     private static final String TAG = AppModule.class.getSimpleName();

@@ -1,7 +1,6 @@
 package com.moac.android.opensecretsanta;
 
 import com.moac.android.opensecretsanta.module.AppModule;
-import com.moac.android.opensecretsanta.module.DebugInstrumentationModule;
 import com.moac.android.opensecretsanta.module.DebugNotifyModule;
 
 /**
@@ -12,7 +11,6 @@ public class Modules {
         return new Object[]{
                 new AppModule(app),
                 new DebugNotifyModule(),
-                new DebugInstrumentationModule()
         };
     }
 
