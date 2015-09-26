@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion '21.1.2'
+    compileSdkVersion 23
+    buildToolsVersion '23.0.1'
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
@@ -15,13 +15,13 @@ android {
     defaultConfig {
         applicationId "com.moac.android.opensecretsanta"
         minSdkVersion 14
-        targetSdkVersion 21
+        targetSdkVersion 23
         versionCode 12
         versionName "3.1"
     }
 
     signingConfigs {
-        release {}
+        release
     }
 
     buildTypes {
@@ -76,7 +76,7 @@ dependencies {
 
     compile project(':libraries:dagger-injections')
 
-    compile 'com.android.support:support-v13:19.0.0'
+    compile 'com.android.support:support-v13:23.0.1'
 
     compile 'com.moac.drawengine:draw-engine:1.4.1'
     compile 'com.j256.ormlite:ormlite-android:4.48'
@@ -102,7 +102,7 @@ dependencies {
     androidTestCompile 'com.google.dexmaker:dexmaker:1.0'
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.0'
 
-    debugCompile 'com.facebook.stetho:stetho:1.0.1'
+    debugCompile 'com.facebook.stetho:stetho:1.2.0'
 
 }
 
