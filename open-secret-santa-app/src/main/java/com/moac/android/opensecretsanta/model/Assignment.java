@@ -16,10 +16,10 @@ public class Assignment extends PersistableObject {
 
     public static final String TABLE_NAME = "assignments";
 
-    public static interface Columns extends PersistableObject.Columns {
-        public static final String GIVER_MEMBER_ID_COLUMN = "GIVER_MEMBER_ID";
-        public static final String RECEIVER_MEMBER_ID_COLUMN = "RECEIVER_MEMBER_ID";
-        public static final String SEND_STATUS_COLUMN = "SEND_STATUS";
+    public interface Columns extends PersistableObject.Columns {
+        String GIVER_MEMBER_ID_COLUMN = "GIVER_MEMBER_ID";
+        String RECEIVER_MEMBER_ID_COLUMN = "RECEIVER_MEMBER_ID";
+        String SEND_STATUS_COLUMN = "SEND_STATUS";
     }
 
     @DatabaseField(columnName = Columns.GIVER_MEMBER_ID_COLUMN, foreign = true, canBeNull = false,

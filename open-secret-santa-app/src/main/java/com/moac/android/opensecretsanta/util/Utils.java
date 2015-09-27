@@ -4,19 +4,20 @@ import android.content.SharedPreferences;
 
 import rx.Subscription;
 
-public class Utils {
+public final class Utils {
 
-    public static final String TAG = Utils.class.getSimpleName();
+    private static final String TAG = Utils.class.getSimpleName();
 
     private static final String DO_ONCE_TAG = "do_once";
 
-    // No instances
-    private Utils() {}
+    private Utils() {
+        throw new AssertionError("No instances allowed.");
+    }
 
     public static boolean doOnce(SharedPreferences prefs, String taskTag, Runnable task) {
         final String prefTag = DO_ONCE_TAG + taskTag;
         boolean isDone = prefs.getBoolean(prefTag, false);
-        if(!isDone) {
+        if (!isDone) {
             task.run();
             prefs.edit().putBoolean(prefTag, true).apply();
             return true;
@@ -25,7 +26,7 @@ public class Utils {
     }
 
     public static void safeUnsubscribe(Subscription subscription) {
-        if(subscription != null) {
+        if (subscription != null) {
             subscription.unsubscribe();
         }
     }

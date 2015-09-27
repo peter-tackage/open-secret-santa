@@ -2,11 +2,11 @@ package com.moac.android.opensecretsanta.notify.sms;
 
 import android.content.Context;
 import android.util.Log;
-import com.google.common.base.Strings;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.notify.Notifier;
+import com.moac.android.opensecretsanta.util.TextUtils;
 
 public class SmsNotifier implements Notifier {
 
@@ -32,7 +32,7 @@ public class SmsNotifier implements Notifier {
     private static String buildSmsMsg(String _baseMsg, String _groupMsg, String _giverName, String _receiverName) {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format(_baseMsg, _giverName, _receiverName));
-        sb.append(Strings.isNullOrEmpty(_groupMsg) ? "" : " " + _groupMsg);
+        sb.append(TextUtils.isNullOrEmpty(_groupMsg) ? "" : " " + _groupMsg);
         Log.v(TAG, "buildSmsMsg() - result: " + sb.toString());
         return sb.toString();
     }

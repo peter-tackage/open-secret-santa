@@ -6,9 +6,8 @@ import android.content.Intent;
 import android.telephony.SmsManager;
 import android.util.Log;
 
-import com.moac.android.opensecretsanta.activity.Intents;
+import com.moac.android.opensecretsanta.ui.Intents;
 import com.moac.android.opensecretsanta.model.Assignment;
-import com.moac.android.opensecretsanta.model.Member;
 
 import java.util.ArrayList;
 

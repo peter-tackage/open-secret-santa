@@ -75,8 +75,7 @@ repositories {
 }
 dependencies {
 
-    compile project(':libraries:dagger-injections')
-
+    compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.android.support:support-v13:23.0.1'
 
     compile 'com.moac.drawengine:draw-engine:1.4.1'
@@ -85,8 +84,6 @@ dependencies {
 
     compile 'com.squareup:otto:1.3.4'
 
-    compile 'com.squareup.dagger:dagger:1.2.2'
-    compile 'com.squareup.dagger:dagger-compiler:1.2.2'
     compile 'com.squareup.picasso:picasso:2.3.4'
 
     compile 'com.google.dagger:dagger:2.0.1'

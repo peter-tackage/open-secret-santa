@@ -1,15 +1,15 @@
 package com.moac.android.opensecretsanta.notify.sms;
 
 import android.annotation.TargetApi;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.provider.Telephony;
+import android.support.v4.app.Fragment;
 
 import com.moac.android.opensecretsanta.BuildConfig;
-import com.moac.android.opensecretsanta.inject.ForApplication;
+import com.moac.android.opensecretsanta.inject.base.ForApplication;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
