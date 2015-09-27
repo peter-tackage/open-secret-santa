@@ -1,5 +1,6 @@
 package com.moac.android.opensecretsanta.notify.sms;
 
+import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.inject.base.component.ComponentHolder;
 import com.moac.android.opensecretsanta.model.Assignment;
@@ -34,10 +35,14 @@ public class SmsManagerSendReceiver extends BroadcastReceiver
     @Inject
     Bus mBus;
 
+    private Context context;
+
     private SmsManagerSendReceiverComponent component;
 
     @Override
     public void onReceive(Context context, Intent intent) {
+
+        this.context = context;
 
         // Inject dependencies
         component().inject(this);
@@ -85,9 +90,17 @@ public class SmsManagerSendReceiver extends BroadcastReceiver
 
     @Override
     public SmsManagerSendReceiverComponent component() {
-        Preconditions.checkState(component != null, "Component has not been initialized");
+        Preconditions.checkState(this.context != null, "Context cannot be null.");
+
+        if (this.component == null) {
+            this.component = DaggerSmsManagerSendReceiverComponent.builder()
+                                                                  .openSecretSantaApplicationComponent(
+                                                                          ((OpenSecretSantaApplication) context
+                                                                                  .getApplicationContext())
+                                                                                  .component())
+                                                                  .build();
+        }
 
         return component;
     }
-
 }
