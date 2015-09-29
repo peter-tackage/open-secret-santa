@@ -1,29 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
   <!-- CAB Menu items -->
   <item
     android:id="@+id/menu_item_delete"
     android:icon="@drawable/ic_action_delete"
     android:title="@string/menu_delete"
-    android:showAsAction="always" />
+    app:showAsAction="ifRoom" />
     <item
       android:id="@+id/menu_item_edit"
       android:icon="@drawable/ic_action_edit"
       android:title="@string/menu_edit"
-      android:showAsAction="always" />
+      app:showAsAction="ifRoom" />
     <item
       android:id="@+id/menu_item_restrict"
       android:icon="@drawable/ic_action_restrict"
       android:title="@string/menu_restrictions"
-      android:showAsAction="always" />
+      app:showAsAction="ifRoom" />
     <item
       android:id="@+id/menu_item_notify_selection"
       android:icon="@drawable/ic_action_notify"
       android:title="@string/menu_notify_selected"
-      android:showAsAction="always" />
+      app:showAsAction="ifRoom" />
     <item
       android:id="@+id/menu_item_reveal"
       android:icon="@drawable/ic_action_reveal"
       android:title="@string/menu_reveal"
-      android:showAsAction="always" />
+      app:showAsAction="ifRoom" />
 </menu>

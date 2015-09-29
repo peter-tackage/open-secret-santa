@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId "com.moac.android.opensecretsanta"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 23
         versionCode 12
         versionName "3.1"
@@ -77,6 +77,7 @@ dependencies {
 
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.android.support:support-v13:23.0.1'
+    compile 'com.android.support:design:23.0.1'
 
     compile 'com.moac.drawengine:draw-engine:1.4.1'
     compile 'com.j256.ormlite:ormlite-android:4.48'

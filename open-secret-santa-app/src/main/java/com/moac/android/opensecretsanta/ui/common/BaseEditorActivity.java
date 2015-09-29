@@ -1,16 +1,15 @@
 package com.moac.android.opensecretsanta.ui.common;
 
+import com.moac.android.opensecretsanta.R;
+
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
-
-import com.moac.android.opensecretsanta.R;
 
 public abstract class BaseEditorActivity extends AppCompatActivity {
 
@@ -36,7 +35,7 @@ public abstract class BaseEditorActivity extends AppCompatActivity {
     protected abstract void createEditorFragment(Bundle savedInstance);
 
     private void configureActionBar() {
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             // Inflate a custom action bar with editor controls
             LayoutInflater inflater = (LayoutInflater) getSystemService
@@ -63,8 +62,9 @@ public abstract class BaseEditorActivity extends AppCompatActivity {
             });
             // Show the custom action bar but hide the home icon and title
             actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM,
-                    ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME |
-                            ActionBar.DISPLAY_SHOW_TITLE);
+                                        ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME
+                                        |
+                                        ActionBar.DISPLAY_SHOW_TITLE);
             actionBar.setCustomView(editorActionBarView);
         }
     }

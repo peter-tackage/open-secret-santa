@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/drawer_layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/background">
+<android.support.v4.widget.DrawerLayout android:id="@+id/drawer_layout"
+                                        xmlns:android="http://schemas.android.com/apk/res/android"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="@drawable/background">
 
     <!-- The main content view -->
     <LinearLayout
@@ -13,17 +12,23 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_main"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/MyToolbarTheme"/>
+
         <FrameLayout
             android:id="@+id/container_fragment_content"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"/>
 
         <include
             android:id="@+id/view_default_sms_warning"
             layout="@layout/layout_fix_default_sms_app"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 
@@ -34,6 +39,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@color/white"
-        android:choiceMode="singleChoice" />
+        android:choiceMode="singleChoice"/>
 
 </android.support.v4.widget.DrawerLayout>

@@ -28,12 +28,13 @@ import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -71,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private MainActivityComponent component;
 
+    private Toolbar mToolbar;
+
     protected DrawerLayout mDrawerLayout;
     protected ActionBarDrawerToggle mDrawerToggle;
     protected ListView mDrawerList;
@@ -103,6 +106,9 @@ public class MainActivity extends AppCompatActivity implements
 
     private void initialiseUI() {
         setContentView(R.layout.activity_main);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar_main);
+        setSupportActionBar(mToolbar);
+
         mDrawerList = (ListView) findViewById(R.id.left_drawer_list);
 
         // Add Groups list header - *before adapter is set*
@@ -117,15 +123,14 @@ public class MainActivity extends AppCompatActivity implements
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(
-                this,                  /* host Activity */
-                mDrawerLayout,         /* DrawerLayout object */
-                R.drawable.ic_menu_drawer,  /* nav drawer icon to replace 'Up' caret */
-                R.string.drawer_open_accesshint,  /* "open drawer" description */
-                R.string.drawer_close_accesshint) /* "close drawer" description */ {
+                this,
+                mDrawerLayout,
+                R.string.drawer_open_accesshint,
+                R.string.drawer_close_accesshint) {
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
-                getActionBar().setTitle(getString(R.string.app_name));
+                getSupportActionBar().setTitle(getString(R.string.app_name));
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
@@ -138,16 +143,15 @@ public class MainActivity extends AppCompatActivity implements
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        if (getActionBar() != null) {
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-            getActionBar().setHomeButtonEnabled(true);
-            getActionBar().setDisplayUseLogoEnabled(false);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setDisplayUseLogoEnabled(false);
         }
 
         //  Fetch the most recently used Group Id from preferences
-        long groupId = mSharedPreferences.
-                                                 getLong(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY,
-                                                         PersistableObject.UNSET_ID);
+        long groupId = mSharedPreferences.getLong(OpenSecretSantaApplication.MOST_RECENT_GROUP_KEY,
+                                                  PersistableObject.UNSET_ID);
 
         // Ensure most recent Group is valid
         if (groupId > PersistableObject.UNSET_ID) {
