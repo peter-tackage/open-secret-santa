@@ -1,15 +1,16 @@
 package com.moac.android.opensecretsanta.ui.common;
 
-import com.moac.android.opensecretsanta.R;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
+
+import com.moac.android.opensecretsanta.R;
 
 public abstract class BaseEditorActivity extends AppCompatActivity {
 
@@ -35,37 +36,37 @@ public abstract class BaseEditorActivity extends AppCompatActivity {
     protected abstract void createEditorFragment(Bundle savedInstance);
 
     private void configureActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            // Inflate a custom action bar with editor controls
-            LayoutInflater inflater = (LayoutInflater) getSystemService
-                    (Context.LAYOUT_INFLATER_SERVICE);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
+        setSupportActionBar(toolbar);
+        // Inflate a custom action bar with editor controls
+        LayoutInflater inflater = (LayoutInflater) getSystemService
+                (Context.LAYOUT_INFLATER_SERVICE);
 
-            @SuppressLint("InflateParams")
-            View editorActionBarView = inflater.inflate(R.layout.editor_custom_action_bar, null);
-            View okMenuItem = editorActionBarView.findViewById(R.id.menuItem_ok);
-            okMenuItem.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Leave it to Fragment to report save result
-                    if (mSaveableFragment.save()) {
-                        finish();
-                    }
-                }
-            });
-            View discardMenuItem = editorActionBarView.findViewById(R.id.menuItem_discard);
-            discardMenuItem.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+        @SuppressLint("InflateParams")
+        View editorActionBarView = inflater.inflate(R.layout.editor_custom_action_bar, null);
+        View okMenuItem = editorActionBarView.findViewById(R.id.menuItem_ok);
+        okMenuItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Leave it to Fragment to report save result
+                if (mSaveableFragment.save()) {
                     finish();
                 }
-            });
-            // Show the custom action bar but hide the home icon and title
-            actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM,
-                                        ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME
-                                        |
-                                        ActionBar.DISPLAY_SHOW_TITLE);
-            actionBar.setCustomView(editorActionBarView);
-        }
+            }
+        });
+        View discardMenuItem = editorActionBarView.findViewById(R.id.menuItem_discard);
+        discardMenuItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        // Show the custom action bar but hide the home icon and title
+        getSupportActionBar()
+                .setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM,
+                        ActionBar.DISPLAY_SHOW_CUSTOM
+                                | ActionBar.DISPLAY_SHOW_HOME
+                                | ActionBar.DISPLAY_SHOW_TITLE);
+        getSupportActionBar().setCustomView(editorActionBarView);
     }
 }
