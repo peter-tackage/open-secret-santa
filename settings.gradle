@@ -1,2 +1,2 @@
-include ':open-secret-santa-app', ':libraries:dagger-injections'
+include ':open-secret-santa-app'
 

@@ -1,18 +1,17 @@
 package com.moac.android.opensecretsanta.module;
 
-import android.content.Context;
-
 import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
-import com.moac.android.opensecretsanta.inject.ForApplication;
+import com.moac.android.opensecretsanta.inject.base.ForApplication;
 
+import dagger.Module;
 import dagger.Provides;
 
-@dagger.Module(injects = {OpenSecretSantaApplication.class},
-        complete = false,
-        includes = {PersistenceModule.class, EventModule.class, NotifyModule.class})
+@Module(includes = {PersistenceModule.class,
+                    EventModule.class,
+                    NotifyModule.class,
+                    AccountModule.class,
+                    InstrumentationModule.class})
 public final class AppModule {
-
-    private static final String TAG = AppModule.class.getSimpleName();
 
     private final OpenSecretSantaApplication mApplication;
 
@@ -22,8 +21,8 @@ public final class AppModule {
 
     @ForApplication
     @Provides
-    public Context provideApplicationContext() {
-        return mApplication.getApplicationContext();
+    public OpenSecretSantaApplication provideApp() {
+        return mApplication;
     }
 
 }

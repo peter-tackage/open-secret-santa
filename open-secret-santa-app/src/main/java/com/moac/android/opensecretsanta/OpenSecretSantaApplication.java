@@ -1,20 +1,21 @@
 package com.moac.android.opensecretsanta;
 
-import android.content.SharedPreferences;
-
-import com.moac.android.inject.dagger.InjectingApplication;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
+import com.moac.android.opensecretsanta.inject.base.component.ComponentHolder;
+import com.moac.android.opensecretsanta.inject.base.module.BaseApplicationModule;
 import com.moac.android.opensecretsanta.instrumentation.Instrumentation;
 import com.moac.android.opensecretsanta.model.Group;
+import com.moac.android.opensecretsanta.module.AppModule;
 import com.moac.android.opensecretsanta.util.GroupUtils;
 import com.moac.android.opensecretsanta.util.Utils;
 
-import java.util.Arrays;
-import java.util.List;
+import android.app.Application;
+import android.content.SharedPreferences;
 
 import javax.inject.Inject;
 
-public class OpenSecretSantaApplication extends InjectingApplication {
+public class OpenSecretSantaApplication extends Application implements
+                                                            ComponentHolder<OpenSecretSantaApplicationComponent> {
 
     public static final String MOST_RECENT_GROUP_KEY = "most_recent_group_id";
 
@@ -22,32 +23,37 @@ public class OpenSecretSantaApplication extends InjectingApplication {
     private static final String TAG = "OpenSecretSantaApplication";
 
     @Inject
-    DatabaseManager mDatabaseManager;
+    DatabaseManager databaseManager;
 
     @Inject
-    SharedPreferences mSharedPreferences;
+    SharedPreferences sharedPreferences;
 
     @Inject
-    Instrumentation mInstrumentation;
+    Instrumentation instrumentation;
+
+    private OpenSecretSantaApplicationComponent component;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
+        // Inject dependencies
+        component().inject(this);
+
         // Initialize app instrumentation
-        mInstrumentation.init();
+        instrumentation.init();
 
         // Ensure a default group exists
         initializeDefaultGroup();
     }
 
     private void initializeDefaultGroup() {
-        Utils.doOnce(mSharedPreferences,
-                CREATE_DEFAULT_GROUP_TASK, new Runnable() {
+        Utils.doOnce(sharedPreferences,
+                     CREATE_DEFAULT_GROUP_TASK, new Runnable() {
                     @Override
                     public void run() {
                         // Don't add another group if there is at least one already
-                        if (!mDatabaseManager.queryHasGroup()) {
+                        if (!databaseManager.queryHasGroup()) {
                             createDefaultInitialGroup();
                         }
                     }
@@ -56,17 +62,24 @@ public class OpenSecretSantaApplication extends InjectingApplication {
 
     private void createDefaultInitialGroup() {
         String baseName = getString(R.string.base_group_name);
-        Group myFirstGroup = GroupUtils.createIncrementingGroup(mDatabaseManager, baseName);
+        Group myFirstGroup = GroupUtils.createIncrementingGroup(databaseManager, baseName);
         // Assign as the current Group
-        mSharedPreferences.edit().
+        sharedPreferences.edit().
                 putLong(MOST_RECENT_GROUP_KEY, myFirstGroup.getId()).apply();
     }
 
     @Override
-    public List<Object> getModules() {
-        List<Object> modules = super.getModules();
-        modules.addAll(Arrays.asList(Modules.list(this)));
-        return modules;
+    public OpenSecretSantaApplicationComponent component() {
+        if (this.component == null) {
+            this.component =
+                    DaggerOpenSecretSantaApplicationComponent.builder()
+                                                             .baseApplicationModule(
+                                                                     new BaseApplicationModule(
+                                                                             this))
+                                                             .appModule(new AppModule(this))
+                                                             .build();
+        }
+        return this.component;
     }
 
 }

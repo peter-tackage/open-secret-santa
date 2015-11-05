@@ -12,7 +12,11 @@ import com.moac.android.opensecretsanta.model.Member;
 
 import java.util.List;
 
-public class NotifyUtils {
+public final class NotifyUtils {
+
+    private NotifyUtils() {
+        throw new AssertionError("No instances allowed.");
+    }
 
     public static boolean containsSendableEntry(List<Member> _members) {
         for (Member member : _members) {

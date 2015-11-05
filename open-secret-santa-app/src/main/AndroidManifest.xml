@@ -20,21 +20,20 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".ui.main.MainActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"
-            android:theme="@style/AppLauncherTheme">
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.RestrictionsActivity" />
+        <activity android:name=".ui.restrictions.RestrictionsActivity" />
         <activity
-            android:name=".activity.EditActivity"
+            android:name=".ui.edit.EditActivity"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".activity.AllPreferencesActivity" />
+        <activity android:name=".ui.settings.AllPreferencesActivity" />
 
         <receiver
             android:name=".notify.sms.SmsManagerSendReceiver"

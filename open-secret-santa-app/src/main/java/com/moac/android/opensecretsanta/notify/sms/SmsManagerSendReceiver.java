@@ -1,17 +1,20 @@
 package com.moac.android.opensecretsanta.notify.sms;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
-
-import com.moac.android.inject.dagger.InjectingBroadcastReceiver;
-import com.moac.android.opensecretsanta.activity.Intents;
+import com.moac.android.opensecretsanta.OpenSecretSantaApplication;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
+import com.moac.android.opensecretsanta.inject.base.component.ComponentHolder;
 import com.moac.android.opensecretsanta.model.Assignment;
 import com.moac.android.opensecretsanta.model.PersistableObject;
 import com.moac.android.opensecretsanta.notify.NotifyStatusEvent;
+import com.moac.android.opensecretsanta.ui.Intents;
+import com.moac.android.opensecretsanta.util.Preconditions;
 import com.squareup.otto.Bus;
+
+import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 
 import javax.inject.Inject;
 
@@ -21,7 +24,8 @@ import javax.inject.Inject;
  * for that Assignment receipt. Instead we use the Extra in the Intent
  * to determine which Assignment is being processed.
  */
-public class SmsManagerSendReceiver extends InjectingBroadcastReceiver {
+public class SmsManagerSendReceiver extends BroadcastReceiver
+        implements ComponentHolder<SmsManagerSendReceiverComponent> {
 
     private static final String TAG = SmsManagerSendReceiver.class.getSimpleName();
 
@@ -31,9 +35,17 @@ public class SmsManagerSendReceiver extends InjectingBroadcastReceiver {
     @Inject
     Bus mBus;
 
+    private Context context;
+
+    private SmsManagerSendReceiverComponent component;
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        super.onReceive(context, intent);
+
+        this.context = context;
+
+        // Inject dependencies
+        component().inject(this);
 
         /**
          * Due to the asynchronous nature of this callback, we need to be defensive.
@@ -43,27 +55,30 @@ public class SmsManagerSendReceiver extends InjectingBroadcastReceiver {
          * Note: This callback happens on the main thread
          */
 
-        long assignmentId = intent.getLongExtra(Intents.ASSIGNMENT_ID_INTENT_EXTRA, PersistableObject.UNSET_ID);
+        long assignmentId = intent
+                .getLongExtra(Intents.ASSIGNMENT_ID_INTENT_EXTRA, PersistableObject.UNSET_ID);
 
-        if(assignmentId <= PersistableObject.UNSET_ID) {
+        if (assignmentId <= PersistableObject.UNSET_ID) {
             Log.e(TAG, "onReceive() - Assignment Id extra not set");
             return;
         }
 
         Assignment assignment = mDb.queryById(assignmentId, Assignment.class);
-        if(assignment == null) {
+        if (assignment == null) {
             Log.e(TAG, "onReceive() - No Assignment found to update, id: " + assignmentId);
             return;
         }
 
         Log.i(TAG, "onReceive() got message sent notification:" + intent);
-        switch(getResultCode()) {
+        switch (getResultCode()) {
             case Activity.RESULT_OK:
                 Log.i(TAG, "onReceive() - Success sending SMS");
                 assignment.setSendStatus(Assignment.Status.Sent);
                 break;
             default:
-                Log.i(TAG, "onReceive() - Failure sending SMS: code - " + getResultCode() + " data: " + getResultData());
+                Log.i(TAG,
+                      "onReceive() - Failure sending SMS: code - " + getResultCode() + " data: "
+                      + getResultData());
                 assignment.setSendStatus(Assignment.Status.Failed);
         }
         Log.d(TAG, "OnReceive() - updating Assignment and posting to bus: " + assignment);
@@ -71,5 +86,21 @@ public class SmsManagerSendReceiver extends InjectingBroadcastReceiver {
         mDb.update(assignment);
         // Post update of Assignment status to Bus.
         mBus.post(new NotifyStatusEvent(assignment));
+    }
+
+    @Override
+    public SmsManagerSendReceiverComponent component() {
+        Preconditions.checkState(this.context != null, "Context cannot be null.");
+
+        if (this.component == null) {
+            this.component = DaggerSmsManagerSendReceiverComponent.builder()
+                                                                  .openSecretSantaApplicationComponent(
+                                                                          ((OpenSecretSantaApplication) context
+                                                                                  .getApplicationContext())
+                                                                                  .component())
+                                                                  .build();
+        }
+
+        return component;
     }
 }

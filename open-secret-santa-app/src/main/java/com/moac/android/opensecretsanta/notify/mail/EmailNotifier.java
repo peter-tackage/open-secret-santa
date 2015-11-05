@@ -3,7 +3,6 @@ package com.moac.android.opensecretsanta.notify.mail;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
-import com.google.common.base.Strings;
 import com.moac.android.opensecretsanta.R;
 import com.moac.android.opensecretsanta.database.DatabaseManager;
 import com.moac.android.opensecretsanta.model.Assignment;
@@ -11,6 +10,7 @@ import com.moac.android.opensecretsanta.model.Member;
 import com.moac.android.opensecretsanta.notify.NotificationFailureException;
 import com.moac.android.opensecretsanta.notify.Notifier;
 import com.moac.android.opensecretsanta.notify.NotifyStatusEvent;
+import com.moac.android.opensecretsanta.util.TextUtils;
 import com.squareup.otto.Bus;
 
 public class EmailNotifier implements Notifier {
@@ -65,7 +65,7 @@ public class EmailNotifier implements Notifier {
     private static String buildEmailMsg(String _baseMsg, String _giverName, String _receiverName, String _groupMsg, String _footer) {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format(_baseMsg, _giverName, _receiverName));
-        sb.append(Strings.isNullOrEmpty(_groupMsg) ? "" : " " +  _groupMsg);
+        sb.append(TextUtils.isNullOrEmpty(_groupMsg) ? "" : " " +  _groupMsg);
         sb.append(_footer);
         Log.v(TAG, "buildEmailMsg() - result: " + sb.toString());
 

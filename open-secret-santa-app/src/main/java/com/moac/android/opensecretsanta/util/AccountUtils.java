@@ -21,9 +21,13 @@ import java.io.IOException;
 import rx.Observable;
 import rx.Subscriber;
 
-public class AccountUtils {
+public final class AccountUtils {
 
     private static final String TAG = AccountUtils.class.getSimpleName();
+
+    private AccountUtils() {
+        throw new AssertionError("No instances allowed.");
+    }
 
     // Must run on new thread
     public static Observable<EmailAuthorization> getPreferredGmailAuth(final Context context, final AccountManager accountManager, final SharedPreferences prefs, final Activity activity) {
