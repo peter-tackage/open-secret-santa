@@ -9,6 +9,7 @@ public final class Preconditions {
         throw new AssertionError("No instances allowed.");
     }
 
+    @NonNull
     public static <T> T checkNotNull(@Nullable T value, @NonNull String errorMessage) {
         if (value == null) {
             throw new IllegalArgumentException(errorMessage);
@@ -16,6 +17,7 @@ public final class Preconditions {
         return value;
     }
 
+    @NonNull
     public static String checkNotNullOrEmpty(@Nullable String value, @NonNull String errorMessage) {
         if (com.moac.android.opensecretsanta.util.TextUtils.isNullOrEmpty(value)) {
             throw new IllegalArgumentException(errorMessage);
@@ -23,11 +25,15 @@ public final class Preconditions {
         return value;
     }
 
-    public static boolean checkState(boolean condition, @NonNull String errorMessage) {
+    public static void checkState(boolean condition, @NonNull String errorMessage) {
         if (!condition) {
             throw new IllegalStateException(errorMessage);
         }
-        return condition;
+    }
+
+    @NonNull
+    public static <T> T get(@Nullable T value) {
+        return checkNotNull(value, "Value cannot be null.");
     }
 
 }

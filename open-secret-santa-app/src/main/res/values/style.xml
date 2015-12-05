@@ -23,7 +23,6 @@
     <style name="MyToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:background">@color/primary_color</item>
         <item name="popupTheme">@style/MyPopUpTheme</item>
-        <!-- FIXME This makes the CAB use white icons ( -->
         <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 

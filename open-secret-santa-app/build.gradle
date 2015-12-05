@@ -10,7 +10,7 @@ android {
     }
 
     lintOptions {
-        abortOnError false
+        abortOnError true
     }
 
     defaultConfig {
@@ -64,7 +64,7 @@ android {
 
 }
 
-// Customs Maven repositories
+// Custom Maven repositories
 repositories {
     maven {
         url "https://raw.github.com/peter-tackage/maven-repo/master/releases/"
